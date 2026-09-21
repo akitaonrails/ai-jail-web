@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "title": "Segurança: o que o ai-jail protege e onde ele para",
+    "description": "O modelo de ameaças do ai-jail em palavras simples: o que o sandbox barra, o que não barra, que opções o enfraquecem, como saem as releases e como reportar falhas."
+  },
+  "hero": {
+    "title": "Uma camada útil, com limites conhecidos",
+    "lede": "O ai-jail mantém um agente de código com IA longe das suas chaves, do seu diretório home e do resto da sua máquina. Ele é um sandbox de processo, então compartilha o seu kernel. Quando o código é hostil, ele não substitui uma máquina virtual descartável.",
+    "report": "Reportar uma vulnerabilidade",
+    "doc": "Ler o SECURITY.md"
+  },
+  "stops": {
+    "title": "O que ele foi feito para barrar",
+    "lede": "Uma página web, um pacote ou um arquivo no repositório pode convencer um agente a se comportar mal. É isto que ele vai procurar nessa hora, e não vai encontrar.",
+    "alt": "O agente e o projeto ficam dentro de um muro de grades. Seis setas saem do agente e batem no muro. Do lado de fora, apagados e gradeados, estão o seu home e as suas chaves, os segredos do seu shell, a rede, a sua tela e o clipboard, o seu terminal e a política da jaula.",
+    "caption": "Os padrões. Cada item do lado de fora continua lá até você mesmo abrir.",
+    "items": [
+      { "text": "Seu diretório home e as credenciais que estão nele. O agente recebe um home novo e vazio, então <code>~/.ssh</code> e <code>~/.aws</code> não existem lá dentro." },
+      { "text": "Segredos no seu shell. As variáveis de ambiente são reduzidas a uma allowlist pequena, então os tokens exportados ficam de fora." },
+      { "text": "A rede. Ela fica desligada, então nada do que o agente lê pode ser enviado para lugar nenhum." },
+      { "text": "A memória compartilhada do host, o seu servidor gráfico e o seu clipboard. A saída do agente passa por um filtro que descarta sequências de terminal de clipboard e de consulta." },
+      { "text": "Digitar no seu terminal. O Linux bloqueia a chamada <code>TIOCSTI</code>, que simula teclas, e o macOS restringe o controle de terminal ao único terminal que o ai-jail criou para aquela execução." },
+      { "text": "As próprias regras. Um arquivo <code>.ai-jail</code> dentro de um repositório não é confiável: ele pode apertar o sandbox, nunca abrir." }
+    ],
+    "link": "Como cada camada faz isso"
+  },
+  "edge": {
+    "title": "Onde o muro acaba",
+    "lede": "A jaula e o seu sistema se apoiam no mesmo kernel. Um bug nesse kernel, num driver ou no backend do sandbox é um caminho por fora do muro, e o ai-jail não tem o que fazer a respeito. Uma máquina virtual traz o próprio kernel, e por isso é a fronteira mais forte.",
+    "alt": "À esquerda, o seu sistema e a jaula do ai-jail com o agente dentro se apoiam numa única laje compartilhada, o seu kernel, e uma linha tracejada vai do agente até o seu sistema passando pela laje. À direita, uma VM descartável cerca um agente apoiado num kernel próprio e separado.",
+    "caption": "Um sandbox divide o chão com aquilo que protege, e uma VM traz o próprio chão.",
+    "listTitle": "O que continua em risco",
+    "items": [
+      "Vulnerabilidades de kernel e de drivers. Todo processo em sandbox fala com o mesmo kernel que o resto da sua máquina.",
+      "Bugs no seu emulador de terminal, principalmente com <code>--terminal-passthrough</code>, que desliga o filtro de saída.",
+      "Defeitos no próprio backend do sandbox: bubblewrap, Landlock e seccomp no Linux, <code>sandbox-exec</code> no macOS.",
+      "Segredos dentro do projeto. Um arquivo <code>.env</code> no repositório pode ser lido, a menos que você o mascare. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar arquivos</a>.",
+      "As máscaras cobrem só os caminhos que existem quando o sandbox inicia. Um arquivo de segredos criado depois, durante a sessão, não fica escondido.",
+      "Side channels e algumas classes de comunicação entre processos.",
+      "No macOS, o <code>sandbox-exec</code> foi marcado como obsoleto pela Apple e não equivale ao isolamento do Linux. <a class=\"link\" href=\"/how-it-works/\">Veja as diferenças no macOS</a>."
+    ],
+    "callout": {
+      "title": "Para código que você acredita ser hostil, use uma VM descartável",
+      "text": "O ai-jail é para agentes que são úteis e às vezes erram ou são enganados. Para análise de malware, ou para um repositório de que você já desconfia, suba uma máquina virtual que possa jogar fora. <a class=\"link\" href=\"/compare/\">Compare as opções</a>."
+    }
+  },
+  "switches": {
+    "title": "Opções que abrem o muro",
+    "lede": "Tudo o que está abaixo fica desligado até você ligar, e cada item dá acesso real ao agente. <a class=\"link\" href=\"/configure/#switches\">Como definir cada um está na página Configurar</a>.",
+    "head": { "flag": "Opção", "gives": "O que qualquer coisa no sandbox passa a poder fazer" },
+    "rows": [
+      "Enviar para qualquer lugar tudo o que consegue ler. O tráfego é irrestrito e não há filtro por domínio.",
+      "Agir como root na sua máquina por meio do daemon do Docker.",
+      "Capturar teclas e tirar screenshots de outras janelas X11.",
+      "Pedir ao seu gerenciador de usuário do systemd para rodar serviços no host.",
+      "Ler o ambiente inteiro do seu shell, com os segredos.",
+      "Usar o login salvo do agente, por exemplo o <code>~/.claude</code> do Claude.",
+      "Gravar e reproduzir áudio enquanto estiver ligada.",
+      "Ver o seu diretório home real. É uma exceção ampla; prefira mapear só o caminho de que você precisa."
+    ]
+  },
+  "closed": {
+    "title": "Na dúvida, ele se recusa a iniciar",
+    "lede": "Um sandbox que inicia, sem avisar, mais fraco do que você pediu é pior do que um que para com um erro. Nestes casos o ai-jail para.",
+    "items": [
+      "Um arquivo de configuração que existe e está inválido ou ilegível.",
+      "Um <code>.ai-jail</code> de projeto que é um symlink. Um <code>~/.ai-jail</code> global que é symlink só é seguido até um arquivo regular que pertence a você, em que ninguém mais pode escrever, fora do projeto.",
+      "<code>--lockdown</code> quando o Landlock, as regras de sistema de arquivos do próprio kernel, está ausente, parcial ou falha ao ser aplicado. <code>--lockdown --no-landlock</code> também é rejeitado.",
+      "<code>--allow-tcp-port</code>. Essa interface não consegue restringir UDP, então a flag é aceita por compatibilidade e a inicialização falha.",
+      "Um <code>BWRAP_BIN</code> que aponta para um binário do bubblewrap que alguém além do root poderia ter trocado. Ele é ignorado com um aviso, e sem um bubblewrap confiável a inicialização falha."
+    ],
+    "counter": {
+      "title": "Onde ele só avisa",
+      "text": "Fora do <code>--lockdown</code>, uma falha do Landlock gera um aviso. Num kernel antigo demais para o Landlock, o ai-jail avisa e segue só com a camada do bubblewrap. Leia as linhas de inicialização."
+    }
+  },
+  "checked": {
+    "title": "Como o projeto é verificado",
+    "lede": "Um único mantenedor toca o projeto, tudo em aberto. Abaixo está o que é verificado e o que não é.",
+    "facts": [
+      { "label": "testes de integração de fuga do sandbox, que tentam escrever em <code>/usr</code>, ler <code>~/.ssh</code>, chamar <code>ptrace</code> e <code>bpf</code>, e esperam falhar" },
+      { "label": "testes unitários na árvore de código-fonte na versão 1.22.0" },
+      { "label": "requisições de rede na inicialização. A checagem de atualização é opt-in, com <code>--update-check</code>" }
+    ],
+    "audit": {
+      "title": "Auditado internamente, não por terceiros",
+      "text": "Antes da 1.0, o projeto fez uma auditoria interna de código e uma revisão de segurança do refactor, e publicou as duas no repositório. Nenhuma empresa externa auditou o ai-jail. <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">Leia a revisão de segurança</a>."
+    },
+    "release": {
+      "title": "Como uma release é feita",
+      "items": [
+        "As tags de release são assinadas, e o CI verifica cada uma contra um fingerprint de chave fixado no repositório.",
+        "Cada GitHub Action é fixada num SHA de commit, e as actions são restritas a uma allowlist.",
+        "Os builds usam uma toolchain de Rust fixada e dependências com <code>--locked</code>.",
+        "Os binários de macOS são assinados e notarizados pela Apple.",
+        "Cada arquivo compactado vem com um checksum SHA-256, e o job de publicação confere todos de novo."
+      ]
+    },
+    "missing": {
+      "title": "O que o documento de release diz que ainda falta",
+      "items": [
+        "Os segredos de assinatura e de publicação ainda ficam guardados no nível do repositório e deveriam ir para os ambientes de release.",
+        "Ainda não há um ruleset que obrigue toda tag <code>v*</code> a ser assinada.",
+        "Releases imutáveis não estão habilitadas.",
+        "A publicação no crates.io ainda usa um token. O trusted publishing está planejado.",
+        "Com um único mantenedor, não há um segundo revisor para as mudanças nem para as releases."
+      ],
+      "link": "Ler o RELEASE_SECURITY.md"
+    }
+  },
+  "report": {
+    "title": "Reportar uma vulnerabilidade",
+    "text": "Não abra uma issue pública. Use o relato privado de vulnerabilidades do GitHub, inclua os passos para reproduzir e as versões afetadas, e dê tempo para coordenar uma correção.",
+    "button": "Abrir um advisory privado"
+  },
+  "faq": {
+    "title": "Perguntas comuns",
+    "items": [
+      { "q": "O agente consegue escapar?", "a": "Os padrões são feitos e testados para bloquear os caminhos comuns: arquivos, ambiente, rede e IPC do host. Um bug de kernel, de driver, de terminal ou do backend do sandbox ainda poderia deixá-lo sair. Todo sandbox de processo tem esse limite, e por isso o lugar de código hostil é uma VM descartável." },
+      { "q": "É seguro rodar com a rede ligada?", "a": "É mais seguro do que rodar o agente sem nada, porque as suas chaves e o seu diretório home continuam fora, sem ter como ser enviados. Tudo o que o agente consegue ler, ele consegue enviar, e o ai-jail não tem filtro por domínio. Mascare antes os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>." },
+      { "q": "Ele já foi auditado?", "a": "Internamente, antes da 1.0, com os relatórios publicados no repositório. Nunca passou por auditoria de terceiros. O código é aberto sob a GPL 3.0, e relatos privados de vulnerabilidade são bem-vindos." }
+    ]
+  },
+  "next": [
+    { "title": "Como funciona", "text": "As camadas entre o agente e o seu sistema, e o que muda no macOS." },
+    { "title": "Configurar", "text": "Todas as opções, como mascarar segredos e o modo lockdown." },
+    { "title": "Comparar", "text": "Sandboxes embutidos dos agentes, Docker e máquinas virtuais, lado a lado." }
+  ]
+}

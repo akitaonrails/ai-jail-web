@@ -1,0 +1,7 @@
+Two horizontal rows stacked one above the other, showing the same story twice, each read left to right. The rows have the same objects in the same positions so the eye can compare them.
+
+TOP ROW, with the small row title "Without a jail" at its left edge: a document page icon with one highlighted line inside it, labeled "Poisoned page". An arrow leads right to a glowing cyan microchip labeled "Agent". A cyan arrow leads right from the chip to a brightly lit warm gold key icon labeled "SSH key". A final cyan arrow leads right from the key to a brightly lit globe icon labeled "Internet". Every arrow in this row is solid and complete.
+
+BOTTOM ROW, with the small row title "With ai-jail" at its left edge: the same document page icon and the same cyan microchip, but the chip now sits inside a rounded wall made of thick vertical bars in the warm gold-to-magenta gradient. The arrow that leaves the chip stops at the inside of the wall and goes no further. To the right, outside the wall, the key icon and the globe icon are dim, desaturated maroon-grey with thin vertical bars across them, and no arrow reaches them.
+
+Use each label once per row at most: "Poisoned page", "Agent", "SSH key", "Internet" appear in the top row only; the bottom row repeats the icons without labels, apart from its row title. Six label texts in total.

@@ -1,0 +1,7 @@
+A side-by-side comparison diagram with two equal panels, read left to right.
+
+LEFT PANEL, titled "Permission prompt": a large cyan microchip labeled "Agent" on the left. From it a thin cyan line runs to the right through a stack of three overlapping rounded dialog cards drawn in warm gold outline. The cards contain no text at all, only one small rounded button shape each. The front card's button is labeled "Approve". The cyan line passes through the cards and arrives at a brightly lit warm gold folder icon with a key on it, labeled "Your keys". The line reaches the folder: the path is open once the button is pressed.
+
+RIGHT PANEL, titled "Sandbox": the same cyan microchip labeled "Agent" on the left. A thin cyan line runs to the right and stops dead at a tall thick wall made of vertical bars in the warm gold-to-magenta gradient, labeled "Kernel rule". Beyond the wall the folder with a key, labeled "Your keys", is dim and barred, and no line reaches it.
+
+The two panels have the same size and the same objects, so the only difference the eye sees is a stack of dialogs that lets the line through, against a wall that stops it.

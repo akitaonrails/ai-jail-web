@@ -1,0 +1,7 @@
+A side view diagram with two separate groups, read left to right, with a wide empty gap between them.
+
+LEFT GROUP: one long, thick horizontal slab drawn in the warm orange-to-red gradient, labeled "Your kernel" on its front face. Standing on top of this single slab, side by side, are two things: on the left a small house-shaped block in warm gold labeled "Your system", and on the right a rounded cage made of thick vertical bars in the warm gradient, labeled "ai-jail", with a glowing cyan microchip labeled "Agent" inside it. Both stand on the same slab. A thin dashed cyan line runs from the Agent chip straight down into the slab, travels along inside the slab, and comes up under "Your system", showing that a path through the shared slab goes around the cage.
+
+RIGHT GROUP: a large rounded box outline in the warm magenta tone labeled "Disposable VM". Inside that box is its own, smaller, separate slab labeled "Its own kernel", and standing on it a second glowing cyan microchip with no label. This slab does not touch the left slab; the gap between the two groups is empty.
+
+Facts the picture must get right: the left slab is shared by the cage and the system; the right slab is separate and enclosed in the VM box; the dashed line exists only in the left group.

@@ -1,0 +1,4 @@
+{
+  "install-first-run": { "translate": ["Dry run", "Look around", "Run the agent", "Agent", "Project", "Network", "Login", "Your home"], "keep": [] },
+  "install-inside": { "translate": ["Agent", "Project", "Empty home", "System tools", "SSH keys", "Cloud logins", "Other projects", "Network"], "keep": [] }
+}

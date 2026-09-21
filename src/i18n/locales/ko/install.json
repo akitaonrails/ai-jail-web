@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "title": "ai-jail 설치와 첫 실행: 에이전트를 감옥 안에서 돌리기",
+    "description": "Homebrew, AUR, cargo, Nix로 ai-jail을 설치하는 방법입니다. 드라이 런으로 샌드박스를 미리 확인한 다음, 네트워크와 에이전트 로그인만 열어서 Claude Code나 Codex를 샌드박스 안에서 시작합니다. 시작되지 않을 때 확인할 문제 해결 항목도 있습니다."
+  },
+  "hero": {
+    "title": "설치하고, 안을 둘러보고, 에이전트 실행하기",
+    "lede": "ai-jail은 프로그램 하나이고 데몬도 root도 필요 없습니다. 설치한 다음 평소 입력하던 명령 앞에 이름을 붙이면 에이전트가 샌드박스 안에서 시작됩니다.",
+    "jump": "설치 방법 고르기",
+    "releases": "GitHub 릴리스"
+  },
+  "install": {
+    "title": "설치",
+    "lede": "평소 명령줄 도구를 설치하던 방식을 고르세요. 어느 방법을 쓰든 똑같은 <code>ai-jail</code> 프로그램 하나가 설치됩니다.",
+    "tabs": ["Homebrew", "Arch Linux", "crates.io", "Nix", "GitHub 릴리스", "소스에서 빌드"],
+    "notes": [
+      "macOS와 Linux에서 됩니다.",
+      "첫 번째 패키지는 Linux x86_64용으로 미리 빌드된 바이너리입니다. 두 번째는 소스에서 빌드합니다.",
+      "Rust 툴체인이 필요합니다. <code>--locked</code>를 주면 릴리스를 테스트할 때 쓴 의존성 버전으로 빌드합니다.",
+      "첫 줄은 아무것도 설치하지 않고 에이전트를 실행합니다. 둘째 줄은 내 사용자 계정에 설치합니다. flake는 ai-jail이 자체 포함된 bubblewrap을 쓰도록 연결합니다.",
+      "압축 파일은 서명되어 있고 체크섬이 함께 올라와 있습니다. 하나를 풀어서 <code>ai-jail</code>을 <code>PATH</code>에 있는 위치에 두세요. 서명 확인 방법은 <a class=\"link\" href=\"/security/\">보안 페이지</a>에 있습니다.",
+      "필요한 Rust 버전은 {rust}입니다."
+    ],
+    "platforms": {
+      "title": "시스템 요구 사항",
+      "items": [
+        { "title": "Linux", "text": "bubblewrap을 설치하세요. ai-jail이 샌드박스를 구성할 때 쓰는 작은 프로그램입니다. 대부분의 배포판에 <code>bubblewrap</code>이라는 패키지로 있습니다." },
+        { "title": "macOS", "text": "설치할 것이 없습니다. ai-jail은 macOS에 포함된 <code>sandbox-exec</code>를 씁니다. Apple은 이 인터페이스를 deprecated로 표시하고 있습니다." },
+        { "title": "Windows", "text": "지원하지 않습니다. WSL2를 쓰고 그 안에서 Linux 절차를 따르세요." }
+      ]
+    }
+  },
+  "first": {
+    "title": "첫 실행",
+    "lede": "명령 세 개로 계획을 확인하고, 안을 둘러보고, 에이전트를 실제로 돌립니다. ai-jail은 요청하기 전까지 아무것도 열지 않습니다.",
+    "alt": "왼쪽에서 오른쪽으로 패널 세 개. 드라이 런에서는 감방이 점선 윤곽뿐이고 에이전트는 바깥에서 기다립니다. 둘러보기에서는 감방이 실선이고 그 안에 터미널과 프로젝트 폴더가 있습니다. 에이전트 실행에서는 에이전트와 프로젝트가 안에 있고 벽에 구멍이 두 개 나 있습니다. 하나는 네트워크용, 하나는 에이전트 로그인용입니다. 홈 폴더는 세 패널 모두에서 바깥에 막혀 있습니다.",
+    "caption": "홈 디렉터리는 모든 단계에서 바깥에 있습니다. 무언가를 여는 것은 마지막 단계뿐이고, 그것도 클라우드 에이전트에 필요한 두 가지만 엽니다.",
+    "steps": [
+      { "title": "아무것도 실행하지 않고 계획 보기", "text": "프로젝트로 이동해서 드라이 런을 요청합니다. ai-jail은 사용할 샌드박스 명령을 출력하고 종료합니다. 드라이 런은 파일을 쓰지 않습니다." },
+      { "title": "안을 둘러보기", "text": "감옥 안에서 일반 셸을 시작합니다. 프로젝트는 실제 경로에 그대로 있고 편집할 수 있습니다. 홈 디렉터리는 새로 만든 빈 디렉터리이고 셸에 있던 토큰은 없습니다. 나가려면 <code>exit</code>를 입력합니다." },
+      { "title": "필요한 두 가지를 주고 에이전트 실행하기", "text": "클라우드 모델과 통신하는 에이전트에는 모델에 닿기 위한 네트워크와 내가 누구인지 증명하는 저장된 로그인이 필요합니다. 둘 다 기본으로 꺼져 있으니 <code>--network</code>와 <code>--agent-state</code>로 켭니다. 버전 1.22부터는 알려진 에이전트를 둘 중 하나 없이 시작하면 ai-jail이 빠진 플래그 이름을 담은 경고를 출력합니다." },
+      { "title": "그 에이전트의 기본값으로 만들기", "text": "두 설정을 내 설정 파일인 <code>~/.ai-jail</code>에 에이전트 이름 아래로 넣습니다. 그 뒤로는 짧은 명령만 입력하면 됩니다. 프로젝트에 생길 수 있는 <code>.ai-jail</code> 파일은 감옥을 더 조일 수만 있습니다. 네트워크나 로그인을 켤 수는 없으므로, 클론한 저장소가 스스로 감옥을 열 수는 없습니다." }
+    ],
+    "codeTitles": ["드라이 런", "감옥 안의 셸", "실제 실행", "~/.ai-jail"],
+    "gitignore": {
+      "title": "프로젝트에 생기는 .ai-jail 파일",
+      "text": "일반 실행에서는 프로젝트 설정이 <code>.ai-jail</code>에 저장될 수 있습니다. <code>--env</code>로 넘긴 값은 ai-jail이 이 파일에 쓰지 않습니다. 에이전트에는 이 파일이 빈 파일로 보입니다. README는 감옥 안에서 <code>git status</code>가 깨끗하게 나오도록 <code>.ai-jail</code>을 <code>.gitignore</code>에 추가하라고 권합니다. 두 설정 파일은 <a class=\"link\" href=\"/configure/\">설정</a> 페이지에서 설명합니다."
+    },
+    "exposure": {
+      "title": "두 플래그가 내주는 것",
+      "text": "<code>--network</code>는 사이트별 필터가 없는 네트워크 전체입니다. 에이전트가 읽을 수 있는 것은 무엇이든 보낼 수 있습니다. <code>--agent-state</code>를 켜면 감옥 안의 모든 것이 그 에이전트의 로그인을 쓸 수 있습니다. SSH 키, 클라우드 자격 증명, 다른 프로젝트는 여전히 그 안에 없어서 읽을 수 없습니다. 한계 전체는 <a class=\"link\" href=\"/security/\">보안</a> 페이지에 있습니다."
+    }
+  },
+  "see": {
+    "title": "안에서 보이는 것",
+    "lede": "프롬프트가 <code>(jail)</code>로 바뀌고 프로젝트는 원래 있던 자리에 있습니다. 훔칠 만한 것은 보이지 않습니다.",
+    "termTitle": "Linux에서 실행한 ai-jail bash",
+    "comments": ["# 프로젝트는 실제 경로에 있습니다", "# 셸에 export한 토큰은 따라오지 않았습니다", "# 이 홈에는 키가 없습니다", "# 감옥에는 전용 호스트 이름이 있습니다"],
+    "note": "Linux 세션입니다. macOS에는 별도의 파일 트리를 만들 방법이 없어서 같은 경로가 존재하고, 읽으려고 하면 거부됩니다.",
+    "alt": "감방 안에서 본 모습. 에이전트가 크고 밝은 프로젝트 폴더 옆에 있고, 뒤에는 빈 홈과 시스템 도구가 있습니다. 창살 바깥에는 SSH 키, 클라우드 로그인, 다른 프로젝트, 네트워크가 흐리게 막혀 있습니다.",
+    "caption": "안에서 보면 내 것 중에 존재하는 것은 프로젝트뿐입니다. <code>--network</code>를 넘기기 전에는 네트워크도 바깥에 있습니다."
+  },
+  "trouble": {
+    "title": "시작되지 않을 때",
+    "lede": "README의 문제 해결 항목에 나오는 경우와, 설정하다가 자주 걸리는 규칙 두 가지입니다.",
+    "items": [
+      {
+        "title": "<code>bwrap: setting up uid map: Permission denied</code>",
+        "text": "Ubuntu 24.04 이상과 Debian 13 이상에는 프로그램이 root 없이 사용자 네임스페이스를 만들지 못하게 하는 AppArmor 정책이 들어 있습니다. bubblewrap은 바로 이 방법으로 감옥을 격리합니다. root 없이 동작하는 같은 종류의 도구가 모두 영향을 받습니다. 시스템 전체에서 정책을 완화하려면 이렇게 합니다.",
+        "alt": "정책은 그대로 두고 <code>bwrap</code>만 예외로 둘 수도 있습니다. 아래 내용을 <code>/etc/apparmor.d/bwrap</code>으로 저장한 뒤 <code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>을 실행하세요."
+      },
+      {
+        "title": "<code>BWRAP_BIN</code>이 거부됩니다",
+        "text": "<code>BWRAP_BIN</code>으로 ai-jail이 쓸 bubblewrap을 지정할 수 있습니다. ai-jail은 그 경로가 root 소유이고 다른 사용자가 쓸 수 없는 프로그램이거나, 표준 다중 사용자 <code>/nix/store</code> 안의 프로그램일 때만 받아들입니다. 내 홈에 있는 사본은 거부합니다. 그 파일을 바꿔치기할 수 있는 사람이 감옥을 통제하게 되기 때문입니다."
+      },
+      {
+        "title": "안에서 mise 도구가 보이지 않습니다",
+        "text": "ai-jail은 <a class=\"link\" href=\"https://mise.jdx.dev/\">mise</a>를 찾으면 활성화합니다. 하지만 새 홈에는 mise 설정도 설치된 도구도 없어서 활성화를 건너뜁니다. 내 설정 파일에서 두 디렉터리를 읽기 전용으로 매핑하세요."
+      },
+      {
+        "title": "시작할 때 <code>Failed to create stream fd</code>가 나옵니다",
+        "text": "Ubuntu 데스크톱에서 mise를 준비하는 동안 로그인 스크립트가 내는 메시지입니다. 해롭지 않고 mise도 정상 동작합니다. <code>--no-mise</code>를 주면 mise 준비를 건너뛰고 메시지도 나오지 않습니다."
+      }
+    ]
+  },
+  "agents": {
+    "title": "에이전트별 안내",
+    "lede": "ai-jail은 에이전트마다 로그인을 어디에 보관하는지 알고 있습니다. <code>--agent-state</code>는 시작하는 에이전트의 폴더만, 그것도 존재할 때만 마운트합니다.",
+    "head": ["실행하는 명령", "<code>--agent-state</code>가 마운트하는 것", "알아 둘 점"],
+    "notes": {
+      "claude": "두 번째 Claude 프로필을 쓰려면 <code>--claude-dir</code>로 해당 디렉터리를 지정하세요.",
+      "codex": "창 크기를 바꾸면 ai-jail이 Codex에 다시 그리기 키를 보내 화면을 새로 그리게 합니다.",
+      "aimemory": "ai-jail은 <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a>가 실행하는 에이전트를 인식해서 그 에이전트의 설정을 적용하고, 두 프로그램을 한 감옥 안에서 실행합니다."
+    },
+    "aimemoryState": "실행된 에이전트의 폴더",
+    "more": "<code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code>, <code>omp</code>, 그리고 <code>kimi</code> 명령도 똑같이 동작합니다. 그 밖의 명령도 실행됩니다. 같은 감옥을 받고 로그인 폴더는 받지 않습니다."
+  },
+  "next": {
+    "items": [
+      { "title": "설정", "text": "모든 플래그와 설정 키, 그리고 작업에 필요한 것만 여는 방법." },
+      { "title": "작동 방식", "text": "Linux와 macOS에서 에이전트와 시스템 사이에 놓이는 계층." },
+      { "title": "보안", "text": "ai-jail이 막는 것과 막지 못하는 것, 릴리스 서명 방식." }
+    ]
+  }
+}

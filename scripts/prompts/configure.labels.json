@@ -1,0 +1,5 @@
+{
+  "configure-authority": { "translate": ["Can only tighten", "Trusted", "Command-line flags", "Wins", "The jail", "Agent"], "keep": ["Project .ai-jail", "Global ~/.ai-jail"] },
+  "configure-mask": { "translate": ["Agent", "Your project"], "keep": ["src/", "package.json", "README.md", ".env", "secrets/", "--mask", "--deny-path"] },
+  "configure-lockdown": { "translate": ["Normal", "Lockdown", "Agent", "Project: read and write", "Project: read only"], "keep": ["/tmp"] }
+}

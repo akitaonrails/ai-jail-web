@@ -1,0 +1,123 @@
+{
+  "compare-prompts-vs-walls": {
+    "Permission prompt": "Pedido de permissão",
+    "Sandbox": "Sandbox",
+    "Agent": "Agente",
+    "Approve": "Aprovar",
+    "Your keys": "Suas chaves",
+    "Kernel rule": "Regra do kernel"
+  },
+  "compare-layers-together": {
+    "Agent": "Agente",
+    "MCP servers": "Servidores MCP",
+    "Hooks": "Hooks",
+    "Project": "Projeto",
+    "Agent's prompts": "Pedidos do agente",
+    "Shell commands": "Comandos de shell",
+    "Model API": "API do modelo",
+    "Your home": "Seu home"
+  },
+  "configure-authority": {
+    "Can only tighten": "Só pode apertar",
+    "Trusted": "Confiável",
+    "Command-line flags": "Flags de linha de comando",
+    "Wins": "Vence",
+    "The jail": "A jaula",
+    "Agent": "Agente",
+    "Project .ai-jail": "Projeto .ai-jail",
+    "Global ~/.ai-jail": "Global ~/.ai-jail"
+  },
+  "configure-mask": {
+    "Agent": "Agente",
+    "Your project": "Seu projeto"
+  },
+  "configure-lockdown": {
+    "Normal": "Normal",
+    "Lockdown": "Lockdown",
+    "Agent": "Agente",
+    "Project: read and write": "Projeto: leitura e escrita",
+    "Project: read only": "Projeto: somente leitura"
+  },
+  "how-launch": {
+    "Your command": "Seu comando",
+    "Read config": "Ler a config",
+    "Build the sandbox": "Montar o sandbox",
+    "Start the agent": "Iniciar o agente",
+    "Exit": "Saída",
+    "Project": "Projeto"
+  },
+  "how-layers": {
+    "Namespaces": "Namespaces",
+    "Filesystem": "Sistema de arquivos",
+    "Limits": "Limites",
+    "Agent": "Agente",
+    "Your home": "Seu home"
+  },
+  "how-macos": {
+    "Five layers": "Cinco camadas",
+    "One profile": "Um perfil"
+  },
+  "install-first-run": {
+    "Dry run": "Dry run",
+    "Look around": "Dar uma olhada",
+    "Run the agent": "Rodar o agente",
+    "Agent": "Agente",
+    "Project": "Projeto",
+    "Network": "Rede",
+    "Login": "Login",
+    "Your home": "Seu home"
+  },
+  "install-inside": {
+    "Agent": "Agente",
+    "Project": "Projeto",
+    "Empty home": "Home vazio",
+    "System tools": "Ferramentas do sistema",
+    "SSH keys": "Chaves SSH",
+    "Cloud logins": "Logins de nuvem",
+    "Other projects": "Outros projetos",
+    "Network": "Rede"
+  },
+  "security-boundary": {
+    "Agent": "Agente",
+    "Project": "Projeto",
+    "Home and keys": "Home e chaves",
+    "Shell secrets": "Segredos do shell",
+    "Network": "Rede",
+    "Screen and clipboard": "Tela e clipboard",
+    "Your terminal": "Seu terminal",
+    "Jail policy": "Política da jaula"
+  },
+  "security-shared-kernel": {
+    "Your system": "Seu sistema",
+    "Agent": "Agente",
+    "Your kernel": "Seu kernel",
+    "Disposable VM": "VM descartável",
+    "Its own kernel": "Kernel próprio"
+  },
+  "why-reach": {
+    "Agent": "Agente",
+    "SSH keys": "Chaves SSH",
+    "Cloud credentials": "Credenciais de nuvem",
+    "Browser profiles": "Perfis de navegador",
+    "Shell tokens": "Tokens do shell",
+    "Other projects": "Outros projetos",
+    "Your project": "Seu projeto"
+  },
+  "why-injection": {
+    "Without a jail": "Sem jaula",
+    "Poisoned page": "Página envenenada",
+    "Agent": "Agente",
+    "SSH key": "Chave SSH",
+    "Internet": "Internet",
+    "With ai-jail": "Com ai-jail"
+  },
+  "home-wrap": {
+    "Built-in sandbox": "Sandbox embutido",
+    "Shell commands": "Comandos de shell",
+    "Agent": "Agente",
+    "MCP servers": "Servidores MCP",
+    "Hooks": "Hooks",
+    "Your home": "Seu home",
+    "Project": "Projeto"
+  }
+}

@@ -1,0 +1,15 @@
+A diagram read from the center outward.
+
+CENTER: one large rounded wall made of thick vertical bars in the warm gold-to-magenta gradient. Inside the wall sit a glowing cyan microchip labeled "Agent" and a cyan folder labeled "Project". Nothing else is inside.
+
+Six thin cyan arrows start at the Agent chip, travel outward, hit the inside of the wall and visibly bounce back in a sharp V shape. None of the arrows passes through the wall.
+
+OUTSIDE the wall, arranged in a ring around it, three on the left and three on the right, are six dim, desaturated maroon-grey icons, each crossed by thin vertical prison bars, each aligned with one bouncing arrow:
+- a folder with a key on it, labeled "Home and keys"
+- a small tag with an equals sign, labeled "Shell secrets"
+- a globe, labeled "Network"
+- a monitor with a clipboard, labeled "Screen and clipboard"
+- a keyboard, labeled "Your terminal"
+- a gear document, labeled "Jail policy"
+
+Facts the picture must get right: every arrow bounces off the wall and returns; none reaches an outside icon; the outside icons are dim, never cyan.

@@ -1,0 +1,10 @@
+{
+  "why-reach": {
+    "translate": ["Agent", "SSH keys", "Cloud credentials", "Browser profiles", "Shell tokens", "Other projects", "Your project"],
+    "keep": []
+  },
+  "why-injection": {
+    "translate": ["Without a jail", "Poisoned page", "Agent", "SSH key", "Internet"],
+    "keep": ["With ai-jail"]
+  }
+}

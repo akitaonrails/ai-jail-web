@@ -1,0 +1,85 @@
+---
+// The homepage scroll scene: what the agent can reach, before and after. The section is tall and its stage is
+// sticky; motion.ts only writes data-step="0..4" from the scroll position and the CSS below does everything else.
+// Without JavaScript or with reduced motion there is no data-step: the stage shows the final state and the
+// captions stack as a normal list.
+import { useI18n } from '@/i18n';
+const { t, raw } = useI18n(Astro, 'home');
+const steps = raw<{ title: string; text: string }[]>('scene.steps');
+// `off` is the step at which the tile goes dark; `optin` tiles come back in gold at the last step.
+const tiles = [
+  { label: '~/.ssh', off: 2 }, { label: '~/.aws', off: 2 }, { label: t('scene.tiles.projects'), off: 2 },
+  { label: '$GITHUB_TOKEN', off: 3 }, null, { label: t('scene.tiles.network'), off: 3, optin: true },
+  { label: 'docker.sock', off: 3 }, { label: t('scene.tiles.display'), off: 3 }, { label: '~/.claude', off: 2, optin: true },
+];
+---
+<section class="scene on-ink" data-scene={steps.length} aria-label={t('scene.label')}>
+  <div class="stage">
+    <div class="wrap grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-16 items-center">
+      <ol class="caps">
+        {steps.map((s, i) => (
+          <li class="cap" data-i={i}>
+            <h2 class="text-3xl">{s.title}</h2>
+            <p class="mt-4 text-lg max-w-[30em]" style="color:var(--on-ink-muted)" set:html={s.text} />
+          </li>
+        ))}
+      </ol>
+      <div class="map" dir="ltr" aria-hidden="true">
+        {tiles.map((tile) => tile ? (
+          <div class="tile" data-off={tile.off} data-optin={tile.optin ? '' : undefined}><span>{tile.label}</span></div>
+        ) : (
+          <div class="tile project">
+            <span class="chip"><span>{t('scene.agent')}</span></span>
+            <span>{t('scene.project')}</span>
+            <span class="cellbars"><i></i><i></i><i></i><i></i></span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><span data-scene-progress></span></div>
+  </div>
+</section>
+
+<style>
+  .scene { position: relative; }
+  .stage { padding-block: clamp(4rem, 9vw, 7rem); }
+  .caps { display: grid; gap: 2.5rem; }
+  .progress { display: none; }
+
+  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.5rem, 1.4vw, 1rem); max-inline-size: 36rem; inline-size: 100%; margin-inline: auto; }
+  .tile { position: relative; aspect-ratio: 1; display: grid; place-content: center; justify-items: center; gap: 0.5rem; padding: 0.4rem; text-align: center; border-radius: 1.1rem; border: 1.5px solid var(--v-red); background: color-mix(in oklch, var(--v-red) 9%, var(--ink)); color: var(--on-ink-muted); font-family: var(--font-mono); font-size: clamp(0.68rem, 1.5vw, 0.9rem); overflow-wrap: anywhere; transition: border-color 0.6s, background 0.6s, color 0.6s, box-shadow 0.6s, opacity 0.6s; }
+  /* Final state, which is also the no-script state: everything blocked, opt-ins gold, project inside. */
+  .tile:not(.project) { background: repeating-linear-gradient(90deg, color-mix(in oklch, var(--v-red) 22%, var(--ink)) 0 3px, var(--ink) 3px 11px); }
+  .tile[data-optin] { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-gold) 12%, var(--ink)); color: var(--v-gold); }
+  .project { border: 2px solid var(--v-cyan); background: color-mix(in oklch, var(--v-cyan) 10%, var(--ink)); color: var(--on-ink); box-shadow: 0 0 60px -10px color-mix(in oklch, var(--v-cyan) 60%, transparent); font-family: var(--font-display); font-weight: 700; }
+  .chip { display: grid; place-items: center; inline-size: clamp(2.6rem, 7vw, 4rem); aspect-ratio: 1; border-radius: 0.7rem; background: linear-gradient(135deg, var(--v-cyan), var(--v-cyan-deep)); color: var(--on-action); font-size: 0.7em; font-weight: 800; box-shadow: 0 0 30px color-mix(in oklch, var(--v-cyan) 70%, transparent); }
+  .cellbars { position: absolute; inset: 0; display: flex; justify-content: space-evenly; pointer-events: none; }
+  .cellbars i { inline-size: 5px; block-size: 100%; background: linear-gradient(var(--v-gold), var(--v-red)); border-radius: 99px; opacity: 0.55; transform-origin: top; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .cellbars i:nth-child(2) { transition-delay: 0.08s; } .cellbars i:nth-child(3) { transition-delay: 0.16s; } .cellbars i:nth-child(4) { transition-delay: 0.24s; }
+
+  /* Scroll-driven version. */
+  .scene[data-step] { block-size: 520vh; }
+  .scene[data-step] .stage { position: sticky; inset-block-start: 0; block-size: 100dvh; display: grid; align-content: center; padding-block: 5rem 2rem; overflow: hidden; }
+  .scene[data-step] .caps { display: grid; gap: 0; }
+  .scene[data-step] .cap { grid-area: 1 / 1; opacity: 0; transform: translateY(1.5rem); transition: opacity 0.5s, transform 0.5s; pointer-events: none; }
+  .scene[data-step='0'] .cap[data-i='0'], .scene[data-step='1'] .cap[data-i='1'], .scene[data-step='2'] .cap[data-i='2'],
+  .scene[data-step='3'] .cap[data-i='3'], .scene[data-step='4'] .cap[data-i='4'] { opacity: 1; transform: none; pointer-events: auto; }
+  .scene[data-step] .progress { display: block; position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 3px; }
+  .progress span { display: block; block-size: 100%; background: var(--spectrum); transform: scaleX(0); transform-origin: left; }
+
+  /* A tile is "lit" (reachable, in the logo's warm gold) until the scroll reaches its data-off step. */
+  .scene[data-step='0'] .tile:not(.project), .scene[data-step='1'] .tile:not(.project),
+  .scene[data-step='2'] .tile[data-off='3'] { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-orange) 16%, var(--ink)); color: var(--on-ink); box-shadow: 0 0 40px -14px var(--v-orange); }
+  /* Opt-ins are dark like the rest until the last step. */
+  .scene[data-step='2'] .tile[data-optin][data-off='2'], .scene[data-step='3'] .tile[data-optin] { border-color: var(--v-red); color: var(--on-ink-muted); background: repeating-linear-gradient(90deg, color-mix(in oklch, var(--v-red) 22%, var(--ink)) 0 3px, var(--ink) 3px 11px); }
+  .scene[data-step='0'] .project { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-orange) 16%, var(--ink)); box-shadow: none; }
+  .scene[data-step='0'] .cellbars i { transform: scaleY(0); }
+
+  @media (max-width: 63.99rem) {
+    .scene[data-step] .stage { align-content: start; padding-block-start: 5.5rem; }
+    .scene[data-step] .cap h2 { font-size: var(--text-2xl); }
+    .scene[data-step] .cap p { font-size: 1rem; margin-block-start: 0.6rem; }
+    .scene[data-step] .caps { min-block-size: 15.5rem; }
+    .map { max-inline-size: min(22rem, 46dvh); }
+  }
+</style>

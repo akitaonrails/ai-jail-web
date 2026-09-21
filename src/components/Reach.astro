@@ -1,0 +1,10 @@
+---
+// What the agent can touch. state: inside (cyan ring), blocked (red bars), optin (gold ring). Text accepts inline HTML.
+interface Item { text: string; state?: 'inside' | 'blocked' | 'optin' }
+interface Props { items: Item[]; state?: Item['state']; title?: string }
+const { items, state = 'inside', title } = Astro.props;
+---
+<div>
+  {title && <h3 class="text-xl mb-4">{title}</h3>}
+  <ul class="reach">{items.map((it) => <li data-state={it.state ?? state}><span set:html={it.text} /></li>)}</ul>
+</div>

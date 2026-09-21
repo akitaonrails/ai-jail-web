@@ -1,0 +1,173 @@
+{
+  "meta": {
+    "title": "Configure ai-jail: flags, config files, masking and lockdown",
+    "description": "Every ai-jail capability starts off. See each flag and config key, how to hide secrets inside a project, what lockdown does, and recipes you can copy."
+  },
+  "hero": {
+    "title": "Closed by default. You hold the switches.",
+    "lede": "With no options, the agent gets only your project, without network, login or keys. You open what a task needs one switch at a time, and you can close the jail further.",
+    "switches": "See the switches",
+    "install": "Install"
+  },
+  "authority": {
+    "title": "Three places a setting can come from",
+    "lede": "Settings come from a file inside the project, a file in your home directory and the flags you type. They are listed from least to most authority.",
+    "alt": "Three sources feed the jail. The project .ai-jail file can only tighten it. The global ~/.ai-jail file is trusted. Command-line flags win over both. Inside the jail sits the agent behind a row of switches, most of them off.",
+    "caption": "A repository you cloned cannot open its own jail.",
+    "points": [
+      { "title": "Project <code>.ai-jail</code>", "text": "ai-jail treats it as untrusted: it can tighten the jail and never open it. ai-jail never follows it through a symlink, and the agent sees an empty file in its place." },
+      { "title": "Global <code>~/.ai-jail</code>", "text": "It is yours, so ai-jail trusts it. It holds a base table for every run, plus <code>[commands.&lt;name&gt;]</code> tables chosen by the first word of the command." },
+      { "title": "Command-line flags", "text": "Flags have the highest authority. Most switches come in pairs, such as <code>--network</code> and <code>--no-network</code>, so a flag can also close what a file opened." }
+    ],
+    "merge": "In a command table, single values replace the base and lists such as maps and masks are added to it.",
+    "codeTitle": "~/.ai-jail",
+    "codeBase": "# base: applies to every command",
+    "codeClaude": "# only when the command starts with \"claude\"",
+    "trust": {
+      "title": "When a team ships its own policy",
+      "text": "List a parent directory under <code>trust_project_config</code> in the global file, and project files beneath it may open capabilities too. Everything under that directory is trusted, including repositories you clone there later, so keep the list narrow."
+    }
+  },
+  "switches": {
+    "title": "The switches",
+    "lede": "Every row is off until you ask, and each capability flag has a <code>--no-</code> twin that closes it again. A red badge marks a switch that weakens the jail. <a class=\"link\" href=\"/security/\">Security has the full list and the reasons</a>.",
+    "cols": { "flag": "Flag", "key": "Config key", "opens": "What it does", "risk": "Risk" },
+    "risk": { "optin": "Opens one thing", "weakens": "Weakens the jail" },
+    "none": "none",
+    "groups": [
+      {
+        "title": "Network and services",
+        "rows": [
+          { "text": "Unrestricted network access. Anything the agent can read, it can send out." },
+          { "text": "Your <code>~/.ssh</code>, read only, and your SSH agent socket, so <code>git push</code> works." },
+          { "text": "The Docker socket. This is effectively root on your machine, because the daemon can start containers that mount the host." },
+          { "text": "The Tailscale socket." },
+          { "text": "The systemd user bus. The agent can ask your user manager to run services on the host. Linux only." }
+        ]
+      },
+      {
+        "title": "Agent and environment",
+        "rows": [
+          { "text": "The agent's own login and settings, such as <code>~/.claude</code> or <code>~/.codex</code>. Anything in the jail can then use those credentials." },
+          { "text": "Uses the given directory as Claude's state and sets <code>CLAUDE_CONFIG_DIR</code>." },
+          { "text": "Passes one variable from your shell, or sets one with <code>NAME=VALUE</code>. Repeatable, never saved to disk." },
+          { "text": "Passes your whole shell environment, every secret in it included. Avoid it." },
+          { "text": "The same as <code>--env</code>, from the global file only. A project file that sets it is ignored." }
+        ]
+      },
+      {
+        "title": "Desktop and hardware",
+        "rows": [
+          { "text": "GPU devices, and with them the driver's attack surface. Linux only." },
+          { "text": "The Wayland socket and nothing else from your session. Linux only." },
+          { "text": "The X11 socket. X11 lets a program log keystrokes and take screenshots." },
+          { "text": "PipeWire and PulseAudio sockets and <code>/dev/snd</code>. Anything in the jail can record and play audio. Linux only." },
+          { "text": "The host's <code>/dev/shm</code>, which opens shared memory with processes outside the jail." },
+          { "text": "Your <code>~/Pictures</code>, read only." },
+          { "text": "A separate browser profile. <code>hard</code> (the default) keeps nothing between runs, <code>soft</code> keeps a profile under <code>~/.local/share/ai-jail/browsers</code>." }
+        ]
+      },
+      {
+        "title": "Files",
+        "rows": [
+          { "text": "Mounts one more path read only. Write <code>SOURCE:DEST</code> to mount it somewhere else. Repeatable." },
+          { "text": "Mounts one more path read and write. Repeatable." },
+          { "text": "Mounts a path copy-on-write: the agent's writes go to a side layer and the original stays untouched. Linux only; on macOS it becomes a read-only mount." },
+          { "text": "Never mounts the named dot-directory, for example <code>.my_secrets</code>. Repeatable." }
+        ]
+      },
+      {
+        "title": "Layers you can turn off, and should not",
+        "rows": [
+          { "text": "Turns off Landlock, the kernel's own copy of the file rules. Refused under <code>--lockdown</code>." },
+          { "text": "Turns off the filter that blocks dangerous system calls." },
+          { "text": "Turns off the limits that stop runaway processes." },
+          { "text": "Gives up the fresh home directory. This is broad access to your real home. Prefer <code>--map</code> for the one path you need." }
+        ]
+      },
+      {
+        "title": "Utility",
+        "rows": [
+          { "text": "Prints the sandbox command and runs nothing. It never writes a config file." },
+          { "text": "Writes or updates the project <code>.ai-jail</code> and exits." },
+          { "text": "Ignores the project <code>.ai-jail</code> for this run." },
+          { "text": "Generates permission configs for the AI tools themselves." },
+          { "text": "Shows the current <code>.ai-jail</code> configuration." },
+          { "text": "Shows every mount as the jail is built." }
+        ]
+      }
+    ],
+    "layersLink": "<a class=\"link\" href=\"/how-it-works/\">How it works</a> explains what each layer does.",
+    "more": "Run <code>ai-jail --help</code> for the rest: the status bar, worktrees, mise and terminal options."
+  },
+  "secrets": {
+    "title": "Hide secrets inside the project",
+    "lede": "Your <code>.env</code> file lives in the project, and the project is readable and writable. With the network on, the agent can send out whatever it can read there. Masking takes those files away.",
+    "alt": "A project folder. The agent reaches src, package.json and README.md. The .env file is masked and the secrets folder is denied: both are dim and barred, and no line from the agent reaches them.",
+    "caption": "The rest of the project stays as it was.",
+    "points": [
+      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "Replaces every match with an empty placeholder. The agent sees that the file exists and gets no content, so tools that only check for it keep working." },
+      { "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>", "text": "Makes every match a permission error." },
+      { "title": "<code>--mask-except</code> and <code>--deny-path-except</code>", "text": "Carve one path back out of a rule. They weaken protection, so a project file cannot set them." }
+    ],
+    "flagsTitle": "As flags",
+    "flagsNote": "# quote globs so ai-jail gets the pattern, not your shell's expansion",
+    "tomlTitle": ".ai-jail",
+    "tomlNote": "# a project file may tighten, so this works in the repository too",
+    "caveat": {
+      "title": "Only paths that exist at launch are covered",
+      "text": "A path that is missing, or a glob that matches nothing, is skipped with a warning. A file created later, during the session, is not covered. If you need the rule enforced, create the file first. An empty <code>.env</code> is enough."
+    }
+  },
+  "lockdown": {
+    "title": "Lockdown: let an agent read code it must not change",
+    "lede": "<code>--lockdown</code> is for reviews and audits. The agent can read the project and answer questions about it, and it cannot change a file in it.",
+    "alt": "Two panels. In normal mode the agent sits inside the wall next to a project folder it can read and write, and a /tmp folder. In lockdown the wall is thicker, the project folder is read only, and /tmp is the only writable place.",
+    "caption": "The agent and project are the same, and only a temporary directory is writable.",
+    "changes": "What changes",
+    "items": [
+      { "text": "The project is mounted read only" },
+      { "text": "Only <code>/tmp</code> is writable on Linux. On macOS nothing is" },
+      { "text": "No dot-directories from your home, no extra maps, no overlays" },
+      { "text": "The environment is cleared and <code>PATH</code> is fixed to system directories" },
+      { "text": "Landlock is mandatory: if it cannot be applied, the launch fails" },
+      { "text": "Tighter limits on processes, open files and file size" },
+      { "text": "No display, audio, GPU, Docker, SSH agent or mise, whatever else you passed" }
+    ],
+    "codeTitle": "terminal",
+    "network": {
+      "title": "Lockdown and the network",
+      "text": "Lockdown has no network by default. On Linux, <code>--network</code> still overrides that, so leave it out unless you mean it. On macOS, lockdown always blocks the network."
+    }
+  },
+  "recipes": {
+    "title": "Recipes",
+    "lede": "Copy one. To see what it builds, run it with <code>--dry-run</code> first.",
+    "items": [
+      { "title": "A cloud agent, day to day", "text": "A hosted model needs the network to reach its API and its own login to authenticate. Put both in the global file and the command stays short." },
+      { "title": "Git push over SSH", "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. Pushing also needs the network." },
+      { "title": "mise toolchains", "text": "The fresh home directory has no mise installs in it, so ai-jail skips mise. Map the two mise directories in, read only." },
+      { "title": "A browser for the agent", "text": "<code>--browser</code> alone gives a browser that cannot load a page or open a window. On Linux it also needs <code>--network</code> and <code>--display</code>, and an X11 browser needs <code>--x11</code> in place of <code>--display</code>." },
+      { "title": "Separate Claude profiles", "text": "Keep work and personal logins apart by pointing each run at its own Claude directory." },
+      { "title": "Try a risky refactor on a copy", "text": "An overlay keeps the agent's writes in a side layer under <code>.ai-jail-overlays</code> in the project. Compare it with the original afterward and keep what you like. Linux only." }
+    ],
+    "comments": {
+      "once": "# once, in ~/.ai-jail",
+      "then": "# then, in any project",
+      "wayland": "# Wayland",
+      "x11": "# X11"
+    }
+  },
+  "compat": {
+    "title": "Old configs keep working",
+    "text": "Backward compatibility is a project rule: the project never removes a flag or a config key. Unknown keys are ignored and missing ones take their defaults, so a file written for an old version still loads.",
+    "legacy": "Older switches keep their inverted names, where <code>true</code> turns the thing off: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. That is why <code>--gpu</code> is saved as <code>no_gpu = false</code>. Newer switches use plain names such as <code>network = true</code>."
+  },
+  "next": {
+    "items": [
+      { "title": "Security", "text": "The threat model, every switch that weakens the jail, and what stays out of scope." },
+      { "title": "How it works", "text": "The kernel layers behind these switches, and how macOS differs." },
+      { "title": "Install", "text": "Get the binary and run your first agent inside the jail." }
+    ]
+  }
+}

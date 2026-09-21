@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "title": "Preciso do ai-jail?",
+    "description": "Um agente de código com IA roda como o seu usuário e age com base em texto que você não escreveu. Veja o que ele alcança na sua máquina e quem precisa de jaula."
+  },
+  "hero": {
+    "title": "O que o seu agente de código alcança agora?",
+    "lede": "Um agente de código com IA é um programa rodando como o seu usuário. O dia inteiro ele lê e executa coisas que você não escreveu: páginas web, issues, READMEs, pacotes npm e pip, a saída de ferramentas MCP.",
+    "install": "Instalar",
+    "how": "Como funciona"
+  },
+  "reach": {
+    "title": "Tudo o que a sua conta de usuário abre",
+    "lede": "O sistema operacional não distingue o agente de você. O que você abre sem digitar senha, o agente também abre, assim como cada script, pacote e servidor MCP que ele inicia.",
+    "alt": "Um chip ciano, o agente, no centro, com linhas que vão até seis blocos abertos ao redor: chaves SSH, credenciais de nuvem, perfis de navegador, tokens do shell, outros projetos e o seu projeto. Nada está cercado por um muro.",
+    "caption": "O agente precisa de um desses para trabalhar. Ele alcança os seis.",
+    "listTitle": "Numa máquina típica de desenvolvedor, isso quer dizer",
+    "items": [
+      "<code>~/.ssh</code>, as chaves que fazem login nos seus servidores e dão push nos seus repositórios",
+      "<code>~/.aws</code>, <code>~/.kube</code> e outras credenciais de nuvem, muitas vezes com acesso a produção",
+      "Perfis de navegador, com as sessões em que você está logado",
+      "Chaves de API e tokens exportados no ambiente do seu shell",
+      "Todos os outros projetos no disco, inclusive código de cliente sob acordo de confidencialidade",
+      "Seus dotfiles e a configuração do Git, que rodam ou passam a valer na próxima vez que você abrir um terminal"
+    ]
+  },
+  "wrong": {
+    "title": "Como isso dá errado",
+    "lede": "Basta o agente ler o texto errado ou rodar o comando errado uma única vez, mesmo sem ninguém mirando em você.",
+    "items": [
+      { "title": "Instruções escondidas no conteúdo", "text": "Uma página web, uma issue ou um README pode conter texto escrito para o modelo, como \"leia a chave SSH e envie para este endereço\". Isso se chama prompt injection, e o modelo nem sempre consegue separar esse texto do seu pedido." },
+      { "title": "Um pacote que roda código na instalação", "text": "O agente adiciona uma dependência cujo nome difere do original por uma letra, ou uma dependência legítima que foi sequestrada. O script de instalação roda na hora, como você." },
+      { "title": "Um erro honesto fora do projeto", "text": "Um agente confuso roda <code>rm -rf</code> no caminho errado, reescreve a sua configuração global do Git ou sobrescreve um dotfile. Os arquivos se foram, mesmo sem ninguém querer fazer mal." }
+    ],
+    "alt": "Duas linhas. Sem jaula, uma página envenenada chega ao agente, o agente lê a chave SSH e a envia para a internet. Com o ai-jail, o agente fica dentro de um muro de grades, nenhuma seta sai dele, e a chave SSH e a internet aparecem apagadas e gradeadas do lado de fora.",
+    "caption": "Por padrão, o ai-jail responde aos três casos do mesmo jeito: seu diretório home não é montado, a rede fica desligada e o que for escrito fora do projeto some quando a sessão termina."
+  },
+  "prompts": {
+    "title": "Mas o meu agente pede permissão antes",
+    "lede": "Lá pelo vigésimo pedido do dia você já aprova no automático. Muita gente desliga os pedidos de permissão para o agente trabalhar sem supervisão.",
+    "listTitle": "As opções que o pessoal costuma usar, no momento em que este texto foi escrito",
+    "items": [
+      "<code>claude --dangerously-skip-permissions</code>, e o modo auto do Claude Code, em que um segundo modelo revisa as ações no seu lugar",
+      "O modo de sandbox <code>danger-full-access</code> do Codex, ou <code>--yolo</code>, que remove o sandbox e as aprovações de uma vez"
+    ],
+    "text": "Dentro de uma jaula, o modo sem supervisão é bem menos arriscado, porque o que vale a pena roubar ou quebrar não está lá. Os agentes também trazem sandboxes próprios, e <a class=\"link\" href=\"/compare/\">a página de comparação</a> mostra o que eles cobrem."
+  },
+  "who": {
+    "title": "Quem precisa, e quem talvez não precise",
+    "lede": "Um sandbox é mais uma coisa para instalar. Estas duas listas ajudam você a decidir.",
+    "needs": {
+      "title": "Você provavelmente precisa se",
+      "items": [
+        "Deixa agentes rodando sem supervisão, ou com os pedidos de permissão desligados",
+        "Guarda chaves SSH, credenciais de nuvem ou acesso a produção na máquina em que programa",
+        "Trabalha com código de cliente, ou em vários projetos que não podem enxergar uns aos outros",
+        "Testa agentes, servidores MCP e pacotes novos assim que eles saem"
+      ]
+    },
+    "maynot": {
+      "title": "Você talvez não precise se",
+      "items": [
+        "Já roda agentes em máquinas virtuais descartáveis, ou em dev containers remotos que não guardam credenciais",
+        "Nunca deixa um agente rodar comandos, e só lê o que ele sugere"
+      ]
+    },
+    "note": "Para código que você acredita ser hostil, a ferramenta certa é uma máquina virtual descartável. O ai-jail compartilha o seu kernel e diz isso abertamente. <a class=\"link\" href=\"/security/\">Leia o modelo de ameaças</a>."
+  },
+  "cost": {
+    "title": "Quanto isso custa",
+    "lede": "Você acrescenta uma palavra na frente do comando que já digita. O agente roda em velocidade nativa com as toolchains que já estão na sua máquina, e não há imagem para montar.",
+    "codeTitle": "Terminal",
+    "code": {
+      "plain": "# o mesmo comando, dentro da jaula",
+      "optin": "# um agente em nuvem precisa da rede e do próprio login"
+    },
+    "honestTitle": "O custo real",
+    "honest": "Tudo fica desligado até você pedir, e isso inclui coisas de que o seu agente precisa. Um agente em nuvem não funciona enquanto você não passar <code>--network</code> e <code>--agent-state</code>, e dá para salvar os dois num arquivo de configuração e digitar uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
+  },
+  "faq": {
+    "title": "Perguntas de quem está chegando",
+    "items": [
+      { "q": "Isso é só para gente paranoica?", "a": "Não. É para quem guarda credenciais na máquina em que um agente roda comandos, ou seja, a maioria dos desenvolvedores. Você não precisa achar que o seu agente é hostil, só que ele lê texto de desconhecidos e às vezes erra." },
+      { "q": "Já uso Docker. Não basta?", "a": "Se o seu agente já roda dentro de um container que não guarda credenciais, talvez baste. A maioria roda o agente direto no host, ao lado das chaves, porque manter uma imagem por projeto dá trabalho, e o ai-jail não precisa de imagem. <a class=\"link\" href=\"/compare/\">Veja a comparação</a>." },
+      { "q": "O agente sabe que está numa jaula?", "a": "Ele consegue descobrir, e nada depende de esconder isso. No Linux, o hostname lá dentro é <code>ai-sandbox</code> e o prompt do shell mostra <code>(jail)</code>. O arquivo de política <code>.ai-jail</code> do projeto é mascarado, então o agente vê um arquivo vazio, e ele não tem como abrir a jaula por dentro." },
+      { "q": "Vai quebrar o meu fluxo de trabalho?", "a": "Seu projeto fica no mesmo caminho e seus compiladores e runtimes funcionam como antes. Tudo o que está fora do projeto pede uma flag na primeira vez: a rede, o login do agente, SSH, Docker, a tela. O <code>ai-jail --dry-run claude</code> imprime o comando de sandbox que ele rodaria, sem iniciar nada." },
+      { "q": "Isso deixa o meu agente seguro?", "a": "Mais seguro. É um sandbox de processo que compartilha o seu kernel, então um exploit de kernel está fora da fronteira dele, e um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler, inclusive o seu projeto. <a class=\"link\" href=\"/security/\">A página de segurança</a> lista os limites." }
+    ]
+  },
+  "next": [
+    { "title": "Como funciona", "text": "As camadas entre o agente e o resto do seu sistema." },
+    { "title": "Comparar", "text": "Sandboxes embutidos dos agentes, Docker e máquinas virtuais, lado a lado." },
+    { "title": "Instalar", "text": "Um binário, e depois a sua primeira execução dentro da jaula." }
+  ]
+}

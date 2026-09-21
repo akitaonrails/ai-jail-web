@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "title": "ai-jailと組み込みサンドボックス、Docker、VMの比較",
+    "description": "Claude Code、Codex、Gemini CLIのサンドボックスは何を守り、何が外に残るのか。ai-jailより優れている点はどこか。DockerやVMとの違いも含めて、出典付きで比較します。"
+  },
+  "hero": {
+    "title": "エージェントにもサンドボックスはある。ただし守る範囲が違う。",
+    "lede": "組み込みサンドボックスと許可プロンプトは、モデルが実行するコマンドを見張ります。ai-jailは、エージェントというプログラム全体がマシン上で何を見られるかを決めます。両者は併用できます。",
+    "install": "インストール",
+    "how": "仕組み",
+    "reviewed": "最終確認日は{date}です。他社製品は変化が速いため、それらに関する記述にはすべてベンダー自身のドキュメントへのリンクを付けています。"
+  },
+  "wall": {
+    "title": "壁はどこにあるか",
+    "lede": "執筆時点で、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Codeのサンドボックス</a>の対象はシェルコマンドとその子プロセスです。ファイル操作ツールのほうは許可システムで制御され、ドキュメントには<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">MCPサーバーとフックはホスト上で制約なしに動く</a>と書かれています。ai-jailはエージェント自体を壁の中で起動するので、エージェントが起動するものもすべて中に入ります。",
+    "alt": "2枚のパネル。左では、組み込みサンドボックスが囲んでいるのはシェルコマンドだけで、エージェント、MCPサーバー、フックは壁の外にあり、ホームディレクトリへ線が伸びています。右では、ai-jailがエージェント、MCPサーバー、フック、シェルコマンド、プロジェクトをまとめて囲み、ホームディレクトリは外にあって暗く、格子がかかっています。",
+    "caption": "左のパネルはClaude Codeのドキュメントに基づいています。",
+    "codex": "<a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a>も、自分が起動するコマンドをサンドボックスに入れ、<code>codex</code>プロセス自体は外に残します。ローカルのMCPサーバーがどこで動くかは、ドキュメントに書かれていません。"
+  },
+  "prompts": {
+    "title": "許可プロンプトは別の種類の保護",
+    "lede": "プロンプトが尋ねる相手は人間で、人間は急かされたり騙されたりします。サンドボックスが尋ねる相手はカーネルで、答えは毎回同じです。",
+    "alt": "2枚のパネル。左では、エージェントから伸びる線が、「承認」ボタンの付いた承認ダイアログの重なりを通り抜けて、あなたの鍵に届きます。右では、同じ線が「カーネルのルール」と書かれた壁で止まり、その向こうの鍵は暗く、格子がかかっています。",
+    "caption": "プロンプトは役に立ちます。プロンプトはレビューの工程で、サンドボックスは境界です。",
+    "modesTitle": "人間を外すモード",
+    "modesNote": "執筆時点で、以下のエージェントにはいずれも、確認を求めなくなるモードがあります。プロンプトがなくなれば、残る保護はサンドボックスだけです。それも、有効にしてあればの話です。",
+    "cols": { "agent": "エージェント", "mode": "モード", "effect": "ベンダーの説明による動作" },
+    "modes": [
+      { "agent": "Claude Code", "mode": "<code>auto</code>", "effect": "すべてが実行され、別のモデルがあなたの代わりに操作を審査します。ドキュメントはこの分類器を<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">操作ごとの制御であり、隔離の境界ではない</a>と説明しています。" },
+      { "agent": "Claude Code", "mode": "<code>bypassPermissions</code>、または<code>--dangerously-skip-permissions</code>", "effect": "すべてがチェックなしで実行されます。<a class=\"link\" href=\"https://code.claude.com/docs/en/permission-modes\">ドキュメント</a>は、隔離されたコンテナやVMの中だけで使うよう求めています。" },
+      { "agent": "Codex CLI", "mode": "承認ポリシー<code>never</code>", "effect": "エージェントは一切確認を求めません。サンドボックスモードは引き続き適用されます。<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">承認とセキュリティ</a>を参照してください。" },
+      { "agent": "Codex CLI", "mode": "<code>danger-full-access</code>、または<code>--yolo</code>", "effect": "サンドボックスが無効になります。<code>--yolo</code>では承認もなくなります。" }
+    ]
+  },
+  "table": {
+    "title": "並べて比べる",
+    "lede": "ここに書いた内容はすべて、執筆時点の各製品のドキュメントに基づいています。私たちが読んだドキュメントに答えがなかった項目は、セルにそう記しています。",
+    "undocumented": "記載なし",
+    "cols": { "row": "", "claude": "Claude Codeのサンドボックス", "codex": "Codex CLIのサンドボックス", "gemini": "Gemini CLIのサンドボックス", "jail": "ai-jail" },
+    "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>。",
+    "groupJail": "エージェント全体を包むラッパーで加わるもの",
+    "groupBuiltin": "組み込みサンドボックスのほうが優れている点",
+    "rows": [
+      {
+        "label": "壁の中に入るもの",
+        "cells": [
+          "Bash、PowerShell、Monitorのコマンドとその子プロセス。<code>claude</code>プロセス、ファイル操作ツール、MCPサーバー、フックは外です。",
+          "エージェントが起動するコマンド。<code>codex</code>プロセスは外です。ローカルのMCPサーバーについては記載なし。",
+          "CLIのプロセス全体。<code>security.toolSandboxing</code>を使うと、シェルと書き込みツールだけになります。",
+          "プロセスツリー全体。エージェント、ファイル操作ツール、MCPサーバー、フック、すべてのコマンドが入ります。"
+        ]
+      },
+      {
+        "label": "デフォルトで有効か",
+        "cells": [
+          "いいえ。<code>/sandbox</code>か<code>sandbox.enabled</code>で有効にします。依存するものが足りないと、警告を出してサンドボックスなしでコマンドを実行します。<code>sandbox.failIfUnavailable</code>を設定すれば、そうなりません。",
+          "はい。デフォルトのモードは<code>workspace-write</code>です。",
+          "<code>-s</code>、<code>GEMINI_SANDBOX</code>、<code>tools.sandbox</code>のいずれかで有効にします。",
+          "ai-jail経由でエージェントを起動すれば、常に有効です。設定が不正な場合は起動を拒否します。"
+        ]
+      },
+      {
+        "label": "サンドボックス内のコードはデフォルトで<code>~/.ssh</code>を読めるか",
+        "cells": [
+          "はい。ドキュメントによると、デフォルトでは<code>~/.aws/credentials</code>や<code>~/.ssh/</code>などの認証情報ファイルを読めます。拒否ルールはオプトインです。",
+          "Linuxでは読めます。ファイルシステム全体が読み取り専用でマウントされるためです。拒否エントリはオプトインです。macOSのデフォルトは記載なし。",
+          "macOSのデフォルトプロファイル<code>permissive-open</code>は、広い範囲のファイル読み取りを許可します。より厳しいプロファイルはオプトインです。",
+          "いいえ。エージェントには新しい空のホームディレクトリが渡されます。<code>--ssh</code>はオプトインです。"
+        ]
+      },
+      {
+        "label": "環境変数",
+        "cells": [
+          "サンドボックス内のコマンドは、デフォルトで親の環境を認証情報ごと引き継ぎます。<code>sandbox.credentials</code>で拒否またはマスクできます。",
+          "",
+          "",
+          "ターミナル、ロケール、ツールチェーン用の変数だけの最小限の許可リスト。ほかの変数は<code>--env</code>で名前を指定して追加します。"
+        ]
+      },
+      {
+        "label": "モデルが使える抜け道",
+        "cells": [
+          "モデルは<code>dangerouslyDisableSandbox</code>を付けてコマンドを再試行でき、その場合は通常の許可フローを通ります。<code>allowUnsandboxedCommands: false</code>でこれを無効にできます。",
+          "<code>on-request</code>ポリシーでは、ワークスペース外の編集やネットワークのために、エージェントがサンドボックスの外に出る許可を求めます。",
+          "",
+          "ありません。ポリシーはエージェントの起動前にあなたが決めます。プロジェクト側の<code>.ai-jail</code>ファイルは、ポリシーを厳しくできても緩めることはできません。"
+        ]
+      },
+      {
+        "label": "どのエージェントでも使えるか",
+        "cells": [
+          "Claude Codeのみ",
+          "Codexのみ",
+          "Gemini CLIのみ",
+          "どんなコマンドでも使えます。ポリシーファイル1つで、すべてのエージェントに対応します。"
+        ]
+      },
+      {
+        "label": "ネットワークの扱い",
+        "cells": [
+          "ドメイン単位の許可リストを持つプロキシ。新しいドメインが出てくると確認を求めます。ドメインフロンティングで回避されうることは、ドキュメントにも書かれています。",
+          "<code>workspace-write</code>ではデフォルトで無効。設定1つで有効になり、オプションのプロキシでドメイン単位の許可と拒否のルールを追加できます。",
+          "デフォルトのプロファイルはネットワークを許可します。より厳しいプロファイルやプロキシ付きのプロファイルはオプトインです。",
+          "全部かゼロかです。デフォルトでは無効で、<code>--network</code>で全体が開きます。ドメイン単位のフィルターは、あえて備えていません。"
+        ]
+      },
+      {
+        "label": "コマンドごとの承認",
+        "cells": [
+          "あり。許可モード、planモード、分類器モデル、組織で管理するポリシーがあります。",
+          "あり。承認ポリシー、カテゴリ別のルール、オプションのレビュー用エージェントがあります。",
+          "",
+          "なし。ai-jailは個々のコマンドを見ることも、確認を求めることもありません。"
+        ]
+      },
+      {
+        "label": "プロジェクト内の保護されたパス",
+        "cells": [
+          "あり。<code>.git/hooks</code>、<code>.git/config</code>、<code>.claude</code>の設定、<code>.mcp.json</code>、シェルのrcファイルなどは読み取り専用のままです。",
+          "あり。書き込み可能なルートの下にある<code>.git</code>、<code>.agents</code>、<code>.codex</code>は読み取り専用です。",
+          "",
+          "組み込みではなし。プロジェクト全体が書き込み可能です。パスのマスクや拒否は、<code>--mask</code>と<code>deny_paths</code>で自分で指定します。"
+        ]
+      },
+      {
+        "label": "秘密情報をエージェントから隠したまま使う",
+        "cells": [
+          "認証情報のマスク機能を使うと、本物の秘密情報をプロキシ側で注入できます。実験的な設定が必要です。",
+          "",
+          "",
+          "できません。マスクされたファイルは空のファイルです。"
+        ]
+      },
+      {
+        "label": "プラットフォーム",
+        "cells": [
+          "macOS、Linux、WSL2。ネイティブのWindowsとWSL1には非対応。",
+          "macOS、Linux、WSL2、ネイティブのWindows。",
+          "macOSのSeatbelt、DockerまたはPodman、gVisor、LXC（実験的）、ネイティブのWindows。",
+          "LinuxとmacOS。WindowsではWSL2のみ。"
+        ]
+      },
+      {
+        "label": "インストール",
+        "cells": [
+          "エージェントに同梱。Linuxでは<code>bubblewrap</code>と<code>socat</code>が必要です。",
+          "エージェントに同梱。",
+          "エージェントに同梱。コンテナ系のバックエンドにはDockerかPodmanが必要です。",
+          "別のバイナリ。Linuxでは<code>bubblewrap</code>が必要です。"
+        ]
+      }
+    ],
+    "runtimeTitle": "Anthropicもプロセス全体を包むラッパーを提供している",
+    "runtimeText": "執筆時点で、<code>npx @anthropic-ai/sandbox-runtime claude</code>は、同じSeatbeltとbubblewrapの仕組みでClaude Codeのプロセス全体を包みます。ファイル操作ツール、MCPサーバー、フックも対象に入ります。Anthropicはこれを<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">ベータ版のリサーチプレビューと説明</a>しており、Linuxでは拒否リストが起動時に一度だけ作られ、後から作られたファイルには及ばないと注記しています。Claude Codeしか使わないなら、ai-jailに直接代わる選択肢です。",
+    "opencodeTitle": "OpenCodeにはルールがあり、サンドボックスはない",
+    "opencodeText": "執筆時点で、<a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">OpenCodeのpermissionsページ</a>には<code>allow</code>、<code>ask</code>、<code>deny</code>のルールが説明されており、ほとんどの権限のデフォルトは<code>allow</code>だとあります。OSサンドボックスについての記述はありません。"
+  },
+  "both": {
+    "title": "両方使う",
+    "lede": "ネットワークが無効だと、クラウド型のエージェントは自分のモデルAPIに接続できません。実際に開けるものは2つ、ネットワークとエージェントのログイン情報です。",
+    "codeTitle": "ジェイルの中のクラウド型エージェント",
+    "alt": "ai-jailと書かれた大きな壁が、エージェント、MCPサーバー、フック、プロジェクト、シェルコマンドを囲んでいます。エージェントとシェルコマンドの間には、エージェント自身の承認プロンプトがあります。1本の線が壁の門を通ってモデルAPIへ出ています。ホームディレクトリは壁の外にあり、暗く、格子がかかっています。",
+    "caption": "外側の壁がai-jailです。その中で、エージェントのプロンプトとルールはこれまでどおり働きます。",
+    "points": [
+      { "title": "エージェント自身のチェックが引き続き担うこと", "text": "許可プロンプト、許可と拒否のルール、planモードはエージェントというプログラムの一部なので、ジェイルの中でも外と同じように動きます。あなたなら承認しなかったはずのコマンドを、ここで止められます。" },
+      { "title": "その下でai-jailが保証すること", "text": "あなたが何を承認しても、エージェントとそのMCPサーバー、フックからは、ホームディレクトリも鍵もシェルのトークンも見えません。ただし、エージェントは読めるものを送れます。<a class=\"link\" href=\"/configure/#secrets\">プロジェクト内の秘密情報はマスクしてください</a>。" }
+    ],
+    "nestedTitle": "プロンプトは残す。ただしサンドボックスの中のサンドボックスは当てにしない",
+    "nestedText": "Linuxでは、ai-jailは<code>unshare</code>や<code>mount</code>など、新しい名前空間やマウントを作るシステムコールをブロックします。プロセスが脱出するときに使う手段だからです。エージェントがジェイルの中で起動するbubblewrapのサンドボックスにはこれらのシステムコールが必要で、この組み合わせが動くとはai-jailのドキュメントに書かれていません。Claude Codeのドキュメントは執筆時点で、入れ子の構成向けに<code>enableWeakerNestedSandbox</code>を用意しており、これは<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">セキュリティを大幅に弱める</a>と説明しています。"
+  },
+  "heavy": {
+    "title": "Docker、devコンテナ、仮想マシン",
+    "lede": "これらも良い選択肢で、仮想マシンのほうが境界として強くなります。違いは、何をビルドし、何を更新し続ける必要があるかです。",
+    "cols": { "tool": "", "gives": "得られるもの", "costs": "かかるコスト" },
+    "rows": [
+      { "tool": "Dockerコンテナ", "gives": "専用のファイルシステム、プロセス一覧、ネットワーク。エージェントに見えるのは、あなたがマウントしたものだけです。", "costs": "イメージのビルドと保守が必要で、ツールチェーンをもう一度インストールすることになります。Dockerソケットをマウントすると、そのコンテナはホストのroot相当になります。" },
+      { "tool": "devコンテナ", "gives": "コンテナと同じ隔離。エディタが理解でき、チームで共有できるファイルに定義を書きます。", "costs": "同じくイメージの保守が必要です。加えて、この形式に対応したエディタかツールが要ります。" },
+      { "tool": "仮想マシン", "gives": "専用のカーネル。この中で最も強い境界で、悪意があると考えるコードにはこれが適切です。", "costs": "最も重い選択肢です。ゲストOSをインストールして更新し、メモリを割り当て、プロジェクトをコピーする必要があります。" },
+      { "tool": "ai-jail", "gives": "1つのコマンドを囲むサンドボックス。マシンにすでにあるコンパイラやランタイムを使います。イメージもデーモンもrootも要りません。", "costs": "カーネルをホストと共有するので、カーネルやドライバの脆弱性を突く攻撃は守備範囲の外です。仮想マシンよりは弱い境界です。" }
+    ],
+    "note": "ai-jail自身のドキュメントは、これを「有用な層であり、使い捨てのVMの代わりではない」と位置づけています。<a class=\"link\" href=\"/security/\">脅威モデルを読む</a>。"
+  },
+  "faq": {
+    "title": "併用についての質問",
+    "items": [
+      { "q": "エージェント自身のサンドボックスとプロンプトは切るべきですか？", "a": "プロンプトとルールは残してください。個々のコマンドを審査するのはそちらの役目で、ai-jailはそれをしません。エージェントのOSサンドボックスは、Linuxでは事情が違います。入れ子のbubblewrapサンドボックスに必要なシステムコールをai-jailがブロックしており、この組み合わせが動くとはドキュメントに書かれていません。ジェイルの中でエージェントが「サンドボックスを利用できない」と報告しても、ジェイル自体は機能しています。" },
+      { "q": "ai-jailはDockerより安全ですか？", "a": "境界としては同じ種類です。どちらもカーネルをホストと共有し、どちらも仮想マシンではありません。ai-jailはすべて閉じた状態から始まり、イメージもデーモンもrootも要りません。コンテナは指示されたものをマウントし、Dockerソケットをマウントすればホストのroot相当になります。悪意があると考えるコードには、使い捨てのVMを使ってください。" },
+      { "q": "ドメイン単位のネットワーク許可リストがないのはなぜですか？", "a": "サンドボックスの中に置いたフィルターは、エージェントが使わないことを選べてしまいます。メンテナーは<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/issues/107\">この要望</a>を対象外としてクローズしました。rootなしで実現するには、ユーザー空間のネットワークスタックが必要です。そのうえで、SNIの検査か、認証情報を含むエージェントのAPI通信に対するTLSインターセプトのどちらかも必要になります。SNIの検査は、SNIがない場合や暗号化されている場合には機能しません。フィルターは、すでに特権のある場所でかけてください。エージェントのuidに対するnftablesのルール、<code>IPAddressAllow=</code>を指定したsystemdのスライス、ネットワーク名前空間を所有するコンテナやVMなどです。" },
+      { "q": "Claude Codeしか使いません。それでもai-jailは必要ですか？", "a": "執筆時点で選択肢は3つあります。組み込みサンドボックスはシェルコマンドをカバーします。Anthropicの<code>@anthropic-ai/sandbox-runtime</code>はベータ版のリサーチプレビューで、プロセス全体を包みます。ai-jailもプロセス全体を包みます。ホームディレクトリと環境変数を閉じた状態から始まり、後でほかのエージェントを試すときにも同じポリシーを使えます。<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Anthropicによるサンドボックス環境の比較</a>も参照してください。" }
+    ]
+  },
+  "next": {
+    "items": [
+      { "title": "仕組み", "text": "LinuxとmacOSで、エージェントとシステムの間に入るカーネルの層。" },
+      { "title": "設定", "text": "すべてのスイッチと、タスクに必要なものだけを開ける方法。" },
+      { "title": "セキュリティ", "text": "脅威モデル、限界、ジェイルを弱めるオプトイン。" }
+    ]
+  }
+}

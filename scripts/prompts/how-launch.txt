@@ -1,0 +1,9 @@
+A horizontal process diagram with five stations on one line, read strictly left to right, connected by one glowing line that travels from golden yellow on the left to crimson-magenta on the right.
+
+Station 1, labeled "Your command": a small terminal window icon with a prompt cursor, in gold.
+Station 2, labeled "Read config": three stacked sheets of paper of growing size, smallest at the bottom and largest on top, in gold to orange.
+Station 3, labeled "Build the sandbox": a rounded wall made of thick vertical bars being assembled, with an empty space inside, in orange to red.
+Station 4, labeled "Start the agent": the same rounded wall of vertical bars, now closed, with a glowing cyan microchip inside it and a small cyan folder next to the chip labeled "Project".
+Station 5, labeled "Exit": the wall of bars fading into small dissolving particles in magenta, while the cyan folder labeled "Project" remains solid and intact below it.
+
+The five stations are the same size and evenly spaced. The only cyan objects are the microchip and the project folders. There are exactly six labels in total.

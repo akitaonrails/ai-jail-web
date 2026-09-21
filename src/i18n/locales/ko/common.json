@@ -1,0 +1,53 @@
+{
+  "site": {
+    "tagline": "AI 코딩 에이전트를 위한 OS 샌드박스",
+    "description": "ai-jail은 Linux와 macOS에서 Claude Code, Codex 같은 AI 코딩 에이전트를 OS 샌드박스 안에서 실행합니다. 프로젝트에는 그대로 쓸 수 있고, 키와 토큰, 홈 디렉터리에는 에이전트가 닿을 수 없습니다.",
+    "ogAlt": "ai-jail 로고. 회로 패턴으로 그린 자물쇠이고, 창살 뒤에 마이크로칩이 있습니다"
+  },
+  "a11y": {
+    "skip": "본문으로 건너뛰기",
+    "home": "ai-jail 홈",
+    "mainNav": "주 메뉴",
+    "language": "언어",
+    "toggleTheme": "라이트/다크 테마 전환",
+    "openMenu": "메뉴 열기",
+    "closeMenu": "메뉴 닫기",
+    "menu": "메뉴",
+    "chooseOne": "하나를 선택하세요"
+  },
+  "nav": {
+    "why": { "label": "나에게 필요할까?", "note": "에이전트가 내 컴퓨터에서 닿을 수 있는 것" },
+    "how": { "label": "작동 방식", "note": "에이전트와 시스템 사이에 놓이는 계층" },
+    "compare": { "label": "비교", "note": "내장 샌드박스, Docker, VM" },
+    "configure": { "label": "설정", "note": "작업에 필요한 것만 열기" },
+    "security": { "label": "보안", "note": "위협 모델과 한계" },
+    "install": { "label": "설치", "note": "설치와 첫 실행" }
+  },
+  "kicker": {
+    "why": "나에게 필요할까?",
+    "how": "작동 방식",
+    "compare": "비교",
+    "configure": "설정",
+    "security": "보안",
+    "install": "설치"
+  },
+  "code": { "copy": "복사", "copied": "복사됨" },
+  "reach": { "inside": "감옥 안", "blocked": "닿을 수 없음", "optin": "요청하기 전까지 꺼짐" },
+  "next": { "title": "이어서 읽기" },
+  "cta": {
+    "title": "에이전트를 철창 안에 넣으세요",
+    "text": "ai-jail은 바이너리 하나입니다. 데몬도 root 권한도 필요 없습니다. 평소 실행하던 명령 앞에 단어 하나만 붙이면 됩니다.",
+    "install": "ai-jail 설치하기",
+    "github": "GitHub에서 보기"
+  },
+  "footer": {
+    "version": "버전 {version}, {license} 라이선스",
+    "pages": "페이지",
+    "releases": "릴리스",
+    "report": "취약점 신고",
+    "sibling": "자매 프로젝트 ai-memory",
+    "by": "만든 사람",
+    "theme": { "system": "시스템", "light": "라이트", "dark": "다크" }
+  },
+  "notfound": { "title": "이 페이지는 갇혀 있습니다", "text": "없는 주소입니다. 홈 페이지는 있습니다.", "home": "홈 페이지로 가기" }
+}

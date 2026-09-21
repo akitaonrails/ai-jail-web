@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "title": "Como o ai-jail funciona",
+    "description": "O que acontece quando você digita ai-jail claude: as camadas do kernel entre o seu agente de código e o seu sistema no Linux, e o que muda no macOS."
+  },
+  "hero": {
+    "title": "O que acontece quando você digita ai-jail claude",
+    "lede": "O ai-jail monta uma cópia pequena e fechada do seu sistema, coloca o seu projeto nela e inicia o agente lá dentro. Os muros são recursos do próprio sistema operacional, então o agente roda em velocidade total e não consegue desligá-los.",
+    "install": "Instalar",
+    "security": "Ler o modelo de ameaças"
+  },
+  "launch": {
+    "title": "O que acontece na inicialização",
+    "lede": "Leva um instante, toda vez, e depois nada fica rodando em segundo plano.",
+    "alt": "Cinco etapas da esquerda para a direita: o seu comando, o ai-jail lê a configuração, monta o sandbox, inicia o agente dentro dos muros ao lado do projeto e, na saída, os muros se desfazem enquanto o projeto permanece.",
+    "caption": "O ai-jail monta o sandbox do zero a cada inicialização e joga fora na saída. Só o seu projeto mantém as alterações.",
+    "steps": [
+      { "title": "Ele lê as suas regras", "text": "O ai-jail confia no seu arquivo <code>~/.ai-jail</code>. Um arquivo <code>.ai-jail</code> dentro do projeto é tratado como não confiável: ele pode apertar o sandbox, nunca abrir. As flags na linha de comando têm prioridade sobre os dois." },
+      { "title": "Ele monta o sandbox", "text": "O ai-jail prepara cada uma das camadas abaixo antes de o agente existir. Se um arquivo de configuração estiver ilegível ou inválido, o ai-jail para, em vez de iniciar com regras mais fracas." },
+      { "title": "Ele inicia o agente lá dentro", "text": "O agente herda os mesmos muros, assim como cada script, pacote e servidor MCP que ele inicia. Quando o agente termina, o ai-jail termina junto." }
+    ],
+    "link": "Todas as flags e chaves de configuração"
+  },
+  "layers": {
+    "title": "As camadas, de fora para dentro",
+    "lede": "O ai-jail não confia em nenhum muro para segurar tudo sozinho. No Linux o agente fica atrás de cinco deles, cada um imposto pelo kernel, mais dois filtros sobre o que entra e o que sai.",
+    "alt": "Cinco muros concêntricos em volta de um chip ciano com o rótulo Agente. De fora para dentro: Namespaces, Sistema de arquivos, Landlock, seccomp, Limites. A sua pasta home fica do lado de fora de todos eles, apagada e gradeada.",
+    "caption": "Cada muro cobre um erro do muro que está por fora dele.",
+    "is": "O que é",
+    "stops": "O que barra",
+    "items": [
+      {
+        "name": "Namespaces",
+        "tag": "bubblewrap",
+        "is": "Um namespace é o kernel dando a um processo uma visão privada do sistema. O ai-jail pede ao bubblewrap para criá-los. É a mesma ferramenta pequena que o Flatpak usa para isolar apps de desktop, e ela não precisa de root.",
+        "stops": "O agente ganha a própria lista de processos, o próprio hostname (<code>ai-sandbox</code>), nenhum canal de comunicação com os programas do host e nenhuma rede, a menos que você passe <code>--network</code>. Se o ai-jail morrer, tudo lá dentro morre junto."
+      },
+      {
+        "name": "Sistema de arquivos",
+        "tag": "montagens",
+        "is": "Dentro do namespace só existe o que o ai-jail monta. O projeto fica com leitura e escrita no caminho real, diretórios do sistema como <code>/usr</code> ficam somente leitura, e o diretório home e o <code>/tmp</code> são novos e ficam na memória.",
+        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> e os perfis de navegador estão numa lista embutida que nunca é montada. Tudo o que for escrito fora do projeto some quando a sessão termina."
+      },
+      {
+        "name": "Landlock",
+        "tag": "kernel 5.13+",
+        "is": "O Landlock é um recurso do kernel Linux que permite a um processo abrir mão do acesso a arquivos de forma definitiva. O ai-jail usa o Landlock para repetir as regras de sistema de arquivos como uma segunda allowlist dentro do kernel.",
+        "stops": "Um erro ou um truque na camada de montagem não basta para alcançar um caminho fora da lista, e o que é somente leitura continua somente leitura. Em kernels antigos demais para o Landlock, o ai-jail avisa e segue com as outras camadas."
+      },
+      {
+        "name": "seccomp",
+        "tag": "chamadas de sistema",
+        "is": "Os programas pedem coisas ao kernel por meio de chamadas de sistema (syscalls). O seccomp é um filtro sobre essas chamadas, e o ai-jail usa esse filtro para recusar as que um agente de código nunca precisa.",
+        "stops": "O filtro bloqueia <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, módulos do kernel, <code>io_uring</code>, o keyring do kernel, raw sockets e <code>TIOCSTI</code>, a chamada que digita teclas num terminal. É uma blocklist de propósito, para que compiladores e runtimes continuem funcionando."
+      },
+      {
+        "name": "Limites de recursos",
+        "tag": "rlimits",
+        "is": "Tetos que o kernel impõe sobre quanto uma árvore de processos pode usar: 4.096 processos e 65.536 arquivos abertos, com core dumps desligados. O modo lockdown baixa esses números para 1.024 e 4.096.",
+        "stops": "Uma fork bomb ou um script fora de controle bate no teto dentro da jaula, em vez de travar a sua máquina. O agente não consegue aumentar os limites de volta."
+      },
+      {
+        "name": "Allowlist de ambiente",
+        "tag": "o que entra",
+        "is": "Seu shell está cheio de variáveis, e algumas delas são chaves de API. O ai-jail limpa o ambiente e repassa só uma lista curta: <code>PATH</code>, <code>HOME</code>, <code>TERM</code>, locale e configurações de proxy e de certificados.",
+        "stops": "Tokens e credenciais de nuvem exportados no seu shell nunca chegam ao agente. Quando uma tarefa precisa de uma variável, você a repassa pelo nome com <code>--env</code>."
+      },
+      {
+        "name": "Proxy de terminal",
+        "tag": "o que sai",
+        "is": "O agente roda atrás de um pseudoterminal próprio, e o que ele imprime passa por um parser de terminal antes de chegar à sua tela. O mesmo proxy desenha a barra de status do ai-jail na última linha.",
+        "stops": "O proxy filtra as sequências de escape que mexem no seu clipboard ou consultam o seu terminal. Dentro do tmux ou do zellij ele se desliga sozinho, porque terminais aninhados brigam pelo redimensionamento."
+      }
+    ]
+  },
+  "macos": {
+    "title": "No macOS o muro é mais fino",
+    "lede": "O macOS não tem namespaces, Landlock nem seccomp. O ai-jail transforma a mesma política num perfil para o <code>sandbox-exec</code>, o sandbox embutido da Apple. A documentação do ai-jail diz com todas as letras que isso não equivale ao isolamento do Linux.",
+    "alt": "Dois painéis. À esquerda, Linux: o chip do agente e o projeto dele dentro de cinco muros concêntricos. À direita, macOS: o mesmo chip e o mesmo projeto dentro de um único muro, com o rótulo um perfil.",
+    "caption": "O macOS recebe a mesma política e as mesmas flags, atrás de menos muros.",
+    "head": { "linux": "Linux", "macos": "macOS" },
+    "rows": [
+      { "what": "Backend", "linux": "bubblewrap, depois Landlock, seccomp e limites de recursos", "macos": "<code>sandbox-exec</code> com um perfil gerado a cada inicialização. A Apple marcou a ferramenta como obsoleta, e não existe nada melhor sem extensões de kernel." },
+      { "what": "Diretório home", "linux": "Um home novo, na memória. O seu home real não é montado.", "macos": "O perfil começa sem nenhuma leitura global e depois libera só os caminhos de que o agente precisa, então o seu home real continua fechado." },
+      { "what": "<code>/tmp</code>", "linux": "Privado, descartado na saída", "macos": "O <code>/tmp</code> do host, porque não existe mount namespace. <code>TMPDIR</code> aponta para uma pasta privada criada para aquela inicialização, e esse é o único caminho temporário liberado." },
+      { "what": "Mapeamentos copy-on-write", "linux": "<code>--overlay-map</code> deixa o agente escrever numa cópia", "macos": "Tratado como um mapeamento somente leitura" },
+      { "what": "Rede", "linux": "Desligada por padrão, num network namespace próprio", "macos": "Desligada por padrão. No lockdown fica sempre bloqueada, mesmo com <code>--network</code>." },
+      { "what": "Outros programas", "linux": "Invisíveis: lista de processos própria, sem IPC do host", "macos": "Mach, IOKit e IPC do host são negados, a menos que você passe <code>--macos-host-ipc</code>" }
+    ],
+    "windows": {
+      "title": "Windows",
+      "text": "Não existe backend para Windows. Instale o WSL2 e use a versão de Linux dentro dele, onde você tem todas as camadas do Linux."
+    }
+  },
+  "blocks": {
+    "title": "Por que essas peças",
+    "lede": "O ai-jail escreve o mínimo possível de código de segurança próprio. Ele comanda o bubblewrap, que é pequeno, vem empacotado em todas as grandes distribuições e é exercitado todo dia pelo Flatpak, e acrescenta recursos do kernel por cima.",
+    "head": { "option": "Opção", "verdict": "Por que não" },
+    "rows": [
+      { "option": "Firejail", "verdict": "Dá conta do trabalho, mas é um binário setuid root, e várias CVEs vêm desse design. O bubblewrap funciona sem root." },
+      { "option": "Reescrever o bubblewrap em Rust", "verdict": "Mais de 500 linhas de código sensível de segurança para manter e corrigir sozinho, tudo para evitar uma dependência de uns 50 KB que recebe correções do upstream." },
+      { "option": "nsjail", "verdict": "Capaz, mas feito para servidores, configurado por arquivos protobuf e empacotado em menos distribuições." },
+      { "option": "systemd-nspawn", "verdict": "Exige o systemd, então falha dentro de containers e em sistemas sem ele." }
+    ],
+    "link": "Ler a avaliação completa"
+  },
+  "facts": {
+    "title": "Pequeno o bastante para ler",
+    "lede": "A ferramenta inteira é um único programa síncrono em Rust, sem runtime assíncrono, daemon ou imagem de container.",
+    "items": [
+      { "label": "binário para instalar" },
+      { "label": "dependências diretas" },
+      { "label": "testes unitários no código-fonte" },
+      { "label": "testes que tentam escapar de um sandbox real" }
+    ],
+    "note": "Contado no repositório do ai-jail na versão 1.22.0."
+  },
+  "limit": {
+    "title": "O que as camadas não cobrem",
+    "text": "Tudo isso compartilha o seu kernel. Um exploit de kernel ou de driver está fora da fronteira, assim como tudo o que você mesmo abre: um agente com <code>--network</code> pode enviar para fora o que conseguir ler. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
+    "link": "O modelo de ameaças e os riscos residuais"
+  },
+  "next": [
+    { "title": "Configurar", "text": "Todas as flags e chaves de configuração, e como abrir só o que a tarefa precisa." },
+    { "title": "Segurança", "text": "O modelo de ameaças, os opt-ins que o enfraquecem, auditorias e assinatura de releases." },
+    { "title": "Comparar", "text": "No que ele difere dos sandboxes embutidos dos agentes, do Docker e de máquinas virtuais." }
+  ]
+}

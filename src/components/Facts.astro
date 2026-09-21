@@ -1,0 +1,22 @@
+---
+// A strip of verified numbers. `n` counts up once on first view; pass count={false} for a number that must
+// not animate (a zero). Numbers come from src/data/facts.json, never typed into a page. Labels accept inline HTML.
+interface Item { n: number; label: string; count?: boolean }
+interface Props { items: Item[] }
+const { items } = Astro.props;
+---
+<dl class="facts" data-reveal="children" style={`--cols:${items.length}`}>
+  {items.map((f) => (
+    <div>
+      <dd class="text-4xl" data-count={f.count === false ? undefined : f.n}>{f.n}</dd>
+      <dt set:html={f.label} />
+    </div>
+  ))}
+</dl>
+<style>
+  .facts { display: grid; gap: 2.5rem 2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 48rem) { .facts { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); } }
+  .facts > div { display: flex; flex-direction: column; border-block-start: 0.3rem solid var(--hue-vivid); padding-block-start: 1rem; }
+  .facts dd { font-family: var(--font-display); font-weight: 750; color: var(--hue); line-height: 1; font-variant-numeric: tabular-nums; }
+  .facts dt { margin-block-start: 0.6rem; color: var(--muted); }
+</style>

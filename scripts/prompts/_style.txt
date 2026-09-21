@@ -1,0 +1,8 @@
+ART DIRECTION (follow strictly, and match the attached logo's look):
+- Clean vector-style infographic illustration, slightly isometric where objects are shown, flat shapes with a soft neon glow. No photorealism, no 3D render look, no people, no faces, no stock-art clichés.
+- Background: one solid, very dark warm maroon-black (#140C10) edge to edge, with at most a faint dot grid. No border, no frame, no vignette, no watermark, no signature.
+- Linework and shapes use a warm neon spectrum that travels left to right: golden yellow (#FFD23F) → orange (#FF8A1F) → red-orange (#F2542D) → crimson-magenta (#D81E5B). Walls, bars, locks and anything that is part of the sandbox use this warm spectrum.
+- The AI agent is ALWAYS drawn as a glowing icy-cyan microchip (#5FE3F0 to #3B8BFF), like the chip in the logo. Cyan is reserved for the agent and for what it is allowed to reach. Nothing else is cyan or blue.
+- Things that are blocked or out of reach are dim, desaturated dark maroon-grey (#4A2F38) with thin vertical prison bars across them. No red "X" marks, no skulls, no padlock emoji.
+- Labels: short, crisp, correctly spelled, in a clean geometric sans-serif, off-white (#F6F0F2), horizontal, never overlapping shapes. Use ONLY the label texts given in quotes above, spelled exactly; add no other words, numbers or fake UI text.
+- Generous negative space, a clear reading order, large shapes that stay legible when the image is shown small on a phone.

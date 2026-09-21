@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import Reach from '@/components/Reach.astro';
+import Callout from '@/components/Callout.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import Faq from '@/components/Faq.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Lockdown from '@/components/Lockdown.astro';
+import logo from '@/assets/img/logo.png';
+import { site } from '@/data/site';
+import { faqPage, type Faq as FaqItem } from '@/lib/schema';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href } = useI18n(Astro, 'home');
+const faq = raw<FaqItem[]>('faq.items');
+const points = withText([{ hue: 'orange' }, { hue: 'gold' }, { hue: 'red' }] as const, raw<{ title: string; text: string }[]>('how.points'));
+type Item = { text: string };
+---
+<Base schema={[faqPage(faq)]}>
+  <section class="hero" data-exit>
+    <div class="wrap grid items-center gap-10 lg:grid-cols-[1.25fr_1fr] pt-32 pb-16 md:pt-40 md:pb-24">
+      <div>
+        <h1 class="text-4xl" data-reveal>{t('hero.title')}</h1>
+        <p class="lede mt-7 !text-[1.3rem]">{t('hero.lede')}</p>
+        <div class="mt-8 max-w-md"><CodeBlock code={'cd ~/Projects/my-app\nai-jail claude'} /></div>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
+          <a href={href('/why/')} class="btn btn-ghost">{t('hero.why')}</a>
+        </div>
+      </div>
+      <div class="relative justify-self-center" data-parallax="0.08">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <Image src={logo} alt={t('hero.logoAlt')} widths={[320, 480, 720, 960]} sizes="(min-width: 1024px) 30rem, 70vw" loading="eager" fetchpriority="high" class="relative w-[min(30rem,70vw)] h-auto" />
+      </div>
+    </div>
+  </section>
+
+  <Lockdown />
+
+  <Section title={t('wrap.title')} lede={t('wrap.lede')} hue="cyan" fill>
+    <Figure name="home-wrap" alt={t('wrap.alt')} caption={t('wrap.caption')} />
+    <a href={href('/compare/')} class="btn btn-ghost">{t('wrap.link')}</a>
+  </Section>
+
+  <Section title={t('defaults.title')} lede={t('defaults.lede')} hue="gold" tint>
+    <div class="grid gap-10 md:grid-cols-3" data-reveal="children">
+      <Reach title={t('reach.inside')} items={raw<Item[]>('defaults.inside')} state="inside" />
+      <Reach title={t('reach.blocked')} items={raw<Item[]>('defaults.blocked')} state="blocked" />
+      <Reach title={t('reach.optin')} items={raw<Item[]>('defaults.optin')} state="optin" />
+    </div>
+    <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('defaults.link')}</a>
+  </Section>
+
+  <Section title={t('how.title')} lede={t('how.lede')} hue="orange">
+    <FeatureGrid items={points} />
+    <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('how.link')}</a>
+  </Section>
+
+  <section class="wrap">
+    <Callout title={t('limits.title')}>
+      <p set:html={t('limits.text')} />
+      <p><a class="link" href={href('/security/')}>{t('limits.link')}</a></p>
+    </Callout>
+    <Callout title={t('pair.title')} hue="cyan">
+      <p set:html={t('pair.text')} />
+      <p><a class="link" href={site.sibling}>{t('pair.link')}</a></p>
+    </Callout>
+  </section>
+
+  <Faq items={faq} title={t('faq.title')} />
+  <CtaBand />
+</Base>
+
+<style>
+  .hero { background: var(--bg); transform-origin: 50% 100%; }
+  .hero-glow { position: absolute; inset: 8%; background: var(--spectrum); filter: blur(90px); opacity: 0.35; border-radius: 50%; }
+</style>

@@ -1,0 +1,214 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import Reach from '@/components/Reach.astro';
+import Callout from '@/components/Callout.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href } = useI18n(Astro, 'configure');
+type Text = { title: string; text: string };
+
+const sources = withText([{ hue: 'red' }, { hue: 'gold' }, { hue: 'orange' }] as const, raw<Text[]>('authority.points'));
+const globalToml = [
+  t('authority.codeBase'),
+  'hide_dotdirs = [".my_secrets"]',
+  'mask = [".env", ".env.*"]',
+  '',
+  t('authority.codeClaude'),
+  '[commands.claude]',
+  'network = true',
+  'agent_state = true',
+  'env_pass = ["ANTHROPIC_BASE_URL"]',
+  'mask = ["*.pem"]',
+].join('\n');
+
+// Structure of the switch tables. `risk`: optin (gold) opens one thing, weakens (red) is on the Security list.
+type Risk = 'optin' | 'weakens' | undefined;
+const rows: { flag: string; key?: string; risk?: Risk }[][] = [
+  [
+    { flag: '--network', key: 'network = true', risk: 'weakens' },
+    { flag: '--ssh', key: 'ssh = true', risk: 'optin' },
+    { flag: '--docker', key: 'no_docker = false', risk: 'weakens' },
+    { flag: '--tailscale', key: 'tailscale = true', risk: 'optin' },
+    { flag: '--systemd-user', key: 'systemd_user = true', risk: 'weakens' },
+  ],
+  [
+    { flag: '--agent-state', key: 'agent_state = true', risk: 'optin' },
+    { flag: '--claude-dir <PATH>', key: 'claude_dir = "..."', risk: 'optin' },
+    { flag: '--env <NAME[=VALUE]>', risk: 'optin' },
+    { flag: '--inherit-env', key: 'inherit_env = true', risk: 'weakens' },
+    { flag: '', key: 'env_pass = ["NAME"]', risk: 'optin' },
+  ],
+  [
+    { flag: '--gpu', key: 'no_gpu = false', risk: 'optin' },
+    { flag: '--display', key: 'no_display = false', risk: 'optin' },
+    { flag: '--x11', key: 'x11 = true', risk: 'weakens' },
+    { flag: '--audio', key: 'audio = true', risk: 'optin' },
+    { flag: '--host-shm', key: 'host_shm = true', risk: 'optin' },
+    { flag: '--pictures', key: 'pictures = true', risk: 'optin' },
+    { flag: '--browser[=hard|soft]', key: 'browser_profile = "hard"', risk: 'optin' },
+  ],
+  [
+    { flag: '--map <PATH|SOURCE:DEST>', key: 'ro_maps = [...]', risk: 'optin' },
+    { flag: '--rw-map <PATH|SOURCE:DEST>', key: 'rw_maps = [...]', risk: 'optin' },
+    { flag: '--overlay-map <PATH>', key: 'overlay_maps = [...]', risk: 'optin' },
+    { flag: '--hide-dotdir <NAME>', key: 'hide_dotdirs = [...]' },
+  ],
+  [
+    { flag: '--no-landlock', key: 'no_landlock = true', risk: 'weakens' },
+    { flag: '--no-seccomp', key: 'no_seccomp = true', risk: 'weakens' },
+    { flag: '--no-rlimits', key: 'no_rlimits = true', risk: 'weakens' },
+    { flag: '--no-private-home', key: 'private_home = false', risk: 'weakens' },
+  ],
+  [
+    { flag: '--dry-run' },
+    { flag: '--init' },
+    { flag: '--clean' },
+    { flag: '--bootstrap' },
+    { flag: 'status' },
+    { flag: '-v, --verbose' },
+  ],
+];
+const groups = raw<{ title: string; rows: { text: string }[] }[]>('switches.groups').map((g, i) => ({
+  title: g.title,
+  rows: withText(rows[i], g.rows),
+}));
+const riskHue = { optin: 'gold', weakens: 'red' } as const;
+
+const maskPoints = withText([{ hue: 'gold' }, { hue: 'red' }, { hue: 'orange' }] as const, raw<Text[]>('secrets.points'));
+const maskFlags = [
+  t('secrets.flagsNote'),
+  "ai-jail --mask .env --mask '.env.*' --mask '*.pem' --deny-path secrets/ claude",
+  '',
+  "ai-jail --mask '.env.*' --mask-except .env.example claude",
+].join('\n');
+const maskToml = [
+  t('secrets.tomlNote'),
+  'mask = [".env", ".env.*", "*.pem"]',
+  'deny_paths = ["secrets/"]',
+].join('\n');
+
+const recipeCode = [
+  { code: [t('recipes.comments.once'), '[commands.claude]', 'network = true', 'agent_state = true', '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
+  { code: 'ai-jail --network --ssh --agent-state claude' },
+  { code: '[commands.claude]\nro_maps = ["~/.config/mise", "~/.local/share/mise"]', codeTitle: '~/.ai-jail' },
+  { code: [t('recipes.comments.wayland'), 'ai-jail --browser=soft --network --display chromium', t('recipes.comments.x11'), 'ai-jail --browser=soft --network --x11 chromium'].join('\n') },
+  { code: 'ai-jail --network --claude-dir ~/.claude-work claude' },
+  { code: 'ai-jail --network --agent-state --overlay-map ~/Projects/my-app/src claude' },
+];
+const recipes = withText(recipeCode, raw<Text[]>('recipes.items'));
+
+const next = withText(
+  [{ hue: 'red', href: '/security/' }, { hue: 'orange', href: '/how-it-works/' }, { hue: 'cyan', href: '/install/' }] as const,
+  raw<Text[]>('next.items'),
+);
+---
+<Base title={t('meta.title')} description={t('meta.description')}>
+  <PageHero hue="gold" kicker={t('kicker.configure')} title={t('hero.title')} lede={t('hero.lede')}>
+    <a href="#switches" class="btn btn-primary">{t('hero.switches')}</a>
+    <a href={href('/install/')} class="btn btn-ghost">{t('hero.install')}</a>
+  </PageHero>
+
+  <Section title={t('authority.title')} lede={t('authority.lede')} hue="gold">
+    <Figure name="configure-authority" alt={t('authority.alt')} caption={t('authority.caption')} />
+    <FeatureGrid items={sources} />
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-start">
+      <div>
+        <p class="lede" set:html={t('authority.merge')} />
+        <Callout title={t('authority.trust.title')} hue="gold"><p set:html={t('authority.trust.text')} /></Callout>
+      </div>
+      <CodeBlock code={globalToml} title={t('authority.codeTitle')} />
+    </div>
+  </Section>
+
+  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold" tint>
+    <div class="grid gap-14">
+      {groups.map((g, gi) => (
+        <div>
+          <h3 class="text-xl mb-4">{g.title}</h3>
+          <div class="table-wrap">
+            <table class="table-site switches">
+              <thead>
+                <tr>
+                  <th scope="col">{t('switches.cols.flag')}</th>
+                  {gi < 5 && <th scope="col">{t('switches.cols.key')}</th>}
+                  <th scope="col">{t('switches.cols.opens')}</th>
+                  {gi < 5 && <th scope="col">{t('switches.cols.risk')}</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {g.rows.map((r) => (
+                  <tr>
+                    <td>{r.flag ? <code dir="ltr">{r.flag}</code> : <span class="text-muted font-normal">{t('switches.none')}</span>}</td>
+                    {gi < 5 && <td>{r.key ? <code dir="ltr">{r.key}</code> : <span class="text-muted">{t('switches.none')}</span>}</td>}
+                    <td class="opens" set:html={r.text} />
+                    {gi < 5 && <td>{r.risk && <span class="badge whitespace-nowrap" data-hue={riskHue[r.risk]}>{t(`switches.risk.${r.risk}`)}</span>}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {gi === 4 && <p class="mt-4 text-muted" set:html={t('switches.layersLink')} />}
+        </div>
+      ))}
+    </div>
+    <p class="mt-10 text-muted" set:html={t('switches.more')} />
+  </Section>
+
+  <Section id="secrets" title={t('secrets.title')} lede={t('secrets.lede')} hue="gold">
+    <Figure name="configure-mask" alt={t('secrets.alt')} caption={t('secrets.caption')} />
+    <FeatureGrid items={maskPoints} />
+    <div class="mt-12 grid gap-6 lg:grid-cols-2 items-start">
+      <CodeBlock code={maskFlags} title={t('secrets.flagsTitle')} />
+      <CodeBlock code={maskToml} title={t('secrets.tomlTitle')} />
+    </div>
+    <Callout title={t('secrets.caveat.title')}><p set:html={t('secrets.caveat.text')} /></Callout>
+  </Section>
+
+  <Section id="lockdown" title={t('lockdown.title')} lede={t('lockdown.lede')} hue="red" tint>
+    <Figure name="configure-lockdown" alt={t('lockdown.alt')} caption={t('lockdown.caption')} />
+    <div class="grid gap-10 lg:grid-cols-2 items-start">
+      <Reach title={t('lockdown.changes')} items={raw<{ text: string }[]>('lockdown.items')} state="blocked" />
+      <div>
+        <CodeBlock code="ai-jail --lockdown claude" title={t('lockdown.codeTitle')} />
+        <Callout title={t('lockdown.network.title')}><p set:html={t('lockdown.network.text')} /></Callout>
+      </div>
+    </div>
+  </Section>
+
+  <Section title={t('recipes.title')} lede={t('recipes.lede')} hue="gold">
+    <div class="grid gap-x-8 gap-y-12 lg:grid-cols-2" data-reveal="children">
+      {recipes.map((r) => (
+        <div class="grid gap-4 content-start min-w-0">
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h3 class="text-xl">{r.title}</h3>
+          <p class="text-muted max-w-[40em]" set:html={r.text} />
+          <CodeBlock code={r.code} title={r.codeTitle} />
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section title={t('compat.title')} hue="gold" narrow tint>
+    <div class="prose-site">
+      <p set:html={t('compat.text')} />
+      <p class="text-muted" set:html={t('compat.legacy')} />
+    </div>
+  </Section>
+
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>
+
+<style>
+  .switches code { white-space: nowrap; }
+  .switches .opens { min-width: 18rem; }
+  .switches .opens :global(code) { white-space: normal; }
+</style>

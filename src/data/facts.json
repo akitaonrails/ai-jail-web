@@ -1,0 +1,10 @@
+{
+  "version": "1.22.0",
+  "license": "GPL-3.0-only",
+  "rust": "1.97.1",
+  "binarySize": "881K",
+  "unitTests": 720,
+  "escapeTests": 19,
+  "reviewedAt": "2026-09-21",
+  "dependencies": 8
+}

@@ -1,0 +1,123 @@
+{
+  "compare-prompts-vs-walls": {
+    "Permission prompt": "בקשת אישור",
+    "Sandbox": "Sandbox",
+    "Agent": "סוכן",
+    "Approve": "אישור",
+    "Your keys": "המפתחות שלכם",
+    "Kernel rule": "כלל של הקרנל"
+  },
+  "compare-layers-together": {
+    "Agent": "סוכן",
+    "MCP servers": "שרתי MCP",
+    "Hooks": "Hooks",
+    "Project": "פרויקט",
+    "Agent's prompts": "בקשות האישור",
+    "Shell commands": "פקודות shell",
+    "Model API": "API של המודל",
+    "Your home": "תיקיית הבית"
+  },
+  "configure-authority": {
+    "Can only tighten": "יכול רק להדק",
+    "Trusted": "אמין",
+    "Command-line flags": "דגלי שורת הפקודה",
+    "Wins": "גובר",
+    "The jail": "הכלא",
+    "Agent": "סוכן",
+    "Project .ai-jail": ".ai-jail של הפרויקט",
+    "Global ~/.ai-jail": "~/.ai-jail גלובלי"
+  },
+  "configure-mask": {
+    "Agent": "סוכן",
+    "Your project": "הפרויקט שלכם"
+  },
+  "configure-lockdown": {
+    "Normal": "רגיל",
+    "Lockdown": "Lockdown",
+    "Agent": "סוכן",
+    "Project: read and write": "פרויקט: קריאה וכתיבה",
+    "Project: read only": "פרויקט: לקריאה בלבד"
+  },
+  "how-launch": {
+    "Your command": "הפקודה שלכם",
+    "Read config": "קריאת ההגדרות",
+    "Build the sandbox": "בניית ה-sandbox",
+    "Start the agent": "הפעלת הסוכן",
+    "Exit": "יציאה",
+    "Project": "פרויקט"
+  },
+  "how-layers": {
+    "Namespaces": "Namespaces",
+    "Filesystem": "מערכת קבצים",
+    "Limits": "מגבלות",
+    "Agent": "סוכן",
+    "Your home": "תיקיית הבית"
+  },
+  "how-macos": {
+    "Five layers": "חמש שכבות",
+    "One profile": "פרופיל אחד"
+  },
+  "install-first-run": {
+    "Dry run": "Dry run",
+    "Look around": "מבט מבפנים",
+    "Run the agent": "הרצת הסוכן",
+    "Agent": "סוכן",
+    "Project": "פרויקט",
+    "Network": "רשת",
+    "Login": "התחברות",
+    "Your home": "תיקיית הבית"
+  },
+  "install-inside": {
+    "Agent": "סוכן",
+    "Project": "פרויקט",
+    "Empty home": "תיקיית בית ריקה",
+    "System tools": "כלי המערכת",
+    "SSH keys": "מפתחות SSH",
+    "Cloud logins": "התחברויות לענן",
+    "Other projects": "פרויקטים אחרים",
+    "Network": "רשת"
+  },
+  "security-boundary": {
+    "Agent": "סוכן",
+    "Project": "פרויקט",
+    "Home and keys": "בית ומפתחות",
+    "Shell secrets": "סודות ה-shell",
+    "Network": "רשת",
+    "Screen and clipboard": "מסך ולוח העתקה",
+    "Your terminal": "הטרמינל שלכם",
+    "Jail policy": "מדיניות הכלא"
+  },
+  "security-shared-kernel": {
+    "Your system": "המערכת שלכם",
+    "Agent": "סוכן",
+    "Your kernel": "הקרנל שלכם",
+    "Disposable VM": "מכונה חד-פעמית",
+    "Its own kernel": "קרנל משלה"
+  },
+  "why-reach": {
+    "Agent": "סוכן",
+    "SSH keys": "מפתחות SSH",
+    "Cloud credentials": "פרטי גישה לענן",
+    "Browser profiles": "פרופילי דפדפן",
+    "Shell tokens": "טוקנים מה-shell",
+    "Other projects": "פרויקטים אחרים",
+    "Your project": "הפרויקט שלכם"
+  },
+  "why-injection": {
+    "Without a jail": "בלי כלא",
+    "Poisoned page": "דף מורעל",
+    "Agent": "סוכן",
+    "SSH key": "מפתח SSH",
+    "Internet": "אינטרנט",
+    "With ai-jail": "עם ai-jail"
+  },
+  "home-wrap": {
+    "Built-in sandbox": "ה-sandbox המובנה",
+    "Shell commands": "פקודות shell",
+    "Agent": "סוכן",
+    "MCP servers": "שרתי MCP",
+    "Hooks": "Hooks",
+    "Your home": "תיקיית הבית",
+    "Project": "פרויקט"
+  }
+}

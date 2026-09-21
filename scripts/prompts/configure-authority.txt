@@ -1,0 +1,10 @@
+A flow diagram read left to right. Three sources of settings on the left feed one jail on the right.
+
+LEFT COLUMN, three stacked cards of equal width, top to bottom:
+1. A small document card, dim and thin-lined, labeled "Project .ai-jail". Under it a small caption label "Can only tighten". Its arrow is a thin dim dashed line that runs left to right from the card to the jail, with the arrowhead at the jail end, the same direction as the other two arrows.
+2. A medium document card in warm gold, labeled "Global ~/.ai-jail". Under it the caption label "Trusted". Its arrow to the jail is a solid medium gold line.
+3. A terminal prompt card in bright orange, the largest and brightest of the three, labeled "Command-line flags". Under it the caption label "Wins". Its arrow to the jail is the thickest line.
+
+RIGHT: one large rounded wall made of thick vertical bars in the warm gold-to-magenta gradient, labeled "The jail". Inside it sits a glowing cyan microchip labeled "Agent". On the wall facing the three arrows is a row of five small toggle switches, most of them in the off position and two in the on position glowing gold.
+
+The three arrows converge on the row of switches. Nothing else is drawn.

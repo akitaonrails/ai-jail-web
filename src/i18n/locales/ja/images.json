@@ -1,0 +1,123 @@
+{
+  "compare-prompts-vs-walls": {
+    "Permission prompt": "許可プロンプト",
+    "Sandbox": "サンドボックス",
+    "Agent": "エージェント",
+    "Approve": "承認",
+    "Your keys": "あなたの鍵",
+    "Kernel rule": "カーネルのルール"
+  },
+  "compare-layers-together": {
+    "Agent": "エージェント",
+    "MCP servers": "MCPサーバー",
+    "Hooks": "フック",
+    "Project": "プロジェクト",
+    "Agent's prompts": "エージェントのプロンプト",
+    "Shell commands": "シェルコマンド",
+    "Model API": "モデルAPI",
+    "Your home": "あなたのホーム"
+  },
+  "configure-authority": {
+    "Can only tighten": "厳しくするだけ",
+    "Trusted": "信頼される",
+    "Command-line flags": "コマンドラインのフラグ",
+    "Wins": "最優先",
+    "The jail": "ジェイル",
+    "Agent": "エージェント",
+    "Project .ai-jail": "プロジェクトの .ai-jail",
+    "Global ~/.ai-jail": "グローバルの ~/.ai-jail"
+  },
+  "configure-mask": {
+    "Agent": "エージェント",
+    "Your project": "あなたのプロジェクト"
+  },
+  "configure-lockdown": {
+    "Normal": "通常",
+    "Lockdown": "ロックダウン",
+    "Agent": "エージェント",
+    "Project: read and write": "プロジェクト：読み書き可能",
+    "Project: read only": "プロジェクト：読み取り専用"
+  },
+  "how-launch": {
+    "Your command": "あなたのコマンド",
+    "Read config": "設定を読む",
+    "Build the sandbox": "サンドボックスを構築",
+    "Start the agent": "エージェントを起動",
+    "Exit": "終了",
+    "Project": "プロジェクト"
+  },
+  "how-layers": {
+    "Namespaces": "名前空間",
+    "Filesystem": "ファイルシステム",
+    "Limits": "リソース制限",
+    "Agent": "エージェント",
+    "Your home": "あなたのホーム"
+  },
+  "how-macos": {
+    "Five layers": "5つの層",
+    "One profile": "1つのプロファイル"
+  },
+  "install-first-run": {
+    "Dry run": "ドライラン",
+    "Look around": "中を見て回る",
+    "Run the agent": "エージェントを実行",
+    "Agent": "エージェント",
+    "Project": "プロジェクト",
+    "Network": "ネットワーク",
+    "Login": "ログイン",
+    "Your home": "あなたのホーム"
+  },
+  "install-inside": {
+    "Agent": "エージェント",
+    "Project": "プロジェクト",
+    "Empty home": "空のホーム",
+    "System tools": "システムのツール",
+    "SSH keys": "SSH鍵",
+    "Cloud logins": "クラウドのログイン",
+    "Other projects": "ほかのプロジェクト",
+    "Network": "ネットワーク"
+  },
+  "security-boundary": {
+    "Agent": "エージェント",
+    "Project": "プロジェクト",
+    "Home and keys": "ホームと鍵",
+    "Shell secrets": "シェルの秘密情報",
+    "Network": "ネットワーク",
+    "Screen and clipboard": "画面とクリップボード",
+    "Your terminal": "あなたのターミナル",
+    "Jail policy": "ジェイルのポリシー"
+  },
+  "security-shared-kernel": {
+    "Your system": "あなたのシステム",
+    "Agent": "エージェント",
+    "Your kernel": "あなたのカーネル",
+    "Disposable VM": "使い捨てのVM",
+    "Its own kernel": "専用のカーネル"
+  },
+  "why-reach": {
+    "Agent": "エージェント",
+    "SSH keys": "SSH鍵",
+    "Cloud credentials": "クラウドの認証情報",
+    "Browser profiles": "ブラウザのプロファイル",
+    "Shell tokens": "シェルのトークン",
+    "Other projects": "ほかのプロジェクト",
+    "Your project": "あなたのプロジェクト"
+  },
+  "why-injection": {
+    "Without a jail": "ジェイルなし",
+    "Poisoned page": "汚染されたページ",
+    "Agent": "エージェント",
+    "SSH key": "SSH鍵",
+    "Internet": "インターネット",
+    "With ai-jail": "ai-jailあり"
+  },
+  "home-wrap": {
+    "Built-in sandbox": "組み込みサンドボックス",
+    "Shell commands": "シェルコマンド",
+    "Agent": "エージェント",
+    "MCP servers": "MCPサーバー",
+    "Hooks": "フック",
+    "Your home": "あなたのホーム",
+    "Project": "プロジェクト"
+  }
+}

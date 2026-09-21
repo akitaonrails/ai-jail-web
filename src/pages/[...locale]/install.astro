@@ -1,0 +1,173 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import Steps from '@/components/Steps.astro';
+import Tabs from '@/components/Tabs.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import Callout from '@/components/Callout.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/data/site';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href } = useI18n(Astro, 'install');
+type Words = { title: string; text: string };
+
+const methods = [
+  'brew tap akitaonrails/tap && brew install ai-jail',
+  'yay -S ai-jail-bin\nyay -S ai-jail',
+  'cargo install --locked ai-jail',
+  'nix run github:akitaonrails/ai-jail -- claude\nnix profile install github:akitaonrails/ai-jail',
+  'ai-jail-linux-x86_64.tar.gz\nai-jail-macos-aarch64.tar.gz',
+  'cargo build --release --locked\ninstall -Dm755 target/release/ai-jail ~/.local/bin/ai-jail',
+];
+const methodNotes = raw<string[]>('install.notes').map((n) => n.replace('{rust}', '<code>1.97.1</code>'));
+const platforms = withText(
+  [{ hue: 'orange', code: 'pacman -S bubblewrap\napt install bubblewrap\ndnf install bubblewrap' }, { hue: 'cyan' }, { hue: 'red' }] as { hue: 'orange' | 'cyan' | 'red'; code?: string }[],
+  raw<Words[]>('install.platforms.items'),
+);
+
+const codeTitles = raw<string[]>('first.codeTitles');
+const steps = withText(
+  [
+    { code: 'cd ~/Projects/my-app\nai-jail --dry-run claude' },
+    { code: 'ai-jail bash' },
+    { code: 'ai-jail --network --agent-state claude' },
+    { code: '[commands.claude]\nnetwork = true\nagent_state = true\n\n# from now on, in any project:\n# ai-jail claude' },
+  ].map((s, i) => ({ ...s, codeTitle: codeTitles[i] })),
+  raw<Words[]>('first.steps'),
+);
+
+const c = raw<string[]>('see.comments');
+const session = [
+  '$ ai-jail bash',
+  c[0], '(jail) ~/Projects/my-app $ pwd', '/home/you/Projects/my-app',
+  c[1], '(jail) ~/Projects/my-app $ echo $GITHUB_TOKEN', '',
+  c[2], '(jail) ~/Projects/my-app $ cat ~/.ssh/id_ed25519', 'cat: /home/you/.ssh/id_ed25519: No such file or directory',
+  c[3], '(jail) ~/Projects/my-app $ hostname', 'ai-sandbox',
+].join('\n');
+
+const trouble = withText(
+  [
+    {
+      code: "echo 'kernel.apparmor_restrict_unprivileged_userns=0' \\\n  | sudo tee /etc/sysctl.d/60-userns.conf\nsudo sysctl --system",
+      altCode: 'abi <abi/4.0>,\ninclude <tunables/global>\nprofile bwrap /usr/bin/bwrap flags=(unconfined) {\n  userns,\n}',
+      altTitle: '/etc/apparmor.d/bwrap',
+    },
+    {},
+    { code: '[commands.claude]\nro_maps = ["~/.config/mise", "~/.local/share/mise"]', codeTitle: '~/.ai-jail' },
+    { code: 'ai-jail --no-mise claude' },
+  ] as { code?: string; codeTitle?: string; altCode?: string; altTitle?: string }[],
+  raw<(Words & { alt?: string })[]>('trouble.items'),
+);
+
+const agentRows = [
+  { cmd: 'ai-jail claude', state: ['~/.claude', '~/.claude.json'], note: 'claude' },
+  { cmd: 'ai-jail codex', state: ['~/.codex'], note: 'codex' },
+  { cmd: 'ai-jail opencode', state: ['~/.config/opencode', '~/.local/share/opencode'] },
+  { cmd: 'ai-jail gemini', state: ['~/.gemini'] },
+  { cmd: 'ai-jail ai-memory run claude', state: [], note: 'aimemory' },
+];
+
+const next = withText(
+  [
+    { hue: 'gold', href: href('/configure/') },
+    { hue: 'orange', href: href('/how-it-works/') },
+    { hue: 'red', href: href('/security/') },
+  ] as const,
+  raw<Words[]>('next.items'),
+);
+---
+<Base title={t('meta.title')} description={t('meta.description')}>
+  <PageHero hue="cyan" kicker={t('kicker.install')} title={t('hero.title')} lede={t('hero.lede')}>
+    <a href="#install" class="btn btn-primary">{t('hero.jump')}</a>
+    <a href={`${site.repo}/releases`} class="btn btn-ghost">{t('hero.releases')}</a>
+  </PageHero>
+
+  <Section id="install" title={t('install.title')} lede={t('install.lede')} hue="cyan">
+    <Tabs id="method" labels={raw<string[]>('install.tabs')}>
+      <div slot="0" class="grid gap-4 max-w-[46rem]"><CodeBlock code={methods[0]} /><p class="text-muted max-w-[40em]" set:html={methodNotes[0]} /></div>
+      <div slot="1" class="grid gap-4 max-w-[46rem]"><CodeBlock code={methods[1]} /><p class="text-muted max-w-[40em]" set:html={methodNotes[1]} /></div>
+      <div slot="2" class="grid gap-4 max-w-[46rem]"><CodeBlock code={methods[2]} /><p class="text-muted max-w-[40em]" set:html={methodNotes[2]} /></div>
+      <div slot="3" class="grid gap-4 max-w-[46rem]"><CodeBlock code={methods[3]} /><p class="text-muted max-w-[40em]" set:html={methodNotes[3]} /></div>
+      <div slot="4" class="grid gap-4 max-w-[46rem]"><CodeBlock code={methods[4]} /><p class="text-muted max-w-[40em]" set:html={methodNotes[4]} /></div>
+      <div slot="5" class="grid gap-4 max-w-[46rem]"><CodeBlock code={methods[5]} /><p class="text-muted max-w-[40em]" set:html={methodNotes[5]} /></div>
+    </Tabs>
+
+    <h3 class="text-xl mt-16 mb-8">{t('install.platforms.title')}</h3>
+    <div class="grid gap-10 md:grid-cols-3" data-reveal="children">
+      {platforms.map((p) => (
+        <div data-hue={p.hue} class="platform grid gap-3 content-start">
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h4 class="text-xl">{p.title}</h4>
+          <p class="text-muted" set:html={p.text} />
+          {p.code && <CodeBlock code={p.code} />}
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section title={t('first.title')} lede={t('first.lede')} hue="cyan" tint fill>
+    <Figure name="install-first-run" alt={t('first.alt')} caption={t('first.caption')} />
+    <Steps steps={steps} />
+    <div class="grid gap-x-8 md:grid-cols-2 mt-10">
+      <Callout title={t('first.exposure.title')}><p set:html={t('first.exposure.text')} /></Callout>
+      <Callout hue="gold" title={t('first.gitignore.title')}><p set:html={t('first.gitignore.text')} /></Callout>
+    </div>
+  </Section>
+
+  <Section title={t('see.title')} lede={t('see.lede')} hue="cyan">
+    <div class="grid gap-10 items-start">
+      <div class="grid gap-4 min-w-0 max-w-[46rem]">
+        <CodeBlock code={session} title={t('see.termTitle')} />
+        <p class="text-muted text-sm max-w-[40em]">{t('see.note')}</p>
+      </div>
+      <div class="inside-fig min-w-0"><Figure name="install-inside" alt={t('see.alt')} /></div>
+    </div>
+    <p class="text-muted max-w-[40em] mt-6" set:html={t('see.caption')} />
+  </Section>
+
+  <Section title={t('trouble.title')} lede={t('trouble.lede')} hue="red" tint>
+    <div class="grid gap-12 md:grid-cols-2" data-reveal="children">
+      {trouble.map((item) => (
+        <div class="grid gap-4 content-start min-w-0">
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h3 class="text-xl break-words" set:html={item.title} />
+          <p class="text-muted max-w-[40em]" set:html={item.text} />
+          {item.code && <CodeBlock code={item.code} title={item.codeTitle} />}
+          {item.alt && <p class="text-muted max-w-[40em]" set:html={item.alt} />}
+          {item.altCode && <CodeBlock code={item.altCode} title={item.altTitle} />}
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section title={t('agents.title')} lede={t('agents.lede')} hue="cyan">
+    <div class="table-wrap">
+      <table class="table-site">
+        <thead><tr>{raw<string[]>('agents.head').map((h) => <th scope="col" set:html={h} />)}</tr></thead>
+        <tbody>
+          {agentRows.map((r) => (
+            <tr>
+              <td dir="ltr"><code>{r.cmd}</code></td>
+              <td>{r.state.length ? r.state.map((s, i) => <>{i > 0 && <br />}<code dir="ltr">{s}</code></>) : t('agents.aimemoryState')}</td>
+              <td>{r.note && <span set:html={t(`agents.notes.${r.note}`)} />}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-muted max-w-[40em] mt-6" set:html={t('agents.more')} />
+  </Section>
+
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>
+
+<style>
+  .inside-fig :global(.fig) { margin-block: 0; }
+</style>

@@ -1,0 +1,118 @@
+---
+import Base from '@/layouts/Base.astro';
+import Facts from '@/components/Facts.astro';
+import factsData from '@/data/facts.json';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import Callout from '@/components/Callout.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/data/site';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href } = useI18n(Astro, 'how');
+type Text = { title: string; text: string };
+type Layer = { name: string; tag: string; is: string; stops: string };
+
+const launch = withText([{ hue: 'gold' }, { hue: 'orange' }, { hue: 'cyan' }] as const, raw<Text[]>('launch.steps'));
+// Outside in, the same order and colors as the how-layers diagram; the last two are filters, not walls.
+const layers = withText(
+  [{ hue: 'gold' }, { hue: 'orange' }, { hue: 'orange' }, { hue: 'red' }, { hue: 'magenta' }, { hue: 'cyan' }, { hue: 'cyan' }] as const,
+  raw<Layer[]>('layers.items'),
+);
+const macos = raw<{ what: string; linux: string; macos: string }[]>('macos.rows');
+const blocks = raw<{ option: string; verdict: string }[]>('blocks.rows');
+// Counted in the ai-jail repository at 1.22.0: #[test] in src/, #[test] in tests/sandbox_escape.rs, [dependencies] in Cargo.toml.
+const facts = withText([{ n: 1 }, { n: factsData.dependencies }, { n: factsData.unitTests }, { n: factsData.escapeTests }], raw<{ label: string }[]>('facts.items'));
+const next = withText(
+  [{ href: '/configure/', hue: 'gold' }, { href: '/security/', hue: 'red' }, { href: '/compare/', hue: 'cyan' }] as const,
+  raw<Text[]>('next'),
+);
+---
+<Base title={t('meta.title')} description={t('meta.description')}>
+  <PageHero hue="orange" kicker={t('kicker.how')} title={t('hero.title')} lede={t('hero.lede')}>
+    <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
+    <a href={href('/security/')} class="btn btn-ghost">{t('hero.security')}</a>
+  </PageHero>
+
+  <Section title={t('launch.title')} lede={t('launch.lede')} hue="orange" id="launch">
+    <Figure name="how-launch" alt={t('launch.alt')} caption={t('launch.caption')} />
+    <FeatureGrid items={launch} />
+    <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('launch.link')}</a>
+  </Section>
+
+  <Section title={t('layers.title')} lede={t('layers.lede')} hue="orange" id="layers" tint fill>
+    <Figure name="how-layers" alt={t('layers.alt')} caption={t('layers.caption')} />
+    <ol class="layers" data-focus-list>
+      {layers.map((l, i) => (
+        <li data-hue={l.hue} id={`layer-${i + 1}`}>
+          <div class="layer-head">
+            <span class="bars" aria-hidden="true"><i></i></span>
+            <h3 class="text-2xl">{l.name}</h3>
+            <span class="badge" dir="ltr">{l.tag}</span>
+          </div>
+          <dl class="layer-body">
+            <div><dt>{t('layers.is')}</dt><dd set:html={l.is} /></div>
+            <div><dt>{t('layers.stops')}</dt><dd set:html={l.stops} /></div>
+          </dl>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <Section title={t('macos.title')} lede={t('macos.lede')} hue="red" id="macos">
+    <Figure name="how-macos" alt={t('macos.alt')} caption={t('macos.caption')} />
+    <div class="table-wrap">
+      <table class="table-site">
+        <thead><tr><td></td><th scope="col">{t('macos.head.linux')}</th><th scope="col">{t('macos.head.macos')}</th></tr></thead>
+        <tbody>
+          {macos.map((r) => <tr><td set:html={r.what} /><td set:html={r.linux} /><td set:html={r.macos} /></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <Callout title={t('macos.windows.title')} hue="cyan"><p>{t('macos.windows.text')}</p></Callout>
+  </Section>
+
+  <Section title={t('blocks.title')} lede={t('blocks.lede')} hue="orange" id="why-bubblewrap" tint>
+    <div class="table-wrap">
+      <table class="table-site">
+        <thead><tr><th scope="col">{t('blocks.head.option')}</th><th scope="col">{t('blocks.head.verdict')}</th></tr></thead>
+        <tbody>
+          {blocks.map((r) => <tr><td>{r.option}</td><td set:html={r.verdict} /></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-8"><a class="link" href={`${site.docs}/sandbox-alternatives.md`}>{t('blocks.link')}</a></p>
+  </Section>
+
+  <Section title={t('facts.title')} lede={t('facts.lede')} hue="gold" id="facts">
+    <Facts items={facts} />
+    <p class="mt-8 text-sm text-muted">{t('facts.note')}</p>
+    <Callout title={t('limit.title')}>
+      <p set:html={t('limit.text')} />
+      <p><a class="link" href={href('/security/')}>{t('limit.link')}</a></p>
+    </Callout>
+  </Section>
+
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>
+
+<style>
+  /* The layer sequence: one item is lit as it crosses the reading line. Without JavaScript all are lit. */
+  .layers { display: grid; row-gap: clamp(2.5rem, 6vw, 4.5rem); max-width: 60rem; }
+  .layers > li { padding-inline-start: 1.5rem; border-inline-start: 0.3rem solid var(--hue-vivid); transition: opacity .4s ease, border-color .4s ease, transform .4s ease; }
+  .layer-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; }
+  .layer-head h3 { color: var(--hue); }
+  .layer-body { display: grid; gap: 1.25rem 2.5rem; margin-block-start: 1.25rem; }
+  .layer-body dt { font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm); color: var(--muted); }
+  .layer-body dd { margin-block-start: 0.35rem; max-width: 34em; }
+  @media (min-width: 48rem) { .layer-body { grid-template-columns: 1fr 1fr; } }
+  .layers[data-focus-ready] > li[data-state='ahead'] { opacity: 0.35; border-inline-start-color: var(--line); transform: translateY(0.75rem); }
+  .layers[data-focus-ready] > li[data-state='past'] { opacity: 0.55; border-inline-start-color: var(--line); }
+  .layers[data-focus-ready] > li[data-state='active'] { opacity: 1; }
+
+</style>

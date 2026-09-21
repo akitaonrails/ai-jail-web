@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "title": "ai-jail comparado a sandboxes de agentes, Docker e VMs",
+    "description": "O que os sandboxes do Claude Code, Codex e Gemini CLI cobrem, o que deixam de fora, onde ganham do ai-jail e como Docker e VMs se comparam, com fontes."
+  },
+  "hero": {
+    "title": "Seu agente já tem um sandbox. Ele cobre a outra metade.",
+    "lede": "Sandboxes embutidos e pedidos de permissão vigiam os comandos que o modelo executa. O ai-jail decide o que o programa do agente inteiro enxerga na sua máquina. Os dois funcionam juntos.",
+    "install": "Instalar",
+    "how": "Como funciona",
+    "reviewed": "Última revisão em {date}. Os outros produtos mudam rápido, então cada afirmação sobre eles tem link para a documentação do próprio fornecedor."
+  },
+  "wall": {
+    "title": "Onde fica o muro",
+    "lede": "No momento em que este texto foi escrito, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">o sandbox do Claude Code</a> vale para comandos de shell e seus processos filhos. As ferramentas de arquivo dele usam o sistema de permissões, e a documentação diz que <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">servidores MCP e hooks rodam sem restrição no host</a>. O ai-jail inicia o próprio agente dentro do muro, então tudo o que ele dispara também fica lá dentro.",
+    "alt": "Dois painéis. À esquerda, um sandbox embutido cerca só os comandos de shell, enquanto o agente, seus servidores MCP e seus hooks ficam fora do muro, com linhas que chegam ao seu diretório home. À direita, o ai-jail cerca o agente, os servidores MCP, os hooks, os comandos de shell e o projeto juntos, e o seu diretório home fica do lado de fora, apagado e gradeado.",
+    "caption": "O painel da esquerda segue a documentação do Claude Code.",
+    "codex": "O <a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a> também coloca em sandbox os comandos que dispara e deixa o processo <code>codex</code> do lado de fora. A documentação dele não diz onde rodam os servidores MCP locais."
+  },
+  "prompts": {
+    "title": "Pedido de permissão é outro tipo de proteção",
+    "lede": "Um pedido de permissão pergunta a uma pessoa, e uma pessoa pode estar com pressa ou ser enganada. Um sandbox pergunta ao kernel, que dá a mesma resposta todas as vezes.",
+    "alt": "Dois painéis. À esquerda, uma linha que sai do agente atravessa uma pilha de diálogos de aprovação com um botão Aprovar e chega às suas chaves. À direita, a mesma linha para num muro com o rótulo regra do kernel, e as suas chaves atrás dele aparecem apagadas e gradeadas.",
+    "caption": "Os pedidos de permissão são úteis. Eles são uma etapa de revisão, e um sandbox é uma fronteira.",
+    "modesTitle": "Modos que tiram a pessoa do caminho",
+    "modesNote": "No momento em que este texto foi escrito, cada um destes agentes tem um modo que para de perguntar. Sem o pedido de permissão, o sandbox é a única proteção que sobra, se houver algum ligado.",
+    "cols": { "agent": "Agente", "mode": "Modo", "effect": "O que o fornecedor diz que ele faz" },
+    "modes": [
+      { "agent": "Claude Code", "mode": "<code>auto</code>", "effect": "Tudo roda e um segundo modelo revisa as ações no seu lugar. A documentação chama esse classificador de <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">um controle por ação, não uma fronteira de isolamento</a>." },
+      { "agent": "Claude Code", "mode": "<code>bypassPermissions</code>, também <code>--dangerously-skip-permissions</code>", "effect": "Tudo roda sem nenhuma verificação. A <a class=\"link\" href=\"https://code.claude.com/docs/en/permission-modes\">documentação</a> diz para usar só em containers e VMs isolados." },
+      { "agent": "Codex CLI", "mode": "Política de aprovação <code>never</code>", "effect": "O agente nunca pergunta. O modo de sandbox continua valendo. Veja <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">aprovações e segurança</a>." },
+      { "agent": "Codex CLI", "mode": "<code>danger-full-access</code>, ou <code>--yolo</code>", "effect": "O sandbox fica desligado. Com <code>--yolo</code> também não há aprovações." }
+    ]
+  },
+  "table": {
+    "title": "Lado a lado",
+    "lede": "Tudo aqui descreve a documentação de cada produto no momento em que este texto foi escrito. Quando a documentação que lemos não responde a uma pergunta, a célula diz isso.",
+    "undocumented": "Não documentado",
+    "cols": { "row": "", "claude": "Sandbox do Claude Code", "codex": "Sandbox do Codex CLI", "gemini": "Sandbox do Gemini CLI", "jail": "ai-jail" },
+    "sources": "Fontes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">sandboxing do Claude Code</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">ambientes de sandbox do Claude Code</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">aprovações e segurança do Codex</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">sandbox de Linux do Codex</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">sandbox do Gemini CLI</a>.",
+    "groupJail": "O que um wrapper em volta do agente inteiro acrescenta",
+    "groupBuiltin": "O que os sandboxes embutidos fazem melhor",
+    "rows": [
+      {
+        "label": "O que fica dentro do muro",
+        "cells": [
+          "Comandos do Bash, do PowerShell e do Monitor e seus processos filhos. O processo <code>claude</code>, suas ferramentas de arquivo, servidores MCP e hooks ficam de fora.",
+          "Os comandos que o agente dispara. O processo <code>codex</code> fica de fora. Servidores MCP locais: não documentado.",
+          "O processo inteiro da CLI, ou só as ferramentas de shell e de escrita com <code>security.toolSandboxing</code>.",
+          "A árvore de processos inteira: o agente, suas ferramentas de arquivo, servidores MCP, hooks e todos os comandos."
+        ]
+      },
+      {
+        "label": "Ligado por padrão",
+        "cells": [
+          "Não. Você liga com <code>/sandbox</code> ou <code>sandbox.enabled</code>. Se faltar uma dependência, ele avisa e roda os comandos sem sandbox, a menos que você defina <code>sandbox.failIfUnavailable</code>.",
+          "Sim. <code>workspace-write</code> é o modo padrão.",
+          "Você liga com <code>-s</code>, <code>GEMINI_SANDBOX</code> ou <code>tools.sandbox</code>.",
+          "Fica ligado sempre que você inicia o agente por ele. Se a configuração for inválida, ele se recusa a iniciar."
+        ]
+      },
+      {
+        "label": "Código no sandbox consegue ler <code>~/.ssh</code> por padrão?",
+        "cells": [
+          "Sim. A documentação diz que o padrão ainda permite ler arquivos de credenciais como <code>~/.aws/credentials</code> e <code>~/.ssh/</code>. As regras de negação são opt-in.",
+          "Sim no Linux, onde o sistema de arquivos inteiro é montado como somente leitura. As entradas de negação são opt-in. Padrão no macOS: não documentado.",
+          "O perfil padrão no macOS, <code>permissive-open</code>, permite leitura ampla de arquivos. Perfis mais restritos são opt-in.",
+          "Não. O agente recebe um diretório home novo e vazio. <code>--ssh</code> é opt-in."
+        ]
+      },
+      {
+        "label": "Variáveis de ambiente",
+        "cells": [
+          "Os comandos no sandbox herdam o ambiente do processo pai por padrão, com as credenciais. <code>sandbox.credentials</code> pode negar ou mascarar essas variáveis.",
+          "",
+          "",
+          "Uma allowlist mínima com variáveis de terminal, locale e toolchain. Você acrescenta outras pelo nome com <code>--env</code>."
+        ]
+      },
+      {
+        "label": "Saída de emergência que o modelo pode usar",
+        "cells": [
+          "O modelo pode tentar o comando de novo com <code>dangerouslyDisableSandbox</code>, que passa pelo fluxo normal de permissões. <code>allowUnsandboxedCommands: false</code> desliga isso.",
+          "Com a política <code>on-request</code>, o agente pede para sair do sandbox quando precisa editar fora do workspace ou usar a rede.",
+          "",
+          "Nenhuma. Você define a política antes de o agente iniciar, e o arquivo <code>.ai-jail</code> do próprio projeto pode apertá-la, nunca abrir."
+        ]
+      },
+      {
+        "label": "Funciona com qualquer agente",
+        "cells": [
+          "Só Claude Code",
+          "Só Codex",
+          "Só Gemini CLI",
+          "Qualquer comando, com um único arquivo de política para todos os seus agentes."
+        ]
+      },
+      {
+        "label": "Modelo de rede",
+        "cells": [
+          "Um proxy com allowlist por domínio. Um domínio novo gera um pedido de permissão. A documentação observa que domain fronting consegue contorná-lo.",
+          "Desligada por padrão em <code>workspace-write</code>. Uma configuração liga a rede, e um proxy opcional acrescenta regras de permissão e negação por domínio.",
+          "O perfil padrão permite rede. Perfis mais restritos e com proxy são opt-in.",
+          "Tudo ou nada. Fica desligada por padrão, e <code>--network</code> abre tudo. Não há filtro por domínio, de propósito."
+        ]
+      },
+      {
+        "label": "Aprovação a cada comando",
+        "cells": [
+          "Sim. Modos de permissão, um modo de planejamento, um modelo classificador e política gerenciada pela organização.",
+          "Sim. Políticas de aprovação, regras por categoria e um agente revisor opcional.",
+          "",
+          "Nenhuma. O ai-jail nunca vê comandos individuais e nunca pergunta."
+        ]
+      },
+      {
+        "label": "Caminhos protegidos dentro do projeto",
+        "cells": [
+          "Sim. <code>.git/hooks</code>, <code>.git/config</code>, as configurações em <code>.claude</code>, <code>.mcp.json</code>, arquivos rc do shell e outros ficam somente leitura.",
+          "Sim. <code>.git</code>, <code>.agents</code> e <code>.codex</code> dentro das raízes graváveis ficam somente leitura.",
+          "",
+          "Nenhum embutido. O projeto inteiro é gravável. Você mesmo mascara ou nega caminhos com <code>--mask</code> e <code>deny_paths</code>."
+        ]
+      },
+      {
+        "label": "Esconder segredos do agente e ainda assim usá-los",
+        "cells": [
+          "O mascaramento de credenciais consegue injetar o segredo real no proxy. Depende de uma configuração experimental.",
+          "",
+          "",
+          "Não. Um arquivo mascarado é um arquivo vazio."
+        ]
+      },
+      {
+        "label": "Plataformas",
+        "cells": [
+          "macOS, Linux, WSL2. Não roda em Windows nativo nem em WSL1.",
+          "macOS, Linux, WSL2 e Windows nativo.",
+          "Seatbelt no macOS, Docker ou Podman, gVisor, LXC (experimental) e Windows nativo.",
+          "Linux e macOS. No Windows, só com WSL2."
+        ]
+      },
+      {
+        "label": "Instalação",
+        "cells": [
+          "Vem com o agente. No Linux precisa de <code>bubblewrap</code> e <code>socat</code>.",
+          "Vem com o agente.",
+          "Vem com o agente. Os backends de container precisam de Docker ou Podman.",
+          "Um binário separado. No Linux precisa de <code>bubblewrap</code>."
+        ]
+      }
+    ],
+    "runtimeTitle": "A Anthropic também tem um wrapper do processo inteiro",
+    "runtimeText": "No momento em que este texto foi escrito, <code>npx @anthropic-ai/sandbox-runtime claude</code> envolve o processo inteiro do Claude Code com as mesmas primitivas, Seatbelt e bubblewrap, então ferramentas de arquivo, servidores MCP e hooks também ficam cobertos. A Anthropic <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">descreve o pacote como um research preview em beta</a> e observa que, no Linux, a lista de negação é montada uma vez na inicialização e não cobre arquivos criados depois. Se você só usa o Claude Code, é uma alternativa direta ao ai-jail.",
+    "opencodeTitle": "O OpenCode tem regras e nenhum sandbox",
+    "opencodeText": "No momento em que este texto foi escrito, <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">a página de permissões do OpenCode</a> documenta as regras <code>allow</code>, <code>ask</code> e <code>deny</code>, diz que a maioria das permissões vem como <code>allow</code> por padrão e não descreve nenhum sandbox de sistema operacional."
+  },
+  "both": {
+    "title": "Use os dois",
+    "lede": "Com a rede desligada, um agente em nuvem não alcança a API do próprio modelo. Na prática você abre duas coisas: a rede e o login do agente.",
+    "codeTitle": "um agente em nuvem na jaula",
+    "alt": "Um muro grande com o rótulo ai-jail cerca o agente, seus servidores MCP, seus hooks, o projeto e seus comandos de shell. Entre o agente e os comandos de shell fica o pedido de aprovação do próprio agente. Uma linha sai do muro por um portão até a API do modelo. O seu diretório home fica do lado de fora do muro, apagado e gradeado.",
+    "caption": "O muro externo é o ai-jail. Dentro dele, os pedidos de permissão e as regras do agente continuam fazendo o trabalho deles.",
+    "points": [
+      { "title": "O que as checagens do agente continuam fazendo", "text": "Pedidos de permissão, regras de allow e deny e o modo de planejamento fazem parte do programa do agente, então funcionam dentro da jaula como funcionam fora. Eles pegam aquele comando que você não teria aprovado." },
+      { "title": "O que o ai-jail garante por baixo", "text": "O agente, seus servidores MCP e seus hooks nunca veem o seu diretório home, as suas chaves nem os tokens do seu shell, não importa o que você aprove. O que o agente consegue ler, ele ainda consegue enviar, então <a class=\"link\" href=\"/configure/#secrets\">mascare os segredos dentro do projeto</a>." }
+    ],
+    "nestedTitle": "Mantenha os pedidos de permissão, mas não conte com um sandbox dentro de outro",
+    "nestedText": "No Linux, o ai-jail bloqueia as chamadas de sistema que criam namespaces e montagens novos, como <code>unshare</code> e <code>mount</code>, porque é por elas que um processo escapa. Um sandbox do bubblewrap iniciado pelo agente dentro da jaula precisa dessas chamadas, e a documentação do ai-jail não diz que essa combinação funciona. A documentação do Claude Code, no momento em que este texto foi escrito, oferece <code>enableWeakerNestedSandbox</code> para cenários aninhados e diz que a opção <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">enfraquece consideravelmente a segurança</a>."
+  },
+  "heavy": {
+    "title": "Docker, dev containers e máquinas virtuais",
+    "lede": "Essas também são boas respostas, e uma máquina virtual é uma resposta mais forte. Elas diferem no que você precisa montar e manter atualizado.",
+    "cols": { "tool": "", "gives": "O que você ganha", "costs": "O que custa" },
+    "rows": [
+      { "tool": "Container Docker", "gives": "Sistema de arquivos, lista de processos e rede próprios. O agente vê só o que você monta.", "costs": "Uma imagem para montar e manter, com as suas toolchains instaladas pela segunda vez. Se você montar o socket do Docker, o container equivale a root no host." },
+      { "tool": "Dev container", "gives": "O mesmo isolamento de um container, descrito num arquivo que o seu editor entende e o seu time pode compartilhar.", "costs": "A mesma manutenção de imagem, mais um editor ou uma ferramenta que entenda o formato." },
+      { "tool": "Máquina virtual", "gives": "Um kernel próprio. É a fronteira mais forte desta lista, e a certa para código que você acredita ser hostil.", "costs": "A opção mais pesada: um sistema guest para instalar e atualizar, que consome memória e para onde você precisa copiar o projeto." },
+      { "tool": "ai-jail", "gives": "Um sandbox em volta de um comando, usando os compiladores e runtimes que já estão na sua máquina. Não precisa de imagem, daemon nem root.", "costs": "Ele compartilha o seu kernel, então um exploit de kernel ou de driver está fora da fronteira dele. É mais fraco que uma máquina virtual." }
+    ],
+    "note": "A própria documentação do ai-jail o descreve como uma camada útil, que não substitui uma VM descartável. <a class=\"link\" href=\"/security/\">Leia o modelo de ameaças</a>."
+  },
+  "faq": {
+    "title": "Perguntas sobre usar os dois juntos",
+    "items": [
+      { "q": "Devo desligar o sandbox e os pedidos de permissão do meu agente?", "a": "Mantenha os pedidos de permissão e as regras. Eles revisam comandos um a um, coisa que o ai-jail nunca faz. O sandbox de sistema operacional do agente é outra história no Linux: o ai-jail bloqueia as chamadas de sistema de que um sandbox bubblewrap aninhado precisa, e a documentação dele não diz que a combinação funciona. Se o agente avisar que o sandbox dele está indisponível dentro da jaula, a jaula continua lá." },
+      { "q": "O ai-jail é mais seguro que o Docker?", "a": "Os dois são a mesma classe de fronteira. Ambos compartilham o seu kernel, e nenhum é uma máquina virtual. O ai-jail começa com tudo fechado e não precisa de imagem, daemon nem root. Um container monta o que você mandar, e um socket do Docker montado equivale a root no host. Para código que você acredita ser hostil, use uma VM descartável." },
+      { "q": "Por que não existe uma allowlist de rede por domínio?", "a": "Um filtro que mora dentro do sandbox é um filtro que o agente pode simplesmente não usar. O mantenedor fechou <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/issues/107\">o pedido</a> como fora de escopo: uma versão sem root precisa de uma pilha de rede em userspace e de inspeção de SNI, que falha quando o SNI está ausente ou criptografado, ou então de interceptação TLS do tráfego de API do agente, que carrega credenciais. Filtre onde o privilégio já existe: uma regra de nftables para o uid do agente, um slice do systemd com <code>IPAddressAllow=</code>, ou um container ou VM que seja dono do network namespace." },
+      { "q": "Só uso o Claude Code. Ainda preciso do ai-jail?", "a": "Você tem três opções, no momento em que este texto foi escrito. O sandbox embutido cobre comandos de shell. O <code>@anthropic-ai/sandbox-runtime</code> da Anthropic, um research preview em beta, envolve o processo inteiro. O ai-jail também envolve o processo inteiro, começa com o seu diretório home e as variáveis de ambiente fechados e usa a mesma política para qualquer outro agente que você testar depois. Veja <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">a comparação de ambientes de sandbox da Anthropic</a>." }
+    ]
+  },
+  "next": {
+    "items": [
+      { "title": "Como funciona", "text": "As camadas do kernel entre o agente e o seu sistema, no Linux e no macOS." },
+      { "title": "Configurar", "text": "Todas as opções, e como abrir só o que a tarefa precisa." },
+      { "title": "Segurança", "text": "O modelo de ameaças, os limites e os opt-ins que enfraquecem a jaula." }
+    ]
+  }
+}

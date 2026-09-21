@@ -1,0 +1,135 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import Callout from '@/components/Callout.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import Faq from '@/components/Faq.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import facts from '@/data/facts.json';
+import { faqPage, type Faq as FaqItem } from '@/lib/schema';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href, date } = useI18n(Astro, 'compare');
+const faq = raw<FaqItem[]>('faq.items');
+
+type Mode = { agent: string; mode: string; effect: string };
+type Row = { label: string; cells: string[] };
+type Heavy = { tool: string; gives: string; costs: string };
+const modes = raw<Mode[]>('prompts.modes');
+const rows = raw<Row[]>('table.rows');
+// The first rows are where a whole-process wrapper adds something; the rest are where the built-ins are ahead.
+const JAIL_ROWS = 6;
+const groups = [
+  { title: t('table.groupJail'), hue: 'orange', rows: rows.slice(0, JAIL_ROWS) },
+  { title: t('table.groupBuiltin'), hue: 'cyan', rows: rows.slice(JAIL_ROWS) },
+] as const;
+const columns = ['claude', 'codex', 'gemini', 'jail'] as const;
+const heavy = raw<Heavy[]>('heavy.rows');
+
+const together = withText([{ hue: 'cyan' }, { hue: 'orange' }] as const, raw<{ title: string; text: string }[]>('both.points'));
+const next = withText(
+  [{ href: '/how-it-works/', hue: 'orange' }, { href: '/configure/', hue: 'gold' }, { href: '/security/', hue: 'red' }] as const,
+  raw<{ title: string; text: string }[]>('next.items'),
+);
+---
+<Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
+  <PageHero hue="cyan" kicker={t('kicker.compare')} title={t('hero.title')} lede={t('hero.lede')}>
+    <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
+    <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
+  </PageHero>
+  <div class="wrap pb-6" data-hue="cyan">
+    <p class="badge reviewed"><span class="bars" aria-hidden="true"><i></i></span><span>{t('hero.reviewed', { date: date(facts.reviewedAt) })}</span></p>
+  </div>
+
+  <Section title={t('wall.title')} lede={t('wall.lede')} hue="cyan">
+    <Figure name="home-wrap" alt={t('wall.alt')} caption={t('wall.caption')} />
+    <p class="text-muted max-w-[40em]" set:html={t('wall.codex')} />
+  </Section>
+
+  <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="gold" tint>
+    <Figure name="compare-prompts-vs-walls" alt={t('prompts.alt')} caption={t('prompts.caption')} />
+    <h3 class="text-xl">{t('prompts.modesTitle')}</h3>
+    <p class="mt-3 text-muted max-w-[40em]">{t('prompts.modesNote')}</p>
+    <div class="table-wrap mt-6">
+      <table class="table-site">
+        <thead><tr><th scope="col">{t('prompts.cols.agent')}</th><th scope="col">{t('prompts.cols.mode')}</th><th scope="col">{t('prompts.cols.effect')}</th></tr></thead>
+        <tbody>
+          {modes.map((m) => (<tr><td>{m.agent}</td><td set:html={m.mode} /><td class="wide" set:html={m.effect} /></tr>))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section id="table" title={t('table.title')} lede={t('table.lede')} hue="cyan">
+    <div class="table-wrap">
+      <table class="table-site compare">
+        <thead>
+          <tr>
+            <td></td>
+            {columns.map((c) => <th scope="col" class:list={[c === 'jail' && 'jail']}>{t(`table.cols.${c}`)}</th>)}
+          </tr>
+        </thead>
+        {groups.map((g) => (
+          <tbody data-hue={g.hue}>
+            <tr class="group"><th scope="colgroup" colspan={columns.length + 1}><span class="bars" aria-hidden="true"><i></i></span>{g.title}</th></tr>
+            {g.rows.map((r) => (
+              <tr>
+                <th scope="row" set:html={r.label} />
+                {r.cells.map((c, i) => c
+                  ? <td class:list={[i === columns.length - 1 && 'jail']} data-hue={i === columns.length - 1 ? 'cyan' : undefined} set:html={c} />
+                  : <td class="none">{t('table.undocumented')}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        ))}
+      </table>
+    </div>
+    <p class="mt-5 text-sm text-muted max-w-[60em]" set:html={t('table.sources')} />
+    <div class="grid gap-x-8 md:grid-cols-2 mt-6">
+      <Callout title={t('table.runtimeTitle')} hue="cyan"><p set:html={t('table.runtimeText')} /></Callout>
+      <Callout title={t('table.opencodeTitle')} hue="gold"><p set:html={t('table.opencodeText')} /></Callout>
+    </div>
+  </Section>
+
+  <Section id="both" title={t('both.title')} lede={t('both.lede')} hue="orange" tint fill>
+    <div class="max-w-xl"><CodeBlock code={'cd ~/Projects/my-app\nai-jail --network --agent-state claude'} title={t('both.codeTitle')} /></div>
+    <Figure name="compare-layers-together" alt={t('both.alt')} caption={t('both.caption')} />
+    <FeatureGrid items={together} cols={2} />
+    <Callout title={t('both.nestedTitle')}><p set:html={t('both.nestedText')} /></Callout>
+  </Section>
+
+  <Section id="containers" title={t('heavy.title')} lede={t('heavy.lede')} hue="red">
+    <div class="table-wrap">
+      <table class="table-site">
+        <thead><tr><td></td><th scope="col">{t('heavy.cols.gives')}</th><th scope="col">{t('heavy.cols.costs')}</th></tr></thead>
+        <tbody>
+          {heavy.map((h) => (<tr><th scope="row">{h.tool}</th><td class="wide" set:html={h.gives} /><td class="wide" set:html={h.costs} /></tr>))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-6 text-muted max-w-[40em]" set:html={t('heavy.note')} />
+  </Section>
+
+  <Faq items={faq} title={t('faq.title')} hue="cyan" />
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>
+
+<style>
+  .reviewed { border-radius: 0.9rem; align-items: flex-start; padding: 0.5rem 0.9rem; font-weight: 500; max-width: 46em; }
+  .reviewed .bars { block-size: 1rem; gap: 0.25rem; flex-shrink: 0; margin-block-start: 0.2em; }
+  .table-site tbody th[scope='row'] { background: none; white-space: normal; min-width: 11rem; vertical-align: top; border-block-start: 1px solid var(--line); }
+  .table-site thead td { background: var(--tint); }
+  .table-site td.wide { min-width: 16rem; }
+  .compare td { min-width: 14rem; }
+  .compare .jail { background: var(--hue-soft); }
+  .compare thead .jail { color: var(--hue); }
+  .compare .group th { background: none; color: var(--hue); padding-block: 1.4rem 0.7rem; border-block-start: 1px solid var(--line); white-space: normal; }
+  .compare .group .bars { display: inline-flex; block-size: 0.9rem; gap: 0.22rem; margin-inline-end: 0.6rem; vertical-align: -0.05em; }
+  .compare td.none { color: var(--muted); font-style: italic; }
+</style>

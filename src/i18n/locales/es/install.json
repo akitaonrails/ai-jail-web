@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "title": "Instalar ai-jail y ejecutar tu primer agente enjaulado",
+    "description": "Instala ai-jail con Homebrew, el AUR, cargo o Nix, revisa el sandbox con un dry run y arranca Claude Code o Codex solo con la red y su login activados."
+  },
+  "hero": {
+    "title": "Instálalo, mira dentro, ejecuta tu agente",
+    "lede": "ai-jail es un solo programa, sin daemon y sin root. Lo instalas, pones su nombre delante del comando que ya escribes y el agente arranca dentro de un sandbox.",
+    "jump": "Elige cómo instalarlo",
+    "releases": "Versiones en GitHub"
+  },
+  "install": {
+    "title": "Instalar",
+    "lede": "Elige la forma en que ya instalas tus herramientas de línea de comandos. Todos los métodos te dan el mismo y único programa <code>ai-jail</code>.",
+    "tabs": ["Homebrew", "Arch Linux", "crates.io", "Nix", "Versiones en GitHub", "Desde el código fuente"],
+    "notes": [
+      "Funciona en macOS y en Linux.",
+      "El primer paquete es un binario precompilado para Linux x86_64. El segundo compila desde el código fuente.",
+      "Necesita una toolchain de Rust. <code>--locked</code> compila con las versiones de dependencias con las que se probó la versión publicada.",
+      "La primera línea ejecuta un agente sin instalar nada. La segunda instala para tu usuario. El flake hace que ai-jail use su propia copia de bubblewrap.",
+      "Los archivos comprimidos están firmados y traen sus checksums al lado. Descomprime uno y pon <code>ai-jail</code> en algún lugar de tu <code>PATH</code>. Cómo verificar la firma está en la <a class=\"link\" href=\"/security/\">página de Seguridad</a>.",
+      "Necesita Rust {rust}."
+    ],
+    "platforms": {
+      "title": "Lo que necesita tu sistema",
+      "items": [
+        { "title": "Linux", "text": "Instala bubblewrap, el pequeño programa que ai-jail usa para construir el sandbox. La mayoría de las distribuciones lo empaquetan como <code>bubblewrap</code>." },
+        { "title": "macOS", "text": "No hay nada que instalar. ai-jail usa <code>sandbox-exec</code>, que viene con macOS. Apple marca esa interfaz como obsoleta." },
+        { "title": "Windows", "text": "No está soportado. Usa WSL2 y sigue dentro de él los pasos de Linux." }
+      ]
+    }
+  },
+  "first": {
+    "title": "Tu primera ejecución",
+    "lede": "Tres comandos te llevan del plan a un vistazo por dentro y de ahí a un agente funcionando. ai-jail no abre nada hasta que lo pidas.",
+    "alt": "Tres paneles de izquierda a derecha. Dry run: la celda es solo un contorno punteado y el agente espera fuera. Echar un vistazo: la celda es sólida y contiene una terminal y la carpeta del proyecto. Ejecutar el agente: el agente y el proyecto están dentro, con dos aberturas en el muro, una para la red y otra para el login del agente. Tu carpeta home queda fuera, tras barrotes, en los tres.",
+    "caption": "Tu directorio home queda fuera en cada paso. Solo el último paso abre algo, y solo las dos cosas que un agente en la nube necesita.",
+    "steps": [
+      { "title": "Mira el plan sin ejecutar nada", "text": "Ve a tu proyecto y pide un dry run, una simulación. ai-jail imprime el comando de sandbox que usaría y termina. Un dry run nunca escribe un archivo." },
+      { "title": "Echa un vistazo dentro", "text": "Arranca una shell simple en la jaula. Tu proyecto está ahí, en su ruta real, y puedes editarlo. Tu directorio home es uno nuevo y vacío, y los tokens de tu shell ya no están. Escribe <code>exit</code> para salir." },
+      { "title": "Ejecuta el agente con las dos cosas que necesita", "text": "Un agente que habla con un modelo en la nube necesita la red para llegar a él, y su propio login guardado para demostrar quién eres. Ambos están apagados por defecto, así que los activas: <code>--network</code> y <code>--agent-state</code>. Desde la versión 1.22, si arrancas un agente conocido sin uno de ellos, ai-jail imprime una advertencia con el nombre del flag que falta." },
+      { "title": "Déjalo como predeterminado para ese agente", "text": "Pon los dos ajustes en <code>~/.ai-jail</code>, tu propio archivo de configuración, bajo el nombre del agente. A partir de ahí basta con el comando corto. El archivo <code>.ai-jail</code> que puede aparecer en el proyecto solo puede endurecer la jaula. Nunca puede activar la red ni un login, así que un repositorio que clonas no puede abrirse la jaula a sí mismo." }
+    ],
+    "codeTitles": ["dry run", "una shell en la jaula", "la ejecución real", "~/.ai-jail"],
+    "gitignore": {
+      "title": "El archivo .ai-jail en tu proyecto",
+      "text": "Una ejecución normal puede guardar ajustes del proyecto en <code>.ai-jail</code>. ai-jail nunca escribe ahí los valores que pasas con <code>--env</code>. El agente ve ese archivo vacío. El README sugiere añadir <code>.ai-jail</code> a <code>.gitignore</code> para que <code>git status</code> salga limpio dentro de la jaula. <a class=\"link\" href=\"/configure/\">Configurar</a> explica los dos archivos de configuración."
+    },
+    "exposure": {
+      "title": "Lo que esos dos flags dejan expuesto",
+      "text": "<code>--network</code> es toda la red, sin filtro por sitio, así que todo lo que el agente puede leer, lo puede enviar. <code>--agent-state</code> deja que todo lo que hay en la jaula use el login de ese agente. Tus claves SSH, tus credenciales de la nube y tus otros proyectos siguen sin estar ahí para que los lean. <a class=\"link\" href=\"/security/\">Seguridad</a> tiene la lista completa de límites."
+    }
+  },
+  "see": {
+    "title": "Lo que verás dentro",
+    "lede": "El prompt cambia a <code>(jail)</code> y el proyecto está donde siempre estuvo. Falta lo que vale la pena robar.",
+    "termTitle": "ai-jail bash, en Linux",
+    "comments": ["# el proyecto está en su ruta real", "# un token exportado en tu shell no vino contigo", "# tus claves no están en este home", "# la jaula tiene su propio hostname"],
+    "note": "Esta es una sesión de Linux. macOS no tiene forma de construir un árbol de archivos aparte, así que ahí las mismas rutas existen y se deniega su lectura.",
+    "alt": "La vista desde dentro de la celda. El agente está junto a una carpeta de proyecto grande y brillante, con un home vacío y las herramientas del sistema detrás. Fuera de las rejas, atenuados y tras barrotes: las claves SSH, los logins de la nube, otros proyectos y la red.",
+    "caption": "Desde dentro, el proyecto es lo único tuyo que existe. La red también queda fuera hasta que pases <code>--network</code>."
+  },
+  "trouble": {
+    "title": "Si no arranca",
+    "lede": "Estos son los casos que cubre la sección de problemas del README, más las dos reglas de configuración con las que la gente tropieza.",
+    "items": [
+      {
+        "title": "<code>bwrap: setting up uid map: Permission denied</code>",
+        "text": "Ubuntu 24.04 y posteriores y Debian 13 y posteriores traen una política de AppArmor que impide a los programas crear user namespaces sin root, que es como bubblewrap aísla la jaula. Afecta a todas las herramientas sin root de este tipo. Relájala para todo el sistema:",
+        "alt": "O conserva la política y exime solo a <code>bwrap</code>. Guarda esto como <code>/etc/apparmor.d/bwrap</code> y luego ejecuta <code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>."
+      },
+      {
+        "title": "Tu <code>BWRAP_BIN</code> es rechazado",
+        "text": "Puedes apuntar ai-jail a un bubblewrap concreto con <code>BWRAP_BIN</code>. ai-jail lo acepta solo cuando resuelve a un programa propiedad de root que otros usuarios no pueden escribir, o a uno en un <code>/nix/store</code> multiusuario estándar. Rechaza una copia en tu propio home, porque quien pueda reemplazar ese archivo controla la jaula."
+      },
+      {
+        "title": "Faltan las herramientas de mise dentro",
+        "text": "ai-jail activa <a class=\"link\" href=\"https://mise.jdx.dev/\">mise</a> cuando lo encuentra, pero el home nuevo no tiene ni la configuración de mise ni sus herramientas instaladas, así que omite la activación. Mapea ambas hacia dentro, en solo lectura, desde tu propia configuración:"
+      },
+      {
+        "title": "<code>Failed to create stream fd</code> al arrancar",
+        "text": "Viene de un script de inicio de sesión de Ubuntu desktop durante la preparación de mise. Es inofensivo y mise sigue funcionando. Pasa <code>--no-mise</code> para omitir la preparación de mise y, con ella, el mensaje."
+      }
+    ]
+  },
+  "agents": {
+    "title": "Por agente",
+    "lede": "ai-jail sabe dónde guarda su login cada agente. <code>--agent-state</code> monta solo las carpetas del agente que arrancas, y solo si existen.",
+    "head": ["Ejecutas", "<code>--agent-state</code> monta", "Conviene saber"],
+    "notes": {
+      "claude": "Para un segundo perfil de Claude, apunta <code>--claude-dir</code> a su directorio.",
+      "codex": "Después de redimensionar la ventana, ai-jail le envía a Codex una tecla de redibujado para que la pantalla se repinte.",
+      "aimemory": "ai-jail reconoce al agente que lanza <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> y aplica los ajustes de ese agente, con ambos programas en una sola jaula."
+    },
+    "aimemoryState": "Las carpetas del agente lanzado",
+    "more": "Lo mismo funciona con <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code>, <code>omp</code> y los comandos de <code>kimi</code>. Cualquier otro comando también se ejecuta. Recibe la misma jaula y ninguna carpeta de login."
+  },
+  "next": {
+    "items": [
+      { "title": "Configurar", "text": "Cada flag y cada clave de configuración, y cómo abrir solo lo que la tarea necesita." },
+      { "title": "Cómo funciona", "text": "Las capas entre el agente y tu sistema, en Linux y en macOS." },
+      { "title": "Seguridad", "text": "Qué detiene ai-jail, qué no, y cómo se firman las versiones." }
+    ]
+  }
+}

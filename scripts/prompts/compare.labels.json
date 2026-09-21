@@ -1,0 +1,4 @@
+{
+  "compare-prompts-vs-walls": { "translate": ["Permission prompt", "Sandbox", "Agent", "Approve", "Your keys", "Kernel rule"], "keep": [] },
+  "compare-layers-together": { "translate": ["Agent", "MCP servers", "Hooks", "Project", "Agent's prompts", "Shell commands", "Model API", "Your home"], "keep": ["ai-jail"] }
+}

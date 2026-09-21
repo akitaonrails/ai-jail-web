@@ -1,0 +1,173 @@
+{
+  "meta": {
+    "title": "Configurar o ai-jail: flags, arquivos, máscaras e lockdown",
+    "description": "No ai-jail, todo recurso começa desligado. Veja cada flag e chave de configuração, como esconder segredos no projeto, o que o lockdown faz e receitas prontas."
+  },
+  "hero": {
+    "title": "Fechado por padrão. Quem liga é você.",
+    "lede": "Sem nenhuma opção, o agente recebe só o seu projeto, sem rede, login ou chaves. Você abre o que a tarefa precisa, uma opção de cada vez, e também pode fechar a jaula ainda mais.",
+    "switches": "Ver as opções",
+    "install": "Instalar"
+  },
+  "authority": {
+    "title": "Três lugares de onde vem uma configuração",
+    "lede": "As configurações vêm de um arquivo dentro do projeto, de um arquivo no seu diretório home e das flags que você digita. A lista vai da menor para a maior autoridade.",
+    "alt": "Três fontes alimentam a jaula. O arquivo .ai-jail do projeto só consegue apertá-la. O arquivo global ~/.ai-jail é confiável. As flags de linha de comando têm prioridade sobre os dois. Dentro da jaula fica o agente, atrás de uma fileira de interruptores, a maioria desligada.",
+    "caption": "Um repositório que você clonou não consegue abrir a própria jaula.",
+    "points": [
+      { "title": "<code>.ai-jail</code> do projeto", "text": "O ai-jail trata esse arquivo como não confiável: ele pode apertar a jaula, nunca abrir. O ai-jail nunca o segue através de um symlink, e o agente vê um arquivo vazio no lugar dele." },
+      { "title": "<code>~/.ai-jail</code> global", "text": "É seu, então o ai-jail confia nele. Ele guarda uma tabela base para todas as execuções, mais tabelas <code>[commands.&lt;name&gt;]</code> escolhidas pela primeira palavra do comando." },
+      { "title": "Flags de linha de comando", "text": "As flags têm a maior autoridade. A maioria das opções vem em pares, como <code>--network</code> e <code>--no-network</code>, então uma flag também fecha o que um arquivo abriu." }
+    ],
+    "merge": "Numa tabela de comando, valores simples substituem os da base, e listas como mapeamentos e máscaras são somadas a ela.",
+    "codeTitle": "~/.ai-jail",
+    "codeBase": "# base: vale para todos os comandos",
+    "codeClaude": "# só quando o comando começa com \"claude\"",
+    "trust": {
+      "title": "Quando um time distribui a própria política",
+      "text": "Liste um diretório pai em <code>trust_project_config</code> no arquivo global, e os arquivos de projeto abaixo dele também passam a poder abrir recursos. Tudo dentro desse diretório é confiável, inclusive repositórios que você clonar ali depois, então mantenha a lista enxuta."
+    }
+  },
+  "switches": {
+    "title": "As opções",
+    "lede": "Cada linha fica desligada até você pedir, e cada flag de recurso tem uma gêmea <code>--no-</code> que fecha de novo. Um selo vermelho marca uma opção que enfraquece a jaula. <a class=\"link\" href=\"/security/\">Segurança tem a lista completa e os motivos</a>.",
+    "cols": { "flag": "Flag", "key": "Chave de configuração", "opens": "O que faz", "risk": "Risco" },
+    "risk": { "optin": "Abre uma coisa", "weakens": "Enfraquece a jaula" },
+    "none": "nenhuma",
+    "groups": [
+      {
+        "title": "Rede e serviços",
+        "rows": [
+          { "text": "Acesso irrestrito à rede. Tudo o que o agente consegue ler, ele consegue enviar para fora." },
+          { "text": "O seu <code>~/.ssh</code>, somente leitura, e o socket do seu agente SSH, para o <code>git push</code> funcionar." },
+          { "text": "O socket do Docker. Na prática é root na sua máquina, porque o daemon pode subir containers que montam o host." },
+          { "text": "O socket do Tailscale." },
+          { "text": "O barramento de usuário do systemd. O agente pode pedir ao seu gerenciador de usuário para rodar serviços no host. Só no Linux." }
+        ]
+      },
+      {
+        "title": "Agente e ambiente",
+        "rows": [
+          { "text": "O login e as configurações do próprio agente, como <code>~/.claude</code> ou <code>~/.codex</code>. A partir daí, tudo o que roda na jaula pode usar essas credenciais." },
+          { "text": "Usa o diretório informado como estado do Claude e define <code>CLAUDE_CONFIG_DIR</code>." },
+          { "text": "Repassa uma variável do seu shell, ou define uma com <code>NAME=VALUE</code>. Pode ser repetida e nunca é salva em disco." },
+          { "text": "Repassa o ambiente inteiro do seu shell, com todos os segredos que houver nele. Evite." },
+          { "text": "O mesmo que <code>--env</code>, só a partir do arquivo global. Um arquivo de projeto que defina essa chave é ignorado." }
+        ]
+      },
+      {
+        "title": "Desktop e hardware",
+        "rows": [
+          { "text": "Os dispositivos de GPU, e com eles a superfície de ataque do driver. Só no Linux." },
+          { "text": "O socket do Wayland e mais nada da sua sessão. Só no Linux." },
+          { "text": "O socket do X11. O X11 permite que um programa capture teclas e tire screenshots." },
+          { "text": "Os sockets do PipeWire e do PulseAudio e o <code>/dev/snd</code>. Tudo o que roda na jaula pode gravar e reproduzir áudio. Só no Linux." },
+          { "text": "O <code>/dev/shm</code> do host, que abre memória compartilhada com processos de fora da jaula." },
+          { "text": "O seu <code>~/Pictures</code>, somente leitura." },
+          { "text": "Um perfil de navegador separado. <code>hard</code> (o padrão) não guarda nada entre execuções, <code>soft</code> mantém um perfil em <code>~/.local/share/ai-jail/browsers</code>." }
+        ]
+      },
+      {
+        "title": "Arquivos",
+        "rows": [
+          { "text": "Monta mais um caminho como somente leitura. Escreva <code>SOURCE:DEST</code> para montar em outro lugar. Pode ser repetida." },
+          { "text": "Monta mais um caminho com leitura e escrita. Pode ser repetida." },
+          { "text": "Monta um caminho em copy-on-write: o que o agente escreve vai para uma camada à parte e o original fica intacto. Só no Linux; no macOS vira uma montagem somente leitura." },
+          { "text": "Nunca monta o diretório oculto indicado, por exemplo <code>.my_secrets</code>. Pode ser repetida." }
+        ]
+      },
+      {
+        "title": "Camadas que você pode desligar, e não deveria",
+        "rows": [
+          { "text": "Desliga o Landlock, a cópia das regras de arquivo que fica no próprio kernel. É recusada com <code>--lockdown</code>." },
+          { "text": "Desliga o filtro que bloqueia chamadas de sistema perigosas." },
+          { "text": "Desliga os limites que seguram processos fora de controle." },
+          { "text": "Abre mão do diretório home novo. É acesso amplo ao seu home real. Prefira <code>--map</code> para o único caminho de que você precisa." }
+        ]
+      },
+      {
+        "title": "Utilitários",
+        "rows": [
+          { "text": "Imprime o comando de sandbox e não roda nada. Nunca grava arquivo de configuração." },
+          { "text": "Grava ou atualiza o <code>.ai-jail</code> do projeto e sai." },
+          { "text": "Ignora o <code>.ai-jail</code> do projeto nesta execução." },
+          { "text": "Gera configurações de permissão para as próprias ferramentas de IA." },
+          { "text": "Mostra a configuração atual do <code>.ai-jail</code>." },
+          { "text": "Mostra cada montagem enquanto a jaula é construída." }
+        ]
+      }
+    ],
+    "layersLink": "<a class=\"link\" href=\"/how-it-works/\">Como funciona</a> explica o que cada camada faz.",
+    "more": "Rode <code>ai-jail --help</code> para ver o resto: a barra de status, worktrees, mise e opções de terminal."
+  },
+  "secrets": {
+    "title": "Esconda segredos dentro do projeto",
+    "lede": "Seu arquivo <code>.env</code> mora no projeto, e o projeto tem leitura e escrita. Com a rede ligada, o agente pode enviar para fora o que conseguir ler ali. Mascarar tira esses arquivos do alcance dele.",
+    "alt": "Uma pasta de projeto. O agente alcança src, package.json e README.md. O arquivo .env está mascarado e a pasta secrets está negada: os dois aparecem apagados e gradeados, e nenhuma linha do agente chega até eles.",
+    "caption": "O resto do projeto continua como estava.",
+    "points": [
+      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "Substitui cada arquivo que bate com o padrão por um placeholder vazio. O agente vê que o arquivo existe e não recebe conteúdo nenhum, então ferramentas que só checam a existência dele continuam funcionando." },
+      { "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>", "text": "Transforma cada caminho que bate com o padrão num erro de permissão." },
+      { "title": "<code>--mask-except</code> e <code>--deny-path-except</code>", "text": "Tiram um caminho de dentro de uma regra. Elas enfraquecem a proteção, então um arquivo de projeto não pode defini-las." }
+    ],
+    "flagsTitle": "Como flags",
+    "flagsNote": "# coloque os globs entre aspas para o ai-jail receber o padrão, e não a expansão do seu shell",
+    "tomlTitle": ".ai-jail",
+    "tomlNote": "# um arquivo de projeto pode apertar, então isto também funciona no repositório",
+    "caveat": {
+      "title": "Só caminhos que existem na inicialização são cobertos",
+      "text": "Um caminho que não existe, ou um glob que não bate com nada, é pulado com um aviso. Um arquivo criado depois, durante a sessão, não fica coberto. Se você precisa que a regra valha, crie o arquivo antes. Um <code>.env</code> vazio já basta."
+    }
+  },
+  "lockdown": {
+    "title": "Lockdown: o agente lê o código e não pode alterar nada",
+    "lede": "<code>--lockdown</code> serve para revisões e auditorias. O agente lê o projeto e responde perguntas sobre ele, mas não consegue alterar nenhum arquivo.",
+    "alt": "Dois painéis. No modo normal, o agente fica dentro do muro ao lado de uma pasta de projeto em que pode ler e escrever e de uma pasta /tmp. No lockdown o muro é mais grosso, a pasta do projeto é somente leitura e /tmp é o único lugar gravável.",
+    "caption": "O agente e o projeto são os mesmos, e só um diretório temporário é gravável.",
+    "changes": "O que muda",
+    "items": [
+      { "text": "O projeto é montado como somente leitura" },
+      { "text": "Só o <code>/tmp</code> é gravável no Linux. No macOS, nada é" },
+      { "text": "Nenhum diretório oculto do seu home, nenhum mapeamento extra, nenhum overlay" },
+      { "text": "O ambiente é limpo e o <code>PATH</code> fica fixo nos diretórios do sistema" },
+      { "text": "O Landlock é obrigatório: se não puder ser aplicado, a inicialização falha" },
+      { "text": "Limites mais apertados de processos, arquivos abertos e tamanho de arquivo" },
+      { "text": "Sem tela, áudio, GPU, Docker, agente SSH ou mise, não importa o que mais você tenha passado" }
+    ],
+    "codeTitle": "terminal",
+    "network": {
+      "title": "Lockdown e a rede",
+      "text": "O lockdown vem sem rede por padrão. No Linux, <code>--network</code> ainda se sobrepõe a isso, então só passe a flag se for essa mesmo a intenção. No macOS, o lockdown sempre bloqueia a rede."
+    }
+  },
+  "recipes": {
+    "title": "Receitas",
+    "lede": "Copie uma. Para ver o que ela monta, rode antes com <code>--dry-run</code>.",
+    "items": [
+      { "title": "Um agente em nuvem, no dia a dia", "text": "Um modelo hospedado precisa da rede para chegar à API e do próprio login para autenticar. Coloque os dois no arquivo global e o comando continua curto." },
+      { "title": "Git push via SSH", "text": "<code>--ssh</code> monta <code>~/.ssh</code> como somente leitura e encaminha o socket do seu agente SSH. O push também precisa da rede." },
+      { "title": "Toolchains do mise", "text": "O diretório home novo não tem nenhuma instalação do mise, então o ai-jail pula o mise. Mapeie os dois diretórios do mise para dentro, somente leitura." },
+      { "title": "Um navegador para o agente", "text": "<code>--browser</code> sozinho entrega um navegador que não carrega página nem abre janela. No Linux ele também precisa de <code>--network</code> e <code>--display</code>, e um navegador X11 precisa de <code>--x11</code> no lugar de <code>--display</code>." },
+      { "title": "Perfis separados do Claude", "text": "Mantenha o login do trabalho e o pessoal separados apontando cada execução para um diretório do Claude próprio." },
+      { "title": "Teste um refactor arriscado numa cópia", "text": "Um overlay guarda o que o agente escreve numa camada à parte, em <code>.ai-jail-overlays</code> dentro do projeto. Depois compare com o original e fique com o que gostar. Só no Linux." }
+    ],
+    "comments": {
+      "once": "# uma vez, em ~/.ai-jail",
+      "then": "# depois, em qualquer projeto",
+      "wayland": "# Wayland",
+      "x11": "# X11"
+    }
+  },
+  "compat": {
+    "title": "Configs antigas continuam funcionando",
+    "text": "Compatibilidade retroativa é regra do projeto: nenhuma flag ou chave de configuração é removida. Chaves desconhecidas são ignoradas e as que faltam assumem o valor padrão, então um arquivo escrito para uma versão antiga ainda carrega.",
+    "legacy": "As opções mais antigas mantêm os nomes invertidos, em que <code>true</code> desliga a coisa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. É por isso que <code>--gpu</code> é salvo como <code>no_gpu = false</code>. As opções mais novas usam nomes diretos, como <code>network = true</code>."
+  },
+  "next": {
+    "items": [
+      { "title": "Segurança", "text": "O modelo de ameaças, cada opção que enfraquece a jaula e o que fica fora do escopo." },
+      { "title": "Como funciona", "text": "As camadas do kernel por trás dessas opções, e no que o macOS difere." },
+      { "title": "Instalar", "text": "Baixe o binário e rode o seu primeiro agente dentro da jaula." }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+A single diagram of one large enclosure, read left to right.
+
+One large rounded wall made of thick vertical bars, in the warm gold-to-magenta gradient, fills the left two thirds of the image. Above it sits the label "ai-jail".
+
+INSIDE the wall: a large cyan microchip labeled "Agent" at the center. To its left, stacked in one column, exactly three small cyan icons, each with its own label: a server box labeled "MCP servers", a hook-shaped icon labeled "Hooks", and a folder labeled "Project". All three must be present. Between the Agent chip and a small cyan terminal window icon labeled "Shell commands" floats one small rounded dialog card in warm gold outline with a single button shape and no text inside, labeled "Agent's prompts". A thin cyan line goes from the Agent through that card to the Shell commands icon.
+
+A separate thin cyan line starts at the top of the Agent microchip itself (not at the dialog card), rises, leaves the wall through one small gate at the top right of the wall and reaches a small cyan cloud icon labeled "Model API".
+
+OUTSIDE the wall, on the far right and lower down, a folder with a key on it labeled "Your home" is dim and barred, with no lines reaching it.
+
+The picture shows that the agent's own approval prompt keeps working inside the outer wall, and that the only opening in the wall is the network line to the model API.

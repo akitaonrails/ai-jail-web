@@ -1,0 +1,53 @@
+{
+  "site": {
+    "tagline": "Un sandbox del sistema operativo para agentes de programación con IA",
+    "description": "ai-jail ejecuta Claude Code, Codex y otros agentes de programación con IA dentro de un sandbox del sistema operativo en Linux y macOS. El proyecto sigue siendo escribible. Tus claves, tus tokens y tu directorio home quedan fuera de alcance.",
+    "ogAlt": "El logo de ai-jail: un candado hecho de pistas de circuito con un microchip tras las rejas"
+  },
+  "a11y": {
+    "skip": "Saltar al contenido",
+    "home": "Inicio de ai-jail",
+    "mainNav": "Principal",
+    "language": "Idioma",
+    "toggleTheme": "Cambiar entre tema claro y oscuro",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "menu": "Menú",
+    "chooseOne": "Elige una opción"
+  },
+  "nav": {
+    "why": { "label": "¿Lo necesito?", "note": "Lo que un agente puede alcanzar en tu máquina" },
+    "how": { "label": "Cómo funciona", "note": "Las capas entre el agente y tu sistema" },
+    "compare": { "label": "Comparar", "note": "Sandboxes integrados, Docker y VMs" },
+    "configure": { "label": "Configurar", "note": "Abre solo lo que la tarea necesita" },
+    "security": { "label": "Seguridad", "note": "El modelo de amenazas y sus límites" },
+    "install": { "label": "Instalar", "note": "Instalación y primera ejecución" }
+  },
+  "kicker": {
+    "why": "¿Lo necesito?",
+    "how": "Cómo funciona",
+    "compare": "Comparar",
+    "configure": "Configurar",
+    "security": "Seguridad",
+    "install": "Instalar"
+  },
+  "code": { "copy": "Copiar", "copied": "Copiado" },
+  "reach": { "inside": "Dentro de la jaula", "blocked": "Fuera de alcance", "optin": "Apagado hasta que lo pidas" },
+  "next": { "title": "Sigue leyendo" },
+  "cta": {
+    "title": "Pon a tu agente tras las rejas",
+    "text": "ai-jail es un único binario que no necesita daemon ni root. Añades una palabra delante del comando que ya usas.",
+    "install": "Instalar ai-jail",
+    "github": "Ver en GitHub"
+  },
+  "footer": {
+    "version": "Versión {version}, licencia {license}",
+    "pages": "Páginas",
+    "releases": "Versiones",
+    "report": "Reportar una vulnerabilidad",
+    "sibling": "ai-memory, el proyecto hermano",
+    "by": "Hecho por",
+    "theme": { "system": "Sistema", "light": "Claro", "dark": "Oscuro" }
+  },
+  "notfound": { "title": "Esta página está bajo llave", "text": "La dirección no existe. La página de inicio sí.", "home": "Ir a la página de inicio" }
+}

@@ -1,0 +1,7 @@
+A side-by-side comparison diagram with two equal panels, read left to right. Both panels show the same objects in the same positions: a wall of thick vertical bars in the warm gold-to-magenta gradient enclosing a cyan microchip, a project folder and a small box for temporary files.
+
+LEFT PANEL, titled "Normal": inside the wall, the cyan microchip labeled "Agent" sits next to a bright cyan folder with a small pencil icon on it, labeled "Project: read and write". Below, a small cyan box labeled "/tmp".
+
+RIGHT PANEL, titled "Lockdown": the wall is visibly thicker, with a double row of bars. Inside, the same cyan microchip labeled "Agent" sits next to the same folder, now drawn as a cyan outline only with a small eye icon on it instead of the pencil, labeled "Project: read only". Below, the small cyan box labeled "/tmp" is the only filled cyan shape besides the chip.
+
+The only differences the eye sees between the panels are the thicker wall, and the folder changing from filled with a pencil to outlined with an eye.

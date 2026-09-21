@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "title": "Security: what ai-jail protects and where it stops",
+    "description": "The ai-jail threat model in plain words: what the sandbox stops, what it cannot stop, which switches weaken it, how releases are built and how to report a flaw."
+  },
+  "hero": {
+    "title": "A useful layer, with known edges",
+    "lede": "ai-jail keeps an AI coding agent away from your keys, your home directory and the rest of your machine. It is a process sandbox, so it shares your kernel. It does not replace a disposable virtual machine when the code is hostile.",
+    "report": "Report a vulnerability",
+    "doc": "Read SECURITY.md"
+  },
+  "stops": {
+    "title": "What it is built to stop",
+    "lede": "An agent can be talked into bad behavior by a web page, a package or a file in the repository. These are the things it then reaches for, and does not find.",
+    "alt": "The agent and the project sit inside a wall of bars. Six arrows leave the agent and bounce off the wall. Outside, dim and barred, are your home and keys, your shell secrets, the network, your screen and clipboard, your terminal and the jail policy.",
+    "caption": "The defaults. Every item on the outside stays there until you open it yourself.",
+    "items": [
+      { "text": "Your home directory and the credentials in it. The agent gets a fresh, empty home, so <code>~/.ssh</code> and <code>~/.aws</code> do not exist in there." },
+      { "text": "Secrets in your shell. Environment variables are cut down to a small allowlist, so exported tokens stay outside." },
+      { "text": "The network. It is off, so nothing the agent reads can be sent anywhere." },
+      { "text": "Host shared memory, your display server and your clipboard. Agent output passes through a filter that drops terminal clipboard and query sequences." },
+      { "text": "Typing into your terminal. Linux blocks the <code>TIOCSTI</code> call that fakes keystrokes, and macOS limits terminal control to the one terminal ai-jail created for the run." },
+      { "text": "Its own rules. A <code>.ai-jail</code> file inside a repository is untrusted: it can tighten the sandbox and never open it." }
+    ],
+    "link": "How each layer does this"
+  },
+  "edge": {
+    "title": "Where the wall ends",
+    "lede": "The jail and your system stand on the same kernel. A bug in that kernel, in a driver or in the sandbox backend is a way around the wall, and ai-jail cannot do anything about it. A virtual machine brings its own kernel, which is why it is the stronger boundary.",
+    "alt": "On the left, your system and the ai-jail cage holding the agent stand on one shared slab, your kernel, and a dashed line runs from the agent through the slab to your system. On the right, a disposable VM encloses an agent standing on its own separate kernel.",
+    "caption": "A sandbox shares the ground with what it protects, and a VM brings its own.",
+    "listTitle": "What stays at risk",
+    "items": [
+      "Kernel and driver vulnerabilities. Every sandboxed process talks to the same kernel as the rest of your machine.",
+      "Bugs in your terminal emulator, above all with <code>--terminal-passthrough</code>, which turns the output filter off.",
+      "Defects in the sandbox backend itself: bubblewrap, Landlock and seccomp on Linux, <code>sandbox-exec</code> on macOS.",
+      "Secrets inside the project. A <code>.env</code> file in the repository is readable unless you mask it. <a class=\"link\" href=\"/configure/#secrets\">See how to mask files</a>.",
+      "Masks cover only paths that exist when the sandbox starts. A secret file created later, during the session, is not hidden.",
+      "Side channels and some classes of inter-process communication.",
+      "On macOS, <code>sandbox-exec</code> is deprecated by Apple and is not equivalent to the Linux isolation. <a class=\"link\" href=\"/how-it-works/\">See the macOS differences</a>."
+    ],
+    "callout": {
+      "title": "For code you believe is hostile, use a disposable VM",
+      "text": "ai-jail is for agents that are useful and sometimes wrong or misled. For malware analysis, or a repository you already distrust, start a virtual machine you can throw away. <a class=\"link\" href=\"/compare/\">Compare the options</a>."
+    }
+  },
+  "switches": {
+    "title": "Switches that open the wall",
+    "lede": "Everything below is off until you turn it on, and each one gives the agent real access. <a class=\"link\" href=\"/configure/#switches\">How to set them is on the Configure page</a>.",
+    "head": { "flag": "Switch", "gives": "What anything in the sandbox can then do" },
+    "rows": [
+      "Send anywhere everything it can read. Traffic is unrestricted and there is no per-domain filter.",
+      "Act as root on your machine through the Docker daemon.",
+      "Log keystrokes and take screenshots of other X11 windows.",
+      "Ask your systemd user manager to run services on the host.",
+      "Read your whole shell environment, secrets included.",
+      "Use the agent's saved login, for example Claude's <code>~/.claude</code>.",
+      "Record and play audio while it is on.",
+      "See your real home directory. This is a broad exception; prefer a map of the one path you need."
+    ]
+  },
+  "closed": {
+    "title": "When in doubt, it refuses to start",
+    "lede": "A sandbox that silently starts weaker than you asked is worse than one that stops with an error. In these cases ai-jail stops.",
+    "items": [
+      "A config file that exists and is invalid or unreadable.",
+      "A project <code>.ai-jail</code> that is a symlink. A symlinked global <code>~/.ai-jail</code> is followed only to a regular file you own, that no one else can write, outside the project.",
+      "<code>--lockdown</code> when Landlock, the kernel's own filesystem rules, is missing, partial or fails to apply. <code>--lockdown --no-landlock</code> is rejected too.",
+      "<code>--allow-tcp-port</code>. That interface cannot constrain UDP, so the flag is accepted for compatibility and the launch fails.",
+      "A <code>BWRAP_BIN</code> that points at a bubblewrap binary someone other than root could have replaced. It is ignored with a warning, and with no trusted bubblewrap the launch fails."
+    ],
+    "counter": {
+      "title": "Where it only warns",
+      "text": "Outside <code>--lockdown</code>, a Landlock failure is a warning. On a kernel too old for Landlock, ai-jail says so and continues with the bubblewrap layer alone. Read the startup lines."
+    }
+  },
+  "checked": {
+    "title": "How the project is checked",
+    "lede": "One maintainer runs the project in the open. Below is what gets checked and what does not.",
+    "facts": [
+      { "label": "sandbox-escape integration tests that try to write to <code>/usr</code>, read <code>~/.ssh</code>, call <code>ptrace</code> and <code>bpf</code>, and expect to fail" },
+      { "label": "unit tests in the source tree at version 1.22.0" },
+      { "label": "network requests at launch. The update check is opt-in with <code>--update-check</code>" }
+    ],
+    "audit": {
+      "title": "Audited internally, not by a third party",
+      "text": "Before 1.0 the project ran its own internal code audit and security review of the refactor, and published both in the repository. No outside firm has audited ai-jail. <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">Read the security review</a>."
+    },
+    "release": {
+      "title": "How a release is made",
+      "items": [
+        "Release tags are signed, and CI verifies each one against a key fingerprint pinned in the repository.",
+        "Every GitHub Action is pinned to a commit SHA, and actions are restricted to an allowlist.",
+        "Builds use a pinned Rust toolchain and <code>--locked</code> dependencies.",
+        "macOS binaries are signed and notarized by Apple.",
+        "Each archive ships with a SHA-256 checksum, and the publish job checks them again."
+      ]
+    },
+    "missing": {
+      "title": "What the release document says is still missing",
+      "items": [
+        "Signing and publishing secrets are still stored at repository level and should move into the release environments.",
+        "No ruleset yet forces every <code>v*</code> tag to be signed.",
+        "Immutable releases are not enabled.",
+        "crates.io publishing still uses a token. Trusted publishing is planned.",
+        "With a single maintainer there is no second reviewer on changes or releases."
+      ],
+      "link": "Read RELEASE_SECURITY.md"
+    }
+  },
+  "report": {
+    "title": "Report a vulnerability",
+    "text": "Do not open a public issue. Use GitHub's private vulnerability reporting, include the steps to reproduce and the affected versions, and allow time to coordinate a fix.",
+    "button": "Open a private advisory"
+  },
+  "faq": {
+    "title": "Common questions",
+    "items": [
+      { "q": "Can the agent break out?", "a": "The defaults are built and tested to block the ordinary routes: files, environment, network and host IPC. A kernel, driver, terminal or sandbox-backend bug could still let it out. Every process sandbox has that limit, which is why hostile code belongs in a disposable VM." },
+      { "q": "Is it safe to run with the network on?", "a": "It is safer than running the agent bare, because your keys and home directory are still not there to send. Anything the agent can read, it can send, and ai-jail has no per-domain filtering. Mask the secrets inside the project first. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>." },
+      { "q": "Has it been audited?", "a": "Internally, before 1.0, with the reports published in the repository. It has had no third-party audit. The code is open under GPL 3.0, and private vulnerability reports are welcome." }
+    ]
+  },
+  "next": [
+    { "title": "How it works", "text": "The layers between the agent and your system, and what changes on macOS." },
+    { "title": "Configure", "text": "Every switch, how to mask secrets, and lockdown mode." },
+    { "title": "Compare", "text": "Built-in agent sandboxes, Docker and virtual machines, side by side." }
+  ]
+}

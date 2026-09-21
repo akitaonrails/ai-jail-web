@@ -1,0 +1,5 @@
+{
+  "how-launch": { "translate": ["Your command", "Read config", "Build the sandbox", "Start the agent", "Exit", "Project"], "keep": [] },
+  "how-layers": { "translate": ["Namespaces", "Filesystem", "Limits", "Agent", "Your home"], "keep": ["Landlock", "seccomp"] },
+  "how-macos": { "translate": ["Five layers", "One profile"], "keep": ["Linux", "macOS"] }
+}

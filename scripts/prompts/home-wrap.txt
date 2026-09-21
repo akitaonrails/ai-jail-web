@@ -1,0 +1,7 @@
+A side-by-side comparison diagram with two equal panels, read left to right.
+
+LEFT PANEL, titled "Built-in sandbox": a small rounded wall made of vertical bars encloses ONLY one small box labeled "Shell commands". Outside that small wall, in the open, sit a large cyan microchip labeled "Agent", and two smaller cyan boxes labeled "MCP servers" and "Hooks". Next to them, also in the open and brightly lit in warm gold, a folder icon with a key on it labeled "Your home". Thin cyan lines connect the Agent, MCP servers and Hooks to the "Your home" folder, showing they can reach it.
+
+RIGHT PANEL, titled "ai-jail": one large rounded wall made of thick vertical bars, in the warm gold-to-magenta gradient, encloses everything together: the cyan microchip labeled "Agent" and three cyan boxes labeled "MCP servers", "Hooks" and "Shell commands", plus a cyan folder labeled "Project". OUTSIDE the wall, on the far right, the folder with a key labeled "Your home" is dim and barred, with no lines reaching it.
+
+The two panels have the same size and the same objects, so the only difference the eye sees is where the wall is.

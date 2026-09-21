@@ -1,0 +1,123 @@
+{
+  "compare-prompts-vs-walls": {
+    "Permission prompt": "권한 확인 프롬프트",
+    "Sandbox": "샌드박스",
+    "Agent": "에이전트",
+    "Approve": "승인",
+    "Your keys": "내 키",
+    "Kernel rule": "커널 규칙"
+  },
+  "compare-layers-together": {
+    "Agent": "에이전트",
+    "MCP servers": "MCP 서버",
+    "Hooks": "훅",
+    "Project": "프로젝트",
+    "Agent's prompts": "에이전트 프롬프트",
+    "Shell commands": "셸 명령",
+    "Model API": "모델 API",
+    "Your home": "내 홈"
+  },
+  "configure-authority": {
+    "Can only tighten": "조이기만 가능",
+    "Trusted": "신뢰됨",
+    "Command-line flags": "명령줄 플래그",
+    "Wins": "우선",
+    "The jail": "감옥",
+    "Agent": "에이전트",
+    "Project .ai-jail": "프로젝트 .ai-jail",
+    "Global ~/.ai-jail": "전역 ~/.ai-jail"
+  },
+  "configure-mask": {
+    "Agent": "에이전트",
+    "Your project": "내 프로젝트"
+  },
+  "configure-lockdown": {
+    "Normal": "일반",
+    "Lockdown": "락다운",
+    "Agent": "에이전트",
+    "Project: read and write": "프로젝트: 읽기·쓰기",
+    "Project: read only": "프로젝트: 읽기 전용"
+  },
+  "how-launch": {
+    "Your command": "내 명령",
+    "Read config": "설정 읽기",
+    "Build the sandbox": "샌드박스 구성",
+    "Start the agent": "에이전트 시작",
+    "Exit": "종료",
+    "Project": "프로젝트"
+  },
+  "how-layers": {
+    "Namespaces": "네임스페이스",
+    "Filesystem": "파일시스템",
+    "Limits": "제한",
+    "Agent": "에이전트",
+    "Your home": "내 홈"
+  },
+  "how-macos": {
+    "Five layers": "계층 다섯 개",
+    "One profile": "프로파일 하나"
+  },
+  "install-first-run": {
+    "Dry run": "드라이 런",
+    "Look around": "둘러보기",
+    "Run the agent": "에이전트 실행",
+    "Agent": "에이전트",
+    "Project": "프로젝트",
+    "Network": "네트워크",
+    "Login": "로그인",
+    "Your home": "내 홈"
+  },
+  "install-inside": {
+    "Agent": "에이전트",
+    "Project": "프로젝트",
+    "Empty home": "빈 홈",
+    "System tools": "시스템 도구",
+    "SSH keys": "SSH 키",
+    "Cloud logins": "클라우드 로그인",
+    "Other projects": "다른 프로젝트",
+    "Network": "네트워크"
+  },
+  "security-boundary": {
+    "Agent": "에이전트",
+    "Project": "프로젝트",
+    "Home and keys": "홈과 키",
+    "Shell secrets": "셸 시크릿",
+    "Network": "네트워크",
+    "Screen and clipboard": "화면과 클립보드",
+    "Your terminal": "내 터미널",
+    "Jail policy": "감옥 정책"
+  },
+  "security-shared-kernel": {
+    "Your system": "내 시스템",
+    "Agent": "에이전트",
+    "Your kernel": "내 커널",
+    "Disposable VM": "일회용 VM",
+    "Its own kernel": "자체 커널"
+  },
+  "why-reach": {
+    "Agent": "에이전트",
+    "SSH keys": "SSH 키",
+    "Cloud credentials": "클라우드 자격 증명",
+    "Browser profiles": "브라우저 프로필",
+    "Shell tokens": "셸 토큰",
+    "Other projects": "다른 프로젝트",
+    "Your project": "내 프로젝트"
+  },
+  "why-injection": {
+    "Without a jail": "감옥 없이",
+    "Poisoned page": "오염된 페이지",
+    "Agent": "에이전트",
+    "SSH key": "SSH 키",
+    "Internet": "인터넷",
+    "With ai-jail": "ai-jail 사용"
+  },
+  "home-wrap": {
+    "Built-in sandbox": "내장 샌드박스",
+    "Shell commands": "셸 명령",
+    "Agent": "에이전트",
+    "MCP servers": "MCP 서버",
+    "Hooks": "훅",
+    "Your home": "내 홈",
+    "Project": "프로젝트"
+  }
+}

@@ -1,0 +1,9 @@
+A top-down diagram of five concentric rounded-square walls, nested one inside the other like the rings of a fortress, with a glowing cyan microchip at the exact center. Each wall is a ring made of short thick vertical bars. The walls are clearly separated by dark gaps so that all five can be counted.
+
+From the outermost wall to the innermost, the colors go: golden yellow, orange, red-orange, crimson, magenta.
+
+Each wall has one label, placed on the right side of the image outside the rings, in a vertical column, each connected to its wall by a thin straight leader line. From the outermost to the innermost wall the labels are: "Namespaces", "Filesystem", "Landlock", "seccomp", "Limits". The microchip at the center is labeled "Agent" directly below it.
+
+Outside the outermost wall, on the far left, a dim dark maroon-grey folder icon with a key on it, crossed by thin vertical bars, labeled "Your home". No line reaches it.
+
+Exactly seven labels in total. The word "seccomp" is written in lowercase.

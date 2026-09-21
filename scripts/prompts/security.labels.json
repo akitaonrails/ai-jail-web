@@ -1,0 +1,10 @@
+{
+  "security-boundary": {
+    "translate": ["Agent", "Project", "Home and keys", "Shell secrets", "Network", "Screen and clipboard", "Your terminal", "Jail policy"],
+    "keep": []
+  },
+  "security-shared-kernel": {
+    "translate": ["Your system", "Agent", "Your kernel", "Disposable VM", "Its own kernel"],
+    "keep": ["ai-jail"]
+  }
+}

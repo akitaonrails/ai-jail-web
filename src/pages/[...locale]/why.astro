@@ -1,0 +1,86 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import Callout from '@/components/Callout.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import Faq from '@/components/Faq.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { faqPage, type Faq as FaqItem } from '@/lib/schema';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href } = useI18n(Astro, 'why');
+type Point = { title: string; text: string };
+const faq = raw<FaqItem[]>('faq.items');
+const scenarios = withText([{ hue: 'magenta' }, { hue: 'red' }, { hue: 'orange' }] as const, raw<Point[]>('wrong.items'));
+const next = withText([
+  { href: '/how-it-works/', hue: 'orange' },
+  { href: '/compare/', hue: 'cyan' },
+  { href: '/install/', hue: 'cyan' },
+] as const, raw<Point[]>('next'));
+const cost = [
+  'cd ~/Projects/my-app',
+  t('cost.code.plain'),
+  'ai-jail claude',
+  t('cost.code.optin'),
+  'ai-jail --network --agent-state claude',
+].join('\n');
+---
+<Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
+  <PageHero hue="magenta" kicker={t('kicker.why')} title={t('hero.title')} lede={t('hero.lede')}>
+    <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
+    <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
+  </PageHero>
+
+  <Section title={t('reach.title')} lede={t('reach.lede')} hue="magenta" fill>
+    <Figure name="why-reach" alt={t('reach.alt')} caption={t('reach.caption')} />
+    <h3 class="text-xl mb-5">{t('reach.listTitle')}</h3>
+    <ul class="ticks md:grid-cols-2 md:gap-x-10 max-w-[64rem]" data-reveal="children">
+      {raw<string[]>('reach.items').map((it) => <li set:html={it} />)}
+    </ul>
+  </Section>
+
+  <Section title={t('wrong.title')} lede={t('wrong.lede')} hue="red" tint>
+    <FeatureGrid items={scenarios} />
+    <Figure name="why-injection" alt={t('wrong.alt')} caption={t('wrong.caption')} />
+  </Section>
+
+  <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="cyan" narrow>
+    <h3 class="text-xl mb-5">{t('prompts.listTitle')}</h3>
+    <ul class="ticks" dir="auto">
+      {raw<string[]>('prompts.items').map((it) => <li set:html={it} />)}
+    </ul>
+    <p class="mt-8 max-w-[40em]" set:html={t('prompts.text')} />
+  </Section>
+
+  <Section title={t('who.title')} lede={t('who.lede')} hue="magenta" tint>
+    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2" data-reveal="children">
+      <div data-hue="magenta">
+        <span class="bars mb-4" aria-hidden="true"><i></i></span>
+        <h3 class="text-xl mb-5">{t('who.needs.title')}</h3>
+        <ul class="ticks">{raw<string[]>('who.needs.items').map((it) => <li set:html={it} />)}</ul>
+      </div>
+      <div data-hue="cyan">
+        <span class="bars mb-4" aria-hidden="true"><i></i></span>
+        <h3 class="text-xl mb-5">{t('who.maynot.title')}</h3>
+        <ul class="ticks">{raw<string[]>('who.maynot.items').map((it) => <li set:html={it} />)}</ul>
+      </div>
+    </div>
+    <p class="mt-10 max-w-[40em] text-muted" set:html={t('who.note')} />
+  </Section>
+
+  <Section title={t('cost.title')} lede={t('cost.lede')} hue="gold">
+    <div class="grid gap-10 lg:grid-cols-2 items-start">
+      <CodeBlock code={cost} title={t('cost.codeTitle')} />
+      <Callout title={t('cost.honestTitle')} hue="gold"><p set:html={t('cost.honest')} /></Callout>
+    </div>
+  </Section>
+
+  <Faq items={faq} title={t('faq.title')} hue="magenta" />
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>

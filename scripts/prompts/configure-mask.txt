@@ -1,0 +1,12 @@
+A diagram of one project folder, read left to right.
+
+LEFT: a glowing cyan microchip labeled "Agent", with thin cyan lines reaching to the right toward the files it can use.
+
+CENTER AND RIGHT: a large open folder outline in cyan labeled "Your project". Inside it, a vertical file tree of five entries, each a row with an icon and a label, top to bottom:
+- a cyan folder labeled "src/"
+- a cyan file labeled "package.json"
+- a cyan file labeled "README.md"
+- a file labeled ".env" that is dim, desaturated maroon-grey, hollow like an empty outline, with thin vertical prison bars across it
+- a folder labeled "secrets/" that is dim, desaturated maroon-grey, with thin vertical prison bars across it
+
+The cyan lines from the Agent reach the three cyan entries. No line reaches ".env" or "secrets/". To the right of ".env" a small warm gold tag labeled "--mask". To the right of "secrets/" a small warm red tag labeled "--deny-path".

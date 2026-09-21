@@ -1,0 +1,9 @@
+A side-by-side comparison diagram with two equal panels, read left to right.
+
+LEFT PANEL, titled "Linux": a glowing cyan microchip at the center, surrounded by five concentric rounded walls made of thick vertical bars, colored from golden yellow on the outside through orange and red to magenta on the inside. Next to the chip, inside the walls, a small cyan folder.
+
+RIGHT PANEL, titled "macOS": the same glowing cyan microchip and the same small cyan folder, surrounded by only ONE rounded wall made of vertical bars, in orange. The wall is thinner than the walls on the left.
+
+Under the left panel the label "Five layers". Under the right panel the label "One profile".
+
+Both panels have the same size and the chip is the same size in both, so the only difference the eye sees is the number of walls. Exactly four labels in total.

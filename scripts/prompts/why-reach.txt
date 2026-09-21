@@ -1,0 +1,17 @@
+A map of what one program can reach on a developer's laptop, drawn as a hub with spokes. No wall and no sandbox appears anywhere in this picture.
+
+CENTER: a large glowing cyan microchip labeled "Agent".
+
+AROUND IT, evenly spaced in a wide ring, six large rounded tiles, each with one simple icon, all brightly lit in the warm gold-to-magenta spectrum (gold on the left side of the ring, magenta on the right side):
+1. a key icon, labeled "SSH keys"
+2. a cloud icon, labeled "Cloud credentials"
+3. a browser window icon made only of plain rectangles and lines, with NO letters or words inside the icon, labeled "Browser profiles"
+4. a terminal prompt icon, labeled "Shell tokens"
+5. a stack of folders icon, labeled "Other projects"
+6. a single folder icon, labeled "Your project"
+
+A thin glowing cyan line runs from the Agent chip to EVERY one of the six tiles, all six lines equally bright, showing that the agent can reach all of them. None of the tiles is dim and none has bars: everything is open.
+
+Exactly seven labels in total. No title text.
+
+The icons contain no text at all: no "URL", no letters, no numbers inside any tile.

@@ -1,0 +1,53 @@
+{
+  "site": {
+    "tagline": "AIコーディングエージェントのためのOSサンドボックス",
+    "description": "ai-jailは、Claude CodeやCodexなどのAIコーディングエージェントをLinuxとmacOSのOSサンドボックス内で実行します。プロジェクトには書き込めますが、鍵やトークン、ホームディレクトリには手が届きません。",
+    "ogAlt": "ai-jailのロゴ。回路パターンでできた南京錠で、格子の奥にマイクロチップが見える"
+  },
+  "a11y": {
+    "skip": "本文へスキップ",
+    "home": "ai-jailのホーム",
+    "mainNav": "メイン",
+    "language": "言語",
+    "toggleTheme": "ライトとダークを切り替える",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる",
+    "menu": "メニュー",
+    "chooseOne": "1つ選んでください"
+  },
+  "nav": {
+    "why": { "label": "自分に必要？", "note": "エージェントが手元のマシンで触れられるもの" },
+    "how": { "label": "仕組み", "note": "エージェントとシステムの間にある層" },
+    "compare": { "label": "比較", "note": "組み込みサンドボックス、Docker、VM" },
+    "configure": { "label": "設定", "note": "タスクに必要なものだけを開ける" },
+    "security": { "label": "セキュリティ", "note": "脅威モデルとその限界" },
+    "install": { "label": "インストール", "note": "インストールと初回の実行" }
+  },
+  "kicker": {
+    "why": "自分に必要？",
+    "how": "仕組み",
+    "compare": "比較",
+    "configure": "設定",
+    "security": "セキュリティ",
+    "install": "インストール"
+  },
+  "code": { "copy": "コピー", "copied": "コピーしました" },
+  "reach": { "inside": "ジェイルの中", "blocked": "手が届かない", "optin": "指定するまで無効" },
+  "next": { "title": "続きを読む" },
+  "cta": {
+    "title": "エージェントを檻の中に",
+    "text": "ai-jailは単一のバイナリで、デーモンもroot権限も要りません。いつものコマンドの前に1語足すだけです。",
+    "install": "ai-jailをインストール",
+    "github": "GitHubで見る"
+  },
+  "footer": {
+    "version": "バージョン{version}、ライセンスは{license}",
+    "pages": "ページ",
+    "releases": "リリース",
+    "report": "脆弱性を報告する",
+    "sibling": "姉妹プロジェクトのai-memory",
+    "by": "作者",
+    "theme": { "system": "システム", "light": "ライト", "dark": "ダーク" }
+  },
+  "notfound": { "title": "このページは檻の中です", "text": "このアドレスは存在しません。ホームページならあります。", "home": "ホームページへ" }
+}

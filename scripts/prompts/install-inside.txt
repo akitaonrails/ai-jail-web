@@ -1,0 +1,7 @@
+A single scene: the view from inside a cell, looking outward. A large rounded room outlined by thick vertical bars in the warm gold-to-magenta gradient fills most of the picture.
+
+In the center of the room sits a glowing cyan microchip labeled "Agent". Next to it, large and brightly lit in cyan, an open folder labeled "Project" with a few small file sheets in it. Behind them, smaller and in calm cyan outline, a small empty house-shaped box labeled "Empty home" and a small toolbox labeled "System tools".
+
+Beyond the bars, outside the room, four dim desaturated maroon-grey objects, each crossed by thin vertical bars, barely visible in the dark: a key labeled "SSH keys", a cloud labeled "Cloud logins", a stack of folders labeled "Other projects", and a globe labeled "Network". No lines connect the inside of the room to anything outside.
+
+The inside of the room is lit; everything outside the bars fades into the dark ground.

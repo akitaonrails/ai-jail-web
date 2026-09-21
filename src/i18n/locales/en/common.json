@@ -1,0 +1,53 @@
+{
+  "site": {
+    "tagline": "An OS sandbox for AI coding agents",
+    "description": "ai-jail runs Claude Code, Codex and other AI coding agents inside an OS sandbox on Linux and macOS. The project stays writable. Your keys, tokens and home directory stay out of reach.",
+    "ogAlt": "The ai-jail logo: a padlock made of circuit traces with a microchip behind bars"
+  },
+  "a11y": {
+    "skip": "Skip to content",
+    "home": "ai-jail home",
+    "mainNav": "Main",
+    "language": "Language",
+    "toggleTheme": "Switch between light and dark",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "chooseOne": "Choose one"
+  },
+  "nav": {
+    "why": { "label": "Do I need it?", "note": "What an agent can reach on your machine" },
+    "how": { "label": "How it works", "note": "The layers between the agent and your system" },
+    "compare": { "label": "Compare", "note": "Built-in sandboxes, Docker and VMs" },
+    "configure": { "label": "Configure", "note": "Open only what a task needs" },
+    "security": { "label": "Security", "note": "The threat model and its limits" },
+    "install": { "label": "Install", "note": "Install and first run" }
+  },
+  "kicker": {
+    "why": "Do I need it?",
+    "how": "How it works",
+    "compare": "Compare",
+    "configure": "Configure",
+    "security": "Security",
+    "install": "Install"
+  },
+  "code": { "copy": "Copy", "copied": "Copied" },
+  "reach": { "inside": "Inside the jail", "blocked": "Out of reach", "optin": "Off until you ask" },
+  "next": { "title": "Keep reading" },
+  "cta": {
+    "title": "Put your agent behind bars",
+    "text": "ai-jail is a single binary that needs no daemon and no root. You add one word in front of the command you already run.",
+    "install": "Install ai-jail",
+    "github": "View on GitHub"
+  },
+  "footer": {
+    "version": "Version {version}, licensed {license}",
+    "pages": "Pages",
+    "releases": "Releases",
+    "report": "Report a vulnerability",
+    "sibling": "ai-memory, the sister project",
+    "by": "Made by",
+    "theme": { "system": "System", "light": "Light", "dark": "Dark" }
+  },
+  "notfound": { "title": "This page is locked away", "text": "The address does not exist. The home page does.", "home": "Go to the home page" }
+}

@@ -1,0 +1,112 @@
+---
+import Base from '@/layouts/Base.astro';
+import Facts from '@/components/Facts.astro';
+import factsData from '@/data/facts.json';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import Figure from '@/components/Figure.astro';
+import Reach from '@/components/Reach.astro';
+import Callout from '@/components/Callout.astro';
+import Faq from '@/components/Faq.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/data/site';
+import { faqPage, type Faq as FaqItem } from '@/lib/schema';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href } = useI18n(Astro, 'security');
+const advisory = `${site.repo}/security/advisories/new`;
+const faq = raw<FaqItem[]>('faq.items');
+type Point = { title: string; text: string };
+const next = withText([
+  { href: '/how-it-works/', hue: 'orange' },
+  { href: '/configure/', hue: 'gold' },
+  { href: '/compare/', hue: 'cyan' },
+] as const, raw<Point[]>('next'));
+
+// Flags are structure; the consequence of each one is in the catalog, in the same order.
+const flags = ['--network', '--docker', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--audio', '--no-private-home'];
+const consequences = raw<string[]>('switches.rows');
+
+// Counted in the ai-jail repository at v1.22.0: #[test] in tests/sandbox_escape.rs and in src/.
+const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0, count: false }], raw<{ label: string }[]>('checked.facts'));
+---
+<Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
+  <PageHero hue="red" kicker={t('kicker.security')} title={t('hero.title')} lede={t('hero.lede')}>
+    <a href={advisory} class="btn btn-primary">{t('hero.report')}</a>
+    <a href={`${site.docs}/SECURITY.md`} class="btn btn-ghost">{t('hero.doc')}</a>
+  </PageHero>
+
+  <Section title={t('stops.title')} lede={t('stops.lede')} hue="red">
+    <Figure name="security-boundary" alt={t('stops.alt')} caption={t('stops.caption')} />
+    <div class="max-w-[46em]" data-reveal>
+      <Reach title={t('reach.blocked')} items={raw<{ text: string }[]>('stops.items')} state="blocked" />
+    </div>
+    <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('stops.link')}</a>
+  </Section>
+
+  <Section id="limits" title={t('edge.title')} lede={t('edge.lede')} hue="red" tint fill>
+    <Figure name="security-shared-kernel" alt={t('edge.alt')} caption={t('edge.caption')} />
+    <h3 class="text-xl mb-5">{t('edge.listTitle')}</h3>
+    <ul class="ticks max-w-[46em]">
+      {raw<string[]>('edge.items').map((item) => <li set:html={item} />)}
+    </ul>
+    <Callout title={t('edge.callout.title')}>
+      <p set:html={t('edge.callout.text')} />
+    </Callout>
+  </Section>
+
+  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold">
+    <div class="table-wrap">
+      <table class="table-site">
+        <thead><tr><th>{t('switches.head.flag')}</th><th>{t('switches.head.gives')}</th></tr></thead>
+        <tbody>
+          {flags.map((flag, i) => (
+            <tr><td dir="ltr"><code>{flag}</code></td><td set:html={consequences[i]} /></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section id="fails-closed" title={t('closed.title')} lede={t('closed.lede')} hue="orange" tint>
+    <ul class="ticks max-w-[46em]">
+      {raw<string[]>('closed.items').map((item) => <li set:html={item} />)}
+    </ul>
+    <Callout title={t('closed.counter.title')} hue="gold">
+      <p set:html={t('closed.counter.text')} />
+    </Callout>
+  </Section>
+
+  <Section id="checked" title={t('checked.title')} lede={t('checked.lede')} hue="red">
+    <Facts items={facts} />
+
+    <Callout title={t('checked.audit.title')}>
+      <p set:html={t('checked.audit.text')} />
+    </Callout>
+
+    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2 mt-12">
+      <div data-hue="orange">
+        <h3 class="text-xl mb-5">{t('checked.release.title')}</h3>
+        <ul class="ticks">{raw<string[]>('checked.release.items').map((item) => <li set:html={item} />)}</ul>
+      </div>
+      <div data-hue="red">
+        <h3 class="text-xl mb-5">{t('checked.missing.title')}</h3>
+        <ul class="ticks">{raw<string[]>('checked.missing.items').map((item) => <li set:html={item} />)}</ul>
+        <p class="mt-6"><a class="link" href={`${site.docs}/RELEASE_SECURITY.md`}>{t('checked.missing.link')}</a></p>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="report" title={t('report.title')} lede={t('report.text')} hue="red" tint narrow>
+    <a href={advisory} class="btn btn-primary">{t('report.button')}</a>
+  </Section>
+
+  <Faq items={faq} title={t('faq.title')} hue="red" />
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>
+
+<style>
+</style>
