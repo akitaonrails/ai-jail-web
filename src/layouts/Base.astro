@@ -5,6 +5,7 @@ import fontsJa from '@/styles/fonts-ja.css?url';
 import fontsKo from '@/styles/fonts-ko.css?url';
 import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.astro';
+import Analytics from '@/components/Analytics.astro';
 import { site } from '@/data/site';
 import facts from '@/data/facts.json';
 import ogImage from '@/assets/img/og.png';
@@ -98,6 +99,7 @@ const detect = locale === defaultLocale && !noindex
     <Nav />
     <main id="main"><slot /></main>
     <Footer />
+    <Analytics />
     <script>
       import '@/scripts/theme';
       import '@/scripts/motion';

@@ -16,12 +16,30 @@
     "chooseOne": "1つ選んでください"
   },
   "nav": {
-    "why": { "label": "自分に必要？", "note": "エージェントが手元のマシンで触れられるもの" },
-    "how": { "label": "仕組み", "note": "エージェントとシステムの間にある層" },
-    "compare": { "label": "比較", "note": "組み込みサンドボックス、Docker、VM" },
-    "configure": { "label": "設定", "note": "タスクに必要なものだけを開ける" },
-    "security": { "label": "セキュリティ", "note": "脅威モデルとその限界" },
-    "install": { "label": "インストール", "note": "インストールと初回の実行" }
+    "why": {
+      "label": "自分に必要？",
+      "note": "エージェントが手元のマシンで触れられるもの"
+    },
+    "how": {
+      "label": "仕組み",
+      "note": "エージェントとシステムの間にある層"
+    },
+    "compare": {
+      "label": "比較",
+      "note": "組み込みサンドボックス、Docker、VM"
+    },
+    "configure": {
+      "label": "設定",
+      "note": "タスクに必要なものだけを開ける"
+    },
+    "security": {
+      "label": "セキュリティ",
+      "note": "脅威モデルとその限界"
+    },
+    "install": {
+      "label": "インストール",
+      "note": "インストールと初回の実行"
+    }
   },
   "kicker": {
     "why": "自分に必要？",
@@ -31,9 +49,18 @@
     "security": "セキュリティ",
     "install": "インストール"
   },
-  "code": { "copy": "コピー", "copied": "コピーしました" },
-  "reach": { "inside": "ジェイルの中", "blocked": "手が届かない", "optin": "指定するまで無効" },
-  "next": { "title": "続きを読む" },
+  "code": {
+    "copy": "コピー",
+    "copied": "コピーしました"
+  },
+  "reach": {
+    "inside": "ジェイルの中",
+    "blocked": "手が届かない",
+    "optin": "指定するまで無効"
+  },
+  "next": {
+    "title": "続きを読む"
+  },
   "cta": {
     "title": "エージェントを檻の中に",
     "text": "ai-jailは単一のバイナリで、デーモンもroot権限も要りません。いつものコマンドの前に1語足すだけです。",
@@ -47,7 +74,22 @@
     "report": "脆弱性を報告する",
     "sibling": "姉妹プロジェクトのai-memory",
     "by": "作者",
-    "theme": { "system": "システム", "light": "ライト", "dark": "ダーク" }
+    "theme": {
+      "system": "システム",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
+    "cookieSettings": "Cookie設定"
   },
-  "notfound": { "title": "このページは檻の中です", "text": "このアドレスは存在しません。ホームページならあります。", "home": "ホームページへ" }
+  "notfound": {
+    "title": "このページは檻の中です",
+    "text": "このアドレスは存在しません。ホームページならあります。",
+    "home": "ホームページへ"
+  },
+  "consent": {
+    "label": "アクセス解析への同意",
+    "text": "このサイトは訪問数を数えるためにGoogle Analyticsを使用します。広告は表示せず、他のサイトまで追跡することもありません。よろしいですか？",
+    "decline": "同意しない",
+    "accept": "同意する"
+  }
 }

@@ -17,6 +17,7 @@ Astro 7, Tailwind 4, GSAP for scroll motion, six languages (en, pt-br, es, he, j
 | `docs/color-study.md` | Where the palette comes from and its measured contrast |
 | `docs/i18n.md` | Languages, translation workflow, translated diagrams |
 | `docs/images.md` | How the diagrams are generated and checked |
+| `docs/analytics.md` | Google Analytics: the `PUBLIC_GA_ID` build variable, consent, events |
 | `docs/brand/` | The logo master and how it was made |
 | `CLAUDE.md` | The rules an AI assistant must follow in this repository |
 

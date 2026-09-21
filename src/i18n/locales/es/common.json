@@ -16,12 +16,30 @@
     "chooseOne": "Elige una opción"
   },
   "nav": {
-    "why": { "label": "¿Lo necesito?", "note": "Lo que un agente puede alcanzar en tu máquina" },
-    "how": { "label": "Cómo funciona", "note": "Las capas entre el agente y tu sistema" },
-    "compare": { "label": "Comparar", "note": "Sandboxes integrados, Docker y VMs" },
-    "configure": { "label": "Configurar", "note": "Abre solo lo que la tarea necesita" },
-    "security": { "label": "Seguridad", "note": "El modelo de amenazas y sus límites" },
-    "install": { "label": "Instalar", "note": "Instalación y primera ejecución" }
+    "why": {
+      "label": "¿Lo necesito?",
+      "note": "Lo que un agente puede alcanzar en tu máquina"
+    },
+    "how": {
+      "label": "Cómo funciona",
+      "note": "Las capas entre el agente y tu sistema"
+    },
+    "compare": {
+      "label": "Comparar",
+      "note": "Sandboxes integrados, Docker y VMs"
+    },
+    "configure": {
+      "label": "Configurar",
+      "note": "Abre solo lo que la tarea necesita"
+    },
+    "security": {
+      "label": "Seguridad",
+      "note": "El modelo de amenazas y sus límites"
+    },
+    "install": {
+      "label": "Instalar",
+      "note": "Instalación y primera ejecución"
+    }
   },
   "kicker": {
     "why": "¿Lo necesito?",
@@ -31,9 +49,18 @@
     "security": "Seguridad",
     "install": "Instalar"
   },
-  "code": { "copy": "Copiar", "copied": "Copiado" },
-  "reach": { "inside": "Dentro de la jaula", "blocked": "Fuera de alcance", "optin": "Apagado hasta que lo pidas" },
-  "next": { "title": "Sigue leyendo" },
+  "code": {
+    "copy": "Copiar",
+    "copied": "Copiado"
+  },
+  "reach": {
+    "inside": "Dentro de la jaula",
+    "blocked": "Fuera de alcance",
+    "optin": "Apagado hasta que lo pidas"
+  },
+  "next": {
+    "title": "Sigue leyendo"
+  },
   "cta": {
     "title": "Pon a tu agente tras las rejas",
     "text": "ai-jail es un único binario que no necesita daemon ni root. Añades una palabra delante del comando que ya usas.",
@@ -47,7 +74,22 @@
     "report": "Reportar una vulnerabilidad",
     "sibling": "ai-memory, el proyecto hermano",
     "by": "Hecho por",
-    "theme": { "system": "Sistema", "light": "Claro", "dark": "Oscuro" }
+    "theme": {
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+    "cookieSettings": "Configuración de cookies"
   },
-  "notfound": { "title": "Esta página está bajo llave", "text": "La dirección no existe. La página de inicio sí.", "home": "Ir a la página de inicio" }
+  "notfound": {
+    "title": "Esta página está bajo llave",
+    "text": "La dirección no existe. La página de inicio sí.",
+    "home": "Ir a la página de inicio"
+  },
+  "consent": {
+    "label": "Consentimiento de analítica",
+    "text": "Este sitio usa Google Analytics para contar visitas. No muestra anuncios ni te sigue a otros sitios. ¿Te parece bien?",
+    "decline": "Rechazar",
+    "accept": "Aceptar"
+  }
 }

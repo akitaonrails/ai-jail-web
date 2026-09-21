@@ -16,12 +16,30 @@
     "chooseOne": "Choose one"
   },
   "nav": {
-    "why": { "label": "Do I need it?", "note": "What an agent can reach on your machine" },
-    "how": { "label": "How it works", "note": "The layers between the agent and your system" },
-    "compare": { "label": "Compare", "note": "Built-in sandboxes, Docker and VMs" },
-    "configure": { "label": "Configure", "note": "Open only what a task needs" },
-    "security": { "label": "Security", "note": "The threat model and its limits" },
-    "install": { "label": "Install", "note": "Install and first run" }
+    "why": {
+      "label": "Do I need it?",
+      "note": "What an agent can reach on your machine"
+    },
+    "how": {
+      "label": "How it works",
+      "note": "The layers between the agent and your system"
+    },
+    "compare": {
+      "label": "Compare",
+      "note": "Built-in sandboxes, Docker and VMs"
+    },
+    "configure": {
+      "label": "Configure",
+      "note": "Open only what a task needs"
+    },
+    "security": {
+      "label": "Security",
+      "note": "The threat model and its limits"
+    },
+    "install": {
+      "label": "Install",
+      "note": "Install and first run"
+    }
   },
   "kicker": {
     "why": "Do I need it?",
@@ -31,9 +49,18 @@
     "security": "Security",
     "install": "Install"
   },
-  "code": { "copy": "Copy", "copied": "Copied" },
-  "reach": { "inside": "Inside the jail", "blocked": "Out of reach", "optin": "Off until you ask" },
-  "next": { "title": "Keep reading" },
+  "code": {
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "reach": {
+    "inside": "Inside the jail",
+    "blocked": "Out of reach",
+    "optin": "Off until you ask"
+  },
+  "next": {
+    "title": "Keep reading"
+  },
   "cta": {
     "title": "Put your agent behind bars",
     "text": "ai-jail is a single binary that needs no daemon and no root. You add one word in front of the command you already run.",
@@ -47,7 +74,22 @@
     "report": "Report a vulnerability",
     "sibling": "ai-memory, the sister project",
     "by": "Made by",
-    "theme": { "system": "System", "light": "Light", "dark": "Dark" }
+    "theme": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "cookieSettings": "Cookie settings"
   },
-  "notfound": { "title": "This page is locked away", "text": "The address does not exist. The home page does.", "home": "Go to the home page" }
+  "notfound": {
+    "title": "This page is locked away",
+    "text": "The address does not exist. The home page does.",
+    "home": "Go to the home page"
+  },
+  "consent": {
+    "label": "Analytics consent",
+    "text": "This site uses Google Analytics to count visits. It shows no ads and does not follow you to other sites. Is that okay?",
+    "decline": "Decline",
+    "accept": "Accept"
+  }
 }

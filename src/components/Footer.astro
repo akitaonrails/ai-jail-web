@@ -30,6 +30,7 @@ const languages = languageLinks(Astro.url.pathname);
   </div>
   <div class="wrap pb-10 flex flex-wrap gap-x-6 gap-y-3 items-center text-sm text-muted">
     <span>{t('footer.by')} <a class="link" href={site.authorUrl}>{site.author}</a></span>
+    <a href="#" data-consent-open class="hover:text-text">{t('footer.cookieSettings')}</a>
     <span class="flex flex-wrap gap-x-3 gap-y-1">
       {languages.map((l) => <a href={l.url} hreflang={l.htmlLang} lang={l.htmlLang} data-set-lang={l.code} class:list={['hover:text-text', l.code === locale && 'text-text font-semibold']}>{l.label}</a>)}
     </span>
