@@ -20,12 +20,7 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 
-# www -> apex
-[[redirects]]
-  from = "https://www.ai-jail.example/*"
-  to = "https://ai-jail.example/:splat"
-  status = 301
-  force = true
+# Add a www -> apex redirect here once the production domain is known.
 
 [[redirects]]
   from = "/github"
