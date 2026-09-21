@@ -1,6 +1,6 @@
-# ai-jail hotsite
+# aijail.io
 
-Marketing and explainer site for ai-jail. Astro, Tailwind 4, GSAP, six languages, deployed on Netlify. Read `docs/design-system.md`, `docs/color-study.md` and `docs/i18n.md` before changing pages.
+Marketing and explainer site for ai-jail, published at https://aijail.io. Astro, Tailwind 4, GSAP, six languages, deployed on Netlify. Read `docs/design-system.md`, `docs/color-study.md` and `docs/i18n.md` before changing pages.
 
 ## Colors are tokens, always
 

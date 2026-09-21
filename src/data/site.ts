@@ -1,7 +1,7 @@
 export const site = {
   name: 'ai-jail',
-  // TODO(owner): the production domain. Also used by astro.config.mjs and netlify.toml.
-  url: 'https://ai-jail.netlify.app',
+  // The production domain. astro.config.mjs reads it from here.
+  url: 'https://aijail.io',
   repo: 'https://github.com/akitaonrails/ai-jail',
   docs: 'https://github.com/akitaonrails/ai-jail/blob/master/docs',
   sibling: 'https://aimemory.io',

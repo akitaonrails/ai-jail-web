@@ -1,6 +1,6 @@
-# ai-jail hotsite
+# aijail.io
 
-The website for [ai-jail](https://github.com/akitaonrails/ai-jail), an OS sandbox for AI coding agents.
+The website for [ai-jail](https://github.com/akitaonrails/ai-jail), an OS sandbox for AI coding agents, published at **https://aijail.io**.
 
 ```bash
 npm install
@@ -21,4 +21,4 @@ Astro 7, Tailwind 4, GSAP for scroll motion, six languages (en, pt-br, es, he, j
 | `docs/brand/` | The logo master and how it was made |
 | `CLAUDE.md` | The rules an AI assistant must follow in this repository |
 
-The production domain is set in one place: `url` in `src/data/site.ts`.
+The production domain, https://aijail.io, is set in `url` in `src/data/site.ts` (canonical URLs, sitemap, share cards) and in the www redirect in `netlify.toml`.
