@@ -31,6 +31,8 @@ Source keys:
 
 ## 2. OpenAI Codex CLI
 
+Superseded in part on 2026-09-22 by `codex-antigravity.md`: docs now live at learn.chatgpt.com, MCP servers are documented as outside the sandbox, Landlock is a compatibility fallback rather than rejected, and permission profiles with `deny` rules exist.
+
 - Sandbox modes: `read-only`, `workspace-write` (default), `danger-full-access` [CX-SB]. `--dangerously-bypass-approvals-and-sandbox` / `--yolo` = no sandbox, no approvals [CX-SEC].
 - Approval policies [CX-SEC]: `on-request` (asks to leave the sandbox: edits outside workspace, network), `never`, `granular` (per-category: sandbox, execpolicy rules, MCP prompts, etc.), optional `approvals_reviewer = "auto_review"` (reviewer agent). `untrusted` is retired as a policy; per-project `trust_level = "untrusted"` remains. `on-failure`: UNVERIFIED (not in current page).
 - Primitives: macOS `sandbox-exec`/Seatbelt; Linux/WSL2 "`bwrap` plus `seccomp` by default" with `PR_SET_NO_NEW_PRIVS`, `--unshare-user/pid/net`; legacy Landlock path is now rejected for filesystem-restricted policies [CX-SEC][CX-LNX]. Native Windows: own sandbox with `unelevated` (restricted-token) or `elevated` backends [CX-SEC][CX-CORE]. WSL1 unsupported since 0.115.

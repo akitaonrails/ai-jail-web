@@ -94,8 +94,11 @@ const next = withText(
       </table>
     </div>
     <p class="mt-5 text-sm text-muted max-w-[60em]" set:html={t('table.sources')} />
-    <div class="grid gap-x-8 md:grid-cols-2 mt-6">
+    <h3 class="text-xl mt-12">{t('table.cardsTitle')}</h3>
+    <div class="grid gap-x-8 md:grid-cols-2">
       <Callout title={t('table.runtimeTitle')} hue="cyan"><p set:html={t('table.runtimeText')} /></Callout>
+      <Callout title={t('table.codexTitle')} hue="cyan"><p set:html={t('table.codexText')} /></Callout>
+      <Callout title={t('table.antigravityTitle')} hue="gold"><p set:html={t('table.antigravityText')} /></Callout>
       <Callout title={t('table.opencodeTitle')} hue="gold"><p set:html={t('table.opencodeText')} /></Callout>
     </div>
   </Section>
