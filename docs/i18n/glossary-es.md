@@ -53,3 +53,6 @@ Terms decided while translating. One English term maps to one target term across
 | API host | host de la API |
 | resolver (system DNS resolver) | resolver del sistema |
 | agent runtime platform | plataforma de runtime para agentes |
+| headless (mode) | headless (modo headless) |
+| preset | preset |
+| browser subagent | subagente de navegador |

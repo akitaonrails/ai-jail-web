@@ -71,3 +71,7 @@ Terms decided while translating. One English term maps to one target term across
 | telemetry | 텔레메트리 |
 | brokered (credentials) | 중개 |
 | MicroVM | MicroVM |
+| headless | 헤드리스 |
+| terminal sandbox | 터미널 샌드박스 |
+| browser subagent | 브라우저 서브에이전트 |
+| permission profile (Codex) | 권한 프로파일 |

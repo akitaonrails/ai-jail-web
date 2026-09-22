@@ -37,7 +37,7 @@
     "lede": "아래 내용은 모두 이 글을 쓰는 시점의 각 제품 문서를 기준으로 합니다. 우리가 읽은 문서에서 답을 찾지 못한 항목은 칸에 그렇게 적었습니다.",
     "undocumented": "문서에 없음",
     "cols": { "row": "", "claude": "Claude Code 샌드박스", "codex": "Codex CLI 샌드박스", "gemini": "Gemini CLI 샌드박스", "jail": "ai-jail" },
-    "sources": "출처: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code 샌드박싱</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code 샌드박스 환경</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex 승인과 보안</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux 샌드박스</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI 샌드박스</a>.",
+    "sources": "출처: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code 샌드박싱</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code 샌드박스 환경</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex 승인과 보안</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex 권한</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux 샌드박스</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI 샌드박스</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity 터미널 샌드박스</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity 권한</a>.",
     "groupJail": "에이전트 전체를 감싸는 래퍼가 더해 주는 것",
     "groupBuiltin": "내장 샌드박스가 더 잘하는 것",
     "rows": [
@@ -45,7 +45,7 @@
         "label": "벽 안에 있는 것",
         "cells": [
           "Bash, PowerShell, Monitor 명령과 그 자식 프로세스. <code>claude</code> 프로세스와 파일 도구, MCP 서버, 훅은 바깥에 있습니다.",
-          "에이전트가 실행하는 명령. <code>codex</code> 프로세스는 바깥에 있습니다. 로컬 MCP 서버는 문서에 없음.",
+          "에이전트가 실행하는 명령. <code>codex</code> 프로세스는 바깥에 있습니다. 문서에 따르면 로컬과 원격 MCP 서버는 별도 프로세스나 전송 방식을 쓰므로 역시 바깥에 있습니다.",
           "CLI 프로세스 전체. <code>security.toolSandboxing</code>을 쓰면 셸과 쓰기 도구만.",
           "프로세스 트리 전체. 에이전트와 파일 도구, MCP 서버, 훅, 모든 명령이 들어갑니다."
         ]
@@ -63,7 +63,7 @@
         "label": "샌드박스 안의 코드가 기본 설정에서 <code>~/.ssh</code>를 읽을 수 있는가",
         "cells": [
           "네. 문서에 따르면 기본 설정에서는 <code>~/.aws/credentials</code>, <code>~/.ssh/</code> 같은 자격 증명 파일을 여전히 읽을 수 있습니다. 거부 규칙은 옵트인입니다.",
-          "Linux에서는 네. 파일시스템 전체가 읽기 전용으로 마운트됩니다. 거부 항목은 옵트인입니다. macOS 기본값은 문서에 없음.",
+          "Linux에서는 네. 파일시스템 전체가 읽기 전용으로 마운트됩니다. 권한 프로파일에 <code>**/.env*</code> 같은 경로에 대한 <code>deny</code> 규칙을 추가할 수 있고, OpenAI가 제공하는 강화 설정에는 이미 들어 있습니다. macOS 기본값은 문서에 없음.",
           "macOS 기본 프로파일인 <code>permissive-open</code>은 파일 읽기를 폭넓게 허용합니다. 더 엄격한 프로파일은 옵트인입니다.",
           "아니요. 에이전트는 새로 만든 빈 홈 디렉터리를 받습니다. <code>--ssh</code>는 옵트인입니다."
         ]
@@ -99,7 +99,7 @@
         "label": "네트워크 모델",
         "cells": [
           "도메인별 허용 목록이 있는 프록시. 새 도메인이 나오면 프롬프트로 묻고, 명령마다 승인은 따로 받습니다. 문서는 프록시가 클라이언트가 보낸 호스트 이름을 그대로 믿기 때문에 도메인 프런팅으로 우회할 수 있다고 밝힙니다.",
-          "<code>workspace-write</code>에서는 기본으로 꺼져 있습니다. 설정 하나로 켜고, 선택 사항인 프록시로 도메인별 허용·거부 규칙을 추가합니다. 문서는 프록시가 MCP 서버 연결은 필터링하지 않는다고 밝힙니다.",
+          "<code>workspace-write</code>에서는 기본으로 꺼져 있습니다. 설정 하나로 켜고, 선택 사항인 프록시로 도메인별 허용·거부 규칙을 추가합니다. 문서는 프록시가 MCP 서버 연결과 웹 검색, 브라우저는 필터링하지 않는다고 밝힙니다.",
           "기본 프로파일은 네트워크를 허용합니다. 더 엄격한 프로파일과 프록시 프로파일은 옵트인입니다.",
           "세 가지 모드가 있고 기본은 꺼짐입니다. <code>--allow-host</code>는 나열한 호스트와 그 서브도메인만 허용합니다. Linux에서는 네트워크 네임스페이스가, macOS에서는 seatbelt 엔드포인트 규칙이 이를 강제하고, 프록시는 이름을 한 번만 해석해서 검사한 주소로만 연결합니다. <code>--network</code>는 전부 엽니다. 필터는 TCP 전용이고 경로별 규칙이 없으며 묻지도 않습니다. 목록에 없는 호스트는 거부되고 <code>--audit-log</code>가 그 시도를 기록합니다. 허용된 호스트는 통째로 신뢰됩니다."
         ]
@@ -153,7 +153,12 @@
     "runtimeTitle": "Anthropic도 프로세스 전체를 감싸는 래퍼를 제공합니다",
     "runtimeText": "이 글을 쓰는 시점에 <code>npx @anthropic-ai/sandbox-runtime claude</code>는 같은 Seatbelt, bubblewrap 프리미티브로 Claude Code 프로세스 전체를 감싸므로 파일 도구와 MCP 서버, 훅도 범위에 들어갑니다. Anthropic은 이것을 <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">베타 리서치 프리뷰라고 설명하며</a>, Linux에서는 거부 목록을 실행 시점에 한 번만 만들기 때문에 나중에 생긴 파일은 포함되지 않는다고 밝힙니다. Claude Code만 쓴다면 ai-jail을 바로 대신할 수 있는 선택지입니다.",
     "opencodeTitle": "OpenCode에는 규칙은 있고 샌드박스는 없습니다",
-    "opencodeText": "이 글을 쓰는 시점에 <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">OpenCode의 권한 문서</a>는 <code>allow</code>, <code>ask</code>, <code>deny</code> 규칙을 설명하고 대부분의 권한이 기본값 <code>allow</code>라고 밝히며, OS 샌드박스는 언급하지 않습니다."
+    "opencodeText": "이 글을 쓰는 시점에 <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">OpenCode의 권한 문서</a>는 <code>allow</code>, <code>ask</code>, <code>deny</code> 규칙을 설명하고 대부분의 권한이 기본값 <code>allow</code>라고 밝히며, OS 샌드박스는 언급하지 않습니다.",
+    "cardsTitle": "다른 에이전트, 카드 하나씩",
+    "codexTitle": "Codex는 명령을 샌드박스에 넣고, 클라우드는 컨테이너에서 돌아갑니다",
+    "codexText": "이 글을 쓰는 시점에 로컬 Codex 샌드박스는 macOS, Linux, 네이티브 Windows에서 에이전트가 실행하는 명령을 감쌉니다. <code>codex</code> 프로세스와 MCP 서버는 바깥에 남습니다. OpenAI는 그 프로세스를 위한 감옥을 제공하지 않고, 바깥 경계로는 <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Dev Containers를 안내합니다</a>. <a class=\"link\" href=\"https://learn.chatgpt.com/docs/environments/cloud-environment\">Codex 클라우드</a>에서는 작업마다 OpenAI가 관리하는 격리 컨테이너에서 실행되며, 에이전트 단계에서는 인터넷이 기본으로 꺼져 있습니다. <code>codex exec</code>는 헤드리스로 돌아가므로 ai-jail로 감쌀 수 있습니다.",
+    "antigravityTitle": "Antigravity는 기본으로 명령을 샌드박스에 넣습니다",
+    "antigravityText": "이 글을 쓰는 시점에 <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Google Antigravity의 터미널 샌드박스</a>는 Default 프리셋에서 켜져 있습니다. 명령은 Linux에서는 커널 네임스페이스, macOS에서는 Seatbelt 안에서 실행되고, <code>~/.ssh</code>와 <code>.env</code>는 숨겨지며, 네트워크는 꺼져 있고, <code>read_url</code>에 허용한 도메인이 그대로 외부 연결 허용 목록이 됩니다. Windows 지원은 2026년 9월에 추가됐습니다. 안에 있는 것은 명령뿐입니다. 에이전트 프로세스와 MCP 도구, 브라우저 서브에이전트는 내 컴퓨터에서 실행되고, 샌드박스 밖에서 실행하도록 승인한 명령은 <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">호스트에서 모든 권한을 가지고 실행됩니다</a>. Antigravity CLI인 <code>agy</code>에는 헤드리스 모드가 있으므로 ai-jail로 감쌀 수 있습니다."
   },
   "both": {
     "title": "둘 다 쓰세요",

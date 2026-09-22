@@ -88,3 +88,9 @@ Terms decided while translating. One English term maps to one target term across
 | telemetry | טלמטריה |
 | agent runtime platform | פלטפורמה להרצת סוכנים |
 | Download (nav, kicker) | הורדה |
+| preset | preset (kept) |
+| headless (mode / run) | ללא ממשק (רץ ללא ממשק / מצב ללא ממשק) |
+| Dev Containers (the product) | Dev Containers (kept; a generic "dev container" stays lowercase Latin) |
+| Codex cloud | Codex cloud (kept) |
+| hardened configuration | הגדרה מוקשחת |
+| outbound allowlist | רשימת היתרים ליציאה |

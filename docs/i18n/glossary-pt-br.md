@@ -66,3 +66,7 @@ Terms decided while translating. One English term maps to one target term across
 | pre-release | pré-release |
 | download (nav, page) | Download (verb: baixar) |
 | agent runtime platform | plataforma de runtime para agentes |
+| card (comparison card) | card |
+| headless (mode) | modo headless |
+| preset | preset |
+| Dev Containers, Codex cloud | kept in English |

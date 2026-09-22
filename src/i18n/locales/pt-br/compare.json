@@ -37,7 +37,7 @@
     "lede": "Tudo aqui descreve a documentação de cada produto no momento em que este texto foi escrito. Quando a documentação que lemos não responde a uma pergunta, a célula diz isso.",
     "undocumented": "Não documentado",
     "cols": { "row": "", "claude": "Sandbox do Claude Code", "codex": "Sandbox do Codex CLI", "gemini": "Sandbox do Gemini CLI", "jail": "ai-jail" },
-    "sources": "Fontes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">sandboxing do Claude Code</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">ambientes de sandbox do Claude Code</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">aprovações e segurança do Codex</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">sandbox de Linux do Codex</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">sandbox do Gemini CLI</a>.",
+    "sources": "Fontes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">sandboxing do Claude Code</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">ambientes de sandbox do Claude Code</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">aprovações e segurança do Codex</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">permissões do Codex</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">sandbox de Linux do Codex</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">sandbox do Gemini CLI</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">sandbox de terminal do Antigravity</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">permissões do Antigravity</a>.",
     "groupJail": "O que um wrapper em volta do agente inteiro acrescenta",
     "groupBuiltin": "O que os sandboxes embutidos fazem melhor",
     "rows": [
@@ -45,7 +45,7 @@
         "label": "O que fica dentro do muro",
         "cells": [
           "Comandos do Bash, do PowerShell e do Monitor e seus processos filhos. O processo <code>claude</code>, suas ferramentas de arquivo, servidores MCP e hooks ficam de fora.",
-          "Os comandos que o agente dispara. O processo <code>codex</code> fica de fora. Servidores MCP locais: não documentado.",
+          "Os comandos que o agente dispara. O processo <code>codex</code> fica de fora. A documentação diz que servidores MCP locais e remotos usam processo ou transporte próprios, então também ficam de fora.",
           "O processo inteiro da CLI, ou só as ferramentas de shell e de escrita com <code>security.toolSandboxing</code>.",
           "A árvore de processos inteira: o agente, suas ferramentas de arquivo, servidores MCP, hooks e todos os comandos."
         ]
@@ -63,7 +63,7 @@
         "label": "Código no sandbox consegue ler <code>~/.ssh</code> por padrão?",
         "cells": [
           "Sim. A documentação diz que o padrão ainda permite ler arquivos de credenciais como <code>~/.aws/credentials</code> e <code>~/.ssh/</code>. As regras de negação são opt-in.",
-          "Sim no Linux, onde o sistema de arquivos inteiro é montado como somente leitura. As entradas de negação são opt-in. Padrão no macOS: não documentado.",
+          "Sim no Linux, onde o sistema de arquivos inteiro é montado como somente leitura. Um perfil de permissões pode acrescentar regras <code>deny</code> para caminhos como <code>**/.env*</code>, e a configuração reforçada da própria OpenAI faz isso. Padrão no macOS: não documentado.",
           "O perfil padrão no macOS, <code>permissive-open</code>, permite leitura ampla de arquivos. Perfis mais restritos são opt-in.",
           "Não. O agente recebe um diretório home novo e vazio. <code>--ssh</code> é opt-in."
         ]
@@ -99,7 +99,7 @@
         "label": "Modelo de rede",
         "cells": [
           "Um proxy com allowlist por domínio. Um domínio novo gera um pedido de permissão, e cada comando ainda passa pela própria aprovação. A documentação observa que o proxy confia no hostname que o cliente envia, então domain fronting consegue contorná-lo.",
-          "Desligada por padrão em <code>workspace-write</code>. Uma configuração liga a rede, e um proxy opcional acrescenta regras de permissão e negação por domínio. A documentação diz que o proxy não filtra as conexões de servidores MCP.",
+          "Desligada por padrão em <code>workspace-write</code>. Uma configuração liga a rede, e um proxy opcional acrescenta regras de permissão e negação por domínio. A documentação diz que o proxy não filtra as conexões de servidores MCP, a busca na web nem o navegador.",
           "O perfil padrão permite rede. Perfis mais restritos e com proxy são opt-in.",
           "Três modos, desligada por padrão. <code>--allow-host</code> libera os hosts listados e seus subdomínios, com a cerca no network namespace no Linux ou numa regra de endpoint do seatbelt no macOS, por um proxy que resolve cada nome uma vez e disca o endereço que conferiu. <code>--network</code> abre tudo. O filtro é só TCP, não tem regras por caminho e nunca pergunta: um host fora da lista é negado, e <code>--audit-log</code> registra a tentativa. Um host permitido é confiável por inteiro."
         ]
@@ -153,7 +153,12 @@
     "runtimeTitle": "A Anthropic também tem um wrapper do processo inteiro",
     "runtimeText": "No momento em que este texto foi escrito, <code>npx @anthropic-ai/sandbox-runtime claude</code> envolve o processo inteiro do Claude Code com as mesmas primitivas, Seatbelt e bubblewrap, então ferramentas de arquivo, servidores MCP e hooks também ficam cobertos. A Anthropic <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">descreve o pacote como um research preview em beta</a> e observa que, no Linux, a lista de negação é montada uma vez na inicialização e não cobre arquivos criados depois. Se você só usa o Claude Code, é uma alternativa direta ao ai-jail.",
     "opencodeTitle": "O OpenCode tem regras e nenhum sandbox",
-    "opencodeText": "No momento em que este texto foi escrito, <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">a página de permissões do OpenCode</a> documenta as regras <code>allow</code>, <code>ask</code> e <code>deny</code>, diz que a maioria das permissões vem como <code>allow</code> por padrão e não descreve nenhum sandbox de sistema operacional."
+    "opencodeText": "No momento em que este texto foi escrito, <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">a página de permissões do OpenCode</a> documenta as regras <code>allow</code>, <code>ask</code> e <code>deny</code>, diz que a maioria das permissões vem como <code>allow</code> por padrão e não descreve nenhum sandbox de sistema operacional.",
+    "cardsTitle": "Outros agentes, um card para cada",
+    "codexTitle": "O Codex coloca comandos em sandbox, e sua nuvem roda em containers",
+    "codexText": "No momento em que este texto foi escrito, o sandbox local do Codex envolve os comandos que o agente dispara no macOS, no Linux e no Windows nativo. O processo <code>codex</code> e os servidores MCP ficam de fora. A OpenAI não entrega jaula para esse processo e <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">aponta para Dev Containers</a> como fronteira externa. No <a class=\"link\" href=\"https://learn.chatgpt.com/docs/environments/cloud-environment\">Codex cloud</a>, cada tarefa roda em um container isolado que a OpenAI administra, com internet desligada por padrão durante a fase do agente. <code>codex exec</code> roda em modo headless, então o ai-jail consegue envolvê-lo.",
+    "antigravityTitle": "O Antigravity coloca comandos em sandbox por padrão",
+    "antigravityText": "No momento em que este texto foi escrito, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">o sandbox de terminal do Google Antigravity</a> vem ligado no preset Default. Os comandos rodam em namespaces do kernel no Linux e no Seatbelt no macOS, <code>~/.ssh</code> e <code>.env</code> ficam escondidos, a rede fica desligada e os domínios que você libera para <code>read_url</code> viram a allowlist de saída. O suporte a Windows chegou em setembro de 2026. Só os comandos ficam dentro. O processo do agente, as ferramentas MCP e o subagente de navegador rodam na sua máquina, e um comando que você aprova para sair do sandbox <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">roda no seu host com todos os privilégios</a>. A CLI do Antigravity, <code>agy</code>, tem modo headless, então o ai-jail consegue envolvê-la."
   },
   "both": {
     "title": "Use os dois",

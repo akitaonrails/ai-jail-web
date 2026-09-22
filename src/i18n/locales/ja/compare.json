@@ -37,7 +37,7 @@
     "lede": "ここに書いた内容はすべて、執筆時点の各製品のドキュメントに基づいています。私たちが読んだドキュメントに答えがなかった項目は、セルにそう記しています。",
     "undocumented": "記載なし",
     "cols": { "row": "", "claude": "Claude Codeのサンドボックス", "codex": "Codex CLIのサンドボックス", "gemini": "Gemini CLIのサンドボックス", "jail": "ai-jail" },
-    "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>。",
+    "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>。",
     "groupJail": "エージェント全体を包むラッパーで加わるもの",
     "groupBuiltin": "組み込みサンドボックスのほうが優れている点",
     "rows": [
@@ -45,7 +45,7 @@
         "label": "壁の中に入るもの",
         "cells": [
           "Bash、PowerShell、Monitorのコマンドとその子プロセス。<code>claude</code>プロセス、ファイル操作ツール、MCPサーバー、フックは外です。",
-          "エージェントが起動するコマンド。<code>codex</code>プロセスは外です。ローカルのMCPサーバーについては記載なし。",
+          "エージェントが起動するコマンド。<code>codex</code>プロセスは外です。ドキュメントによると、ローカルとリモートのMCPサーバーは独自のプロセスやトランスポートを使うため、こちらも外です。",
           "CLIのプロセス全体。<code>security.toolSandboxing</code>を使うと、シェルと書き込みツールだけになります。",
           "プロセスツリー全体。エージェント、ファイル操作ツール、MCPサーバー、フック、すべてのコマンドが入ります。"
         ]
@@ -63,7 +63,7 @@
         "label": "サンドボックス内のコードはデフォルトで<code>~/.ssh</code>を読めるか",
         "cells": [
           "はい。ドキュメントによると、デフォルトでは<code>~/.aws/credentials</code>や<code>~/.ssh/</code>などの認証情報ファイルを読めます。拒否ルールはオプトインです。",
-          "Linuxでは読めます。ファイルシステム全体が読み取り専用でマウントされるためです。拒否エントリはオプトインです。macOSのデフォルトは記載なし。",
+          "Linuxでは読めます。ファイルシステム全体が読み取り専用でマウントされるためです。権限プロファイルで<code>**/.env*</code>のようなパスに<code>deny</code>ルールを追加でき、OpenAI自身の強化設定ではそうしています。macOSのデフォルトは記載なし。",
           "macOSのデフォルトプロファイル<code>permissive-open</code>は、広い範囲のファイル読み取りを許可します。より厳しいプロファイルはオプトインです。",
           "いいえ。エージェントには新しい空のホームディレクトリが渡されます。<code>--ssh</code>はオプトインです。"
         ]
@@ -99,7 +99,7 @@
         "label": "ネットワークの扱い",
         "cells": [
           "ドメイン単位の許可リストを持つプロキシ。新しいドメインが出てくると確認を求め、各コマンドにも個別の承認が要ります。プロキシはクライアントが送るホスト名を信頼するため、ドメインフロンティングで回避されうることは、ドキュメントにも書かれています。",
-          "<code>workspace-write</code>ではデフォルトで無効。設定1つで有効になり、オプションのプロキシでドメイン単位の許可と拒否のルールを追加できます。ドキュメントによると、このプロキシはMCPサーバーへの接続をフィルターしません。",
+          "<code>workspace-write</code>ではデフォルトで無効。設定1つで有効になり、オプションのプロキシでドメイン単位の許可と拒否のルールを追加できます。ドキュメントによると、このプロキシはMCPサーバーへの接続、Web検索、ブラウザをフィルターしません。",
           "デフォルトのプロファイルはネットワークを許可します。より厳しいプロファイルやプロキシ付きのプロファイルはオプトインです。",
           "3つのモードがあり、デフォルトは無効です。<code>--allow-host</code>は、指定したホストとそのサブドメインだけを許可します。Linuxではネットワーク名前空間、macOSではseatbeltのエンドポイントルールで強制され、通信は、名前を一度だけ解決して確認済みのアドレスに接続するプロキシを通ります。<code>--network</code>はすべてを開けます。フィルターはTCPのみで、パス単位のルールはなく、確認も求めません。リスト外のホストは拒否され、<code>--audit-log</code>がその試みを記録します。許可したホストは丸ごと信頼されます。"
         ]
@@ -153,7 +153,12 @@
     "runtimeTitle": "Anthropicもプロセス全体を包むラッパーを提供している",
     "runtimeText": "執筆時点で、<code>npx @anthropic-ai/sandbox-runtime claude</code>は、同じSeatbeltとbubblewrapの仕組みでClaude Codeのプロセス全体を包みます。ファイル操作ツール、MCPサーバー、フックも対象に入ります。Anthropicはこれを<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">ベータ版のリサーチプレビューと説明</a>しており、Linuxでは拒否リストが起動時に一度だけ作られ、後から作られたファイルには及ばないと注記しています。Claude Codeしか使わないなら、ai-jailに直接代わる選択肢です。",
     "opencodeTitle": "OpenCodeにはルールがあり、サンドボックスはない",
-    "opencodeText": "執筆時点で、<a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">OpenCodeのpermissionsページ</a>には<code>allow</code>、<code>ask</code>、<code>deny</code>のルールが説明されており、ほとんどの権限のデフォルトは<code>allow</code>だとあります。OSサンドボックスについての記述はありません。"
+    "opencodeText": "執筆時点で、<a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">OpenCodeのpermissionsページ</a>には<code>allow</code>、<code>ask</code>、<code>deny</code>のルールが説明されており、ほとんどの権限のデフォルトは<code>allow</code>だとあります。OSサンドボックスについての記述はありません。",
+    "cardsTitle": "その他のエージェント、1枚ずつ",
+    "codexTitle": "Codexはコマンドをサンドボックスに入れ、クラウドはコンテナで動く",
+    "codexText": "執筆時点で、ローカルのCodexサンドボックスはmacOS、Linux、ネイティブWindowsでエージェントが起動するコマンドを包みます。<code>codex</code>プロセスとMCPサーバーは外のままです。OpenAIはそのプロセスを囲うジェイルを提供しておらず、外側の境界として<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Dev Containersを案内しています</a>。<a class=\"link\" href=\"https://learn.chatgpt.com/docs/environments/cloud-environment\">Codex cloud</a>では各タスクがOpenAI管理の隔離されたコンテナで動き、エージェントの実行中はデフォルトでインターネットが無効です。<code>codex exec</code>はヘッドレスで動くので、ai-jailで包めます。",
+    "antigravityTitle": "Antigravityはデフォルトでコマンドをサンドボックスに入れる",
+    "antigravityText": "執筆時点で、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Google Antigravityのターミナルサンドボックス</a>はDefaultプリセットで有効です。コマンドはLinuxではカーネルの名前空間、macOSではSeatbeltの中で動き、<code>~/.ssh</code>と<code>.env</code>は隠され、ネットワークは無効で、<code>read_url</code>に許可したドメインがそのまま外向きの許可リストになります。Windows対応は2026年9月に加わりました。中に入るのはコマンドだけです。エージェントのプロセス、MCPツール、ブラウザのサブエージェントはあなたのマシンで動き、サンドボックスの外での実行を承認したコマンドは<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">ホスト上でフル権限で動きます</a>。Antigravity CLIの<code>agy</code>にはヘッドレスモードがあるので、ai-jailで包めます。"
   },
   "both": {
     "title": "両方使う",

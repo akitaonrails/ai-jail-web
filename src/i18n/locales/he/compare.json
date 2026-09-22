@@ -37,7 +37,7 @@
     "lede": "כל מה שכתוב כאן מתאר את התיעוד של כל מוצר נכון לזמן הכתיבה. כשהתיעוד שקראנו לא עונה על שאלה, זה מה שכתוב בתא.",
     "undocumented": "לא מתועד",
     "cols": { "row": "", "claude": "ה-sandbox של Claude Code", "codex": "ה-sandbox של Codex CLI", "gemini": "ה-sandbox של Gemini CLI", "jail": "ai-jail" },
-    "sources": "מקורות: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>.",
+    "sources": "מקורות: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>.",
     "groupJail": "מה מוסיפה עטיפה סביב הסוכן כולו",
     "groupBuiltin": "מה סביבות ה-sandbox המובנות עושות טוב יותר",
     "rows": [
@@ -45,7 +45,7 @@
         "label": "מה נמצא בתוך החומה",
         "cells": [
           "פקודות Bash, PowerShell ו-Monitor ותהליכי הבן שלהן. התהליך <code>claude</code>, כלי הקבצים שלו, שרתי ה-MCP וה-hooks נמצאים בחוץ.",
-          "הפקודות שהסוכן מפעיל. התהליך <code>codex</code> נמצא בחוץ. שרתי MCP מקומיים: לא מתועד.",
+          "הפקודות שהסוכן מפעיל. התהליך <code>codex</code> נמצא בחוץ. לפי התיעוד, שרתי MCP מקומיים ומרוחקים משתמשים בתהליך או ב-transport משלהם, ולכן גם הם בחוץ.",
           "תהליך ה-CLI כולו, או רק כלי ה-shell והכתיבה כשמגדירים <code>security.toolSandboxing</code>.",
           "עץ התהליכים כולו: הסוכן, כלי הקבצים שלו, שרתי ה-MCP, ה-hooks וכל פקודה."
         ]
@@ -63,7 +63,7 @@
         "label": "האם קוד שרץ ב-sandbox יכול לקרוא את <code>~/.ssh</code> כברירת מחדל?",
         "cells": [
           "כן. לפי התיעוד, ברירת המחדל עדיין מתירה לקרוא קובצי פרטי גישה כמו <code>~/.aws/credentials</code> ו-<code>~/.ssh/</code>. כללי deny הם opt-in.",
-          "ב-Linux כן, כי כל מערכת הקבצים מעוגנת שם לקריאה בלבד. רשומות deny הן opt-in. ברירת המחדל ב-macOS: לא מתועד.",
+          "ב-Linux כן, כי כל מערכת הקבצים מעוגנת שם לקריאה בלבד. פרופיל הרשאות יכול להוסיף כללי <code>deny</code> לנתיבים כמו <code>**/.env*</code>, וההגדרה המוקשחת של OpenAI עצמה עושה את זה. ברירת המחדל ב-macOS: לא מתועד.",
           "פרופיל ברירת המחדל ב-macOS, <code>permissive-open</code>, מתיר קריאה רחבה של קבצים. פרופילים מחמירים יותר הם opt-in.",
           "לא. הסוכן מקבל תיקיית בית חדשה וריקה. הדגל <code>--ssh</code> הוא opt-in."
         ]
@@ -94,7 +94,7 @@
         "label": "מודל הרשת",
         "cells": [
           "פרוקסי עם רשימת היתרים לפי דומיין. דומיין חדש מקפיץ בקשת אישור, וכל פקודה עדיין מקבלת אישור משלה. התיעוד מציין שהפרוקסי סומך על שם ה-host שהלקוח שולח, ולכן domain fronting יכול לעקוף אותו.",
-          "כבויה כברירת מחדל במצב <code>workspace-write</code>. הגדרה אחת מדליקה אותה, ופרוקסי אופציונלי מוסיף כללי allow ו-deny לפי דומיין. לפי התיעוד, הפרוקסי לא מסנן חיבורים לשרתי MCP.",
+          "כבויה כברירת מחדל במצב <code>workspace-write</code>. הגדרה אחת מדליקה אותה, ופרוקסי אופציונלי מוסיף כללי allow ו-deny לפי דומיין. לפי התיעוד, הפרוקסי לא מסנן חיבורים לשרתי MCP, חיפוש באינטרנט או את הדפדפן.",
           "פרופיל ברירת המחדל מתיר רשת. פרופילים מחמירים יותר ופרופילים עם פרוקסי הם opt-in.",
           "שלושה מצבים, כבויה כברירת מחדל. <code>--allow-host</code> מתיר את ה-hosts שברשימה ואת תת-הדומיינים שלהם, באכיפה של ה-network namespace ב-Linux או של כלל seatbelt ב-macOS, דרך פרוקסי שפותר כל שם פעם אחת ומחייג לכתובת שבדק. <code>--network</code> פותח הכול. הסינון הוא TCP בלבד, בלי כללים לפי נתיב ובלי בקשות אישור: host שמחוץ לרשימה נדחה, ו-<code>--audit-log</code> מתעד את הניסיון. host מורשה זוכה לאמון מלא."
         ]
@@ -143,7 +143,12 @@
     "runtimeTitle": "גם Anthropic מפיצה עטיפה לתהליך כולו",
     "runtimeText": "נכון לזמן הכתיבה, הפקודה <code>npx @anthropic-ai/sandbox-runtime claude</code> עוטפת את כל התהליך של Claude Code באותן אבני בניין, Seatbelt ו-bubblewrap, כך שגם כלי הקבצים, שרתי ה-MCP וה-hooks מכוסים. Anthropic <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">מתארת אותה כ-beta research preview</a>, ומציינת שב-Linux רשימת ה-deny שלה נבנית פעם אחת בזמן ההפעלה ולא מכסה קבצים שנוצרים אחר כך. אם אתם משתמשים רק ב-Claude Code, זו חלופה ישירה ל-ai-jail.",
     "opencodeTitle": "ב-OpenCode יש כללים ואין sandbox",
-    "opencodeText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">עמוד ההרשאות של OpenCode</a> מתעד כללי <code>allow</code>, <code>ask</code> ו-<code>deny</code>, אומר שברירת המחדל של רוב ההרשאות היא <code>allow</code>, ולא מתאר sandbox ברמת מערכת ההפעלה."
+    "opencodeText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://opencode.ai/docs/permissions/\">עמוד ההרשאות של OpenCode</a> מתעד כללי <code>allow</code>, <code>ask</code> ו-<code>deny</code>, אומר שברירת המחדל של רוב ההרשאות היא <code>allow</code>, ולא מתאר sandbox ברמת מערכת ההפעלה.",
+    "cardsTitle": "סוכנים אחרים, כרטיס לכל אחד",
+    "codexTitle": "Codex סוגר פקודות ב-sandbox, והענן שלו רץ בקונטיינרים",
+    "codexText": "נכון לזמן הכתיבה, ה-sandbox המקומי של Codex עוטף את הפקודות שהסוכן מפעיל ב-macOS, ב-Linux וב-Windows מקורי. התהליך <code>codex</code> ושרתי ה-MCP נשארים בחוץ. OpenAI לא מספקת כלא לתהליך הזה, ו<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">מפנה ל-Dev Containers</a> בתור גבול חיצוני. ב-<a class=\"link\" href=\"https://learn.chatgpt.com/docs/environments/cloud-environment\">Codex cloud</a> כל משימה רצה בקונטיינר מבודד ש-OpenAI מנהלת, והאינטרנט כבוי כברירת מחדל בשלב שבו הסוכן עובד. <code>codex exec</code> רץ ללא ממשק, ולכן ai-jail יכול לעטוף אותו.",
+    "antigravityTitle": "Antigravity סוגר פקודות ב-sandbox כברירת מחדל",
+    "antigravityText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">ה-sandbox של הטרמינל ב-Google Antigravity</a> דלוק ב-preset ברירת המחדל שלו. פקודות רצות ב-namespaces של הקרנל ב-Linux וב-Seatbelt ב-macOS, <code>~/.ssh</code> ו-<code>.env</code> מוסתרים, הרשת כבויה, והדומיינים שאתם מתירים ל-<code>read_url</code> הופכים לרשימת ההיתרים ליציאה. תמיכה ב-Windows הגיעה בספטמבר 2026. רק הפקודות בפנים. תהליך הסוכן, כלי ה-MCP ותת-הסוכן של הדפדפן רצים על המחשב שלכם, ופקודה שאתם מאשרים להוציא מה-sandbox <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">רצה על המארח שלכם עם הרשאות מלאות</a>. ל-CLI של Antigravity, <code>agy</code>, יש מצב ללא ממשק, ולכן ai-jail יכול לעטוף אותו."
   },
   "both": {
     "title": "השתמשו בשניהם",

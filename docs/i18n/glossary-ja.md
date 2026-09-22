@@ -70,3 +70,10 @@ Terms decided while translating. One English term maps to one target term across
 | Visibility (switch group) | 可視性 |
 | API host | APIホスト |
 | resolver | リゾルバ |
+| headless (mode) | ヘッドレス / ヘッドレスモード |
+| container | コンテナ |
+| Dev Containers | 英語のまま |
+| preset (Default preset) | プリセット (Defaultプリセット) |
+| permission profile | 権限プロファイル |
+| subagent | サブエージェント |
+| host (your host machine) | ホスト |
