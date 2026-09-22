@@ -21,4 +21,4 @@ export const nav: NavLink[] = [
   { id: 'configure', href: '/configure/', hue: 'gold' },
   { id: 'security', href: '/security/', hue: 'red' },
 ];
-export const pageHue: Record<string, Hue> = { ...Object.fromEntries(nav.map((n) => [n.id, n.hue])), install: 'cyan' } as Record<string, Hue>;
+export const pageHue: Record<string, Hue> = { ...Object.fromEntries(nav.map((n) => [n.id, n.hue])), install: 'cyan', download: 'cyan' } as Record<string, Hue>;

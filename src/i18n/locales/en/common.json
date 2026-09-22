@@ -39,6 +39,10 @@
     "install": {
       "label": "Install",
       "note": "Install and first run"
+    },
+    "download": {
+      "label": "Download",
+      "note": "Binaries, checksums and release notes"
     }
   },
   "kicker": {
@@ -47,7 +51,8 @@
     "compare": "Compare",
     "configure": "Configure",
     "security": "Security",
-    "install": "Install"
+    "install": "Install",
+    "download": "Download"
   },
   "code": {
     "copy": "Copy",

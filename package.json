@@ -13,7 +13,8 @@
     "check:colors": "node scripts/check-contrast.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "i18n:stamp": "node scripts/check-i18n.mjs --stamp",
-    "colors:sample": "node scripts/sample-logo.mjs"
+    "colors:sample": "node scripts/sample-logo.mjs",
+    "snapshot:github": "node scripts/snapshot-github.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -27,6 +28,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.3",
     "gsap": "^3.15.0",
+    "marked": "^18.0.14",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3"
   },

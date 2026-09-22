@@ -19,7 +19,7 @@ const languages = languageLinks(Astro.url.pathname);
       <p class="mt-3 text-sm text-muted">{t('footer.version', { version: facts.version, license: facts.license })}</p>
     </div>
     <nav aria-label={t('footer.pages')} class="grid gap-2 content-start">
-      {[...nav, { id: 'install', href: '/install/' }].map((l) => <a href={href(l.href)} class="hover:text-text text-muted">{t(`nav.${l.id}.label`)}</a>)}
+      {[...nav, { id: 'install', href: '/install/' }, { id: 'download', href: '/download/' }].map((l) => <a href={href(l.href)} class="hover:text-text text-muted">{t(`nav.${l.id}.label`)}</a>)}
     </nav>
     <div class="grid gap-2 content-start">
       <a href={site.repo} class="hover:text-text text-muted">GitHub</a>
