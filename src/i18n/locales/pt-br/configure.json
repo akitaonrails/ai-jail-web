@@ -38,7 +38,8 @@
       {
         "title": "Rede e serviços",
         "rows": [
-          { "text": "Acesso irrestrito à rede. Tudo o que o agente consegue ler, ele consegue enviar para fora." },
+          { "text": "A rede inteira. Tudo o que o agente consegue ler, ele consegue enviar para fora. Se o agente só precisa de alguns hosts, <code>--allow-host</code> é a escolha mais apertada." },
+          { "text": "O sandbox alcança só o host listado e seus subdomínios, por TCP, pelo proxy embutido do ai-jail. A flag pode ser repetida. Não combina com <code>--network</code> nem com <code>--browser</code>, e um arquivo de projeto só pode encurtar a lista." },
           { "text": "O seu <code>~/.ssh</code>, somente leitura, e o socket do seu agente SSH, para o <code>git push</code> funcionar." },
           { "text": "O socket do Docker. Na prática é root na sua máquina, porque o daemon pode subir containers que montam o host." },
           { "text": "O socket do Tailscale." },
@@ -51,6 +52,7 @@
           { "text": "O login e as configurações do próprio agente, como <code>~/.claude</code> ou <code>~/.codex</code>. A partir daí, tudo o que roda na jaula pode usar essas credenciais." },
           { "text": "Usa o diretório informado como estado do Claude e define <code>CLAUDE_CONFIG_DIR</code>." },
           { "text": "Repassa uma variável do seu shell, ou define uma com <code>NAME=VALUE</code>. Pode ser repetida e nunca é salva em disco." },
+          { "text": "Lê linhas <code>KEY=VALUE</code> estritas de um arquivo e as repassa como <code>--env</code>, que ganha em caso de conflito. O arquivo precisa ser seu, um arquivo regular, com modo 0600 ou mais restrito e fora do projeto, senão a inicialização falha. O ai-jail nunca grava os valores em disco, e a chave de configuração só funciona a partir do arquivo global." },
           { "text": "Repassa o ambiente inteiro do seu shell, com todos os segredos que houver nele. Evite." },
           { "text": "O mesmo que <code>--env</code>, só a partir do arquivo global. Um arquivo de projeto que defina essa chave é ignorado." }
         ]
@@ -86,6 +88,12 @@
         ]
       },
       {
+        "title": "Visibilidade",
+        "rows": [
+          { "text": "Acrescenta um registro por inicialização em <code>~/.local/share/ai-jail/history.jsonl</code> (diretório 0700, arquivo 0600): hora, comando, recursos efetivos, origens da configuração, código de saída e duração. Com <code>--allow-host</code>, cada conexão permitida ou negada também é registrada. Vem desligado por padrão, e um arquivo de projeto pode desligar, mas não ligar." }
+        ]
+      },
+      {
         "title": "Utilitários",
         "rows": [
           { "text": "Imprime o comando de sandbox e não roda nada. Nunca grava arquivo de configuração." },
@@ -117,6 +125,14 @@
     "caveat": {
       "title": "Só caminhos que existem na inicialização são cobertos",
       "text": "Um caminho que não existe, ou um glob que não bate com nada, é pulado com um aviso. Um arquivo criado depois, durante a sessão, não fica coberto. Se você precisa que a regra valha, crie o arquivo antes. Um <code>.env</code> vazio já basta."
+    },
+    "keys": {
+      "title": "Mantenha chaves de API fora de todo arquivo de configuração",
+      "text": "Mascarar cobre arquivos do projeto. Para a chave do próprio agente, passe do seu shell com <code>--env NAME</code>, ou de um arquivo que só você consegue ler com <code>--env-from-file</code>. Nenhuma das duas é gravada num arquivo <code>.ai-jail</code>, e um arquivo de projeto não pode defini-las.",
+      "shellTitle": "terminal",
+      "shellNote": "# o arquivo precisa ser seu, com modo 0600 e fora do projeto",
+      "tomlTitle": "~/.ai-jail",
+      "tomlNote": "# só no arquivo global; um arquivo de projeto que defina isto é ignorado"
     }
   },
   "lockdown": {
@@ -137,14 +153,16 @@
     "codeTitle": "terminal",
     "network": {
       "title": "Lockdown e a rede",
-      "text": "O lockdown vem sem rede por padrão. No Linux, <code>--network</code> ainda se sobrepõe a isso, então só passe a flag se for essa mesmo a intenção. No macOS, o lockdown sempre bloqueia a rede."
+      "text": "O lockdown vem sem rede por padrão. <code>--allow-host</code> continua funcionando no lockdown, então você alcança os hosts listados sem abrir a rede. No Linux, <code>--network</code> ainda se sobrepõe ao lockdown, então só passe a flag se for essa mesmo a intenção. No macOS, o lockdown sempre bloqueia a rede aberta."
     }
   },
   "recipes": {
     "title": "Receitas",
     "lede": "Copie uma. Para ver o que ela monta, rode antes com <code>--dry-run</code>.",
     "items": [
-      { "title": "Um agente em nuvem, no dia a dia", "text": "Um modelo hospedado precisa da rede para chegar à API e do próprio login para autenticar. Coloque os dois no arquivo global e o comando continua curto." },
+      { "title": "Um agente em nuvem, no dia a dia", "text": "Um modelo hospedado precisa chegar à API e do próprio login para autenticar. Coloque os dois no arquivo global e o comando continua curto. Libere só o host da API, ou abra a rede inteira com <code>network = true</code>." },
+      { "title": "Só o host da API do agente", "text": "O agente alcança só a própria API. O Claude usa <code>api.anthropic.com</code>, o Codex <code>api.openai.com</code> e o Gemini <code>generativelanguage.googleapis.com</code>. Se o host estiver faltando na lista, o aviso de inicialização diz qual é." },
+      { "title": "Hosts permitidos no arquivo global", "text": "A lista vale para toda execução daquele comando. Um host permitido é confiável por inteiro: <code>github.com</code> deixa o agente fazer push em qualquer repositório que as suas credenciais alcançam, então só adicione se for isso mesmo que você quer." },
       { "title": "Git push via SSH", "text": "<code>--ssh</code> monta <code>~/.ssh</code> como somente leitura e encaminha o socket do seu agente SSH. O push também precisa da rede." },
       { "title": "Toolchains do mise", "text": "O diretório home novo não tem nenhuma instalação do mise, então o ai-jail pula o mise. Mapeie os dois diretórios do mise para dentro, somente leitura." },
       { "title": "Um navegador para o agente", "text": "<code>--browser</code> sozinho entrega um navegador que não carrega página nem abre janela. No Linux ele também precisa de <code>--network</code> e <code>--display</code>, e um navegador X11 precisa de <code>--x11</code> no lugar de <code>--display</code>." },
@@ -155,13 +173,15 @@
       "once": "# uma vez, em ~/.ai-jail",
       "then": "# depois, em qualquer projeto",
       "wayland": "# Wayland",
-      "x11": "# X11"
+      "x11": "# X11",
+      "open": "# ou abra a rede inteira: network = true",
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
     }
   },
   "compat": {
     "title": "Configs antigas continuam funcionando",
     "text": "Compatibilidade retroativa é regra do projeto: nenhuma flag ou chave de configuração é removida. Chaves desconhecidas são ignoradas e as que faltam assumem o valor padrão, então um arquivo escrito para uma versão antiga ainda carrega.",
-    "legacy": "As opções mais antigas mantêm os nomes invertidos, em que <code>true</code> desliga a coisa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. É por isso que <code>--gpu</code> é salvo como <code>no_gpu = false</code>. As opções mais novas usam nomes diretos, como <code>network = true</code>."
+    "legacy": "As opções mais antigas mantêm os nomes invertidos, em que <code>true</code> desliga a coisa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. É por isso que <code>--gpu</code> é salvo como <code>no_gpu = false</code>. As opções mais novas usam nomes diretos, como <code>network = true</code>. <code>--allow-tcp-port</code> ainda é interpretada e ainda se recusa a iniciar, porque não consegue cercar UDP. O erro dela aponta para <code>--allow-host</code>."
   },
   "next": {
     "items": [

@@ -46,3 +46,28 @@ Terms decided while translating. One English term maps to one target term across
 | residual risks | 잔여 위험 |
 | native speed | 네이티브 속도 |
 | your (machine, home, project) | 내 (컴퓨터, 홈, 프로젝트) |
+| filtered egress | 필터링된 외부 연결 |
+| allowed host | 허용된 호스트 |
+| host allowlist | 호스트 허용 목록 |
+| network modes: off / filtered / open | 꺼짐 / 필터링 / 열림 |
+| API host | API 호스트 |
+| proxy (CONNECT proxy) | 프록시 (CONNECT 프록시) |
+| bridge (in-sandbox) | 브리지 |
+| fence (namespace, seatbelt rule) | 울타리 |
+| trusted wholesale | 통째로 신뢰 |
+| subdomain | 서브도메인 |
+| resolver | 리졸버 |
+| audit log | 감사 로그 |
+| release notes | 릴리스 노트 |
+| checksum | 체크섬 |
+| archive (release .tar.gz) | 압축 파일 |
+| binary | 바이너리 |
+| package manager | 패키지 관리자 |
+| pre-release | 프리릴리스 |
+| free software | 자유 소프트웨어 |
+| agent runtime platform | 에이전트 런타임 플랫폼 |
+| gateway | 게이트웨이 |
+| policy engine | 정책 엔진 |
+| telemetry | 텔레메트리 |
+| brokered (credentials) | 중개 |
+| MicroVM | MicroVM |

@@ -66,3 +66,25 @@ Terms decided while translating. One English term maps to one target term across
 | hosted model | מודל מתארח |
 | refactor | ריפקטור |
 | cell | תא |
+| filtered egress | יציאה מסוננת |
+| network mode: off / filtered / open | מצב רשת: כבויה / מסוננת / פתוחה |
+| host (a network host, as in --allow-host) | host (Latin, kept; מארח stays the host machine) |
+| allowed host | host מורשה (plural: hosts מורשים) |
+| trusted wholesale | זוכה לאמון מלא |
+| subdomains | תת-דומיינים |
+| network namespace | network namespace (kept) |
+| bridge (the in-sandbox forwarder) | גשר |
+| CONNECT proxy | פרוקסי CONNECT |
+| fence / fenced | גדר / מגודר |
+| resolver | resolver |
+| audit log | יומן ביקורת (the flag stays --audit-log) |
+| release notes | הערות גרסה |
+| pre-release | גרסה מוקדמת |
+| checksum | checksum |
+| binary / binaries (download) | קובץ בינארי / קבצים בינאריים |
+| package manager | מנהל חבילות |
+| gateway | gateway |
+| MicroVM | MicroVM |
+| telemetry | טלמטריה |
+| agent runtime platform | פלטפורמה להרצת סוכנים |
+| Download (nav, kicker) | הורדה |

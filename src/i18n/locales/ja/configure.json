@@ -38,7 +38,8 @@
       {
         "title": "ネットワークとサービス",
         "rows": [
-          { "text": "制限なしのネットワークアクセス。エージェントは読めるものを何でも外へ送れます。" },
+          { "text": "ネットワーク全体。エージェントは読めるものを何でも外へ送れます。必要なホストが数個だけなら、<code>--allow-host</code>のほうが厳しく絞れます。" },
+          { "text": "サンドボックスは、指定したホストとそのサブドメインだけに、ai-jail組み込みのプロキシ経由のTCPで届きます。繰り返し指定できます。<code>--network</code>や<code>--browser</code>とは併用できず、プロジェクトファイルはリストを減らすことしかできません。" },
           { "text": "読み取り専用の<code>~/.ssh</code>とSSHエージェントのソケット。<code>git push</code>が動くようになります。" },
           { "text": "Dockerソケット。デーモンはホストをマウントしたコンテナを起動できるので、事実上そのマシンのroot権限です。" },
           { "text": "Tailscaleのソケット。" },
@@ -51,6 +52,7 @@
           { "text": "<code>~/.claude</code>や<code>~/.codex</code>など、エージェント自身のログイン情報と設定。以後、ジェイルの中のものは何でもその認証情報を使えます。" },
           { "text": "指定したディレクトリをClaudeの状態保存先として使い、<code>CLAUDE_CONFIG_DIR</code>を設定します。" },
           { "text": "シェルの変数を1つ渡すか、<code>NAME=VALUE</code>の形で1つ設定します。繰り返し指定でき、ディスクには保存されません。" },
+          { "text": "ファイルから厳密な<code>KEY=VALUE</code>形式の行を読み、<code>--env</code>と同じように渡します。重なった場合はそちらが優先です。ファイルはあなたが所有する通常ファイルで、モードは0600かそれより厳しく、プロジェクトの外にある必要があります。満たさなければ起動は失敗します。ai-jailが値をディスクに保存することはなく、設定キーはグローバルファイルでのみ有効です。" },
           { "text": "シェルの環境全体を、中にある秘密情報ごと渡します。使わないでください。" },
           { "text": "<code>--env</code>と同じですが、グローバルファイルでのみ有効です。プロジェクトファイルで設定しても無視されます。" }
         ]
@@ -86,6 +88,12 @@
         ]
       },
       {
+        "title": "可視性",
+        "rows": [
+          { "text": "起動のたびに1件のレコードを<code>~/.local/share/ai-jail/history.jsonl</code>（ディレクトリは0700、ファイルは0600）に追記します。内容は時刻、コマンド、実際に有効だった機能、設定の出どころ、終了コード、所要時間です。<code>--allow-host</code>を使っていれば、許可または拒否された接続もすべて記録されます。デフォルトでは無効で、プロジェクトファイルは無効にできても有効にはできません。" }
+        ]
+      },
+      {
         "title": "ユーティリティ",
         "rows": [
           { "text": "サンドボックスコマンドを表示するだけで、何も実行しません。設定ファイルを書くこともありません。" },
@@ -117,6 +125,14 @@
     "caveat": {
       "title": "対象は起動時に存在するパスだけ",
       "text": "存在しないパスや、何にも一致しないglobは、警告を出してスキップされます。セッション中に後から作られたファイルは対象になりません。ルールを確実に効かせたいなら、先にファイルを作っておいてください。空の<code>.env</code>で十分です。"
+    },
+    "keys": {
+      "title": "APIキーはどの設定ファイルにも書かない",
+      "text": "マスクの対象はプロジェクト内のファイルです。エージェント自身のキーは、<code>--env NAME</code>でシェルから渡すか、<code>--env-from-file</code>で自分しか読めないファイルから渡してください。どちらも<code>.ai-jail</code>ファイルに書かれることはなく、プロジェクトファイルからは設定できません。",
+      "shellTitle": "ターミナル",
+      "shellNote": "# ファイルは自分の所有で、モード0600、プロジェクトの外に置く",
+      "tomlTitle": "~/.ai-jail",
+      "tomlNote": "# グローバルファイルのみ。プロジェクトファイルで設定しても無視される"
     }
   },
   "lockdown": {
@@ -137,14 +153,16 @@
     "codeTitle": "ターミナル",
     "network": {
       "title": "ロックダウンとネットワーク",
-      "text": "ロックダウンでは、デフォルトでネットワークがありません。ただしLinuxでは<code>--network</code>を付けるとそれが上書きされるので、本当に必要なとき以外は付けないでください。macOSでは、ロックダウンは常にネットワークをブロックします。"
+      "text": "ロックダウンでは、デフォルトでネットワークがありません。<code>--allow-host</code>はロックダウンでも使えるので、ネットワークを開けずに指定したホストへ届きます。Linuxでは<code>--network</code>がロックダウンを上書きするので、本当に必要なとき以外は付けないでください。macOSでは、ロックダウンは全開のネットワークを常にブロックします。"
     }
   },
   "recipes": {
     "title": "レシピ",
     "lede": "コピーして使ってください。何が組み立てられるかを確かめるには、先に<code>--dry-run</code>を付けて実行します。",
     "items": [
-      { "title": "クラウド型エージェントを日常的に使う", "text": "ホスト型のモデルには、APIに接続するためのネットワークと、認証のための自身のログイン情報が必要です。両方をグローバルファイルに書いておけば、コマンドは短いままです。" },
+      { "title": "クラウド型エージェントを日常的に使う", "text": "ホスト型のモデルには、APIへの接続と、認証のための自身のログイン情報が必要です。両方をグローバルファイルに書いておけば、コマンドは短いままです。APIホストだけを許可するか、<code>network = true</code>でネットワーク全体を開けるかを選びます。" },
+      { "title": "エージェントのAPIホストだけ", "text": "エージェントは自分のAPIにしか届きません。Claudeは<code>api.anthropic.com</code>、Codexは<code>api.openai.com</code>、Geminiは<code>generativelanguage.googleapis.com</code>を使います。リストにそのホストがなければ、起動時の警告がホスト名を示します。" },
+      { "title": "グローバルファイルに許可ホストを書く", "text": "リストはそのコマンドのすべての実行に適用されます。許可したホストは丸ごと信頼されます。<code>github.com</code>を許可すると、あなたの認証情報で届くどのリポジトリにもエージェントがpushできるので、それを望むときだけ追加してください。" },
       { "title": "SSH経由でgit pushする", "text": "<code>--ssh</code>は<code>~/.ssh</code>を読み取り専用でマウントし、SSHエージェントのソケットを転送します。pushにはネットワークも必要です。" },
       { "title": "miseのツールチェーン", "text": "新しいホームディレクトリにはmiseでインストールしたものがないので、ai-jailはmiseをスキップします。miseの2つのディレクトリを読み取り専用でマップしてください。" },
       { "title": "エージェント用のブラウザ", "text": "<code>--browser</code>だけでは、ページの読み込みもウィンドウの表示もできないブラウザになります。Linuxでは<code>--network</code>と<code>--display</code>も必要です。X11のブラウザなら、<code>--display</code>の代わりに<code>--x11</code>を使います。" },
@@ -155,13 +173,15 @@
       "once": "# 最初に一度だけ、~/.ai-jailに",
       "then": "# 以降は、どのプロジェクトでも",
       "wayland": "# Wayland",
-      "x11": "# X11"
+      "x11": "# X11",
+      "open": "# または、ネットワーク全体を開ける：network = true",
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
     }
   },
   "compat": {
     "title": "古い設定はそのまま動く",
     "text": "後方互換性はプロジェクトのルールで、フラグや設定キーが削除されることはありません。未知のキーは無視され、足りないキーにはデフォルト値が入るので、古いバージョン向けに書いたファイルもそのまま読み込めます。",
-    "legacy": "古いスイッチは、<code>true</code>で機能が無効になる反転した名前のままです。<code>no_gpu</code>、<code>no_docker</code>、<code>no_display</code>、<code>no_mise</code>、<code>no_landlock</code>、<code>no_seccomp</code>、<code>no_rlimits</code>が該当します。<code>--gpu</code>が<code>no_gpu = false</code>として保存されるのはそのためです。新しいスイッチは<code>network = true</code>のような素直な名前を使います。"
+    "legacy": "古いスイッチは、<code>true</code>で機能が無効になる反転した名前のままです。<code>no_gpu</code>、<code>no_docker</code>、<code>no_display</code>、<code>no_mise</code>、<code>no_landlock</code>、<code>no_seccomp</code>、<code>no_rlimits</code>が該当します。<code>--gpu</code>が<code>no_gpu = false</code>として保存されるのはそのためです。新しいスイッチは<code>network = true</code>のような素直な名前を使います。<code>--allow-tcp-port</code>は今も解析されますが、UDPに柵をかけられないため、起動は引き続き拒否されます。そのエラーは<code>--allow-host</code>を案内します。"
   },
   "next": {
     "items": [

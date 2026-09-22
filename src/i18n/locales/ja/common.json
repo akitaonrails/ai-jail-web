@@ -39,6 +39,10 @@
     "install": {
       "label": "インストール",
       "note": "インストールと初回の実行"
+    },
+    "download": {
+      "label": "ダウンロード",
+      "note": "バイナリ、チェックサム、リリースノート"
     }
   },
   "kicker": {
@@ -47,7 +51,8 @@
     "compare": "比較",
     "configure": "設定",
     "security": "セキュリティ",
-    "install": "インストール"
+    "install": "インストール",
+    "download": "ダウンロード"
   },
   "code": {
     "copy": "コピー",

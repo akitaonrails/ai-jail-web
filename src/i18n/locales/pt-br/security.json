@@ -17,7 +17,7 @@
     "items": [
       { "text": "Seu diretório home e as credenciais que estão nele. O agente recebe um home novo e vazio, então <code>~/.ssh</code> e <code>~/.aws</code> não existem lá dentro." },
       { "text": "Segredos no seu shell. As variáveis de ambiente são reduzidas a uma allowlist pequena, então os tokens exportados ficam de fora." },
-      { "text": "A rede. Ela fica desligada, então nada do que o agente lê pode ser enviado para lugar nenhum." },
+      { "text": "A rede. Ela fica desligada, então nada do que o agente lê pode ser enviado para lugar nenhum. Você pode abri-la para uma lista de hosts, ou por completo." },
       { "text": "A memória compartilhada do host, o seu servidor gráfico e o seu clipboard. A saída do agente passa por um filtro que descarta sequências de terminal de clipboard e de consulta." },
       { "text": "Digitar no seu terminal. O Linux bloqueia a chamada <code>TIOCSTI</code>, que simula teclas, e o macOS restringe o controle de terminal ao único terminal que o ai-jail criou para aquela execução." },
       { "text": "As próprias regras. Um arquivo <code>.ai-jail</code> dentro de um repositório não é confiável: ele pode apertar o sandbox, nunca abrir." }
@@ -37,6 +37,10 @@
       "Segredos dentro do projeto. Um arquivo <code>.env</code> no repositório pode ser lido, a menos que você o mascare. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar arquivos</a>.",
       "As máscaras cobrem só os caminhos que existem quando o sandbox inicia. Um arquivo de segredos criado depois, durante a sessão, não fica escondido.",
       "Side channels e algumas classes de comunicação entre processos.",
+      "Um host permitido é confiável por inteiro. Liberar <code>github.com</code> com <code>--allow-host</code> deixa o agente fazer push em qualquer repositório de lá, não só nos seus.",
+      "A saída filtrada é só TCP. Não há UDP, então um programa que precisa dele não funciona; por outro lado, também não vaza por ali.",
+      "DNS com <code>--allow-host</code>. No Linux, as consultas de nome dentro do sandbox falham, então não existe canal de DNS para fora. No macOS o resolver do sistema não fica cercado, então sobra um canal de DNS de baixa largura de banda, a mesma brecha que a Anthropic documenta para o sandbox-runtime dela.",
+      "O proxy vê o host, a porta e o horário de cada conexão. O que passa lá dentro fica entre as duas pontas. <a class=\"link\" href=\"/how-it-works/#network\">Como a saída filtrada é construída</a>.",
       "No macOS, o <code>sandbox-exec</code> foi marcado como obsoleto pela Apple e não equivale ao isolamento do Linux. <a class=\"link\" href=\"/how-it-works/\">Veja as diferenças no macOS</a>."
     ],
     "callout": {
@@ -46,14 +50,16 @@
   },
   "switches": {
     "title": "Opções que abrem o muro",
-    "lede": "Tudo o que está abaixo fica desligado até você ligar, e cada item dá acesso real ao agente. <a class=\"link\" href=\"/configure/#switches\">Como definir cada um está na página Configurar</a>.",
+    "lede": "Tudo o que está abaixo fica desligado até você ligar, e a maioria dá acesso real ao agente. <a class=\"link\" href=\"/configure/#switches\">Como definir cada um está na página Configurar</a>.",
     "head": { "flag": "Opção", "gives": "O que qualquer coisa no sandbox passa a poder fazer" },
     "rows": [
-      "Enviar para qualquer lugar tudo o que consegue ler. O tráfego é irrestrito e não há filtro por domínio.",
+      "Enviar para qualquer lugar tudo o que consegue ler. O tráfego é irrestrito. <code>--allow-host</code> é a alternativa mais apertada.",
+      "Alcançar exatamente os hosts que você lista, e seus subdomínios, por TCP, através de um proxy embutido. Cada host listado é confiável por inteiro.",
+      "Nada de novo. Esta opção não enfraquece nada: ela grava uma linha por inicialização num arquivo com modo 0600 fora do sandbox, então o agente nunca o vê.",
       "Agir como root na sua máquina por meio do daemon do Docker.",
       "Capturar teclas e tirar screenshots de outras janelas X11.",
       "Pedir ao seu gerenciador de usuário do systemd para rodar serviços no host.",
-      "Ler o ambiente inteiro do seu shell, com os segredos.",
+      "Ler o ambiente inteiro do seu shell, com os segredos. Para chaves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> passa um arquivo no lugar.",
       "Usar o login salvo do agente, por exemplo o <code>~/.claude</code> do Claude.",
       "Gravar e reproduzir áudio enquanto estiver ligada.",
       "Ver o seu diretório home real. É uma exceção ampla; prefira mapear só o caminho de que você precisa."
@@ -66,7 +72,9 @@
       "Um arquivo de configuração que existe e está inválido ou ilegível.",
       "Um <code>.ai-jail</code> de projeto que é um symlink. Um <code>~/.ai-jail</code> global que é symlink só é seguido até um arquivo regular que pertence a você, em que ninguém mais pode escrever, fora do projeto.",
       "<code>--lockdown</code> quando o Landlock, as regras de sistema de arquivos do próprio kernel, está ausente, parcial ou falha ao ser aplicado. <code>--lockdown --no-landlock</code> também é rejeitado.",
-      "<code>--allow-tcp-port</code>. Essa interface não consegue restringir UDP, então a flag é aceita por compatibilidade e a inicialização falha.",
+      "<code>--allow-tcp-port</code>. Essa interface não consegue restringir UDP, então a flag é aceita por compatibilidade, a inicialização falha e o erro aponta para <code>--allow-host</code>.",
+      "<code>--network</code> junto com <code>--allow-host</code>, ou <code>--browser</code> com <code>--allow-host</code>. As duas se contradizem, então o ai-jail se recusa a iniciar.",
+      "Um arquivo de <code>--env-from-file</code> que é um symlink, que o grupo ou todo mundo consegue ler, que pertence a outra pessoa ou que está dentro do projeto.",
       "Um <code>BWRAP_BIN</code> que aponta para um binário do bubblewrap que alguém além do root poderia ter trocado. Ele é ignorado com um aviso, e sem um bubblewrap confiável a inicialização falha."
     ],
     "counter": {
@@ -79,7 +87,7 @@
     "lede": "Um único mantenedor toca o projeto, tudo em aberto. Abaixo está o que é verificado e o que não é.",
     "facts": [
       { "label": "testes de integração de fuga do sandbox, que tentam escrever em <code>/usr</code>, ler <code>~/.ssh</code>, chamar <code>ptrace</code> e <code>bpf</code>, e esperam falhar" },
-      { "label": "testes unitários na árvore de código-fonte na versão 1.22.0" },
+      { "label": "testes unitários na árvore de código-fonte na versão {version}" },
       { "label": "requisições de rede na inicialização. A checagem de atualização é opt-in, com <code>--update-check</code>" }
     ],
     "audit": {
@@ -106,6 +114,10 @@
         "Com um único mantenedor, não há um segundo revisor para as mudanças nem para as releases."
       ],
       "link": "Ler o RELEASE_SECURITY.md"
+    },
+    "log": {
+      "title": "Um log do que você liberou",
+      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar."
     }
   },
   "report": {
@@ -117,7 +129,7 @@
     "title": "Perguntas comuns",
     "items": [
       { "q": "O agente consegue escapar?", "a": "Os padrões são feitos e testados para bloquear os caminhos comuns: arquivos, ambiente, rede e IPC do host. Um bug de kernel, de driver, de terminal ou do backend do sandbox ainda poderia deixá-lo sair. Todo sandbox de processo tem esse limite, e por isso o lugar de código hostil é uma VM descartável." },
-      { "q": "É seguro rodar com a rede ligada?", "a": "É mais seguro do que rodar o agente sem nada, porque as suas chaves e o seu diretório home continuam fora, sem ter como ser enviados. Tudo o que o agente consegue ler, ele consegue enviar, e o ai-jail não tem filtro por domínio. Mascare antes os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>." },
+      { "q": "É seguro rodar com a rede ligada?", "a": "É mais seguro do que rodar o agente sem nada, porque as suas chaves e o seu diretório home continuam fora, sem ter como ser enviados. Com <code>--network</code>, tudo o que o agente consegue ler, ele consegue enviar. O meio-termo é <code>--allow-host</code>: só os hosts que você lista ficam alcançáveis, e cada um é confiável por inteiro. Mascare antes os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>." },
       { "q": "Ele já foi auditado?", "a": "Internamente, antes da 1.0, com os relatórios publicados no repositório. Nunca passou por auditoria de terceiros. O código é aberto sob a GPL 3.0, e relatos privados de vulnerabilidade são bem-vindos." }
     ]
   },

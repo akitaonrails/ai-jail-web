@@ -50,3 +50,19 @@ Terms decided while translating. One English term maps to one target term across
 | recipes | receitas |
 | research preview | research preview |
 | Keep reading | Continue lendo |
+| filtered egress | saída filtrada |
+| network modes: off / filtered / open | rede desligada / filtrada / aberta |
+| allowed host | host permitido |
+| trusted wholesale | confiável por inteiro |
+| to allow (a host) | liberar |
+| audit log | log de auditoria |
+| proxy, CONNECT proxy | proxy, proxy CONNECT |
+| fence (the namespace or seatbelt rule) | cerca / cercado |
+| bridge (in-sandbox forwarder) | ponte |
+| seatbelt | seatbelt |
+| resolver | resolver |
+| release notes | notas da release |
+| checksum | checksum |
+| pre-release | pré-release |
+| download (nav, page) | Download (verb: baixar) |
+| agent runtime platform | plataforma de runtime para agentes |

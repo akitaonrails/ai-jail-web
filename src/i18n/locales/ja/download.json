@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "ai-jailのダウンロード（LinuxとmacOS）",
+    "description": "ai-jailの最新リリースをダウンロード。Linux x86_64とmacOS Apple Silicon向けのビルド済みアーカイブとSHA-256チェックサム、パッケージマネージャーでの導入、リリースノート。"
+  },
+  "hero": {
+    "title": "ai-jail {tag}をダウンロード",
+    "lede": "{date}リリース。Linux用とmacOS用のアーカイブが1つずつあり、それぞれにSHA-256チェックサムが並んでいます。{license}のフリーソフトウェアです。",
+    "jump": "バイナリを入手する",
+    "changelog": "変更点"
+  },
+  "builds": {
+    "title": "バイナリ",
+    "lede": "インストールは1手順です。アーカイブを展開して、<code>ai-jail</code>を<code>PATH</code>の通った場所に置きます。",
+    "yours": "お使いのシステム",
+    "size": "{size} MB",
+    "download": "ダウンロード",
+    "checksum": "チェックサム",
+    "items": [
+      {
+        "title": "Linux x86_64",
+        "text": "bubblewrapが必要です。ai-jailがサンドボックスの構築に使う小さなプログラムで、ほとんどのディストリビューションでは<code>bubblewrap</code>という名前でパッケージになっています。"
+      },
+      {
+        "title": "macOS Apple Silicon",
+        "text": "MシリーズチップのMac向けです。バイナリは署名され、Appleの公証を受けているので、macOSは警告なしに実行します。"
+      }
+    ],
+    "verify": {
+      "title": "チェックサムを確認する",
+      "text": "アーカイブと<code>.sha256</code>ファイルを同じフォルダに置き、お使いのシステムの行を実行します。アーカイブが一致すれば<code>OK</code>と表示されます。",
+      "comments": ["# Linux", "# macOS"],
+      "more": "リリースタグにも署名があります。リリースの作り方と、まだ足りないものは<a class=\"link\" href=\"/security/#checked\">セキュリティ</a>のページにあります。"
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "Windowsのネイティブビルドはありません。WSL2を使い、その中でLinux用のアーカイブを使ってください。"
+    }
+  },
+  "channels": {
+    "title": "パッケージマネージャー",
+    "lede": "どれも、普段使っているツールで同じプログラムをインストールし、更新もそのツールから受け取れます。",
+    "items": [
+      { "title": "Homebrew", "text": "macOSとLinux。" },
+      { "title": "Arch Linux", "text": "<code>ai-jail-bin</code>はビルド済みバイナリ、<code>ai-jail</code>はソースからビルドします。" },
+      { "title": "crates.io", "text": "Rust {rust}と、リリースのテストに使われたバージョンの依存でビルドします。" },
+      { "title": "Nix", "text": "このflakeは、ai-jailが同梱のbubblewrapを使うよう設定します。" }
+    ],
+    "link": "インストールと最初の実行"
+  },
+  "changelog": {
+    "title": "リリースノート",
+    "lede": "直近{n}件のリリースを、プロジェクトが公開したままの形で載せています。",
+    "english": "リリースノートはプロジェクト自身の文章なので、英語のままです。",
+    "prerelease": "プレリリース",
+    "all": "GitHubのリリース一覧"
+  },
+  "next": {
+    "items": [
+      { "title": "インストール", "text": "最初の実行。ドライラン、中の見学、そして必要な2つを付けたエージェントの起動。" },
+      { "title": "設定", "text": "すべてのフラグと設定キー、そしてタスクに必要なものだけを開ける方法。" },
+      { "title": "セキュリティ", "text": "脅威モデル、リリースの署名方法、まだ足りないもの。" }
+    ]
+  }
+}

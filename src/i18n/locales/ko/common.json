@@ -39,6 +39,10 @@
     "install": {
       "label": "설치",
       "note": "설치와 첫 실행"
+    },
+    "download": {
+      "label": "다운로드",
+      "note": "바이너리, 체크섬, 릴리스 노트"
     }
   },
   "kicker": {
@@ -47,7 +51,8 @@
     "compare": "비교",
     "configure": "설정",
     "security": "보안",
-    "install": "설치"
+    "install": "설치",
+    "download": "다운로드"
   },
   "code": {
     "copy": "복사",

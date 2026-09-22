@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Como o ai-jail funciona",
-    "description": "O que acontece quando você digita ai-jail claude: as camadas do kernel entre o seu agente de código e o seu sistema no Linux, e o que muda no macOS."
+    "description": "O que acontece quando você digita ai-jail claude: as camadas do kernel entre o seu agente de código e o seu sistema no Linux, os três modos de rede e o que muda no macOS."
   },
   "hero": {
     "title": "O que acontece quando você digita ai-jail claude",
-    "lede": "O ai-jail monta uma cópia pequena e fechada do seu sistema, coloca o seu projeto nela e inicia o agente lá dentro. Os muros são recursos do próprio sistema operacional, então o agente roda em velocidade total e não consegue desligá-los.",
+    "lede": "O ai-jail monta uma cópia pequena e fechada do seu sistema, coloca o seu projeto nela e inicia o agente lá dentro. Os muros são recursos do próprio sistema operacional, então o agente roda em velocidade total e não consegue desligá-los. A rede fica desligada, aberta para alguns hosts nomeados ou totalmente aberta: você escolhe a cada inicialização.",
     "install": "Instalar",
     "security": "Ler o modelo de ameaças"
   },
@@ -33,7 +33,7 @@
         "name": "Namespaces",
         "tag": "bubblewrap",
         "is": "Um namespace é o kernel dando a um processo uma visão privada do sistema. O ai-jail pede ao bubblewrap para criá-los. É a mesma ferramenta pequena que o Flatpak usa para isolar apps de desktop, e ela não precisa de root.",
-        "stops": "O agente ganha a própria lista de processos, o próprio hostname (<code>ai-sandbox</code>), nenhum canal de comunicação com os programas do host e nenhuma rede, a menos que você passe <code>--network</code>. Se o ai-jail morrer, tudo lá dentro morre junto."
+        "stops": "O agente ganha a própria lista de processos, o próprio hostname (<code>ai-sandbox</code>), nenhum canal de comunicação com os programas do host e um network namespace sem rota para fora, a menos que você abra uma com <code>--allow-host</code> ou <code>--network</code>. Se o ai-jail morrer, tudo lá dentro morre junto."
       },
       {
         "name": "Sistema de arquivos",
@@ -51,7 +51,7 @@
         "name": "seccomp",
         "tag": "chamadas de sistema",
         "is": "Os programas pedem coisas ao kernel por meio de chamadas de sistema (syscalls). O seccomp é um filtro sobre essas chamadas, e o ai-jail usa esse filtro para recusar as que um agente de código nunca precisa.",
-        "stops": "O filtro bloqueia <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, módulos do kernel, <code>io_uring</code>, o keyring do kernel, raw sockets e <code>TIOCSTI</code>, a chamada que digita teclas num terminal. É uma blocklist de propósito, para que compiladores e runtimes continuem funcionando."
+        "stops": "O filtro bloqueia <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, módulos do kernel, <code>io_uring</code>, o keyring do kernel, raw sockets e <code>TIOCSTI</code>, a chamada que digita teclas num terminal. É uma blocklist de propósito, para que compiladores e runtimes continuem funcionando. O único processo iniciado antes de o Landlock e o seccomp valerem é a pequena ponte que leva o tráfego de rede filtrado para fora, então só ela fica sem restrição."
       },
       {
         "name": "Limites de recursos",
@@ -73,6 +73,23 @@
       }
     ]
   },
+  "egress": {
+    "title": "Três caminhos até a rede",
+    "lede": "Cada inicialização escolhe um de três modos de rede. O padrão é o mais restrito, e os outros dois são flags que você passa de propósito.",
+    "alt": "Três painéis, da esquerda para a direita. Desligada: o chip do agente dentro de um muro fechado, com uma nuvem apagada e gradeada do lado de fora. Filtrada: um portão pequeno no muro leva a uma caixa de proxy, que se conecta a uma nuvem ciano com o rótulo api.anthropic.com enquanto uma segunda nuvem continua apagada e gradeada. Aberta: o lado da rede do muro não existe, e o chip se conecta direto à nuvem.",
+    "caption": "Desligada é o padrão. Filtrada abre um portão só para hosts nomeados. Aberta remove o muro do lado da rede.",
+    "modes": [
+      { "title": "Desligada", "text": "O padrão. O sandbox ganha um network namespace privado sem rota para fora, então nada lá dentro alcança a rede." },
+      { "title": "Filtrada", "text": "<code>--allow-host HOST</code>, pode ser repetida. O namespace continua fechado; uma ponte pequena lá dentro encaminha o tráfego para um proxy CONNECT do lado de fora, que disca só para os hosts listados e seus subdomínios. O proxy resolve cada nome uma vez, do lado de fora, e disca o endereço que conferiu. O ai-jail define <code>http_proxy</code> lá dentro, e um programa que ignora isso não alcança nada." },
+      { "title": "Aberta", "text": "<code>--network</code>. O muro some do lado da rede, e o agente pode enviar para fora o que conseguir ler." }
+    ],
+    "head": { "linux": "Linux", "macos": "macOS" },
+    "rows": [
+      { "what": "A cerca no modo filtrado", "linux": "O próprio network namespace, mais a ponte dentro dele", "macos": "Uma regra do <code>sandbox-exec</code> que permite conexões de saída só para a porta do proxy" },
+      { "what": "DNS dentro do sandbox", "linux": "Falha. O proxy resolve os nomes do lado de fora.", "macos": "O resolver do sistema não fica cercado, então sobra um canal de DNS de baixa largura de banda" }
+    ],
+    "link": "As flags, as ressalvas e o que o proxy registra"
+  },
   "macos": {
     "title": "No macOS o muro é mais fino",
     "lede": "O macOS não tem namespaces, Landlock nem seccomp. O ai-jail transforma a mesma política num perfil para o <code>sandbox-exec</code>, o sandbox embutido da Apple. A documentação do ai-jail diz com todas as letras que isso não equivale ao isolamento do Linux.",
@@ -84,7 +101,7 @@
       { "what": "Diretório home", "linux": "Um home novo, na memória. O seu home real não é montado.", "macos": "O perfil começa sem nenhuma leitura global e depois libera só os caminhos de que o agente precisa, então o seu home real continua fechado." },
       { "what": "<code>/tmp</code>", "linux": "Privado, descartado na saída", "macos": "O <code>/tmp</code> do host, porque não existe mount namespace. <code>TMPDIR</code> aponta para uma pasta privada criada para aquela inicialização, e esse é o único caminho temporário liberado." },
       { "what": "Mapeamentos copy-on-write", "linux": "<code>--overlay-map</code> deixa o agente escrever numa cópia", "macos": "Tratado como um mapeamento somente leitura" },
-      { "what": "Rede", "linux": "Desligada por padrão, num network namespace próprio", "macos": "Desligada por padrão. No lockdown fica sempre bloqueada, mesmo com <code>--network</code>." },
+      { "what": "Rede", "linux": "Desligada por padrão: um network namespace sem rota para fora até <code>--allow-host</code> ou <code>--network</code> abrir uma", "macos": "Desligada por padrão, com as mesmas duas flags. No lockdown fica sempre bloqueada, mesmo com <code>--network</code>." },
       { "what": "Outros programas", "linux": "Invisíveis: lista de processos própria, sem IPC do host", "macos": "Mach, IOKit e IPC do host são negados, a menos que você passe <code>--macos-host-ipc</code>" }
     ],
     "windows": {
@@ -113,11 +130,11 @@
       { "label": "testes unitários no código-fonte" },
       { "label": "testes que tentam escapar de um sandbox real" }
     ],
-    "note": "Contado no repositório do ai-jail na versão 1.22.0."
+    "note": "Contado no repositório do ai-jail na versão {version}."
   },
   "limit": {
     "title": "O que as camadas não cobrem",
-    "text": "Tudo isso compartilha o seu kernel. Um exploit de kernel ou de driver está fora da fronteira, assim como tudo o que você mesmo abre: um agente com <code>--network</code> pode enviar para fora o que conseguir ler. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
+    "text": "Tudo isso compartilha o seu kernel. Um exploit de kernel ou de driver está fora da fronteira, assim como tudo o que você mesmo abre: um agente com <code>--network</code> pode enviar para fora o que conseguir ler, e um host permitido é confiável por inteiro. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
     "link": "O modelo de ameaças e os riscos residuais"
   },
   "next": [

@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "title": "הורדת ai-jail ל-Linux ול-macOS",
+    "description": "הורדת הגרסה האחרונה של ai-jail: ארכיונים מוכנים ל-Linux x86_64 ול-macOS Apple Silicon עם checksums מסוג SHA-256, התקנה דרך מנהלי חבילות, והערות הגרסה."
+  },
+  "hero": {
+    "title": "הורדת ai-jail {tag}",
+    "lede": "יצאה ב-{date}. ארכיון אחד ל-Linux ואחד ל-macOS, ולצד כל אחד checksum מסוג SHA-256. תוכנה חופשית ברישיון {license}.",
+    "jump": "לקובץ הבינארי",
+    "changelog": "מה השתנה"
+  },
+  "builds": {
+    "title": "קבצים בינאריים",
+    "lede": "ההתקנה היא צעד אחד: חלצו את הארכיון ושימו את <code>ai-jail</code> במקום כלשהו שנמצא ב-<code>PATH</code> שלכם.",
+    "yours": "המערכת שלכם",
+    "size": "{size} MB",
+    "download": "הורדה",
+    "checksum": "Checksum",
+    "items": [
+      { "title": "Linux x86_64", "text": "צריך bubblewrap, התוכנית הקטנה ש-ai-jail משתמש בה כדי לבנות את ה-sandbox. ברוב ההפצות החבילה נקראת <code>bubblewrap</code>." },
+      { "title": "macOS Apple Silicon", "text": "למחשבי Mac עם שבב מסדרת M. הקובץ הבינארי חתום ועבר notarization של Apple, ולכן macOS מריץ אותו בלי אזהרה." }
+    ],
+    "verify": {
+      "title": "בדיקת ה-checksum",
+      "text": "שימו את הארכיון ואת קובץ ה-<code>.sha256</code> שלו באותה תיקייה, והריצו את השורה שמתאימה למערכת שלכם. כשהארכיון תואם, מודפס <code>OK</code>.",
+      "comments": ["# Linux", "# macOS"],
+      "more": "גם תגיות הגרסה חתומות. בעמוד <a class=\"link\" href=\"/security/#checked\">אבטחה</a> מפורט איך נוצרת גרסה ומה עדיין חסר."
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "אין build מקורי ל-Windows. השתמשו ב-WSL2 ובארכיון של Linux בתוכו."
+    }
+  },
+  "channels": {
+    "title": "מנהלי חבילות",
+    "lede": "כל אחד מאלה מתקין את אותה תוכנה דרך כלי שאתם כבר משתמשים בו, והעדכונים מגיעים ממנו.",
+    "items": [
+      { "title": "Homebrew", "text": "macOS ו-Linux." },
+      { "title": "Arch Linux", "text": "<code>ai-jail-bin</code> הוא הקובץ הבינארי המוכן. <code>ai-jail</code> נבנה מהמקור." },
+      { "title": "crates.io", "text": "נבנה עם Rust {rust} ועם גרסאות התלויות שהגרסה נבדקה איתן." },
+      { "title": "Nix", "text": "ה-flake מפנה את ai-jail לעותק bubblewrap משלו." }
+    ],
+    "link": "התקנה והרצה ראשונה"
+  },
+  "changelog": {
+    "title": "הערות גרסה",
+    "lede": "{n} הגרסאות האחרונות, כפי שהפרויקט מפרסם אותן.",
+    "english": "הערות הגרסה הן הטקסט של הפרויקט עצמו ונשארות באנגלית.",
+    "prerelease": "גרסה מוקדמת",
+    "all": "כל הגרסאות ב-GitHub"
+  },
+  "next": {
+    "items": [
+      { "title": "התקנה", "text": "ההרצה הראשונה: dry run, מבט מבפנים, ואז הסוכן עם שני הדברים שהוא צריך." },
+      { "title": "הגדרה", "text": "כל הדגלים ומפתחות ההגדרה, ואיך פותחים רק את מה שהמשימה צריכה." },
+      { "title": "אבטחה", "text": "מודל האיומים, איך גרסה נחתמת, ומה עדיין חסר." }
+    ]
+  }
+}

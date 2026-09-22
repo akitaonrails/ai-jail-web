@@ -15,12 +15,24 @@
     "alt": "El agente y el proyecto están dentro de un muro de barrotes. Seis flechas salen del agente y rebotan en el muro. Fuera, atenuados y tras barrotes, están tu home y tus claves, los secretos de tu shell, la red, tu pantalla y tu portapapeles, tu terminal y la política de la jaula.",
     "caption": "Los valores por defecto. Todo lo que está fuera se queda ahí hasta que lo abras tú.",
     "items": [
-      { "text": "Tu directorio home y las credenciales que contiene. El agente recibe un home nuevo y vacío, así que <code>~/.ssh</code> y <code>~/.aws</code> no existen ahí dentro." },
-      { "text": "Los secretos de tu shell. Las variables de entorno se reducen a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera." },
-      { "text": "La red. Está apagada, así que nada de lo que el agente lee se puede enviar a ningún lado." },
-      { "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta." },
-      { "text": "Escribir en tu terminal. Linux bloquea la llamada <code>TIOCSTI</code>, que falsifica pulsaciones de teclas, y macOS limita el control de terminal a la única terminal que ai-jail creó para esa ejecución." },
-      { "text": "Sus propias reglas. Un archivo <code>.ai-jail</code> dentro de un repositorio no es de confianza: puede endurecer el sandbox y nunca abrirlo." }
+      {
+        "text": "Tu directorio home y las credenciales que contiene. El agente recibe un home nuevo y vacío, así que <code>~/.ssh</code> y <code>~/.aws</code> no existen ahí dentro."
+      },
+      {
+        "text": "Los secretos de tu shell. Las variables de entorno se reducen a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera."
+      },
+      {
+        "text": "La red. Está apagada, así que nada de lo que el agente lee se puede enviar a ningún lado. Puedes abrirla a una lista de hosts, o del todo."
+      },
+      {
+        "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta."
+      },
+      {
+        "text": "Escribir en tu terminal. Linux bloquea la llamada <code>TIOCSTI</code>, que falsifica pulsaciones de teclas, y macOS limita el control de terminal a la única terminal que ai-jail creó para esa ejecución."
+      },
+      {
+        "text": "Sus propias reglas. Un archivo <code>.ai-jail</code> dentro de un repositorio no es de confianza: puede endurecer el sandbox y nunca abrirlo."
+      }
     ],
     "link": "Cómo lo hace cada capa"
   },
@@ -37,6 +49,10 @@
       "Secretos dentro del proyecto. Un archivo <code>.env</code> en el repositorio se puede leer salvo que lo enmascares. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascarar archivos</a>.",
       "Las máscaras cubren solo las rutas que existen cuando arranca el sandbox. Un archivo con secretos creado después, durante la sesión, no queda oculto.",
       "Canales laterales y algunas clases de comunicación entre procesos.",
+      "Un host permitido es de confianza por completo. Permitir <code>github.com</code> con <code>--allow-host</code> deja que el agente haga push a cualquier repositorio de ahí, no solo a los tuyos.",
+      "La salida filtrada es solo TCP. No hay UDP, así que un programa que lo necesite no funciona; tampoco puede sacar nada por ahí.",
+      "El DNS bajo <code>--allow-host</code>. En Linux, las consultas de nombres dentro del sandbox fallan, así que no hay canal DNS hacia fuera. En macOS el resolver del sistema no está vallado, así que queda un canal DNS de poco ancho de banda, la misma brecha que Anthropic documenta para su propio sandbox-runtime.",
+      "El proxy ve el host, el puerto y el momento de cada conexión. Lo que viaja dentro queda entre los dos extremos. <a class=\"link\" href=\"/how-it-works/#network\">Cómo está construida la salida filtrada</a>.",
       "En macOS, <code>sandbox-exec</code> está marcado como obsoleto por Apple y no equivale al aislamiento de Linux. <a class=\"link\" href=\"/how-it-works/\">Mira las diferencias en macOS</a>."
     ],
     "callout": {
@@ -46,14 +62,19 @@
   },
   "switches": {
     "title": "Interruptores que abren el muro",
-    "lede": "Todo lo de abajo está apagado hasta que lo activas, y cada uno le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
-    "head": { "flag": "Interruptor", "gives": "Lo que puede hacer entonces cualquier cosa dentro del sandbox" },
+    "lede": "Todo lo de abajo está apagado hasta que lo activas, y la mayoría le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
+    "head": {
+      "flag": "Interruptor",
+      "gives": "Lo que puede hacer entonces cualquier cosa dentro del sandbox"
+    },
     "rows": [
-      "Enviar a cualquier parte todo lo que puede leer. El tráfico no tiene restricciones y no hay filtro por dominio.",
+      "Enviar a cualquier parte todo lo que puede leer. El tráfico no tiene restricciones. <code>--allow-host</code> es la alternativa más estricta.",
+      "Llegar exactamente a los hosts que listas, y a sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo.",
+      "Nada nuevo. Este interruptor no debilita nada: escribe una línea por arranque en un archivo con modo 0600 fuera del sandbox, así que el agente nunca lo ve.",
       "Actuar como root en tu máquina a través del daemon de Docker.",
       "Registrar pulsaciones de teclas y tomar capturas de otras ventanas de X11.",
       "Pedirle a tu gestor de usuario de systemd que ejecute servicios en el host.",
-      "Leer todo el entorno de tu shell, secretos incluidos.",
+      "Leer todo el entorno de tu shell, secretos incluidos. Para las claves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> pasa un solo archivo en su lugar.",
       "Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude.",
       "Grabar y reproducir audio mientras esté activado.",
       "Ver tu directorio home real. Es una excepción amplia; mejor mapea la única ruta que necesitas."
@@ -66,7 +87,9 @@
       "Un archivo de configuración que existe y es inválido o ilegible.",
       "Un <code>.ai-jail</code> de proyecto que es un symlink. Un <code>~/.ai-jail</code> global que es un symlink se sigue solo hasta un archivo regular del que eres dueño, que nadie más puede escribir y que está fuera del proyecto.",
       "<code>--lockdown</code> cuando Landlock, las reglas de sistema de archivos del propio kernel, falta, es parcial o no se puede aplicar. <code>--lockdown --no-landlock</code> también se rechaza.",
-      "<code>--allow-tcp-port</code>. Esa interfaz no puede restringir UDP, así que el flag se acepta por compatibilidad y el arranque falla.",
+      "<code>--allow-tcp-port</code>. Esa interfaz no puede restringir UDP, así que el flag se acepta por compatibilidad, el arranque falla y el error apunta a <code>--allow-host</code>.",
+      "<code>--network</code> junto con <code>--allow-host</code>, o <code>--browser</code> con <code>--allow-host</code>. Los dos se contradicen, así que ai-jail se niega a arrancar.",
+      "Un archivo de <code>--env-from-file</code> que es un symlink, que puede leer su grupo o todo el mundo, que pertenece a otra persona o que está dentro del proyecto.",
       "Un <code>BWRAP_BIN</code> que apunta a un binario de bubblewrap que alguien distinto de root pudo haber reemplazado. Se ignora con una advertencia, y sin un bubblewrap de confianza el arranque falla."
     ],
     "counter": {
@@ -78,9 +101,15 @@
     "title": "Cómo se revisa el proyecto",
     "lede": "Un solo mantenedor lleva el proyecto de forma abierta. Abajo está lo que se revisa y lo que no.",
     "facts": [
-      { "label": "tests de integración de escape del sandbox que intentan escribir en <code>/usr</code>, leer <code>~/.ssh</code>, llamar a <code>ptrace</code> y <code>bpf</code>, y esperan fallar" },
-      { "label": "tests unitarios en el código fuente en la versión 1.22.0" },
-      { "label": "peticiones de red al arrancar. La comprobación de actualizaciones es opt-in con <code>--update-check</code>" }
+      {
+        "label": "tests de integración de escape del sandbox que intentan escribir en <code>/usr</code>, leer <code>~/.ssh</code>, llamar a <code>ptrace</code> y <code>bpf</code>, y esperan fallar"
+      },
+      {
+        "label": "tests unitarios en el código fuente en la versión {version}"
+      },
+      {
+        "label": "peticiones de red al arrancar. La comprobación de actualizaciones es opt-in con <code>--update-check</code>"
+      }
     ],
     "audit": {
       "title": "Auditado internamente, no por un tercero",
@@ -106,6 +135,10 @@
         "Con un solo mantenedor no hay un segundo revisor para los cambios ni para las versiones."
       ],
       "link": "Leer RELEASE_SECURITY.md"
+    },
+    "log": {
+      "title": "Un registro de lo que permitiste",
+      "text": "<code>--audit-log</code> responde dos preguntas: qué le dejé hacer a ese agente y adónde intentó llegar. Añade una línea JSON por arranque y, con <code>--allow-host</code> activado, una línea por cada conexión permitida o denegada. Está apagado por defecto, y un <code>.ai-jail</code> de proyecto solo puede apagarlo."
     }
   },
   "report": {
@@ -116,14 +149,32 @@
   "faq": {
     "title": "Preguntas frecuentes",
     "items": [
-      { "q": "¿El agente puede escaparse?", "a": "Los valores por defecto están hechos y probados para bloquear las rutas habituales: archivos, entorno, red e IPC del host. Un bug del kernel, de un driver, de la terminal o del backend del sandbox todavía podría dejarlo salir. Todo sandbox de procesos tiene ese límite, y por eso el código hostil va en una VM desechable." },
-      { "q": "¿Es seguro ejecutarlo con la red activada?", "a": "Es más seguro que ejecutar el agente sin jaula, porque tus claves y tu directorio home siguen sin estar ahí para enviarlos. Todo lo que el agente puede leer, lo puede enviar, y ai-jail no tiene filtrado por dominio. Enmascara primero los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>." },
-      { "q": "¿Ha sido auditado?", "a": "Internamente, antes de la 1.0, con los informes publicados en el repositorio. No ha tenido ninguna auditoría de terceros. El código es abierto bajo GPL 3.0, y los reportes privados de vulnerabilidades son bienvenidos." }
+      {
+        "q": "¿El agente puede escaparse?",
+        "a": "Los valores por defecto están hechos y probados para bloquear las rutas habituales: archivos, entorno, red e IPC del host. Un bug del kernel, de un driver, de la terminal o del backend del sandbox todavía podría dejarlo salir. Todo sandbox de procesos tiene ese límite, y por eso el código hostil va en una VM desechable."
+      },
+      {
+        "q": "¿Es seguro ejecutarlo con la red activada?",
+        "a": "Es más seguro que ejecutar el agente sin jaula, porque tus claves y tu directorio home siguen sin estar ahí para enviarlos. Con <code>--network</code>, todo lo que el agente puede leer, lo puede enviar. El punto medio es <code>--allow-host</code>: solo se llega a los hosts que listas, y cada uno es de confianza por completo. Enmascara primero los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
+      },
+      {
+        "q": "¿Ha sido auditado?",
+        "a": "Internamente, antes de la 1.0, con los informes publicados en el repositorio. No ha tenido ninguna auditoría de terceros. El código es abierto bajo GPL 3.0, y los reportes privados de vulnerabilidades son bienvenidos."
+      }
     ]
   },
   "next": [
-    { "title": "Cómo funciona", "text": "Las capas entre el agente y tu sistema, y qué cambia en macOS." },
-    { "title": "Configurar", "text": "Cada interruptor, cómo enmascarar secretos y el modo lockdown." },
-    { "title": "Comparar", "text": "Los sandboxes integrados de los agentes, Docker y las máquinas virtuales, lado a lado." }
+    {
+      "title": "Cómo funciona",
+      "text": "Las capas entre el agente y tu sistema, y qué cambia en macOS."
+    },
+    {
+      "title": "Configurar",
+      "text": "Cada interruptor, cómo enmascarar secretos y el modo lockdown."
+    },
+    {
+      "title": "Comparar",
+      "text": "Los sandboxes integrados de los agentes, Docker y las máquinas virtuales, lado a lado."
+    }
   ]
 }

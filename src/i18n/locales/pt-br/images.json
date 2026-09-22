@@ -63,7 +63,7 @@
     "Run the agent": "Rodar o agente",
     "Agent": "Agente",
     "Project": "Projeto",
-    "Network": "Rede",
+    "API host": "Host da API",
     "Login": "Login",
     "Your home": "Seu home"
   },
@@ -119,5 +119,11 @@
     "Hooks": "Hooks",
     "Your home": "Seu home",
     "Project": "Projeto"
+  },
+  "how-egress": {
+    "Off": "Desligada",
+    "Filtered": "Filtrada",
+    "Open": "Aberta",
+    "Proxy": "Proxy"
   }
 }

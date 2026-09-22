@@ -63,7 +63,7 @@
     "Run the agent": "에이전트 실행",
     "Agent": "에이전트",
     "Project": "프로젝트",
-    "Network": "네트워크",
+    "API host": "API 호스트",
     "Login": "로그인",
     "Your home": "내 홈"
   },
@@ -119,5 +119,11 @@
     "Hooks": "훅",
     "Your home": "내 홈",
     "Project": "프로젝트"
+  },
+  "how-egress": {
+    "Off": "꺼짐",
+    "Filtered": "필터링",
+    "Open": "열림",
+    "Proxy": "프록시"
   }
 }

@@ -53,3 +53,20 @@ Terms decided while translating. One English term maps to one target term across
 | recipe | レシピ |
 | clone / push / export / glob / worktree | 英語のまま (cloneする、pushする) |
 | Spacing | 和文と欧文・`<code>` の間にスペースを入れない。括弧は和文中では全角（）、コロンは全角： |
+| filtered egress | フィルタ付き外向き通信 |
+| network modes: off / filtered / open | 無効 / フィルタ付き / 全開 (図のラベルも同じ) |
+| allowed host / host allowlist | 許可ホスト / ホストの許可リスト |
+| trusted wholesale | 丸ごと信頼される |
+| fence (the namespace or seatbelt rule) | 柵 |
+| proxy / CONNECT proxy | プロキシ / CONNECTプロキシ |
+| bridge (in-sandbox forwarder) | ブリッジ |
+| audit log | 監査ログ (`--audit-log` の説明では「記録」) |
+| release notes | リリースノート |
+| checksum | チェックサム |
+| pre-release | プレリリース |
+| telemetry | テレメトリ |
+| agent runtime platform | エージェントのランタイムプラットフォーム |
+| gateway | ゲートウェイ |
+| Visibility (switch group) | 可視性 |
+| API host | APIホスト |
+| resolver | リゾルバ |

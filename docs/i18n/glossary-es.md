@@ -37,3 +37,19 @@ Terms decided while translating. One English term maps to one target term across
 | unit tests | tests unitarios |
 | jailed agent | agente enjaulado |
 | dim and barred (alt text) | atenuado y tras barrotes |
+| filtered egress | salida filtrada |
+| allowed host / host allowlist | host permitido / lista de hosts permitidos |
+| trusted wholesale | de confianza por completo |
+| fence (the network fence) / fenced | valla / vallado |
+| bridge (in-sandbox network bridge) | puente |
+| CONNECT proxy | proxy CONNECT |
+| audit log | registro de auditoría |
+| launch record (one line per launch) | registro por arranque |
+| release notes | notas de la versión |
+| pre-release | versión preliminar |
+| archive (release tarball) | archivo comprimido (then: archivo) |
+| checksum / gateway / endpoint / MicroVM / workspace | kept in English |
+| network mode: off / filtered / open | apagada / filtrada / abierta (la red) |
+| API host | host de la API |
+| resolver (system DNS resolver) | resolver del sistema |
+| agent runtime platform | plataforma de runtime para agentes |

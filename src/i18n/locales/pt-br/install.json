@@ -33,13 +33,13 @@
   "first": {
     "title": "Sua primeira execução",
     "lede": "Três comandos levam você de um plano a uma olhada lá dentro e, por fim, a um agente funcionando. O ai-jail não abre nada até você pedir.",
-    "alt": "Três painéis da esquerda para a direita. Dry run: a cela é só um contorno tracejado e o agente espera do lado de fora. Dar uma olhada: a cela é sólida e contém um terminal e a pasta do projeto. Rodar o agente: o agente e o projeto estão lá dentro, com duas aberturas no muro, uma para a rede e outra para o login do agente. A sua pasta home fica gradeada do lado de fora nos três.",
-    "caption": "Seu diretório home fica de fora em todas as etapas. Só a última etapa abre alguma coisa, e só as duas de que um agente em nuvem precisa.",
+    "alt": "Três painéis da esquerda para a direita. Dry run: a cela é só um contorno tracejado e o agente espera do lado de fora. Dar uma olhada: a cela é sólida e contém um terminal e a pasta do projeto. Rodar o agente: o agente e o projeto estão lá dentro, com duas aberturas no muro, um portão para o host da API do agente e outro para o login do agente. A sua pasta home fica gradeada do lado de fora nos três.",
+    "caption": "Seu diretório home fica de fora em todas as etapas. Só a última etapa abre alguma coisa, e só as duas de que um agente em nuvem precisa: o host da API e o login.",
     "steps": [
       { "title": "Veja o plano sem rodar nada", "text": "Vá até o seu projeto e peça um dry run. O ai-jail imprime o comando de sandbox que usaria e sai. Um dry run nunca grava arquivo nenhum." },
       { "title": "Dê uma olhada lá dentro", "text": "Abra um shell comum na jaula. Seu projeto está lá, no caminho real, e você pode editá-lo. Seu diretório home é um novo, vazio, e os tokens do seu shell sumiram. Digite <code>exit</code> para sair." },
-      { "title": "Rode o agente com as duas coisas de que ele precisa", "text": "Um agente que conversa com um modelo em nuvem precisa da rede para chegar até ele e do próprio login salvo para provar quem você é. Os dois vêm desligados por padrão, então você liga: <code>--network</code> e <code>--agent-state</code>. Desde a versão 1.22, se você iniciar um agente conhecido sem uma delas, o ai-jail imprime um aviso com o nome da flag que falta." },
-      { "title": "Torne isso o padrão para esse agente", "text": "Coloque as duas configurações em <code>~/.ai-jail</code>, o seu arquivo de configuração, embaixo do nome do agente. Depois disso o comando curto basta. O arquivo <code>.ai-jail</code> que pode aparecer no projeto só consegue apertar a jaula. Ele nunca liga a rede nem um login, então um repositório que você clona não consegue abrir a jaula para si mesmo." }
+      { "title": "Rode o agente com as duas coisas de que ele precisa", "text": "Um agente que conversa com um modelo em nuvem precisa chegar à API dele e do próprio login salvo para provar quem você é. Os dois vêm desligados por padrão. <code>--allow-host api.anthropic.com</code> abre exatamente esse host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>), e <code>--network</code> abre a rede inteira. <code>--agent-state</code> monta o login. Se você iniciar um agente conhecido sem um caminho até a API dele, o ai-jail avisa e diz qual é o host." },
+      { "title": "Torne isso o padrão para esse agente", "text": "Coloque as duas configurações em <code>~/.ai-jail</code>, o seu arquivo de configuração, embaixo do nome do agente. Depois disso o comando curto basta. O arquivo <code>.ai-jail</code> que pode aparecer no projeto só consegue apertar a jaula: ele pode encurtar a lista de hosts, mas não aumentar, e não liga a rede nem um login, então um repositório que você clona não consegue abrir a jaula para si mesmo." }
     ],
     "codeTitles": ["dry run", "um shell na jaula", "a execução de verdade", "~/.ai-jail"],
     "gitignore": {
@@ -48,8 +48,9 @@
     },
     "exposure": {
       "title": "O que essas duas flags entregam",
-      "text": "<code>--network</code> é a rede inteira, sem filtro por site, então tudo o que o agente consegue ler, ele consegue enviar. <code>--agent-state</code> deixa tudo o que roda na jaula usar o login desse agente. Suas chaves SSH, credenciais de nuvem e outros projetos continuam fora, sem ter como ser lidos. <a class=\"link\" href=\"/security/\">Segurança</a> tem a lista completa de limites."
-    }
+      "text": "Um host que você libera é confiável em tudo o que ele oferece: liberar <code>github.com</code> libera push para qualquer repositório. <code>--network</code> é a rede inteira, então tudo o que o agente consegue ler, ele consegue enviar. <code>--agent-state</code> deixa tudo o que roda na jaula usar o login desse agente. Suas chaves SSH, credenciais de nuvem e outros projetos continuam fora, sem ter como ser lidos. <a class=\"link\" href=\"/security/\">Segurança</a> tem a lista completa de limites."
+    },
+    "comments": ["# ou, com a rede inteira aberta:", "# daqui em diante, em qualquer projeto:"]
   },
   "see": {
     "title": "O que você vai ver lá dentro",
@@ -58,7 +59,7 @@
     "comments": ["# o projeto está no caminho real", "# um token exportado no seu shell não veio junto", "# suas chaves não estão neste home", "# a jaula tem hostname próprio"],
     "note": "Esta é uma sessão no Linux. O macOS não tem como montar uma árvore de arquivos separada, então lá os mesmos caminhos existem e a leitura deles é recusada.",
     "alt": "A vista de dentro da cela. O agente fica ao lado de uma pasta de projeto grande e iluminada, com um home vazio e as ferramentas do sistema atrás dela. Do lado de fora das grades, apagados e gradeados: chaves SSH, logins de nuvem, outros projetos e a rede.",
-    "caption": "Visto de dentro, o projeto é a única coisa sua que existe. A rede também fica de fora até você passar <code>--network</code>."
+    "caption": "Visto de dentro, o projeto é a única coisa sua que existe. A rede também fica de fora até você liberar um host com <code>--allow-host</code> ou tudo com <code>--network</code>."
   },
   "trouble": {
     "title": "Se ele não iniciar",

@@ -75,7 +75,7 @@
       "optin": "# um agente em nuvem precisa da rede e do próprio login"
     },
     "honestTitle": "O custo real",
-    "honest": "Tudo fica desligado até você pedir, e isso inclui coisas de que o seu agente precisa. Um agente em nuvem não funciona enquanto você não passar <code>--network</code> e <code>--agent-state</code>, e dá para salvar os dois num arquivo de configuração e digitar uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
+    "honest": "Tudo fica desligado até você pedir, e isso inclui coisas de que o seu agente precisa. Um agente em nuvem não funciona enquanto você não passar <code>--agent-state</code> e, junto, <code>--allow-host</code> com o host da API dele ou <code>--network</code>, e dá para salvar tudo num arquivo de configuração e digitar uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
   },
   "faq": {
     "title": "Perguntas de quem está chegando",

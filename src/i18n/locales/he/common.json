@@ -39,6 +39,10 @@
     "install": {
       "label": "התקנה",
       "note": "התקנה והרצה ראשונה"
+    },
+    "download": {
+      "label": "הורדה",
+      "note": "קבצים בינאריים, checksums והערות גרסה"
     }
   },
   "kicker": {
@@ -47,7 +51,8 @@
     "compare": "השוואה",
     "configure": "הגדרה",
     "security": "אבטחה",
-    "install": "התקנה"
+    "install": "התקנה",
+    "download": "הורדה"
   },
   "code": {
     "copy": "העתקה",

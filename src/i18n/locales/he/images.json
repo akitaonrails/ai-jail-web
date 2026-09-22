@@ -63,7 +63,7 @@
     "Run the agent": "הרצת הסוכן",
     "Agent": "סוכן",
     "Project": "פרויקט",
-    "Network": "רשת",
+    "API host": "host של ה-API",
     "Login": "התחברות",
     "Your home": "תיקיית הבית"
   },
@@ -119,5 +119,11 @@
     "Hooks": "Hooks",
     "Your home": "תיקיית הבית",
     "Project": "פרויקט"
+  },
+  "how-egress": {
+    "Off": "כבויה",
+    "Filtered": "מסוננת",
+    "Open": "פתוחה",
+    "Proxy": "פרוקסי"
   }
 }

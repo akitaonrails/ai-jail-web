@@ -15,9 +15,18 @@
     "alt": "Tres fuentes alimentan la jaula. El archivo .ai-jail del proyecto solo puede endurecerla. El archivo global ~/.ai-jail es de confianza. Los flags de la línea de comandos mandan sobre ambos. Dentro de la jaula está el agente detrás de una fila de interruptores, la mayoría apagados.",
     "caption": "Un repositorio que clonaste no puede abrir su propia jaula.",
     "points": [
-      { "title": "<code>.ai-jail</code> del proyecto", "text": "ai-jail lo trata como no confiable: puede endurecer la jaula y nunca abrirla. ai-jail nunca lo sigue a través de un symlink, y el agente ve un archivo vacío en su lugar." },
-      { "title": "<code>~/.ai-jail</code> global", "text": "Es tuyo, así que ai-jail confía en él. Contiene una tabla base para todas las ejecuciones, más tablas <code>[commands.&lt;name&gt;]</code> que se eligen por la primera palabra del comando." },
-      { "title": "Flags del comando", "text": "Los flags tienen la mayor autoridad. La mayoría de los interruptores vienen en pares, como <code>--network</code> y <code>--no-network</code>, así que un flag también puede cerrar lo que un archivo abrió." }
+      {
+        "title": "<code>.ai-jail</code> del proyecto",
+        "text": "ai-jail lo trata como no confiable: puede endurecer la jaula y nunca abrirla. ai-jail nunca lo sigue a través de un symlink, y el agente ve un archivo vacío en su lugar."
+      },
+      {
+        "title": "<code>~/.ai-jail</code> global",
+        "text": "Es tuyo, así que ai-jail confía en él. Contiene una tabla base para todas las ejecuciones, más tablas <code>[commands.&lt;name&gt;]</code> que se eligen por la primera palabra del comando."
+      },
+      {
+        "title": "Flags del comando",
+        "text": "Los flags tienen la mayor autoridad. La mayoría de los interruptores vienen en pares, como <code>--network</code> y <code>--no-network</code>, así que un flag también puede cerrar lo que un archivo abrió."
+      }
     ],
     "merge": "En una tabla de comando, los valores simples reemplazan a los de la base y las listas, como los mapeos y las máscaras, se suman a ella.",
     "codeTitle": "~/.ai-jail",
@@ -31,69 +40,153 @@
   "switches": {
     "title": "Los interruptores",
     "lede": "Cada fila está apagada hasta que lo pidas, y cada flag de capacidad tiene un gemelo <code>--no-</code> que la vuelve a cerrar. Una etiqueta roja marca un interruptor que debilita la jaula. <a class=\"link\" href=\"/security/\">Seguridad tiene la lista completa y los motivos</a>.",
-    "cols": { "flag": "Flag", "key": "Clave de configuración", "opens": "Qué hace", "risk": "Riesgo" },
-    "risk": { "optin": "Abre una cosa", "weakens": "Debilita la jaula" },
+    "cols": {
+      "flag": "Flag",
+      "key": "Clave de configuración",
+      "opens": "Qué hace",
+      "risk": "Riesgo"
+    },
+    "risk": {
+      "optin": "Abre una cosa",
+      "weakens": "Debilita la jaula"
+    },
     "none": "ninguna",
     "groups": [
       {
         "title": "Red y servicios",
         "rows": [
-          { "text": "Acceso a la red sin restricciones. Todo lo que el agente puede leer, lo puede enviar fuera." },
-          { "text": "Tu <code>~/.ssh</code>, en solo lectura, y el socket de tu agente SSH, para que <code>git push</code> funcione." },
-          { "text": "El socket de Docker. En la práctica es root en tu máquina, porque el daemon puede arrancar contenedores que montan el host." },
-          { "text": "El socket de Tailscale." },
-          { "text": "El bus de usuario de systemd. El agente puede pedirle a tu gestor de usuario que ejecute servicios en el host. Solo Linux." }
+          {
+            "text": "Toda la red. Todo lo que el agente puede leer, lo puede enviar fuera. Si el agente solo necesita unos pocos hosts, <code>--allow-host</code> es la opción más estricta."
+          },
+          {
+            "text": "El sandbox llega solo al host indicado y a sus subdominios, por TCP a través del proxy integrado de ai-jail. Puedes repetir el flag. No se puede combinar con <code>--network</code> ni <code>--browser</code>, y un archivo de proyecto solo puede recortar la lista."
+          },
+          {
+            "text": "Tu <code>~/.ssh</code>, en solo lectura, y el socket de tu agente SSH, para que <code>git push</code> funcione."
+          },
+          {
+            "text": "El socket de Docker. En la práctica es root en tu máquina, porque el daemon puede arrancar contenedores que montan el host."
+          },
+          {
+            "text": "El socket de Tailscale."
+          },
+          {
+            "text": "El bus de usuario de systemd. El agente puede pedirle a tu gestor de usuario que ejecute servicios en el host. Solo Linux."
+          }
         ]
       },
       {
         "title": "Agente y entorno",
         "rows": [
-          { "text": "El login y los ajustes del propio agente, como <code>~/.claude</code> o <code>~/.codex</code>. Cualquier cosa dentro de la jaula puede entonces usar esas credenciales." },
-          { "text": "Usa el directorio indicado como estado de Claude y define <code>CLAUDE_CONFIG_DIR</code>." },
-          { "text": "Pasa una variable de tu shell, o define una con <code>NAME=VALUE</code>. Se puede repetir y nunca se guarda en disco." },
-          { "text": "Pasa todo el entorno de tu shell, con cada secreto que contenga. Evítalo." },
-          { "text": "Lo mismo que <code>--env</code>, solo desde el archivo global. Si un archivo de proyecto la define, se ignora." }
+          {
+            "text": "El login y los ajustes del propio agente, como <code>~/.claude</code> o <code>~/.codex</code>. Cualquier cosa dentro de la jaula puede entonces usar esas credenciales."
+          },
+          {
+            "text": "Usa el directorio indicado como estado de Claude y define <code>CLAUDE_CONFIG_DIR</code>."
+          },
+          {
+            "text": "Pasa una variable de tu shell, o define una con <code>NAME=VALUE</code>. Se puede repetir y nunca se guarda en disco."
+          },
+          {
+            "text": "Lee líneas <code>KEY=VALUE</code> estrictas de un archivo y las pasa como <code>--env</code>, que gana si hay conflicto. El archivo tiene que ser tuyo, un archivo regular, con modo 0600 o más estricto y fuera del proyecto, o el arranque falla. ai-jail nunca guarda los valores en disco, y la clave de configuración solo funciona desde el archivo global."
+          },
+          {
+            "text": "Pasa todo el entorno de tu shell, con cada secreto que contenga. Evítalo."
+          },
+          {
+            "text": "Lo mismo que <code>--env</code>, solo desde el archivo global. Si un archivo de proyecto la define, se ignora."
+          }
         ]
       },
       {
         "title": "Escritorio y hardware",
         "rows": [
-          { "text": "Los dispositivos de GPU y, con ellos, la superficie de ataque del driver. Solo Linux." },
-          { "text": "El socket de Wayland y nada más de tu sesión. Solo Linux." },
-          { "text": "El socket de X11. X11 permite que un programa registre pulsaciones de teclas y tome capturas de pantalla." },
-          { "text": "Los sockets de PipeWire y PulseAudio y <code>/dev/snd</code>. Cualquier cosa dentro de la jaula puede grabar y reproducir audio. Solo Linux." },
-          { "text": "El <code>/dev/shm</code> del host, que abre memoria compartida con procesos de fuera de la jaula." },
-          { "text": "Tu <code>~/Pictures</code>, en solo lectura." },
-          { "text": "Un perfil de navegador aparte. <code>hard</code> (el valor por defecto) no conserva nada entre ejecuciones, <code>soft</code> conserva un perfil en <code>~/.local/share/ai-jail/browsers</code>." }
+          {
+            "text": "Los dispositivos de GPU y, con ellos, la superficie de ataque del driver. Solo Linux."
+          },
+          {
+            "text": "El socket de Wayland y nada más de tu sesión. Solo Linux."
+          },
+          {
+            "text": "El socket de X11. X11 permite que un programa registre pulsaciones de teclas y tome capturas de pantalla."
+          },
+          {
+            "text": "Los sockets de PipeWire y PulseAudio y <code>/dev/snd</code>. Cualquier cosa dentro de la jaula puede grabar y reproducir audio. Solo Linux."
+          },
+          {
+            "text": "El <code>/dev/shm</code> del host, que abre memoria compartida con procesos de fuera de la jaula."
+          },
+          {
+            "text": "Tu <code>~/Pictures</code>, en solo lectura."
+          },
+          {
+            "text": "Un perfil de navegador aparte. <code>hard</code> (el valor por defecto) no conserva nada entre ejecuciones, <code>soft</code> conserva un perfil en <code>~/.local/share/ai-jail/browsers</code>."
+          }
         ]
       },
       {
         "title": "Archivos",
         "rows": [
-          { "text": "Monta una ruta más en solo lectura. Escribe <code>SOURCE:DEST</code> para montarla en otro lugar. Se puede repetir." },
-          { "text": "Monta una ruta más en lectura y escritura. Se puede repetir." },
-          { "text": "Monta una ruta en copy-on-write: las escrituras del agente van a una capa aparte y el original queda intacto. Solo Linux; en macOS pasa a ser un montaje de solo lectura." },
-          { "text": "Nunca monta el directorio oculto indicado, por ejemplo <code>.my_secrets</code>. Se puede repetir." }
+          {
+            "text": "Monta una ruta más en solo lectura. Escribe <code>SOURCE:DEST</code> para montarla en otro lugar. Se puede repetir."
+          },
+          {
+            "text": "Monta una ruta más en lectura y escritura. Se puede repetir."
+          },
+          {
+            "text": "Monta una ruta en copy-on-write: las escrituras del agente van a una capa aparte y el original queda intacto. Solo Linux; en macOS pasa a ser un montaje de solo lectura."
+          },
+          {
+            "text": "Nunca monta el directorio oculto indicado, por ejemplo <code>.my_secrets</code>. Se puede repetir."
+          }
         ]
       },
       {
         "title": "Capas que puedes apagar, y no deberías",
         "rows": [
-          { "text": "Apaga Landlock, la copia de las reglas de archivos que tiene el propio kernel. Con <code>--lockdown</code> se rechaza." },
-          { "text": "Apaga el filtro que bloquea las llamadas al sistema peligrosas." },
-          { "text": "Apaga los límites que frenan los procesos desbocados." },
-          { "text": "Renuncia al directorio home nuevo. Es un acceso amplio a tu home real. Mejor usa <code>--map</code> para la única ruta que necesitas." }
+          {
+            "text": "Apaga Landlock, la copia de las reglas de archivos que tiene el propio kernel. Con <code>--lockdown</code> se rechaza."
+          },
+          {
+            "text": "Apaga el filtro que bloquea las llamadas al sistema peligrosas."
+          },
+          {
+            "text": "Apaga los límites que frenan los procesos desbocados."
+          },
+          {
+            "text": "Renuncia al directorio home nuevo. Es un acceso amplio a tu home real. Mejor usa <code>--map</code> para la única ruta que necesitas."
+          }
+        ]
+      },
+      {
+        "title": "Visibilidad",
+        "rows": [
+          {
+            "text": "Añade un registro por arranque a <code>~/.local/share/ai-jail/history.jsonl</code> (directorio 0700, archivo 0600): hora, comando, capacidades efectivas, fuentes de configuración, código de salida y duración. Con <code>--allow-host</code>, también registra cada conexión permitida o denegada. Está apagado por defecto, y un archivo de proyecto puede apagarlo pero no activarlo."
+          }
         ]
       },
       {
         "title": "Utilidades",
         "rows": [
-          { "text": "Imprime el comando de sandbox y no ejecuta nada. Nunca escribe un archivo de configuración." },
-          { "text": "Escribe o actualiza el <code>.ai-jail</code> del proyecto y termina." },
-          { "text": "Ignora el <code>.ai-jail</code> del proyecto en esta ejecución." },
-          { "text": "Genera configuraciones de permisos para las propias herramientas de IA." },
-          { "text": "Muestra la configuración actual de <code>.ai-jail</code>." },
-          { "text": "Muestra cada montaje mientras se construye la jaula." }
+          {
+            "text": "Imprime el comando de sandbox y no ejecuta nada. Nunca escribe un archivo de configuración."
+          },
+          {
+            "text": "Escribe o actualiza el <code>.ai-jail</code> del proyecto y termina."
+          },
+          {
+            "text": "Ignora el <code>.ai-jail</code> del proyecto en esta ejecución."
+          },
+          {
+            "text": "Genera configuraciones de permisos para las propias herramientas de IA."
+          },
+          {
+            "text": "Muestra la configuración actual de <code>.ai-jail</code>."
+          },
+          {
+            "text": "Muestra cada montaje mientras se construye la jaula."
+          }
         ]
       }
     ],
@@ -106,9 +199,18 @@
     "alt": "Una carpeta de proyecto. El agente llega a src, package.json y README.md. El archivo .env está enmascarado y la carpeta secrets está denegada: ambos aparecen atenuados y tras barrotes, y ninguna línea del agente llega hasta ellos.",
     "caption": "El resto del proyecto queda como estaba.",
     "points": [
-      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "Reemplaza cada coincidencia por un marcador vacío. El agente ve que el archivo existe y no recibe contenido, así que las herramientas que solo comprueban su existencia siguen funcionando." },
-      { "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>", "text": "Convierte cada coincidencia en un error de permisos." },
-      { "title": "<code>--mask-except</code> y <code>--deny-path-except</code>", "text": "Vuelven a sacar una ruta de una regla. Debilitan la protección, así que un archivo de proyecto no puede definirlos." }
+      {
+        "title": "<code>--mask &lt;PATH|GLOB&gt;</code>",
+        "text": "Reemplaza cada coincidencia por un marcador vacío. El agente ve que el archivo existe y no recibe contenido, así que las herramientas que solo comprueban su existencia siguen funcionando."
+      },
+      {
+        "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>",
+        "text": "Convierte cada coincidencia en un error de permisos."
+      },
+      {
+        "title": "<code>--mask-except</code> y <code>--deny-path-except</code>",
+        "text": "Vuelven a sacar una ruta de una regla. Debilitan la protección, así que un archivo de proyecto no puede definirlos."
+      }
     ],
     "flagsTitle": "Como flags",
     "flagsNote": "# pon los globs entre comillas para que ai-jail reciba el patrón y no la expansión de tu shell",
@@ -117,6 +219,14 @@
     "caveat": {
       "title": "Solo cubre las rutas que existen al arrancar",
       "text": "Una ruta que no existe, o un glob que no coincide con nada, se omite con una advertencia. Un archivo creado después, durante la sesión, no queda cubierto. Si necesitas que la regla se aplique, crea primero el archivo. Basta con un <code>.env</code> vacío."
+    },
+    "keys": {
+      "title": "Las claves de API, fuera de la config",
+      "text": "Enmascarar cubre los archivos del proyecto. Para la clave del propio agente, pásala desde tu shell con <code>--env NAME</code>, o desde un archivo que solo tú puedes leer con <code>--env-from-file</code>. Ninguna de las dos se escribe nunca en un archivo <code>.ai-jail</code>, y un archivo de proyecto no puede definirlas.",
+      "shellTitle": "terminal",
+      "shellNote": "# el archivo tiene que ser tuyo, con modo 0600 y fuera del proyecto",
+      "tomlTitle": "~/.ai-jail",
+      "tomlNote": "# solo en el archivo global; si un archivo de proyecto lo define, se ignora"
     }
   },
   "lockdown": {
@@ -126,48 +236,99 @@
     "caption": "El agente y el proyecto son los mismos, y solo un directorio temporal es escribible.",
     "changes": "Qué cambia",
     "items": [
-      { "text": "El proyecto se monta en solo lectura" },
-      { "text": "En Linux solo <code>/tmp</code> es escribible. En macOS, nada" },
-      { "text": "Sin directorios ocultos de tu home, sin mapeos extra, sin overlays" },
-      { "text": "El entorno se limpia y <code>PATH</code> queda fijado a los directorios del sistema" },
-      { "text": "Landlock es obligatorio: si no se puede aplicar, el arranque falla" },
-      { "text": "Límites más estrictos de procesos, archivos abiertos y tamaño de archivo" },
-      { "text": "Sin pantalla, audio, GPU, Docker, agente SSH ni mise, pases lo que pases" }
+      {
+        "text": "El proyecto se monta en solo lectura"
+      },
+      {
+        "text": "En Linux solo <code>/tmp</code> es escribible. En macOS, nada"
+      },
+      {
+        "text": "Sin directorios ocultos de tu home, sin mapeos extra, sin overlays"
+      },
+      {
+        "text": "El entorno se limpia y <code>PATH</code> queda fijado a los directorios del sistema"
+      },
+      {
+        "text": "Landlock es obligatorio: si no se puede aplicar, el arranque falla"
+      },
+      {
+        "text": "Límites más estrictos de procesos, archivos abiertos y tamaño de archivo"
+      },
+      {
+        "text": "Sin pantalla, audio, GPU, Docker, agente SSH ni mise, pases lo que pases"
+      }
     ],
     "codeTitle": "terminal",
     "network": {
       "title": "Lockdown y la red",
-      "text": "Lockdown no tiene red por defecto. En Linux, <code>--network</code> sigue pudiendo anular eso, así que no lo pases salvo que de verdad lo quieras. En macOS, lockdown siempre bloquea la red."
+      "text": "Lockdown no tiene red por defecto. <code>--allow-host</code> sigue funcionando bajo lockdown, así que puedes llegar a los hosts de la lista sin abrir la red. En Linux, <code>--network</code> sigue pudiendo anular lockdown, así que no lo pases salvo que de verdad lo quieras. En macOS, lockdown siempre bloquea la red abierta."
     }
   },
   "recipes": {
     "title": "Recetas",
     "lede": "Copia una. Para ver qué construye, ejecútala primero con <code>--dry-run</code>.",
     "items": [
-      { "title": "Un agente en la nube, a diario", "text": "Un modelo alojado necesita la red para llegar a su API y su propio login para autenticarse. Pon ambos en el archivo global y el comando sigue siendo corto." },
-      { "title": "Git push por SSH", "text": "<code>--ssh</code> monta <code>~/.ssh</code> en solo lectura y reenvía el socket de tu agente SSH. Para hacer push también hace falta la red." },
-      { "title": "Toolchains de mise", "text": "El directorio home nuevo no tiene ninguna instalación de mise, así que ai-jail omite mise. Mapea hacia dentro los dos directorios de mise, en solo lectura." },
-      { "title": "Un navegador para el agente", "text": "<code>--browser</code> por sí solo da un navegador que no puede cargar una página ni abrir una ventana. En Linux también necesita <code>--network</code> y <code>--display</code>, y un navegador X11 necesita <code>--x11</code> en lugar de <code>--display</code>." },
-      { "title": "Perfiles de Claude separados", "text": "Mantén separados el login del trabajo y el personal apuntando cada ejecución a su propio directorio de Claude." },
-      { "title": "Un refactor arriesgado sobre una copia", "text": "Un overlay guarda las escrituras del agente en una capa aparte, bajo <code>.ai-jail-overlays</code> en el proyecto. Después compárala con el original y quédate con lo que te guste. Solo Linux." }
+      {
+        "title": "Un agente en la nube, a diario",
+        "text": "Un modelo alojado necesita llegar a su API y necesita su propio login para autenticarse. Pon ambos en el archivo global y el comando sigue siendo corto. Permite solo el host de la API, o abre toda la red con <code>network = true</code>."
+      },
+      {
+        "title": "Solo el host de la API del agente",
+        "text": "El agente llega solo a su propia API. Claude usa <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> y Gemini <code>generativelanguage.googleapis.com</code>. Si el host falta en la lista, la advertencia de arranque lo nombra."
+      },
+      {
+        "title": "Hosts permitidos en el archivo global",
+        "text": "La lista se aplica a cada ejecución de ese comando. Un host permitido es de confianza por completo: <code>github.com</code> deja que el agente haga push a cualquier repositorio al que lleguen tus credenciales, así que añádelo solo cuando quieras eso."
+      },
+      {
+        "title": "Git push por SSH",
+        "text": "<code>--ssh</code> monta <code>~/.ssh</code> en solo lectura y reenvía el socket de tu agente SSH. Para hacer push también hace falta la red."
+      },
+      {
+        "title": "Toolchains de mise",
+        "text": "El directorio home nuevo no tiene ninguna instalación de mise, así que ai-jail omite mise. Mapea hacia dentro los dos directorios de mise, en solo lectura."
+      },
+      {
+        "title": "Un navegador para el agente",
+        "text": "<code>--browser</code> por sí solo da un navegador que no puede cargar una página ni abrir una ventana. En Linux también necesita <code>--network</code> y <code>--display</code>, y un navegador X11 necesita <code>--x11</code> en lugar de <code>--display</code>."
+      },
+      {
+        "title": "Perfiles de Claude separados",
+        "text": "Mantén separados el login del trabajo y el personal apuntando cada ejecución a su propio directorio de Claude."
+      },
+      {
+        "title": "Un refactor arriesgado sobre una copia",
+        "text": "Un overlay guarda las escrituras del agente en una capa aparte, bajo <code>.ai-jail-overlays</code> en el proyecto. Después compárala con el original y quédate con lo que te guste. Solo Linux."
+      }
     ],
     "comments": {
       "once": "# una vez, en ~/.ai-jail",
       "then": "# después, en cualquier proyecto",
       "wayland": "# Wayland",
-      "x11": "# X11"
+      "x11": "# X11",
+      "open": "# o abre toda la red: network = true",
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
     }
   },
   "compat": {
     "title": "Tus configs antiguas siguen sirviendo",
     "text": "La compatibilidad hacia atrás es una regla del proyecto: nunca se elimina un flag ni una clave de configuración. Las claves desconocidas se ignoran y las que faltan toman su valor por defecto, así que un archivo escrito para una versión antigua todavía carga.",
-    "legacy": "Los interruptores más antiguos conservan sus nombres invertidos, donde <code>true</code> apaga la cosa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. Por eso <code>--gpu</code> se guarda como <code>no_gpu = false</code>. Los más nuevos usan nombres directos como <code>network = true</code>."
+    "legacy": "Los interruptores más antiguos conservan sus nombres invertidos, donde <code>true</code> apaga la cosa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. Por eso <code>--gpu</code> se guarda como <code>no_gpu = false</code>. Los más nuevos usan nombres directos como <code>network = true</code>. <code>--allow-tcp-port</code> todavía se parsea y todavía se niega a arrancar, porque no puede vallar UDP. Su error apunta a <code>--allow-host</code>."
   },
   "next": {
     "items": [
-      { "title": "Seguridad", "text": "El modelo de amenazas, cada interruptor que debilita la jaula y lo que queda fuera del alcance." },
-      { "title": "Cómo funciona", "text": "Las capas del kernel detrás de estos interruptores, y en qué se diferencia macOS." },
-      { "title": "Instalar", "text": "Consigue el binario y ejecuta tu primer agente dentro de la jaula." }
+      {
+        "title": "Seguridad",
+        "text": "El modelo de amenazas, cada interruptor que debilita la jaula y lo que queda fuera del alcance."
+      },
+      {
+        "title": "Cómo funciona",
+        "text": "Las capas del kernel detrás de estos interruptores, y en qué se diferencia macOS."
+      },
+      {
+        "title": "Instalar",
+        "text": "Consigue el binario y ejecuta tu primer agente dentro de la jaula."
+      }
     ]
   }
 }

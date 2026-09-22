@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Descargar ai-jail para Linux y macOS",
+    "description": "Descarga la última versión de ai-jail: binarios para Linux x86_64 y macOS Apple Silicon con checksums SHA-256, gestores de paquetes y notas de la versión."
+  },
+  "hero": {
+    "title": "Descargar ai-jail {tag}",
+    "lede": "Publicada el {date}. Un archivo comprimido para Linux y otro para macOS, cada uno con su checksum SHA-256 al lado. Software libre bajo {license}.",
+    "jump": "Ir al binario",
+    "changelog": "Qué cambió"
+  },
+  "builds": {
+    "title": "Binarios",
+    "lede": "La instalación es un paso: descomprime el archivo y pon <code>ai-jail</code> en algún lugar de tu <code>PATH</code>.",
+    "yours": "Tu sistema",
+    "size": "{size} MB",
+    "download": "Descargar",
+    "checksum": "Checksum",
+    "items": [
+      {
+        "title": "Linux x86_64",
+        "text": "Necesita bubblewrap, el pequeño programa que ai-jail usa para construir el sandbox. La mayoría de las distribuciones lo empaquetan como <code>bubblewrap</code>."
+      },
+      {
+        "title": "macOS Apple Silicon",
+        "text": "Para Macs con chip de la serie M. El binario está firmado y notarizado por Apple, así que macOS lo ejecuta sin advertencias."
+      }
+    ],
+    "verify": {
+      "title": "Comprueba el checksum",
+      "text": "Pon el archivo comprimido y su <code>.sha256</code> en la misma carpeta y ejecuta la línea de tu sistema. Imprime <code>OK</code> cuando el archivo coincide.",
+      "comments": [
+        "# Linux",
+        "# macOS"
+      ],
+      "more": "Los tags de versión también están firmados. <a class=\"link\" href=\"/security/#checked\">Seguridad</a> explica cómo se hace una versión y qué falta todavía."
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "No hay compilación nativa para Windows. Usa WSL2 y el archivo de Linux dentro de él."
+    }
+  },
+  "channels": {
+    "title": "Gestores de paquetes",
+    "lede": "Cada uno instala el mismo programa a través de una herramienta que ya usas, y las actualizaciones llegan por ella.",
+    "items": [
+      {
+        "title": "Homebrew",
+        "text": "macOS y Linux."
+      },
+      {
+        "title": "Arch Linux",
+        "text": "<code>ai-jail-bin</code> es el binario precompilado. <code>ai-jail</code> compila desde el código fuente."
+      },
+      {
+        "title": "crates.io",
+        "text": "Compila con Rust {rust} y las versiones de dependencias con las que se probó la versión publicada."
+      },
+      {
+        "title": "Nix",
+        "text": "El flake hace que ai-jail use su propia copia de bubblewrap."
+      }
+    ],
+    "link": "Instalar y primera ejecución"
+  },
+  "changelog": {
+    "title": "Notas de la versión",
+    "lede": "Las últimas {n} versiones, tal como las publica el proyecto.",
+    "english": "Las notas de la versión son texto del propio proyecto y se quedan en inglés.",
+    "prerelease": "Versión preliminar",
+    "all": "Todas las versiones en GitHub"
+  },
+  "next": {
+    "items": [
+      {
+        "title": "Instalar",
+        "text": "La primera ejecución: un dry run, un vistazo dentro y luego el agente con las dos cosas que necesita."
+      },
+      {
+        "title": "Configurar",
+        "text": "Cada flag y cada clave de configuración, y cómo abrir solo lo que la tarea necesita."
+      },
+      {
+        "title": "Seguridad",
+        "text": "El modelo de amenazas, cómo se firma una versión y qué falta todavía."
+      }
+    ]
+  }
+}

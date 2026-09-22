@@ -75,7 +75,7 @@
       "optin": "# 클라우드 에이전트에는 네트워크와 자체 로그인이 필요"
     },
     "honestTitle": "솔직한 비용",
-    "honest": "요청하기 전까지는 모든 것이 꺼져 있고, 여기에는 에이전트에 필요한 것도 포함됩니다. 클라우드 에이전트는 <code>--network</code>와 <code>--agent-state</code>를 넘기기 전에는 동작하지 않습니다. 둘 다 설정 파일에 저장해 두면 한 번만 입력하면 됩니다. <a class=\"link\" href=\"/configure/\">모든 스위치 보기</a>."
+    "honest": "요청하기 전까지는 모든 것이 꺼져 있고, 여기에는 에이전트에 필요한 것도 포함됩니다. 클라우드 에이전트는 <code>--agent-state</code>와 함께 API 호스트를 지정한 <code>--allow-host</code> 또는 <code>--network</code>를 넘기기 전에는 동작하지 않습니다. 설정 파일에 저장해 두면 한 번만 입력하면 됩니다. <a class=\"link\" href=\"/configure/\">모든 스위치 보기</a>."
   },
   "faq": {
     "title": "처음 온 사람들이 묻는 질문",

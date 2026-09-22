@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "Linux와 macOS용 ai-jail 다운로드",
+    "description": "최신 ai-jail 릴리스 다운로드. Linux x86_64와 macOS Apple Silicon용 빌드 압축 파일과 SHA-256 체크섬, 패키지 관리자로 설치하는 방법, 릴리스 노트를 제공합니다."
+  },
+  "hero": {
+    "title": "ai-jail {tag} 다운로드",
+    "lede": "{date} 릴리스. Linux용 하나, macOS용 하나의 압축 파일이 있고 각각 SHA-256 체크섬이 옆에 있습니다. {license} 라이선스의 자유 소프트웨어입니다.",
+    "jump": "바이너리 받기",
+    "changelog": "바뀐 점"
+  },
+  "builds": {
+    "title": "바이너리",
+    "lede": "설치는 한 단계입니다. 압축을 풀고 <code>ai-jail</code>을 <code>PATH</code>에 있는 곳에 두세요.",
+    "yours": "내 시스템",
+    "size": "{size} MB",
+    "download": "다운로드",
+    "checksum": "체크섬",
+    "items": [
+      {
+        "title": "Linux x86_64",
+        "text": "ai-jail이 샌드박스를 만들 때 쓰는 작은 프로그램인 bubblewrap이 필요합니다. 대부분의 배포판이 <code>bubblewrap</code>이라는 이름으로 패키징합니다."
+      },
+      {
+        "title": "macOS Apple Silicon",
+        "text": "M 시리즈 칩이 있는 Mac용입니다. 바이너리는 서명한 뒤 Apple의 공증을 받았으므로 macOS가 경고 없이 실행합니다."
+      }
+    ],
+    "verify": {
+      "title": "체크섬 확인",
+      "text": "압축 파일과 <code>.sha256</code> 파일을 같은 폴더에 두고 내 시스템에 맞는 줄을 실행합니다. 압축 파일이 일치하면 <code>OK</code>가 출력됩니다.",
+      "comments": ["# Linux", "# macOS"],
+      "more": "릴리스 태그에도 서명합니다. 릴리스를 만드는 과정과 아직 부족한 점은 <a class=\"link\" href=\"/security/#checked\">보안</a> 페이지에 있습니다."
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "네이티브 Windows 빌드는 없습니다. WSL2 안에서 Linux 압축 파일을 쓰세요."
+    }
+  },
+  "channels": {
+    "title": "패키지 관리자",
+    "lede": "모두 이미 쓰고 있는 도구로 같은 프로그램을 설치하고, 업데이트도 그 도구에서 받습니다.",
+    "items": [
+      { "title": "Homebrew", "text": "macOS와 Linux." },
+      { "title": "Arch Linux", "text": "<code>ai-jail-bin</code>은 빌드된 바이너리입니다. <code>ai-jail</code>은 소스에서 빌드합니다." },
+      { "title": "crates.io", "text": "Rust {rust}와 릴리스를 테스트한 의존성 버전으로 빌드합니다." },
+      { "title": "Nix", "text": "flake는 ai-jail이 자체 bubblewrap 사본을 쓰도록 합니다." }
+    ],
+    "link": "설치와 첫 실행"
+  },
+  "changelog": {
+    "title": "릴리스 노트",
+    "lede": "프로젝트가 공개한 최근 릴리스 {n}개입니다.",
+    "english": "릴리스 노트는 프로젝트의 원문이라 영어 그대로 둡니다.",
+    "prerelease": "프리릴리스",
+    "all": "GitHub의 모든 릴리스"
+  },
+  "next": {
+    "items": [
+      { "title": "설치", "text": "첫 실행: 드라이 런, 안 둘러보기, 그다음 필요한 두 가지를 준 에이전트." },
+      { "title": "설정", "text": "모든 플래그와 설정 키, 그리고 작업에 필요한 것만 여는 방법." },
+      { "title": "보안", "text": "위협 모델, 릴리스 서명 방식, 아직 부족한 점." }
+    ]
+  }
+}

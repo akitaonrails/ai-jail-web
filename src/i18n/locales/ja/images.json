@@ -63,7 +63,7 @@
     "Run the agent": "エージェントを実行",
     "Agent": "エージェント",
     "Project": "プロジェクト",
-    "Network": "ネットワーク",
+    "API host": "APIホスト",
     "Login": "ログイン",
     "Your home": "あなたのホーム"
   },
@@ -119,5 +119,11 @@
     "Hooks": "フック",
     "Your home": "あなたのホーム",
     "Project": "プロジェクト"
+  },
+  "how-egress": {
+    "Off": "無効",
+    "Filtered": "フィルタ付き",
+    "Open": "全開",
+    "Proxy": "プロキシ"
   }
 }

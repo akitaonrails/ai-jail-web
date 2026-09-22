@@ -16,7 +16,7 @@
       { "title": "Inicie pelo ai-jail", "text": "Digite <code>ai-jail</code> na frente do comando. O agente sobe em namespaces próprios, com o seu projeto montado no mesmo caminho." },
       { "title": "Seu home não é montado", "text": "O agente recebe um diretório home novo e vazio. Chaves SSH, credenciais de nuvem, perfis de navegador e seus outros projetos não existem lá dentro." },
       { "title": "Segredos, rede e dispositivos desligados", "text": "As variáveis de ambiente são reduzidas a uma allowlist, então os tokens do seu shell ficam no seu shell. A rede, o socket do Docker, a tela e o clipboard ficam desligados." },
-      { "title": "Abra o que a tarefa precisa", "text": "Um agente em nuvem precisa da rede e do próprio login, então você liga esses dois. Todo o resto fica fechado até você pedir." }
+      { "title": "Abra o que a tarefa precisa", "text": "Um agente em nuvem precisa do próprio login e de um caminho até a API dele, então você abre esses dois: o login, e só o host da API ou a rede inteira. Todo o resto fica fechado até você pedir." }
     ]
   },
   "wrap": {
@@ -40,7 +40,7 @@
       { "text": "Outros processos, IPC do host, interfaces do kernel como <code>ptrace</code> e <code>bpf</code>" }
     ],
     "optin": [
-      { "text": "<code>--network</code>" },
+      { "text": "<code>--allow-host</code> para os hosts que você lista, ou <code>--network</code> para tudo" },
       { "text": "<code>--agent-state</code>, o login do próprio agente" },
       { "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> e outras" }
     ],
@@ -58,7 +58,7 @@
   },
   "limits": {
     "title": "O que ele não é",
-    "text": "O ai-jail é um sandbox de processo. Ele compartilha o seu kernel, então um exploit de kernel ou de driver está fora da fronteira dele, e os recursos que você liga são reais: um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
+    "text": "O ai-jail é um sandbox de processo. Ele compartilha o seu kernel, então um exploit de kernel ou de driver está fora da fronteira dele, e os recursos que você liga são reais: um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler, e um host que você libera com <code>--allow-host</code> é confiável em tudo o que ele oferece. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
     "link": "Ler o modelo de ameaças"
   },
   "pair": {
@@ -72,7 +72,7 @@
       { "q": "Ele deixa o agente mais lento?", "a": "Não. O sandbox é feito de recursos do kernel, namespaces e regras de montagem. Não há emulação nem máquina virtual, e o agente roda em velocidade nativa." },
       { "q": "Quais agentes ele suporta?", "a": "Qualquer comando. Ele tem presets para Claude Code, Codex, Gemini CLI, OpenCode, Crush, Grok, Kimi, pi, jcode e SoulForge, e o <code>ai-jail bash</code> abre um shell dentro da jaula para você dar uma olhada." },
       { "q": "Funciona no Windows?", "a": "Nativamente, não. Use o WSL2 e o backend de Linux dentro dele." },
-      { "q": "Meu agente precisa de internet. A jaula ainda serve para alguma coisa?", "a": "Serve. Com <code>--network</code> ligado, o agente continua lendo só o seu projeto, então suas chaves e o resto do seu home não estão lá para serem enviados. O que ele consegue ler, ele consegue enviar, e por isso é importante mascarar os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>." },
+      { "q": "Meu agente precisa de internet. A jaula ainda serve para alguma coisa?", "a": "Serve. <code>--allow-host api.anthropic.com</code> deixa o agente alcançar só a API dele. Já com <code>--network</code> ligado, o agente continua lendo só o seu projeto, então suas chaves e o resto do seu home não estão lá para serem enviados. O que ele consegue ler, ele consegue enviar, e por isso é importante mascarar os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>." },
       { "q": "É gratuito?", "a": "Sim. O ai-jail é open source, sob a licença GPL 3.0." }
     ]
   }

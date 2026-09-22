@@ -12,7 +12,14 @@
   "install": {
     "title": "Instalar",
     "lede": "Elige la forma en que ya instalas tus herramientas de línea de comandos. Todos los métodos te dan el mismo y único programa <code>ai-jail</code>.",
-    "tabs": ["Homebrew", "Arch Linux", "crates.io", "Nix", "Versiones en GitHub", "Desde el código fuente"],
+    "tabs": [
+      "Homebrew",
+      "Arch Linux",
+      "crates.io",
+      "Nix",
+      "Versiones en GitHub",
+      "Desde el código fuente"
+    ],
     "notes": [
       "Funciona en macOS y en Linux.",
       "El primer paquete es un binario precompilado para Linux x86_64. El segundo compila desde el código fuente.",
@@ -24,41 +31,76 @@
     "platforms": {
       "title": "Lo que necesita tu sistema",
       "items": [
-        { "title": "Linux", "text": "Instala bubblewrap, el pequeño programa que ai-jail usa para construir el sandbox. La mayoría de las distribuciones lo empaquetan como <code>bubblewrap</code>." },
-        { "title": "macOS", "text": "No hay nada que instalar. ai-jail usa <code>sandbox-exec</code>, que viene con macOS. Apple marca esa interfaz como obsoleta." },
-        { "title": "Windows", "text": "No está soportado. Usa WSL2 y sigue dentro de él los pasos de Linux." }
+        {
+          "title": "Linux",
+          "text": "Instala bubblewrap, el pequeño programa que ai-jail usa para construir el sandbox. La mayoría de las distribuciones lo empaquetan como <code>bubblewrap</code>."
+        },
+        {
+          "title": "macOS",
+          "text": "No hay nada que instalar. ai-jail usa <code>sandbox-exec</code>, que viene con macOS. Apple marca esa interfaz como obsoleta."
+        },
+        {
+          "title": "Windows",
+          "text": "No está soportado. Usa WSL2 y sigue dentro de él los pasos de Linux."
+        }
       ]
     }
   },
   "first": {
     "title": "Tu primera ejecución",
     "lede": "Tres comandos te llevan del plan a un vistazo por dentro y de ahí a un agente funcionando. ai-jail no abre nada hasta que lo pidas.",
-    "alt": "Tres paneles de izquierda a derecha. Dry run: la celda es solo un contorno punteado y el agente espera fuera. Echar un vistazo: la celda es sólida y contiene una terminal y la carpeta del proyecto. Ejecutar el agente: el agente y el proyecto están dentro, con dos aberturas en el muro, una para la red y otra para el login del agente. Tu carpeta home queda fuera, tras barrotes, en los tres.",
-    "caption": "Tu directorio home queda fuera en cada paso. Solo el último paso abre algo, y solo las dos cosas que un agente en la nube necesita.",
+    "alt": "Tres paneles de izquierda a derecha. Dry run: la celda es solo un contorno punteado y el agente espera fuera. Echar un vistazo: la celda es sólida y contiene una terminal y la carpeta del proyecto. Ejecutar el agente: el agente y el proyecto están dentro, con dos aberturas en el muro, una puerta hacia el host de la API del agente y otra para el login del agente. Tu carpeta home queda fuera, tras barrotes, en los tres.",
+    "caption": "Tu directorio home queda fuera en cada paso. Solo el último paso abre algo, y solo las dos cosas que un agente en la nube necesita: el host de su API y su login.",
     "steps": [
-      { "title": "Mira el plan sin ejecutar nada", "text": "Ve a tu proyecto y pide un dry run, una simulación. ai-jail imprime el comando de sandbox que usaría y termina. Un dry run nunca escribe un archivo." },
-      { "title": "Echa un vistazo dentro", "text": "Arranca una shell simple en la jaula. Tu proyecto está ahí, en su ruta real, y puedes editarlo. Tu directorio home es uno nuevo y vacío, y los tokens de tu shell ya no están. Escribe <code>exit</code> para salir." },
-      { "title": "Ejecuta el agente con las dos cosas que necesita", "text": "Un agente que habla con un modelo en la nube necesita la red para llegar a él, y su propio login guardado para demostrar quién eres. Ambos están apagados por defecto, así que los activas: <code>--network</code> y <code>--agent-state</code>. Desde la versión 1.22, si arrancas un agente conocido sin uno de ellos, ai-jail imprime una advertencia con el nombre del flag que falta." },
-      { "title": "Déjalo como predeterminado para ese agente", "text": "Pon los dos ajustes en <code>~/.ai-jail</code>, tu propio archivo de configuración, bajo el nombre del agente. A partir de ahí basta con el comando corto. El archivo <code>.ai-jail</code> que puede aparecer en el proyecto solo puede endurecer la jaula. Nunca puede activar la red ni un login, así que un repositorio que clonas no puede abrirse la jaula a sí mismo." }
+      {
+        "title": "Mira el plan sin ejecutar nada",
+        "text": "Ve a tu proyecto y pide un dry run, una simulación. ai-jail imprime el comando de sandbox que usaría y termina. Un dry run nunca escribe un archivo."
+      },
+      {
+        "title": "Echa un vistazo dentro",
+        "text": "Arranca una shell simple en la jaula. Tu proyecto está ahí, en su ruta real, y puedes editarlo. Tu directorio home es uno nuevo y vacío, y los tokens de tu shell ya no están. Escribe <code>exit</code> para salir."
+      },
+      {
+        "title": "Ejecuta el agente con las dos cosas que necesita",
+        "text": "Un agente que habla con un modelo en la nube necesita llegar a su API, y su propio login guardado para demostrar quién eres. Ambos están apagados por defecto. <code>--allow-host api.anthropic.com</code> abre exactamente ese host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>), y <code>--network</code> abre toda la red. <code>--agent-state</code> monta el login. Si arrancas un agente conocido sin una forma de llegar a su API, ai-jail avisa y nombra el host."
+      },
+      {
+        "title": "Déjalo como predeterminado para ese agente",
+        "text": "Pon los dos ajustes en <code>~/.ai-jail</code>, tu propio archivo de configuración, bajo el nombre del agente. A partir de ahí basta con el comando corto. El archivo <code>.ai-jail</code> que puede aparecer en el proyecto solo puede endurecer la jaula: puede recortar la lista de hosts pero no ampliarla, y no puede activar la red ni un login, así que un repositorio que clonas no puede abrirse la jaula a sí mismo."
+      }
     ],
-    "codeTitles": ["dry run", "una shell en la jaula", "la ejecución real", "~/.ai-jail"],
+    "codeTitles": [
+      "dry run",
+      "una shell en la jaula",
+      "la ejecución real",
+      "~/.ai-jail"
+    ],
     "gitignore": {
       "title": "El archivo .ai-jail en tu proyecto",
       "text": "Una ejecución normal puede guardar ajustes del proyecto en <code>.ai-jail</code>. ai-jail nunca escribe ahí los valores que pasas con <code>--env</code>. El agente ve ese archivo vacío. El README sugiere añadir <code>.ai-jail</code> a <code>.gitignore</code> para que <code>git status</code> salga limpio dentro de la jaula. <a class=\"link\" href=\"/configure/\">Configurar</a> explica los dos archivos de configuración."
     },
     "exposure": {
       "title": "Lo que esos dos flags dejan expuesto",
-      "text": "<code>--network</code> es toda la red, sin filtro por sitio, así que todo lo que el agente puede leer, lo puede enviar. <code>--agent-state</code> deja que todo lo que hay en la jaula use el login de ese agente. Tus claves SSH, tus credenciales de la nube y tus otros proyectos siguen sin estar ahí para que los lean. <a class=\"link\" href=\"/security/\">Seguridad</a> tiene la lista completa de límites."
-    }
+      "text": "Un host que permites es de confianza para todo lo que ofrece: permitir <code>github.com</code> permite un push a cualquier repositorio. <code>--network</code> es toda la red, así que todo lo que el agente puede leer, lo puede enviar. <code>--agent-state</code> deja que todo lo que hay en la jaula use el login de ese agente. Tus claves SSH, tus credenciales de la nube y tus otros proyectos siguen sin estar ahí para que los lean. <a class=\"link\" href=\"/security/\">Seguridad</a> tiene la lista completa de límites."
+    },
+    "comments": [
+      "# o, con toda la red abierta:",
+      "# a partir de ahora, en cualquier proyecto:"
+    ]
   },
   "see": {
     "title": "Lo que verás dentro",
     "lede": "El prompt cambia a <code>(jail)</code> y el proyecto está donde siempre estuvo. Falta lo que vale la pena robar.",
     "termTitle": "ai-jail bash, en Linux",
-    "comments": ["# el proyecto está en su ruta real", "# un token exportado en tu shell no vino contigo", "# tus claves no están en este home", "# la jaula tiene su propio hostname"],
+    "comments": [
+      "# el proyecto está en su ruta real",
+      "# un token exportado en tu shell no vino contigo",
+      "# tus claves no están en este home",
+      "# la jaula tiene su propio hostname"
+    ],
     "note": "Esta es una sesión de Linux. macOS no tiene forma de construir un árbol de archivos aparte, así que ahí las mismas rutas existen y se deniega su lectura.",
     "alt": "La vista desde dentro de la celda. El agente está junto a una carpeta de proyecto grande y brillante, con un home vacío y las herramientas del sistema detrás. Fuera de las rejas, atenuados y tras barrotes: las claves SSH, los logins de la nube, otros proyectos y la red.",
-    "caption": "Desde dentro, el proyecto es lo único tuyo que existe. La red también queda fuera hasta que pases <code>--network</code>."
+    "caption": "Desde dentro, el proyecto es lo único tuyo que existe. La red también queda fuera hasta que abras un host con <code>--allow-host</code> o toda ella con <code>--network</code>."
   },
   "trouble": {
     "title": "Si no arranca",
@@ -86,7 +128,11 @@
   "agents": {
     "title": "Por agente",
     "lede": "ai-jail sabe dónde guarda su login cada agente. <code>--agent-state</code> monta solo las carpetas del agente que arrancas, y solo si existen.",
-    "head": ["Ejecutas", "<code>--agent-state</code> monta", "Conviene saber"],
+    "head": [
+      "Ejecutas",
+      "<code>--agent-state</code> monta",
+      "Conviene saber"
+    ],
     "notes": {
       "claude": "Para un segundo perfil de Claude, apunta <code>--claude-dir</code> a su directorio.",
       "codex": "Después de redimensionar la ventana, ai-jail le envía a Codex una tecla de redibujado para que la pantalla se repinte.",
@@ -97,9 +143,18 @@
   },
   "next": {
     "items": [
-      { "title": "Configurar", "text": "Cada flag y cada clave de configuración, y cómo abrir solo lo que la tarea necesita." },
-      { "title": "Cómo funciona", "text": "Las capas entre el agente y tu sistema, en Linux y en macOS." },
-      { "title": "Seguridad", "text": "Qué detiene ai-jail, qué no, y cómo se firman las versiones." }
+      {
+        "title": "Configurar",
+        "text": "Cada flag y cada clave de configuración, y cómo abrir solo lo que la tarea necesita."
+      },
+      {
+        "title": "Cómo funciona",
+        "text": "Las capas entre el agente y tu sistema, en Linux y en macOS."
+      },
+      {
+        "title": "Seguridad",
+        "text": "Qué detiene ai-jail, qué no, y cómo se firman las versiones."
+      }
     ]
   }
 }
