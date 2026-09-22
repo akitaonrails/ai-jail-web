@@ -56,7 +56,7 @@ Gaps a whole-process wrapper (ai-jail) addresses:
 - One policy for every agent, instead of per-agent configs.
 
 Things the built-ins do that ai-jail does not:
-- Per-domain network allowlists with prompts (Claude Code proxy; Codex `network_proxy`); ai-jail is all-or-nothing, off by default. Caveat: Claude Code documents domain-fronting bypass [CC-SB].
+- Per-domain network allowlists with prompts (Claude Code proxy; Codex `network_proxy`); ai-jail is host allowlist since 2.0 (`--allow-host`), off by default. Caveat: Claude Code documents domain-fronting bypass [CC-SB].
 - Credential masking/injection at the proxy (Claude Code) [CC-SB].
 - Per-command approval UX, classifier/auto-review, plan mode, managed org policy.
 - Semantic protected paths (`.git/hooks`, `.claude`, `.codex`) inside the writable workspace.

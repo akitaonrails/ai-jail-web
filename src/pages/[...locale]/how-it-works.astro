@@ -23,9 +23,12 @@ const layers = withText(
   [{ hue: 'gold' }, { hue: 'orange' }, { hue: 'orange' }, { hue: 'red' }, { hue: 'magenta' }, { hue: 'cyan' }, { hue: 'cyan' }] as const,
   raw<Layer[]>('layers.items'),
 );
+// Off is the blocked state, filtered is an opt-in, open is what the agent may reach: the same three colors as the Reach lists.
+const modes = withText([{ hue: 'red' }, { hue: 'gold' }, { hue: 'cyan' }] as const, raw<Text[]>('egress.modes'));
+const egress = raw<{ what: string; linux: string; macos: string }[]>('egress.rows');
 const macos = raw<{ what: string; linux: string; macos: string }[]>('macos.rows');
 const blocks = raw<{ option: string; verdict: string }[]>('blocks.rows');
-// Counted in the ai-jail repository at 1.22.0: #[test] in src/, #[test] in tests/sandbox_escape.rs, [dependencies] in Cargo.toml.
+// Counted in the ai-jail repository at facts.version: #[test] in src/, #[test] in tests/sandbox_escape.rs, [dependencies] in Cargo.toml.
 const facts = withText([{ n: 1 }, { n: factsData.dependencies }, { n: factsData.unitTests }, { n: factsData.escapeTests }], raw<{ label: string }[]>('facts.items'));
 const next = withText(
   [{ href: '/configure/', hue: 'gold' }, { href: '/security/', hue: 'red' }, { href: '/compare/', hue: 'cyan' }] as const,
@@ -63,6 +66,20 @@ const next = withText(
     </ol>
   </Section>
 
+  <Section title={t('egress.title')} lede={t('egress.lede')} hue="orange" id="network">
+    <Figure name="how-egress" alt={t('egress.alt')} caption={t('egress.caption')} />
+    <FeatureGrid items={modes} />
+    <div class="table-wrap mt-10">
+      <table class="table-site">
+        <thead><tr><td></td><th scope="col">{t('egress.head.linux')}</th><th scope="col">{t('egress.head.macos')}</th></tr></thead>
+        <tbody>
+          {egress.map((r) => <tr><td set:html={r.what} /><td set:html={r.linux} /><td set:html={r.macos} /></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('egress.link')}</a>
+  </Section>
+
   <Section title={t('macos.title')} lede={t('macos.lede')} hue="red" id="macos">
     <Figure name="how-macos" alt={t('macos.alt')} caption={t('macos.caption')} />
     <div class="table-wrap">
@@ -90,7 +107,7 @@ const next = withText(
 
   <Section title={t('facts.title')} lede={t('facts.lede')} hue="gold" id="facts">
     <Facts items={facts} />
-    <p class="mt-8 text-sm text-muted">{t('facts.note')}</p>
+    <p class="mt-8 text-sm text-muted">{t('facts.note', { version: factsData.version })}</p>
     <Callout title={t('limit.title')}>
       <p set:html={t('limit.text')} />
       <p><a class="link" href={href('/security/')}>{t('limit.link')}</a></p>

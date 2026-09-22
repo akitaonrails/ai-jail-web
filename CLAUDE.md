@@ -27,4 +27,4 @@ Never silence a STALE error by stamping without translating.
 - Shared patterns belong in `src/components` or `src/styles/global.css`. A page's `<style>` is for what only that page has.
 - Diagrams: `docs/images.md`. Prompts are committed in `scripts/prompts/`. Look at every generated image before committing it.
 - Before pushing: `npm run check:colors && npm run check:i18n && npm run build`. `main` deploys to production through Netlify.
-- When a new ai-jail version is out: update `src/data/facts.json`, re-verify the flags on Configure and the comparison on Compare, and move `reviewedAt`.
+- When a new ai-jail version is out: update `src/data/facts.json` (version, test counts, dependencies), run `npm run snapshot:github`, re-verify the flags on Configure and the comparison on Compare, and move `reviewedAt`. The Download page reads releases from GitHub at build time and falls back to the snapshot.

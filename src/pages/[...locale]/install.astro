@@ -32,12 +32,13 @@ const platforms = withText(
 );
 
 const codeTitles = raw<string[]>('first.codeTitles');
+const k = raw<string[]>('first.comments');
 const steps = withText(
   [
     { code: 'cd ~/Projects/my-app\nai-jail --dry-run claude' },
     { code: 'ai-jail bash' },
-    { code: 'ai-jail --network --agent-state claude' },
-    { code: '[commands.claude]\nnetwork = true\nagent_state = true\n\n# from now on, in any project:\n# ai-jail claude' },
+    { code: `ai-jail --allow-host api.anthropic.com --agent-state claude\n${k[0]}\nai-jail --network --agent-state claude` },
+    { code: `[commands.claude]\nallow_hosts = ["api.anthropic.com"]\nagent_state = true\n\n${k[1]}\n# ai-jail claude` },
   ].map((s, i) => ({ ...s, codeTitle: codeTitles[i] })),
   raw<Words[]>('first.steps'),
 );

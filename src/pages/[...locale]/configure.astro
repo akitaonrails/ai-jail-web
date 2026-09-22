@@ -34,6 +34,7 @@ type Risk = 'optin' | 'weakens' | undefined;
 const rows: { flag: string; key?: string; risk?: Risk }[][] = [
   [
     { flag: '--network', key: 'network = true', risk: 'weakens' },
+    { flag: '--allow-host <HOST>', key: 'allow_hosts = [...]', risk: 'optin' },
     { flag: '--ssh', key: 'ssh = true', risk: 'optin' },
     { flag: '--docker', key: 'no_docker = false', risk: 'weakens' },
     { flag: '--tailscale', key: 'tailscale = true', risk: 'optin' },
@@ -43,6 +44,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '--agent-state', key: 'agent_state = true', risk: 'optin' },
     { flag: '--claude-dir <PATH>', key: 'claude_dir = "..."', risk: 'optin' },
     { flag: '--env <NAME[=VALUE]>', risk: 'optin' },
+    { flag: '--env-from-file <PATH>', key: 'env_from_file = [...]', risk: 'optin' },
     { flag: '--inherit-env', key: 'inherit_env = true', risk: 'weakens' },
     { flag: '', key: 'env_pass = ["NAME"]', risk: 'optin' },
   ],
@@ -67,6 +69,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '--no-rlimits', key: 'no_rlimits = true', risk: 'weakens' },
     { flag: '--no-private-home', key: 'private_home = false', risk: 'weakens' },
   ],
+  [{ flag: '--audit-log', key: 'audit_log = true', risk: 'optin' }],
   [
     { flag: '--dry-run' },
     { flag: '--init' },
@@ -81,6 +84,8 @@ const groups = raw<{ title: string; rows: { text: string }[] }[]>('switches.grou
   rows: withText(rows[i], g.rows),
 }));
 const riskHue = { optin: 'gold', weakens: 'red' } as const;
+const utility = rows.length - 1; // the last group has no config keys and no risk column
+const layers = 4;
 
 const maskPoints = withText([{ hue: 'gold' }, { hue: 'red' }, { hue: 'orange' }] as const, raw<Text[]>('secrets.points'));
 const maskFlags = [
@@ -94,9 +99,21 @@ const maskToml = [
   'mask = [".env", ".env.*", "*.pem"]',
   'deny_paths = ["secrets/"]',
 ].join('\n');
+const keysShell = [
+  t('secrets.keys.shellNote'),
+  'chmod 600 ~/.secrets/claude.env',
+  'ai-jail --env-from-file ~/.secrets/claude.env claude',
+].join('\n');
+const keysToml = [
+  t('secrets.keys.tomlNote'),
+  '[commands.claude]',
+  'env_from_file = ["~/.secrets/claude.env"]',
+].join('\n');
 
 const recipeCode = [
-  { code: [t('recipes.comments.once'), '[commands.claude]', 'network = true', 'agent_state = true', '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
+  { code: [t('recipes.comments.once'), '[commands.claude]', 'allow_hosts = ["api.anthropic.com"]', t('recipes.comments.open'), 'agent_state = true', '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
+  { code: ['ai-jail --allow-host api.anthropic.com --agent-state claude', t('recipes.comments.hosts')].join('\n') },
+  { code: '[commands.claude]\nallow_hosts = ["api.anthropic.com", "github.com"]', codeTitle: '~/.ai-jail' },
   { code: 'ai-jail --network --ssh --agent-state claude' },
   { code: '[commands.claude]\nro_maps = ["~/.config/mise", "~/.local/share/mise"]', codeTitle: '~/.ai-jail' },
   { code: [t('recipes.comments.wayland'), 'ai-jail --browser=soft --network --display chromium', t('recipes.comments.x11'), 'ai-jail --browser=soft --network --x11 chromium'].join('\n') },
@@ -138,24 +155,24 @@ const next = withText(
               <thead>
                 <tr>
                   <th scope="col">{t('switches.cols.flag')}</th>
-                  {gi < 5 && <th scope="col">{t('switches.cols.key')}</th>}
+                  {gi !== utility && <th scope="col">{t('switches.cols.key')}</th>}
                   <th scope="col">{t('switches.cols.opens')}</th>
-                  {gi < 5 && <th scope="col">{t('switches.cols.risk')}</th>}
+                  {gi !== utility && <th scope="col">{t('switches.cols.risk')}</th>}
                 </tr>
               </thead>
               <tbody>
                 {g.rows.map((r) => (
                   <tr>
                     <td>{r.flag ? <code dir="ltr">{r.flag}</code> : <span class="text-muted font-normal">{t('switches.none')}</span>}</td>
-                    {gi < 5 && <td>{r.key ? <code dir="ltr">{r.key}</code> : <span class="text-muted">{t('switches.none')}</span>}</td>}
+                    {gi !== utility && <td>{r.key ? <code dir="ltr">{r.key}</code> : <span class="text-muted">{t('switches.none')}</span>}</td>}
                     <td class="opens" set:html={r.text} />
-                    {gi < 5 && <td>{r.risk && <span class="badge whitespace-nowrap" data-hue={riskHue[r.risk]}>{t(`switches.risk.${r.risk}`)}</span>}</td>}
+                    {gi !== utility && <td>{r.risk && <span class="badge whitespace-nowrap" data-hue={riskHue[r.risk]}>{t(`switches.risk.${r.risk}`)}</span>}</td>}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          {gi === 4 && <p class="mt-4 text-muted" set:html={t('switches.layersLink')} />}
+          {gi === layers && <p class="mt-4 text-muted" set:html={t('switches.layersLink')} />}
         </div>
       ))}
     </div>
@@ -170,6 +187,14 @@ const next = withText(
       <CodeBlock code={maskToml} title={t('secrets.tomlTitle')} />
     </div>
     <Callout title={t('secrets.caveat.title')}><p set:html={t('secrets.caveat.text')} /></Callout>
+    <div id="api-keys" class="mt-14">
+      <h3 class="text-xl mb-3">{t('secrets.keys.title')}</h3>
+      <p class="lede max-w-[46em]" set:html={t('secrets.keys.text')} />
+      <div class="mt-6 grid gap-6 lg:grid-cols-2 items-start">
+        <CodeBlock code={keysShell} title={t('secrets.keys.shellTitle')} />
+        <CodeBlock code={keysToml} title={t('secrets.keys.tomlTitle')} />
+      </div>
+    </div>
   </Section>
 
   <Section id="lockdown" title={t('lockdown.title')} lede={t('lockdown.lede')} hue="red" tint>

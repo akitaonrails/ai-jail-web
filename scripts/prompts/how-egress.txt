@@ -1,0 +1,9 @@
+Three panels side by side, read left to right, separated by generous dark space. Each panel shows the same scene: a glowing cyan microchip standing inside a rounded-square wall made of short thick vertical bars in the warm orange spectrum. One title label sits above each panel: "Off", "Filtered", "Open".
+
+Left panel, "Off": the wall is closed all the way round. Outside the wall to its right floats one small dim dark maroon-grey cloud icon crossed by thin vertical bars. No line connects the chip to the cloud.
+
+Middle panel, "Filtered": the wall has one small gap on its right side, a narrow gate. Just outside the gate stands a small orange rectangular box labeled "Proxy". A thin cyan line runs from the chip, through the gate, into the box. From the box, one thin cyan line continues to a bright cyan cloud icon labeled "api.anthropic.com". Below that, a second cloud icon, dim dark maroon-grey and crossed by thin vertical bars, sits with no line reaching it.
+
+Right panel, "Open": the wall's whole right side is missing, an open side. A thin cyan line runs from the chip straight out to a bright cyan cloud icon. No bars, no box.
+
+Exactly five labels in total: "Off", "Filtered", "Open", "Proxy", "api.anthropic.com". The address is written in lowercase exactly as given. The chips and the walls are the same size in all three panels.

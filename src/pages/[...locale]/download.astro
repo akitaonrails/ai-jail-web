@@ -1,0 +1,172 @@
+---
+import { Marked } from 'marked';
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Section from '@/components/Section.astro';
+import CodeBlock from '@/components/CodeBlock.astro';
+import Callout from '@/components/Callout.astro';
+import NextPages from '@/components/NextPages.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/data/site';
+import facts from '@/data/facts.json';
+import { getGithub, getLatestRelease } from '@/data/github';
+import { localePaths, useI18n, withText } from '@/i18n';
+export const getStaticPaths = localePaths;
+
+const { t, raw, href, date, number } = useI18n(Astro, 'download');
+type Words = { title: string; text: string };
+
+const gh = await getGithub();
+const latest = await getLatestRelease();
+const tag = latest.tag.replace(/^v/, '');
+const latestDownload = (file: string) => `${site.repo}/releases/latest/download/${file}`;
+const asset = (file: string) => latest.assets.find((a) => a.name === file);
+const mb = (bytes: number) => number(bytes / 1048576, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+// Structure per build: file, platform id for the visitor badge, hue. Words come from the catalog.
+const builds = withText(
+  [
+    { file: 'ai-jail-linux-x86_64.tar.gz', platform: 'linux', hue: 'orange' },
+    { file: 'ai-jail-macos-aarch64.tar.gz', platform: 'mac', hue: 'cyan' },
+  ] as const,
+  raw<Words[]>('builds.items'),
+).map((b) => ({ ...b, size: asset(b.file)?.size ?? 0 }));
+
+const verifyComments = raw<string[]>('builds.verify.comments');
+const verify = [
+  verifyComments[0], 'sha256sum -c ai-jail-linux-x86_64.tar.gz.sha256',
+  verifyComments[1], 'shasum -a 256 -c ai-jail-macos-aarch64.tar.gz.sha256',
+].join('\n');
+
+const channels = withText(
+  [
+    { code: 'brew tap akitaonrails/tap && brew install ai-jail' },
+    { code: 'yay -S ai-jail-bin' },
+    { code: 'cargo install --locked ai-jail' },
+    { code: 'nix profile install github:akitaonrails/ai-jail' },
+  ],
+  raw<Words[]>('channels.items').map((w) => ({ ...w, text: w.text.replace('{rust}', `<code>${facts.rust}</code>`) })),
+);
+
+// Release notes are the project's own markdown. Raw HTML is dropped; headings sit under the page's h2 and the release's h3.
+const md = new Marked({
+  renderer: {
+    html: () => '',
+    heading({ tokens, depth }) {
+      if (depth === 1) return '';
+      const d = Math.min(depth + 2, 5);
+      return `<h${d}>${this.parser.parseInline(tokens)}</h${d}>\n`;
+    },
+  },
+});
+const releases = gh.releases.slice(0, 6).map((r) => ({ ...r, html: md.parse(r.body ?? '') as string }));
+
+const next = withText(
+  [
+    { hue: 'cyan', href: href('/install/') },
+    { hue: 'gold', href: href('/configure/') },
+    { hue: 'red', href: href('/security/') },
+  ] as const,
+  raw<Words[]>('next.items'),
+);
+---
+<Base title={t('meta.title')} description={t('meta.description')}>
+  <PageHero hue="cyan" kicker={t('kicker.download')} title={t('hero.title', { tag })} lede={t('hero.lede', { date: date(latest.date), license: facts.license })}>
+    <a href="#builds" class="btn btn-primary">{t('hero.jump')}</a>
+    <a href="#changelog" class="btn btn-ghost">{t('hero.changelog')}</a>
+  </PageHero>
+
+  <Section id="builds" title={t('builds.title')} lede={t('builds.lede')} hue="cyan">
+    <div class="grid gap-6 md:grid-cols-2" data-reveal="children" data-builds>
+      {builds.map((b) => (
+        <div data-hue={b.hue} data-platform={b.platform} class="cell build grid gap-4 content-start min-w-0">
+          <div class="flex items-center justify-between gap-3">
+            <span class="bars" aria-hidden="true"><i></i></span>
+            <span class="badge" data-yours hidden>{t('builds.yours')}</span>
+          </div>
+          <h3 class="text-xl">{b.title}</h3>
+          <p class="text-muted" set:html={b.text} />
+          <p class="text-sm text-muted break-all" dir="ltr"><code>{b.file}</code> · {t('builds.size', { size: mb(b.size) })}</p>
+          <div class="flex flex-wrap gap-3 mt-2">
+            <a href={latestDownload(b.file)} class="btn btn-primary">{t('builds.download')}</a>
+            <a href={latestDownload(`${b.file}.sha256`)} class="btn btn-ghost">{t('builds.checksum')}</a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="grid gap-x-10 gap-y-8 md:grid-cols-2 mt-14 items-start">
+      <div class="grid gap-4 min-w-0">
+        <h3 class="text-xl">{t('builds.verify.title')}</h3>
+        <p class="text-muted max-w-[40em]" set:html={t('builds.verify.text')} />
+        <CodeBlock code={verify} />
+        <p class="text-muted text-sm max-w-[40em]" set:html={t('builds.verify.more')} />
+      </div>
+      <Callout title={t('builds.windows.title')}><p set:html={t('builds.windows.text')} /></Callout>
+    </div>
+  </Section>
+
+  <Section id="channels" title={t('channels.title')} lede={t('channels.lede')} hue="cyan" tint>
+    <div class="grid gap-x-8 gap-y-10 md:grid-cols-2" data-reveal="children">
+      {channels.map((c) => (
+        <div class="grid gap-3 content-start min-w-0">
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h3 class="text-xl">{c.title}</h3>
+          <p class="text-muted max-w-[40em]" set:html={c.text} />
+          <CodeBlock code={c.code} />
+        </div>
+      ))}
+    </div>
+    <a href={href('/install/')} class="btn btn-ghost mt-10">{t('channels.link')}</a>
+  </Section>
+
+  <Section id="changelog" title={t('changelog.title')} lede={t('changelog.lede', { n: number(releases.length) })} hue="cyan" narrow>
+    <p class="text-sm text-muted">{t('changelog.english')}</p>
+    <div class="mt-6 border-t border-line">
+      {releases.map((r) => (
+        <details class="rel border-b border-line">
+          <summary>
+            <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span dir="ltr">{r.tag}</span>
+              <span class="text-sm text-muted font-sans font-normal">{date(r.date)}</span>
+              {r.prerelease && <span class="badge" data-hue="gold">{t('changelog.prerelease')}</span>}
+            </span>
+            <span class="bars" aria-hidden="true"><i></i></span>
+          </summary>
+          <div class="pb-6 text-muted prose-site notes" lang="en" dir="ltr" set:html={r.html} />
+          <p class="pb-6"><a class="link" href={r.url} lang="en" dir="ltr">{r.tag}</a></p>
+        </details>
+      ))}
+    </div>
+    <a href={`${site.repo}/releases`} class="btn btn-ghost mt-10">{t('changelog.all')}</a>
+  </Section>
+
+  <NextPages title={t('next.title')} items={next} />
+  <CtaBand />
+</Base>
+
+<script>
+  // Point out the visitor's build. Purely a hint: both cards stay, and nothing changes without JavaScript.
+  const ua = navigator.userAgent;
+  const platform = ((navigator as any).userAgentData?.platform as string | undefined) ?? navigator.platform ?? '';
+  const isMac = /Mac/i.test(platform) && !/iPhone|iPad/.test(ua);
+  const isLinux = /Linux|X11/i.test(platform) && !/Android/i.test(ua);
+  const mine = isMac ? 'mac' : isLinux ? 'linux' : null;
+  if (mine) document.querySelector(`[data-builds] [data-platform="${mine}"] [data-yours]`)?.removeAttribute('hidden');
+</script>
+
+<style>
+  /* The same accordion as the Faq component, self-contained because this page does not use Faq. */
+  .rel summary { display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding-block: 1.25rem; cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); }
+  .rel summary::-webkit-details-marker { display: none; }
+  .rel .bars { block-size: 1.1rem; gap: 0.3rem; flex-shrink: 0; transition: transform 0.3s; }
+  .rel[open] .bars { transform: rotate(90deg); }
+  .notes { text-align: start; }
+  .notes :global(:is(h3, h4, h5)) { color: var(--text); font-size: var(--text-base); margin-block-start: 1.6em; }
+  .notes :global(ul) { list-style: disc; padding-inline-start: 1.4em; }
+  .notes :global(li + li) { margin-block-start: 0.5em; }
+  .notes :global(pre) { overflow-x: auto; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: 0.8rem; background: var(--tint); font-size: 0.9rem; line-height: 1.6; }
+  .notes :global(p code), .notes :global(li code) { overflow-wrap: anywhere; }
+  .notes :global(strong) { color: var(--text); }
+  .badge[hidden] { display: none; }
+</style>

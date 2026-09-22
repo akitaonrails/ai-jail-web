@@ -15,12 +15,24 @@
     "alt": "The agent and the project sit inside a wall of bars. Six arrows leave the agent and bounce off the wall. Outside, dim and barred, are your home and keys, your shell secrets, the network, your screen and clipboard, your terminal and the jail policy.",
     "caption": "The defaults. Every item on the outside stays there until you open it yourself.",
     "items": [
-      { "text": "Your home directory and the credentials in it. The agent gets a fresh, empty home, so <code>~/.ssh</code> and <code>~/.aws</code> do not exist in there." },
-      { "text": "Secrets in your shell. Environment variables are cut down to a small allowlist, so exported tokens stay outside." },
-      { "text": "The network. It is off, so nothing the agent reads can be sent anywhere." },
-      { "text": "Host shared memory, your display server and your clipboard. Agent output passes through a filter that drops terminal clipboard and query sequences." },
-      { "text": "Typing into your terminal. Linux blocks the <code>TIOCSTI</code> call that fakes keystrokes, and macOS limits terminal control to the one terminal ai-jail created for the run." },
-      { "text": "Its own rules. A <code>.ai-jail</code> file inside a repository is untrusted: it can tighten the sandbox and never open it." }
+      {
+        "text": "Your home directory and the credentials in it. The agent gets a fresh, empty home, so <code>~/.ssh</code> and <code>~/.aws</code> do not exist in there."
+      },
+      {
+        "text": "Secrets in your shell. Environment variables are cut down to a small allowlist, so exported tokens stay outside."
+      },
+      {
+        "text": "The network. It is off, so nothing the agent reads can be sent anywhere. You can open it to a list of hosts, or all the way."
+      },
+      {
+        "text": "Host shared memory, your display server and your clipboard. Agent output passes through a filter that drops terminal clipboard and query sequences."
+      },
+      {
+        "text": "Typing into your terminal. Linux blocks the <code>TIOCSTI</code> call that fakes keystrokes, and macOS limits terminal control to the one terminal ai-jail created for the run."
+      },
+      {
+        "text": "Its own rules. A <code>.ai-jail</code> file inside a repository is untrusted: it can tighten the sandbox and never open it."
+      }
     ],
     "link": "How each layer does this"
   },
@@ -37,6 +49,10 @@
       "Secrets inside the project. A <code>.env</code> file in the repository is readable unless you mask it. <a class=\"link\" href=\"/configure/#secrets\">See how to mask files</a>.",
       "Masks cover only paths that exist when the sandbox starts. A secret file created later, during the session, is not hidden.",
       "Side channels and some classes of inter-process communication.",
+      "An allowed host is trusted wholesale. Allowing <code>github.com</code> with <code>--allow-host</code> lets the agent push to any repository there, not only yours.",
+      "Filtered egress is TCP only. There is no UDP, so a program that needs it does not work; it also cannot leak through it.",
+      "DNS under <code>--allow-host</code>. On Linux, name lookups inside the sandbox fail, so there is no DNS channel out. On macOS the system resolver is not fenced, so a low-bandwidth DNS channel remains, the same gap Anthropic documents for its own sandbox-runtime.",
+      "The proxy sees the host, the port and the timing of each connection. What travels inside stays between the two ends. <a class=\"link\" href=\"/how-it-works/#network\">How filtered egress is built</a>.",
       "On macOS, <code>sandbox-exec</code> is deprecated by Apple and is not equivalent to the Linux isolation. <a class=\"link\" href=\"/how-it-works/\">See the macOS differences</a>."
     ],
     "callout": {
@@ -46,14 +62,19 @@
   },
   "switches": {
     "title": "Switches that open the wall",
-    "lede": "Everything below is off until you turn it on, and each one gives the agent real access. <a class=\"link\" href=\"/configure/#switches\">How to set them is on the Configure page</a>.",
-    "head": { "flag": "Switch", "gives": "What anything in the sandbox can then do" },
+    "lede": "Everything below is off until you turn it on, and most of them give the agent real access. <a class=\"link\" href=\"/configure/#switches\">How to set them is on the Configure page</a>.",
+    "head": {
+      "flag": "Switch",
+      "gives": "What anything in the sandbox can then do"
+    },
     "rows": [
-      "Send anywhere everything it can read. Traffic is unrestricted and there is no per-domain filter.",
+      "Send anywhere everything it can read. Traffic is unrestricted. <code>--allow-host</code> is the tighter alternative.",
+      "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale.",
+      "Nothing new. This switch weakens nothing: it writes one line per launch to a file with mode 0600 outside the sandbox, so the agent never sees it.",
       "Act as root on your machine through the Docker daemon.",
       "Log keystrokes and take screenshots of other X11 windows.",
       "Ask your systemd user manager to run services on the host.",
-      "Read your whole shell environment, secrets included.",
+      "Read your whole shell environment, secrets included. For API keys, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> passes one file instead.",
       "Use the agent's saved login, for example Claude's <code>~/.claude</code>.",
       "Record and play audio while it is on.",
       "See your real home directory. This is a broad exception; prefer a map of the one path you need."
@@ -66,7 +87,9 @@
       "A config file that exists and is invalid or unreadable.",
       "A project <code>.ai-jail</code> that is a symlink. A symlinked global <code>~/.ai-jail</code> is followed only to a regular file you own, that no one else can write, outside the project.",
       "<code>--lockdown</code> when Landlock, the kernel's own filesystem rules, is missing, partial or fails to apply. <code>--lockdown --no-landlock</code> is rejected too.",
-      "<code>--allow-tcp-port</code>. That interface cannot constrain UDP, so the flag is accepted for compatibility and the launch fails.",
+      "<code>--allow-tcp-port</code>. That interface cannot constrain UDP, so the flag is accepted for compatibility, the launch fails, and the error points at <code>--allow-host</code>.",
+      "<code>--network</code> together with <code>--allow-host</code>, or <code>--browser</code> with <code>--allow-host</code>. The two contradict each other, so ai-jail refuses to launch.",
+      "An <code>--env-from-file</code> file that is a symlink, readable by its group or by everyone, owned by someone else or inside the project.",
       "A <code>BWRAP_BIN</code> that points at a bubblewrap binary someone other than root could have replaced. It is ignored with a warning, and with no trusted bubblewrap the launch fails."
     ],
     "counter": {
@@ -78,9 +101,15 @@
     "title": "How the project is checked",
     "lede": "One maintainer runs the project in the open. Below is what gets checked and what does not.",
     "facts": [
-      { "label": "sandbox-escape integration tests that try to write to <code>/usr</code>, read <code>~/.ssh</code>, call <code>ptrace</code> and <code>bpf</code>, and expect to fail" },
-      { "label": "unit tests in the source tree at version 1.22.0" },
-      { "label": "network requests at launch. The update check is opt-in with <code>--update-check</code>" }
+      {
+        "label": "sandbox-escape integration tests that try to write to <code>/usr</code>, read <code>~/.ssh</code>, call <code>ptrace</code> and <code>bpf</code>, and expect to fail"
+      },
+      {
+        "label": "unit tests in the source tree at version {version}"
+      },
+      {
+        "label": "network requests at launch. The update check is opt-in with <code>--update-check</code>"
+      }
     ],
     "audit": {
       "title": "Audited internally, not by a third party",
@@ -106,6 +135,10 @@
         "With a single maintainer there is no second reviewer on changes or releases."
       ],
       "link": "Read RELEASE_SECURITY.md"
+    },
+    "log": {
+      "title": "A log of what you allowed",
+      "text": "<code>--audit-log</code> answers two questions: what did I let that agent do, and where did it try to reach. It appends one JSON line per launch, and with <code>--allow-host</code> on, one line per connection allowed or denied. It is off by default, and a project <code>.ai-jail</code> can only turn it off."
     }
   },
   "report": {
@@ -116,14 +149,32 @@
   "faq": {
     "title": "Common questions",
     "items": [
-      { "q": "Can the agent break out?", "a": "The defaults are built and tested to block the ordinary routes: files, environment, network and host IPC. A kernel, driver, terminal or sandbox-backend bug could still let it out. Every process sandbox has that limit, which is why hostile code belongs in a disposable VM." },
-      { "q": "Is it safe to run with the network on?", "a": "It is safer than running the agent bare, because your keys and home directory are still not there to send. Anything the agent can read, it can send, and ai-jail has no per-domain filtering. Mask the secrets inside the project first. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>." },
-      { "q": "Has it been audited?", "a": "Internally, before 1.0, with the reports published in the repository. It has had no third-party audit. The code is open under GPL 3.0, and private vulnerability reports are welcome." }
+      {
+        "q": "Can the agent break out?",
+        "a": "The defaults are built and tested to block the ordinary routes: files, environment, network and host IPC. A kernel, driver, terminal or sandbox-backend bug could still let it out. Every process sandbox has that limit, which is why hostile code belongs in a disposable VM."
+      },
+      {
+        "q": "Is it safe to run with the network on?",
+        "a": "It is safer than running the agent bare, because your keys and home directory are still not there to send. With <code>--network</code>, anything the agent can read, it can send. The middle ground is <code>--allow-host</code>: only the hosts you list are reachable, and each one is trusted as a whole. Mask the secrets inside the project first. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>."
+      },
+      {
+        "q": "Has it been audited?",
+        "a": "Internally, before 1.0, with the reports published in the repository. It has had no third-party audit. The code is open under GPL 3.0, and private vulnerability reports are welcome."
+      }
     ]
   },
   "next": [
-    { "title": "How it works", "text": "The layers between the agent and your system, and what changes on macOS." },
-    { "title": "Configure", "text": "Every switch, how to mask secrets, and lockdown mode." },
-    { "title": "Compare", "text": "Built-in agent sandboxes, Docker and virtual machines, side by side." }
+    {
+      "title": "How it works",
+      "text": "The layers between the agent and your system, and what changes on macOS."
+    },
+    {
+      "title": "Configure",
+      "text": "Every switch, how to mask secrets, and lockdown mode."
+    },
+    {
+      "title": "Compare",
+      "text": "Built-in agent sandboxes, Docker and virtual machines, side by side."
+    }
   ]
 }

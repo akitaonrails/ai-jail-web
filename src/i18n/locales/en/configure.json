@@ -38,7 +38,8 @@
       {
         "title": "Network and services",
         "rows": [
-          { "text": "Unrestricted network access. Anything the agent can read, it can send out." },
+          { "text": "The whole network. Anything the agent can read, it can send out. If the agent only needs a few hosts, <code>--allow-host</code> is the tighter choice." },
+          { "text": "The sandbox reaches only the listed host and its subdomains, over TCP through ai-jail's built-in proxy. You can repeat the flag. It cannot be combined with <code>--network</code> or <code>--browser</code>, and a project file may only shrink the list." },
           { "text": "Your <code>~/.ssh</code>, read only, and your SSH agent socket, so <code>git push</code> works." },
           { "text": "The Docker socket. This is effectively root on your machine, because the daemon can start containers that mount the host." },
           { "text": "The Tailscale socket." },
@@ -51,6 +52,7 @@
           { "text": "The agent's own login and settings, such as <code>~/.claude</code> or <code>~/.codex</code>. Anything in the jail can then use those credentials." },
           { "text": "Uses the given directory as Claude's state and sets <code>CLAUDE_CONFIG_DIR</code>." },
           { "text": "Passes one variable from your shell, or sets one with <code>NAME=VALUE</code>. Repeatable, never saved to disk." },
+          { "text": "Reads strict <code>KEY=VALUE</code> lines from a file and passes them like <code>--env</code>, which wins on conflicts. The file must be yours, a regular file, mode 0600 or stricter, and outside the project, or the launch fails. ai-jail never saves the values to disk, and the config key works from the global file only." },
           { "text": "Passes your whole shell environment, every secret in it included. Avoid it." },
           { "text": "The same as <code>--env</code>, from the global file only. A project file that sets it is ignored." }
         ]
@@ -86,6 +88,12 @@
         ]
       },
       {
+        "title": "Visibility",
+        "rows": [
+          { "text": "Appends one record per launch to <code>~/.local/share/ai-jail/history.jsonl</code> (directory 0700, file 0600): time, command, effective capabilities, config sources, exit code and duration. With <code>--allow-host</code>, every allowed or denied connection is recorded too. It is off by default, and a project file can turn it off but not on." }
+        ]
+      },
+      {
         "title": "Utility",
         "rows": [
           { "text": "Prints the sandbox command and runs nothing. It never writes a config file." },
@@ -117,6 +125,14 @@
     "caveat": {
       "title": "Only paths that exist at launch are covered",
       "text": "A path that is missing, or a glob that matches nothing, is skipped with a warning. A file created later, during the session, is not covered. If you need the rule enforced, create the file first. An empty <code>.env</code> is enough."
+    },
+    "keys": {
+      "title": "Keep API keys out of every config file",
+      "text": "Masking covers files in the project. For the agent's own key, pass it from your shell with <code>--env NAME</code>, or from a file only you can read with <code>--env-from-file</code>. Neither is ever written to a <code>.ai-jail</code> file, and a project file cannot set them.",
+      "shellTitle": "terminal",
+      "shellNote": "# the file must be yours, mode 0600 and outside the project",
+      "tomlTitle": "~/.ai-jail",
+      "tomlNote": "# global file only; a project file that sets this is ignored"
     }
   },
   "lockdown": {
@@ -137,14 +153,16 @@
     "codeTitle": "terminal",
     "network": {
       "title": "Lockdown and the network",
-      "text": "Lockdown has no network by default. On Linux, <code>--network</code> still overrides that, so leave it out unless you mean it. On macOS, lockdown always blocks the network."
+      "text": "Lockdown has no network by default. <code>--allow-host</code> still works under lockdown, so you can reach the listed hosts without opening the network. On Linux, <code>--network</code> still overrides lockdown, so leave it out unless you mean it. On macOS, lockdown always blocks the open network."
     }
   },
   "recipes": {
     "title": "Recipes",
     "lede": "Copy one. To see what it builds, run it with <code>--dry-run</code> first.",
     "items": [
-      { "title": "A cloud agent, day to day", "text": "A hosted model needs the network to reach its API and its own login to authenticate. Put both in the global file and the command stays short." },
+      { "title": "A cloud agent, day to day", "text": "A hosted model needs to reach its API and needs its own login to authenticate. Put both in the global file and the command stays short. Allow the API host alone, or open the whole network with <code>network = true</code>." },
+      { "title": "Only the agent's API host", "text": "The agent reaches only its own API. Claude uses <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> and Gemini <code>generativelanguage.googleapis.com</code>. If the host is missing from the list, the launch warning names it." },
+      { "title": "Allowed hosts in the global file", "text": "The list applies to every run of that command. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that." },
       { "title": "Git push over SSH", "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. Pushing also needs the network." },
       { "title": "mise toolchains", "text": "The fresh home directory has no mise installs in it, so ai-jail skips mise. Map the two mise directories in, read only." },
       { "title": "A browser for the agent", "text": "<code>--browser</code> alone gives a browser that cannot load a page or open a window. On Linux it also needs <code>--network</code> and <code>--display</code>, and an X11 browser needs <code>--x11</code> in place of <code>--display</code>." },
@@ -155,13 +173,15 @@
       "once": "# once, in ~/.ai-jail",
       "then": "# then, in any project",
       "wayland": "# Wayland",
-      "x11": "# X11"
+      "x11": "# X11",
+      "open": "# or open the whole network: network = true",
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
     }
   },
   "compat": {
     "title": "Old configs keep working",
     "text": "Backward compatibility is a project rule: the project never removes a flag or a config key. Unknown keys are ignored and missing ones take their defaults, so a file written for an old version still loads.",
-    "legacy": "Older switches keep their inverted names, where <code>true</code> turns the thing off: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. That is why <code>--gpu</code> is saved as <code>no_gpu = false</code>. Newer switches use plain names such as <code>network = true</code>."
+    "legacy": "Older switches keep their inverted names, where <code>true</code> turns the thing off: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. That is why <code>--gpu</code> is saved as <code>no_gpu = false</code>. Newer switches use plain names such as <code>network = true</code>. <code>--allow-tcp-port</code> is still parsed and still refuses to launch, because it cannot fence UDP. Its error points at <code>--allow-host</code>."
   },
   "next": {
     "items": [

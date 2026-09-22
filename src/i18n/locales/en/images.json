@@ -63,7 +63,7 @@
     "Run the agent": "Run the agent",
     "Agent": "Agent",
     "Project": "Project",
-    "Network": "Network",
+    "API host": "API host",
     "Login": "Login",
     "Your home": "Your home"
   },
@@ -119,5 +119,11 @@
     "Hooks": "Hooks",
     "Your home": "Your home",
     "Project": "Project"
+  },
+  "how-egress": {
+    "Off": "Off",
+    "Filtered": "Filtered",
+    "Open": "Open",
+    "Proxy": "Proxy"
   }
 }

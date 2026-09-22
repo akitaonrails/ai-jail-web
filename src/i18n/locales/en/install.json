@@ -12,7 +12,14 @@
   "install": {
     "title": "Install",
     "lede": "Choose the way you already install command line tools. Every method gives you the same single <code>ai-jail</code> program.",
-    "tabs": ["Homebrew", "Arch Linux", "crates.io", "Nix", "GitHub releases", "From source"],
+    "tabs": [
+      "Homebrew",
+      "Arch Linux",
+      "crates.io",
+      "Nix",
+      "GitHub releases",
+      "From source"
+    ],
     "notes": [
       "Works on macOS and on Linux.",
       "The first package is a prebuilt binary for Linux x86_64. The second builds from source.",
@@ -24,41 +31,76 @@
     "platforms": {
       "title": "What your system needs",
       "items": [
-        { "title": "Linux", "text": "Install bubblewrap, the small program ai-jail uses to build the sandbox. Most distributions package it as <code>bubblewrap</code>." },
-        { "title": "macOS", "text": "Nothing to install. ai-jail uses <code>sandbox-exec</code>, which ships with macOS. Apple marks that interface as deprecated." },
-        { "title": "Windows", "text": "Not supported. Use WSL2 and follow the Linux steps inside it." }
+        {
+          "title": "Linux",
+          "text": "Install bubblewrap, the small program ai-jail uses to build the sandbox. Most distributions package it as <code>bubblewrap</code>."
+        },
+        {
+          "title": "macOS",
+          "text": "Nothing to install. ai-jail uses <code>sandbox-exec</code>, which ships with macOS. Apple marks that interface as deprecated."
+        },
+        {
+          "title": "Windows",
+          "text": "Not supported. Use WSL2 and follow the Linux steps inside it."
+        }
       ]
     }
   },
   "first": {
     "title": "Your first run",
     "lede": "Three commands take you from a plan, to a look inside, to a working agent. ai-jail opens nothing until you ask.",
-    "alt": "Three panels from left to right. Dry run: the cell is only a dashed outline and the agent waits outside. Look around: the cell is solid and holds a terminal and the project folder. Run the agent: the agent and the project are inside, with two openings in the wall, one for the network and one for the agent's login. Your home folder stays barred outside in all three.",
-    "caption": "Your home directory stays outside at every step. Only the last step opens anything, and only the two things a cloud agent needs.",
+    "alt": "Three panels from left to right. Dry run: the cell is only a dashed outline and the agent waits outside. Look around: the cell is solid and holds a terminal and the project folder. Run the agent: the agent and the project are inside, with two openings in the wall, one gate to the agent's API host and one for the agent's login. Your home folder stays barred outside in all three.",
+    "caption": "Your home directory stays outside at every step. Only the last step opens anything, and only the two things a cloud agent needs: its API host and its login.",
     "steps": [
-      { "title": "See the plan without running anything", "text": "Go to your project and ask for a dry run. ai-jail prints the sandbox command it would use and exits. A dry run never writes a file." },
-      { "title": "Look around inside", "text": "Start a plain shell in the jail. Your project is there at its real path and you can edit it. Your home directory is a fresh, empty one, and your shell's tokens are gone. Type <code>exit</code> to leave." },
-      { "title": "Run the agent with the two things it needs", "text": "An agent that talks to a cloud model needs the network to reach it, and its own saved login to prove who you are. Both are off by default, so you turn them on: <code>--network</code> and <code>--agent-state</code>. Since version 1.22, ai-jail prints a warning naming the missing flag if you start a known agent without one of them." },
-      { "title": "Make it the default for that agent", "text": "Put the two settings in <code>~/.ai-jail</code>, your own config file, under the agent's name. After that the short command is enough. The <code>.ai-jail</code> file that may appear in the project can only tighten the jail. It can never turn the network or a login on, so a repository you clone cannot open the jail for itself." }
+      {
+        "title": "See the plan without running anything",
+        "text": "Go to your project and ask for a dry run. ai-jail prints the sandbox command it would use and exits. A dry run never writes a file."
+      },
+      {
+        "title": "Look around inside",
+        "text": "Start a plain shell in the jail. Your project is there at its real path and you can edit it. Your home directory is a fresh, empty one, and your shell's tokens are gone. Type <code>exit</code> to leave."
+      },
+      {
+        "title": "Run the agent with the two things it needs",
+        "text": "An agent that talks to a cloud model needs to reach its API, and its own saved login to prove who you are. Both are off by default. <code>--allow-host api.anthropic.com</code> opens exactly that host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>), and <code>--network</code> opens the whole network. <code>--agent-state</code> mounts the login. ai-jail warns, naming the host, if you start a known agent without a way to reach it."
+      },
+      {
+        "title": "Make it the default for that agent",
+        "text": "Put the two settings in <code>~/.ai-jail</code>, your own config file, under the agent's name. After that the short command is enough. The <code>.ai-jail</code> file that may appear in the project can only tighten the jail: it can shrink the host list but not grow it, and it cannot turn the network or a login on, so a repository you clone cannot open the jail for itself."
+      }
     ],
-    "codeTitles": ["dry run", "a shell in the jail", "the real run", "~/.ai-jail"],
+    "codeTitles": [
+      "dry run",
+      "a shell in the jail",
+      "the real run",
+      "~/.ai-jail"
+    ],
     "gitignore": {
       "title": "The .ai-jail file in your project",
       "text": "An ordinary run may save project settings to <code>.ai-jail</code>. ai-jail never writes values you pass with <code>--env</code> to it. The agent sees that file as empty. The README suggests adding <code>.ai-jail</code> to <code>.gitignore</code> so <code>git status</code> stays clean inside the jail. <a class=\"link\" href=\"/configure/\">Configure</a> explains both config files."
     },
     "exposure": {
       "title": "What those two flags give away",
-      "text": "<code>--network</code> is the whole network with no per-site filter, so anything the agent can read, it can send. <code>--agent-state</code> lets everything in the jail use that agent's login. Your SSH keys, cloud credentials and other projects are still not there to be read. <a class=\"link\" href=\"/security/\">Security</a> has the full list of limits."
-    }
+      "text": "A host you allow is trusted for everything it offers: allowing <code>github.com</code> allows a push to any repository. <code>--network</code> is the whole network, so anything the agent can read, it can send. <code>--agent-state</code> lets everything in the jail use that agent's login. Your SSH keys, cloud credentials and other projects are still not there to be read. <a class=\"link\" href=\"/security/\">Security</a> has the full list of limits."
+    },
+    "comments": [
+      "# or, with the whole network open:",
+      "# from now on, in any project:"
+    ]
   },
   "see": {
     "title": "What you will see inside",
     "lede": "The prompt changes to <code>(jail)</code> and the project is where it always was. The things worth stealing are missing.",
     "termTitle": "ai-jail bash, on Linux",
-    "comments": ["# the project is at its real path", "# a token exported in your shell did not come along", "# your keys are not in this home", "# the jail has its own hostname"],
+    "comments": [
+      "# the project is at its real path",
+      "# a token exported in your shell did not come along",
+      "# your keys are not in this home",
+      "# the jail has its own hostname"
+    ],
     "note": "This is a Linux session. macOS has no way to build a separate file tree, so there the same paths exist and reading them is refused.",
     "alt": "The view from inside the cell. The agent sits next to a large, bright project folder, with an empty home and the system tools behind it. Outside the bars, dim and barred: SSH keys, cloud logins, other projects and the network.",
-    "caption": "From inside, the project is the only thing of yours that exists. The network stays outside too until you pass <code>--network</code>."
+    "caption": "From inside, the project is the only thing of yours that exists. The network stays outside too until you open a host with <code>--allow-host</code> or all of it with <code>--network</code>."
   },
   "trouble": {
     "title": "If it does not start",
@@ -86,7 +128,11 @@
   "agents": {
     "title": "Per agent",
     "lede": "ai-jail knows where each agent keeps its login. <code>--agent-state</code> mounts only the folders of the agent you start, and only if they exist.",
-    "head": ["You run", "<code>--agent-state</code> mounts", "Good to know"],
+    "head": [
+      "You run",
+      "<code>--agent-state</code> mounts",
+      "Good to know"
+    ],
     "notes": {
       "claude": "For a second Claude profile, point <code>--claude-dir</code> at its directory.",
       "codex": "After you resize the window, ai-jail sends Codex a redraw key so the screen repaints.",
@@ -97,9 +143,18 @@
   },
   "next": {
     "items": [
-      { "title": "Configure", "text": "Every flag and config key, and how to open only what a task needs." },
-      { "title": "How it works", "text": "The layers between the agent and your system, on Linux and on macOS." },
-      { "title": "Security", "text": "What ai-jail stops, what it does not, and how releases are signed." }
+      {
+        "title": "Configure",
+        "text": "Every flag and config key, and how to open only what a task needs."
+      },
+      {
+        "title": "How it works",
+        "text": "The layers between the agent and your system, on Linux and on macOS."
+      },
+      {
+        "title": "Security",
+        "text": "What ai-jail stops, what it does not, and how releases are signed."
+      }
     ]
   }
 }

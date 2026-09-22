@@ -20,16 +20,20 @@ const faq = raw<FaqItem[]>('faq.items');
 type Mode = { agent: string; mode: string; effect: string };
 type Row = { label: string; cells: string[] };
 type Heavy = { tool: string; gives: string; costs: string };
+type Platform = { label: string; openshell: string; jail: string };
 const modes = raw<Mode[]>('prompts.modes');
 const rows = raw<Row[]>('table.rows');
-// The first rows are where a whole-process wrapper adds something; the rest are where the built-ins are ahead.
-const JAIL_ROWS = 6;
+// The first rows are where a whole-process wrapper adds something (the network fence covers the whole tree too); the rest are where the built-ins are ahead.
+const JAIL_ROWS = 7;
 const groups = [
   { title: t('table.groupJail'), hue: 'orange', rows: rows.slice(0, JAIL_ROWS) },
   { title: t('table.groupBuiltin'), hue: 'cyan', rows: rows.slice(JAIL_ROWS) },
 ] as const;
 const columns = ['claude', 'codex', 'gemini', 'jail'] as const;
 const heavy = raw<Heavy[]>('heavy.rows');
+const platforms = raw<Platform[]>('platforms.rows');
+const RECIPE_FILTERED = 'cd ~/Projects/my-app\nai-jail --allow-host api.anthropic.com --agent-state claude';
+const RECIPE_OPEN = 'ai-jail --network --agent-state claude';
 
 const together = withText([{ hue: 'cyan' }, { hue: 'orange' }] as const, raw<{ title: string; text: string }[]>('both.points'));
 const next = withText(
@@ -97,7 +101,11 @@ const next = withText(
   </Section>
 
   <Section id="both" title={t('both.title')} lede={t('both.lede')} hue="orange" tint fill>
-    <div class="max-w-xl"><CodeBlock code={'cd ~/Projects/my-app\nai-jail --network --agent-state claude'} title={t('both.codeTitle')} /></div>
+    <div class="grid gap-4 md:grid-cols-2">
+      <CodeBlock code={RECIPE_FILTERED} title={t('both.codeFiltered')} />
+      <CodeBlock code={RECIPE_OPEN} title={t('both.codeOpen')} />
+    </div>
+    <p class="mt-4 text-muted max-w-[40em]" set:html={t('both.codeNote')} />
     <Figure name="compare-layers-together" alt={t('both.alt')} caption={t('both.caption')} />
     <FeatureGrid items={together} cols={2} />
     <Callout title={t('both.nestedTitle')}><p set:html={t('both.nestedText')} /></Callout>
@@ -115,6 +123,18 @@ const next = withText(
     <p class="mt-6 text-muted max-w-[40em]" set:html={t('heavy.note')} />
   </Section>
 
+  <Section id="platforms" title={t('platforms.title')} lede={t('platforms.lede')} hue="gold" tint>
+    <div class="table-wrap">
+      <table class="table-site">
+        <thead><tr><td></td><th scope="col">{t('platforms.cols.openshell')}</th><th scope="col" data-hue="cyan" class="jail">{t('platforms.cols.jail')}</th></tr></thead>
+        <tbody>
+          {platforms.map((p) => (<tr><th scope="row">{p.label}</th><td class="wide" set:html={p.openshell} /><td class="wide jail" data-hue="cyan" set:html={p.jail} /></tr>))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-6 text-muted max-w-[40em]" set:html={t('platforms.note')} />
+  </Section>
+
   <Faq items={faq} title={t('faq.title')} hue="cyan" />
   <NextPages title={t('next.title')} items={next} />
   <CtaBand />
@@ -127,8 +147,8 @@ const next = withText(
   .table-site thead td { background: var(--tint); }
   .table-site td.wide { min-width: 16rem; }
   .compare td { min-width: 14rem; }
-  .compare .jail { background: var(--hue-soft); }
-  .compare thead .jail { color: var(--hue); }
+  .table-site .jail { background: var(--hue-soft); }
+  .table-site thead .jail { color: var(--hue); }
   .compare .group th { background: none; color: var(--hue); padding-block: 1.4rem 0.7rem; border-block-start: 1px solid var(--line); white-space: normal; }
   .compare .group .bars { display: inline-flex; block-size: 0.9rem; gap: 0.22rem; margin-inline-end: 0.6rem; vertical-align: -0.05em; }
   .compare td.none { color: var(--muted); font-style: italic; }

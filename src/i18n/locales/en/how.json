@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "How it works",
-    "description": "What happens when you type ai-jail claude: the kernel layers between your coding agent and your system on Linux, and what is different on macOS."
+    "description": "What happens when you type ai-jail claude: the kernel layers between your coding agent and your system on Linux, the three network modes, and what is different on macOS."
   },
   "hero": {
     "title": "What happens when you type ai-jail claude",
-    "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off.",
+    "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off. The network is off, opened to a few named hosts, or fully open: you choose per launch.",
     "install": "Install",
     "security": "Read the threat model"
   },
@@ -15,9 +15,18 @@
     "alt": "Five steps from left to right: your command, ai-jail reads its config, builds the sandbox, starts the agent inside the walls next to the project, and on exit the walls dissolve while the project stays.",
     "caption": "ai-jail builds the sandbox new on every launch and throws it away on exit. Only your project keeps its changes.",
     "steps": [
-      { "title": "It reads your rules", "text": "ai-jail trusts your own <code>~/.ai-jail</code> file. It treats a <code>.ai-jail</code> file inside the project as untrusted: that file can tighten the sandbox but never open it. Flags on the command line win over both." },
-      { "title": "It builds the sandbox", "text": "ai-jail sets up each layer below before the agent exists. If a config file is unreadable or invalid, ai-jail stops instead of starting with weaker rules." },
-      { "title": "It starts the agent inside", "text": "The agent, and every script, package and MCP server it starts, inherits the same walls. When the agent exits, ai-jail exits too." }
+      {
+        "title": "It reads your rules",
+        "text": "ai-jail trusts your own <code>~/.ai-jail</code> file. It treats a <code>.ai-jail</code> file inside the project as untrusted: that file can tighten the sandbox but never open it. Flags on the command line win over both."
+      },
+      {
+        "title": "It builds the sandbox",
+        "text": "ai-jail sets up each layer below before the agent exists. If a config file is unreadable or invalid, ai-jail stops instead of starting with weaker rules."
+      },
+      {
+        "title": "It starts the agent inside",
+        "text": "The agent, and every script, package and MCP server it starts, inherits the same walls. When the agent exits, ai-jail exits too."
+      }
     ],
     "link": "All the flags and config keys"
   },
@@ -33,7 +42,7 @@
         "name": "Namespaces",
         "tag": "bubblewrap",
         "is": "A namespace is the kernel giving a process its own private view of the system. ai-jail asks bubblewrap to create them, the same small tool Flatpak uses to sandbox desktop apps, and it needs no root.",
-        "stops": "The agent gets its own process list, its own hostname (<code>ai-sandbox</code>), no inter-process channels to host programs, and no network unless you pass <code>--network</code>. If ai-jail dies, everything inside dies with it."
+        "stops": "The agent gets its own process list, its own hostname (<code>ai-sandbox</code>), no inter-process channels to host programs, and a network namespace with no route out unless you open one with <code>--allow-host</code> or <code>--network</code>. If ai-jail dies, everything inside dies with it."
       },
       {
         "name": "Filesystem",
@@ -51,7 +60,7 @@
         "name": "seccomp",
         "tag": "system calls",
         "is": "Programs ask the kernel for things through system calls. seccomp is a filter on those calls, and ai-jail uses it to refuse the ones a coding agent never needs.",
-        "stops": "The filter blocks <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, kernel modules, <code>io_uring</code>, the kernel keyring, raw sockets, and <code>TIOCSTI</code>, the call that types keystrokes into a terminal. It is a blocklist on purpose, so compilers and runtimes keep working."
+        "stops": "The filter blocks <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, kernel modules, <code>io_uring</code>, the kernel keyring, raw sockets, and <code>TIOCSTI</code>, the call that types keystrokes into a terminal. It is a blocklist on purpose, so compilers and runtimes keep working. The one process started before Landlock and seccomp apply is the small bridge that carries filtered network traffic out, so it alone stays unrestricted."
       },
       {
         "name": "Resource limits",
@@ -73,19 +82,83 @@
       }
     ]
   },
+  "egress": {
+    "title": "Three ways to the network",
+    "lede": "Every launch picks one of three network modes. The default is the strictest, and the other two are flags you pass on purpose.",
+    "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
+    "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
+    "modes": [
+      {
+        "title": "Off",
+        "text": "The default. The sandbox gets a private network namespace with no route out, so nothing inside can reach the network at all."
+      },
+      {
+        "title": "Filtered",
+        "text": "<code>--allow-host HOST</code>, repeatable. The namespace stays closed; a small bridge inside forwards traffic to a CONNECT proxy outside, which dials only the listed hosts and their subdomains. The proxy resolves each name once, outside, and dials the address it checked. ai-jail sets <code>http_proxy</code> inside, and a program that ignores it reaches nothing."
+      },
+      {
+        "title": "Open",
+        "text": "<code>--network</code>. The wall is gone on the network side, and the agent can send out whatever it can read."
+      }
+    ],
+    "head": {
+      "linux": "Linux",
+      "macos": "macOS"
+    },
+    "rows": [
+      {
+        "what": "The fence in filtered mode",
+        "linux": "The network namespace itself, plus the bridge inside it",
+        "macos": "One <code>sandbox-exec</code> rule that allows outbound connections to the proxy's port only"
+      },
+      {
+        "what": "DNS inside the sandbox",
+        "linux": "Fails. The proxy resolves names outside.",
+        "macos": "The system resolver is not fenced, so a low-bandwidth DNS channel remains"
+      }
+    ],
+    "link": "The flags, the caveats and what the proxy logs"
+  },
   "macos": {
     "title": "On macOS the wall is thinner",
     "lede": "macOS has no namespaces, Landlock or seccomp. ai-jail turns the same policy into a profile for <code>sandbox-exec</code>, Apple's built-in sandbox. The ai-jail documentation says plainly that this is not equivalent to the Linux isolation.",
     "alt": "Two panels. On the left, Linux: the agent chip and its project inside five concentric walls. On the right, macOS: the same chip and project inside a single wall, labeled one profile.",
     "caption": "macOS gets the same policy and flags behind fewer walls.",
-    "head": { "linux": "Linux", "macos": "macOS" },
+    "head": {
+      "linux": "Linux",
+      "macos": "macOS"
+    },
     "rows": [
-      { "what": "Backend", "linux": "bubblewrap, then Landlock, seccomp and resource limits", "macos": "<code>sandbox-exec</code> with a profile generated for each launch. Apple has deprecated it, and nothing better exists without kernel extensions." },
-      { "what": "Home directory", "linux": "A fresh in-memory home. Your real one is not mounted.", "macos": "The profile starts with no global reads and then allows only the paths the agent needs, so your real home stays closed." },
-      { "what": "<code>/tmp</code>", "linux": "Private, discarded on exit", "macos": "The host's <code>/tmp</code>, because there is no mount namespace. <code>TMPDIR</code> points at a private folder made for the launch, and that is the only temp path granted." },
-      { "what": "Copy-on-write maps", "linux": "<code>--overlay-map</code> lets the agent write to a copy", "macos": "Treated as a read-only map" },
-      { "what": "Network", "linux": "Off by default, in its own network namespace", "macos": "Off by default. In lockdown it is always blocked, even with <code>--network</code>." },
-      { "what": "Other programs", "linux": "Invisible: own process list, no host IPC", "macos": "Mach, IOKit and host IPC are denied unless you pass <code>--macos-host-ipc</code>" }
+      {
+        "what": "Backend",
+        "linux": "bubblewrap, then Landlock, seccomp and resource limits",
+        "macos": "<code>sandbox-exec</code> with a profile generated for each launch. Apple has deprecated it, and nothing better exists without kernel extensions."
+      },
+      {
+        "what": "Home directory",
+        "linux": "A fresh in-memory home. Your real one is not mounted.",
+        "macos": "The profile starts with no global reads and then allows only the paths the agent needs, so your real home stays closed."
+      },
+      {
+        "what": "<code>/tmp</code>",
+        "linux": "Private, discarded on exit",
+        "macos": "The host's <code>/tmp</code>, because there is no mount namespace. <code>TMPDIR</code> points at a private folder made for the launch, and that is the only temp path granted."
+      },
+      {
+        "what": "Copy-on-write maps",
+        "linux": "<code>--overlay-map</code> lets the agent write to a copy",
+        "macos": "Treated as a read-only map"
+      },
+      {
+        "what": "Network",
+        "linux": "Off by default: a network namespace with no route out until <code>--allow-host</code> or <code>--network</code> opens one",
+        "macos": "Off by default, with the same two flags. In lockdown it is always blocked, even with <code>--network</code>."
+      },
+      {
+        "what": "Other programs",
+        "linux": "Invisible: own process list, no host IPC",
+        "macos": "Mach, IOKit and host IPC are denied unless you pass <code>--macos-host-ipc</code>"
+      }
     ],
     "windows": {
       "title": "Windows",
@@ -95,12 +168,27 @@
   "blocks": {
     "title": "Why these building blocks",
     "lede": "ai-jail writes as little security code of its own as it can. It drives bubblewrap, which is small, packaged by every major distribution and exercised daily by Flatpak, and adds kernel features on top.",
-    "head": { "option": "Option", "verdict": "Why not" },
+    "head": {
+      "option": "Option",
+      "verdict": "Why not"
+    },
     "rows": [
-      { "option": "Firejail", "verdict": "It can do the job, but it is a setuid root binary, and several CVEs come from that design. bubblewrap works without root." },
-      { "option": "Rewriting bubblewrap in Rust", "verdict": "More than 500 lines of security-sensitive code to maintain and patch alone, to avoid a dependency of about 50 KB that receives upstream fixes." },
-      { "option": "nsjail", "verdict": "Capable, but built for servers and driven by protobuf config files, and less widely packaged." },
-      { "option": "systemd-nspawn", "verdict": "Requires systemd, so it fails inside containers and on systems without it." }
+      {
+        "option": "Firejail",
+        "verdict": "It can do the job, but it is a setuid root binary, and several CVEs come from that design. bubblewrap works without root."
+      },
+      {
+        "option": "Rewriting bubblewrap in Rust",
+        "verdict": "More than 500 lines of security-sensitive code to maintain and patch alone, to avoid a dependency of about 50 KB that receives upstream fixes."
+      },
+      {
+        "option": "nsjail",
+        "verdict": "Capable, but built for servers and driven by protobuf config files, and less widely packaged."
+      },
+      {
+        "option": "systemd-nspawn",
+        "verdict": "Requires systemd, so it fails inside containers and on systems without it."
+      }
     ],
     "link": "Read the full evaluation"
   },
@@ -108,21 +196,38 @@
     "title": "Small enough to read",
     "lede": "The whole tool is one synchronous Rust program, with no async runtime, daemon or container image.",
     "items": [
-      { "label": "binary to install" },
-      { "label": "direct dependencies" },
-      { "label": "unit tests in the source" },
-      { "label": "tests that try to escape a real sandbox" }
+      {
+        "label": "binary to install"
+      },
+      {
+        "label": "direct dependencies"
+      },
+      {
+        "label": "unit tests in the source"
+      },
+      {
+        "label": "tests that try to escape a real sandbox"
+      }
     ],
-    "note": "Counted in the ai-jail repository at version 1.22.0."
+    "note": "Counted in the ai-jail repository at version {version}."
   },
   "limit": {
     "title": "What the layers do not cover",
-    "text": "All of this shares your kernel. A kernel or driver exploit is outside the boundary, and so is anything you open yourself: an agent with <code>--network</code> can send out whatever it can read. For code you believe is hostile, use a disposable virtual machine.",
+    "text": "All of this shares your kernel. A kernel or driver exploit is outside the boundary, and so is anything you open yourself: an agent with <code>--network</code> can send out whatever it can read, and an allowed host is trusted wholesale. For code you believe is hostile, use a disposable virtual machine.",
     "link": "The threat model and residual risks"
   },
   "next": [
-    { "title": "Configure", "text": "Every flag and config key, and how to open only what a task needs." },
-    { "title": "Security", "text": "The threat model, the opt-ins that weaken it, audits and release signing." },
-    { "title": "Compare", "text": "How this differs from built-in agent sandboxes, Docker and virtual machines." }
+    {
+      "title": "Configure",
+      "text": "Every flag and config key, and how to open only what a task needs."
+    },
+    {
+      "title": "Security",
+      "text": "The threat model, the opt-ins that weaken it, audits and release signing."
+    },
+    {
+      "title": "Compare",
+      "text": "How this differs from built-in agent sandboxes, Docker and virtual machines."
+    }
   ]
 }

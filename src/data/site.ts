@@ -20,5 +20,6 @@ export const nav: NavLink[] = [
   { id: 'compare', href: '/compare/', hue: 'cyan' },
   { id: 'configure', href: '/configure/', hue: 'gold' },
   { id: 'security', href: '/security/', hue: 'red' },
+  { id: 'download', href: '/download/', hue: 'cyan' },
 ];
 export const pageHue: Record<string, Hue> = { ...Object.fromEntries(nav.map((n) => [n.id, n.hue])), install: 'cyan', download: 'cyan' } as Record<string, Hue>;

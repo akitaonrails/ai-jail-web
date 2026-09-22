@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "Download ai-jail for Linux and macOS",
+    "description": "Download the latest ai-jail release: prebuilt archives for Linux x86_64 and macOS Apple Silicon with SHA-256 checksums, package manager options, and the release notes."
+  },
+  "hero": {
+    "title": "Download ai-jail {tag}",
+    "lede": "Released {date}. One archive for Linux and one for macOS, each with a SHA-256 checksum next to it. Free software under {license}.",
+    "jump": "Get the binary",
+    "changelog": "What changed"
+  },
+  "builds": {
+    "title": "Binaries",
+    "lede": "The install is one step: unpack the archive and put <code>ai-jail</code> somewhere on your <code>PATH</code>.",
+    "yours": "Your system",
+    "size": "{size} MB",
+    "download": "Download",
+    "checksum": "Checksum",
+    "items": [
+      {
+        "title": "Linux x86_64",
+        "text": "Needs bubblewrap, the small program ai-jail uses to build the sandbox. Most distributions package it as <code>bubblewrap</code>."
+      },
+      {
+        "title": "macOS Apple Silicon",
+        "text": "For Macs with an M series chip. The binary is signed and notarized by Apple, so macOS runs it without a warning."
+      }
+    ],
+    "verify": {
+      "title": "Check the checksum",
+      "text": "Put the archive and its <code>.sha256</code> file in the same folder and run the line for your system. It prints <code>OK</code> when the archive matches.",
+      "comments": ["# Linux", "# macOS"],
+      "more": "Release tags are signed as well. <a class=\"link\" href=\"/security/#checked\">Security</a> lists how a release is made and what is still missing."
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "There is no native Windows build. Use WSL2 and the Linux archive inside it."
+    }
+  },
+  "channels": {
+    "title": "Package managers",
+    "lede": "Each of these installs the same program through a tool you already use, and updates come from it.",
+    "items": [
+      { "title": "Homebrew", "text": "macOS and Linux." },
+      { "title": "Arch Linux", "text": "<code>ai-jail-bin</code> is the prebuilt binary. <code>ai-jail</code> builds from source." },
+      { "title": "crates.io", "text": "Builds with Rust {rust} and the dependency versions the release was tested with." },
+      { "title": "Nix", "text": "The flake points ai-jail at its own copy of bubblewrap." }
+    ],
+    "link": "Install and first run"
+  },
+  "changelog": {
+    "title": "Release notes",
+    "lede": "The last {n} releases, as the project publishes them.",
+    "english": "Release notes are the project's own text and stay in English.",
+    "prerelease": "Pre-release",
+    "all": "All releases on GitHub"
+  },
+  "next": {
+    "items": [
+      { "title": "Install", "text": "The first run: a dry run, a look inside, then the agent with the two things it needs." },
+      { "title": "Configure", "text": "Every flag and config key, and how to open only what a task needs." },
+      { "title": "Security", "text": "The threat model, how a release is signed, and what is still missing." }
+    ]
+  }
+}

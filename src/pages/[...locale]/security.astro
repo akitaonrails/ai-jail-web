@@ -26,11 +26,12 @@ const next = withText([
 ] as const, raw<Point[]>('next'));
 
 // Flags are structure; the consequence of each one is in the catalog, in the same order.
-const flags = ['--network', '--docker', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--audio', '--no-private-home'];
+const flags = ['--network', '--allow-host', '--audit-log', '--docker', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--audio', '--no-private-home'];
 const consequences = raw<string[]>('switches.rows');
 
-// Counted in the ai-jail repository at v1.22.0: #[test] in tests/sandbox_escape.rs and in src/.
-const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0, count: false }], raw<{ label: string }[]>('checked.facts'));
+// Counted in the ai-jail repository at facts.version: #[test] in tests/sandbox_escape.rs and in src/.
+const factLabels = raw<{ label: string }[]>('checked.facts').map((f, i) => (i === 1 ? { label: t('checked.facts.1.label', { version: factsData.version }) } : f));
+const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0, count: false }], factLabels);
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
   <PageHero hue="red" kicker={t('kicker.security')} title={t('hero.title')} lede={t('hero.lede')}>
@@ -84,6 +85,10 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
 
     <Callout title={t('checked.audit.title')}>
       <p set:html={t('checked.audit.text')} />
+    </Callout>
+
+    <Callout title={t('checked.log.title')} hue="gold">
+      <p set:html={t('checked.log.text')} />
     </Callout>
 
     <div class="grid gap-x-12 gap-y-10 md:grid-cols-2 mt-12">

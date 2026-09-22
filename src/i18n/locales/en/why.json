@@ -75,7 +75,7 @@
       "optin": "# a cloud agent needs the network and its own login"
     },
     "honestTitle": "The honest cost",
-    "honest": "Everything is off until you ask for it, and that includes things your agent needs. A cloud agent does not work until you pass <code>--network</code> and <code>--agent-state</code>, and you can save both in a config file so you type them once. <a class=\"link\" href=\"/configure/\">See every switch</a>."
+    "honest": "Everything is off until you ask for it, and that includes things your agent needs. A cloud agent does not work until you pass <code>--agent-state</code> and either <code>--allow-host</code> with its API host or <code>--network</code>, and you can save the settings in a config file so you type them once. <a class=\"link\" href=\"/configure/\">See every switch</a>."
   },
   "faq": {
     "title": "Questions newcomers ask",
