@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "השוואה בין ai-jail ל-sandbox מובנה, Docker ומכונות וירטואליות",
-    "description": "מה מכסות סביבות ה-sandbox של Claude Code, Codex ו-Gemini CLI, מה נשאר בחוץ, איפה הן טובות יותר מ-ai-jail, ואיך Docker, מכונות וירטואליות ו-NVIDIA OpenShell משתלבים. עם מקורות."
+    "description": "מה מכסות סביבות ה-sandbox של Claude Code, Codex, Gemini CLI ו-Antigravity, איפה הן עדיפות על ai-jail, ואיך nono, zerobox, Docker, VM ו-NVIDIA OpenShell משתלבים. עם מקורות."
   },
   "hero": {
     "title": "לסוכן שלכם כבר יש sandbox. הוא מכסה חצי אחר.",
@@ -10,12 +10,24 @@
     "how": "איך זה עובד",
     "reviewed": "נבדק לאחרונה בתאריך {date}. מוצרים אחרים משתנים מהר, ולכן כל טענה לגביהם מקושרת לתיעוד של היצרן עצמו."
   },
+  "tldr": {
+    "title": "בקצרה",
+    "lede": "שישה מצבים, תשובה אחת לכל אחד. שאר העמוד מראה את הראיות.",
+    "items": [
+      { "title": "אתם משתמשים ביותר מסוכן אחד", "text": "ai-jail. קובץ מדיניות אחד, כל פקודה, עץ התהליכים כולו בפנים, ותיקיית הבית והמפתחות מוסתרים כברירת מחדל. <a class=\"link\" href=\"/install/\">התקנה</a>." },
+      { "title": "אתם משתמשים רק ב-Claude Code", "text": "גם <code>sandbox-runtime</code> של Anthropic עוטף את התהליך כולו, בגרסת beta. הכלי ai-jail מוסיף כברירת מחדל תיקיית בית ריקה, רשת כבויה ורשימת היתרים לסביבה. <a class=\"link\" href=\"#table\">לכרטיסים</a>." },
+      { "title": "אתם רוצים את ה-sandbox ואת בקשות האישור של הסוכן עצמו", "text": "השאירו אותם דלוקים. הם עובדים בתוך ai-jail, והם תופסים את הפקודות שלא הייתם מאשרים. <a class=\"link\" href=\"#both\">השתמשו בשניהם</a>." },
+      { "title": "אתם רוצים מדיניות לכל כלי, אישורים בזמן ריצה ויומן ביקורת חתום", "text": "בזה nono הולך רחוק יותר מ-ai-jail, במחיר של שפת מדיניות ו-supervisor לכל פקודה. <a class=\"link\" href=\"#wrappers\">השוואת העטיפות</a>." },
+      { "title": "אתם סוגרים ב-sandbox מתוך קוד, קריאת כלי אחת בכל פעם", "text": "ל-zerobox יש SDKs בשביל זה, ו-snapshots כדי לחזור אחורה. הוא משאיר את הקריאה פתוחה, ולא יצאה לו גרסה מאז מאי 2026. <a class=\"link\" href=\"#wrappers\">השוואת העטיפות</a>." },
+      { "title": "אתם לא סומכים על הקוד בכלל", "text": "מכונה וירטואלית חד-פעמית. כל כלי בעמוד הזה חולק איתכם את הקרנל, כולל ai-jail. <a class=\"link\" href=\"#containers\">Docker, קונטיינרים ומכונות וירטואליות</a>." }
+    ]
+  },
   "wall": {
     "title": "איפה עוברת החומה",
     "lede": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">ה-sandbox של Claude Code</a> חל על פקודות shell ועל תהליכי הבן שלהן. כלי הקבצים שלו עוברים דרך מערכת ההרשאות, והתיעוד שלו אומר ש<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">שרתי MCP ו-hooks רצים על המארח בלי הגבלה</a>. עם ai-jail הסוכן עצמו עולה בתוך החומה, ולכן גם כל מה שהוא מפעיל נמצא בפנים.",
     "alt": "שני חלקים. משמאל, sandbox מובנה מקיף רק את פקודות ה-shell, והסוכן, שרתי ה-MCP וה-hooks שלו נמצאים מחוץ לחומה, עם קווים שמגיעים לתיקיית הבית שלכם. מימין, ai-jail מקיף יחד את הסוכן, שרתי ה-MCP, ה-hooks, פקודות ה-shell והפרויקט, ותיקיית הבית שלכם נמצאת בחוץ, מעומעמת וחסומה.",
     "caption": "החלק השמאלי מבוסס על התיעוד של Claude Code.",
-    "codex": "גם <a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a> מריץ בתוך sandbox את הפקודות שהוא מפעיל ומשאיר את התהליך <code>codex</code> בחוץ. התיעוד שלו לא אומר איפה רצים שרתי MCP מקומיים."
+    "codex": "גם <a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a> מריץ בתוך sandbox את הפקודות שהוא מפעיל ומשאיר את התהליך <code>codex</code> בחוץ. לפי התיעוד שלו, שרתי MCP משתמשים בתהליך או ב-transport משלהם, מחוץ ל-sandbox."
   },
   "prompts": {
     "title": "בקשת אישור היא הגנה מסוג אחר",
@@ -37,7 +49,13 @@
     "lede": "כל מה שכתוב כאן מתאר את התיעוד של כל מוצר נכון לזמן הכתיבה. כשהתיעוד שקראנו לא עונה על שאלה, זה מה שכתוב בתא.",
     "undocumented": "לא מתועד",
     "cols": { "row": "", "claude": "ה-sandbox של Claude Code", "codex": "ה-sandbox של Codex CLI", "gemini": "ה-sandbox של Gemini CLI", "jail": "ai-jail" },
-    "sources": "מקורות: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>.",
+    "sources": "מקורות: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>.",
+    "wrappersTitle": "עטיפות כמו ai-jail",
+    "wrappersLead": "שני כלי קוד פתוח נוספים מציבים sandbox של הקרנל סביב סוכן. גרסה 2.2 של ai-jail לקחה רעיונות משניהם: פרטי גישה פנטום מ-zerobox ומ-nono, ויומן ביקורת עם שרשרת hash מ-nono. שניהם כתובים ב-Rust, ברישיון Apache-2.0 ורצים בלי daemon, ושניהם חולקים איתכם את הקרנל, כמו ai-jail.",
+    "nonoTitle": "nono: מדיניות לכל כלי, אישורים בזמן ריצה",
+    "nonoText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a> (של nolabs, גרסה 0.78 בספטמבר 2026) מריץ כל פקודה כ-sandbox בן משלה תחת supervisor שלא נמצא ב-sandbox. ב-Linux הוא משתמש ב-Landlock וב-seccomp trap על פתיחת קבצים, ב-macOS ב-Seatbelt, ואין לו mount namespaces. פרופילים מתירים רק את הנתיבים שמצוינים בהם בשם ושומרים את <code>~/.ssh</code> בקבוצת deny. הסביבה עוברת בירושה במלואה, והרשת פתוחה עד שמעבירים <code>--block-net</code> או <code>--allow-domain</code>. פרוקסי פרטי הגישה שלו נותן לסוכן טוקן של סשן ומזריק את המפתח האמיתי בדרך החוצה. ליומן הביקורת שלו יש שרשרת hash, שורש Merkle וחתימה אופציונלית, וב-Linux פתיחת קובץ שנדחתה יכולה להיעצר ולחכות לאישור שלכם. זה הכלי הקרוב ביותר ל-ai-jail בשאיפות, וזה עם הכי הרבה חלקים נעים.",
+    "zeroboxTitle": "zerobox: ה-sandbox של Codex לכל פקודה, עם סודות לפי host",
+    "zeroboxText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a> (מחבר אחד, גרסה 0.3.3 במאי 2026, בלי גרסה מאז) משתמש ב-runtime של Seatbelt ו-bubblewrap מהריפוזיטורי של Codex. הוא סוגר ב-sandbox פקודה אחת, או קריאת כלי אחת בכל פעם דרך ה-SDKs שלו ל-Node, ל-Python ול-Rust. כתיבה, רשת וסביבה נדחות כברירת מחדל. הקריאה פתוחה, ולכן תיקיית הבית שלכם גלויה אלא אם חסמתם אותה. <code>--secret KEY=VALUE</code> נותן לתהליך placeholder, ו-<code>--secret-host</code> מגביל לאן הערך האמיתי מגיע. הדגל <code>--secret</code> של ai-jail הולך בעקבות התבנית הזאת. יש לו snapshots ושחזור, ואין לו יומן ביקורת, אישורים או presets לסוכנים.",
     "groupJail": "מה מוסיפה עטיפה סביב הסוכן כולו",
     "groupBuiltin": "מה סביבות ה-sandbox המובנות עושות טוב יותר",
     "rows": [
@@ -119,7 +137,7 @@
       },
       {
         "label": "הסתרת סודות מהסוכן בלי לוותר על השימוש בהם",
-        "cells": ["מיסוך פרטי גישה יכול להזריק את הסוד האמיתי בפרוקסי. זה דורש הגדרה ניסיונית.", "", "", "לא. קובץ ממוסך הוא קובץ ריק."]
+        "cells": ["מיסוך פרטי גישה יכול להזריק את הסוד האמיתי בפרוקסי. זה דורש הגדרה ניסיונית.", "", "", "כן, מגרסה 2.2, עם <code>--secret KEY=host</code>. ב-sandbox נמצא placeholder, והפרוקסי מכניס את הערך האמיתי רק לבקשות אל אותו host אחד. זה מכסה לקוחות ששולחים HTTP רגיל לפרוקסי בשביל אותו host; במנהרות HTTPS הוא לא נוגע. קובץ ממוסך נשאר קובץ ריק."]
       },
       {
         "label": "פלטפורמות",

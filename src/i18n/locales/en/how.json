@@ -209,7 +209,7 @@
         "label": "tests that try to escape a real sandbox"
       }
     ],
-    "note": "Counted in the ai-jail repository at version {version}."
+    "note": "Dependencies counted in the ai-jail repository at version {version}; tests at version {tests}."
   },
   "limit": {
     "title": "What the layers do not cover",

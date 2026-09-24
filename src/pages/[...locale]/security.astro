@@ -26,11 +26,11 @@ const next = withText([
 ] as const, raw<Point[]>('next'));
 
 // Flags are structure; the consequence of each one is in the catalog, in the same order.
-const flags = ['--network', '--allow-host', '--audit-log', '--docker', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--audio', '--no-private-home'];
+const flags = ['--network', '--allow-host', '--secret', '--audit-log', '--docker', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--audio', '--no-private-home'];
 const consequences = raw<string[]>('switches.rows');
 
-// Counted in the ai-jail repository at facts.version: #[test] in tests/sandbox_escape.rs and in src/.
-const factLabels = raw<{ label: string }[]>('checked.facts').map((f, i) => (i === 1 ? { label: t('checked.facts.1.label', { version: factsData.version }) } : f));
+// Counted in the ai-jail repository at facts.testsCountedAt: #[test] in tests/sandbox_escape.rs and in src/.
+const factLabels = raw<{ label: string }[]>('checked.facts').map((f, i) => (i === 1 ? { label: t('checked.facts.1.label', { version: factsData.testsCountedAt }) } : f));
 const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0, count: false }], factLabels);
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>

@@ -53,6 +53,7 @@
           { "text": "지정한 디렉터리를 Claude의 상태 디렉터리로 쓰고 <code>CLAUDE_CONFIG_DIR</code>을 설정합니다." },
           { "text": "셸에 있는 변수 하나를 전달하거나 <code>NAME=VALUE</code>로 변수 하나를 설정합니다. 여러 번 쓸 수 있고 디스크에 저장되지 않습니다." },
           { "text": "파일에서 엄격한 <code>KEY=VALUE</code> 줄을 읽어 <code>--env</code>처럼 전달합니다. 충돌하면 플래그 쪽이 이깁니다. 파일은 내 소유의 일반 파일이어야 하고, 권한이 0600 이하이며 프로젝트 바깥에 있어야 합니다. 아니면 실행이 실패합니다. ai-jail은 값을 디스크에 저장하지 않고, 설정 키는 전역 파일에서만 동작합니다." },
+          { "text": "<code>KEY</code>의 실제 값을 샌드박스 밖에 둡니다. 에이전트에는 플레이스홀더가 보이고, 프록시가 그 호스트 하나로 가는 요청에만 실제 값을 넣습니다. <code>--allow-host</code>가 필요하고, 키는 <code>--env</code>나 <code>--env-from-file</code>로 먼저 들어와 있어야 합니다. 전역 파일 전용이고 저장되지 않습니다. 그 호스트에 대해 프록시로 평문 HTTP를 보낼 수 있는 클라이언트만 해당하고, HTTPS 터널은 건드리지 않습니다." },
           { "text": "셸 환경 전체를 그 안의 시크릿까지 모두 전달합니다. 쓰지 마세요." },
           { "text": "<code>--env</code>와 같지만 전역 파일에서만 동작합니다. 프로젝트 파일에 설정하면 무시됩니다." }
         ]
@@ -90,7 +91,8 @@
       {
         "title": "가시성",
         "rows": [
-          { "text": "실행할 때마다 <code>~/.local/share/ai-jail/history.jsonl</code>(디렉터리 0700, 파일 0600)에 레코드 하나를 추가합니다. 시각, 명령, 실제 적용된 기능, 설정 출처, 종료 코드, 소요 시간이 들어갑니다. <code>--allow-host</code>를 쓰면 허용되거나 거부된 연결도 모두 기록합니다. 기본으로 꺼져 있고, 프로젝트 파일은 끌 수만 있고 켤 수는 없습니다." }
+          { "text": "실행할 때마다 <code>~/.local/share/ai-jail/history.jsonl</code>(디렉터리 0700, 파일 0600)에 레코드 하나를 추가합니다. 시각, 명령, 실제 적용된 기능, 설정 출처, 종료 코드, 소요 시간이 들어갑니다. <code>--allow-host</code>를 쓰면 허용되거나 거부된 연결도 모두 기록하고, <code>--secret</code>을 쓰면 주입도 모두 기록합니다. 각 줄에는 바로 앞 줄의 해시가 들어갑니다. 기본으로 꺼져 있고, 프로젝트 파일은 끌 수만 있고 켤 수는 없습니다." },
+          { "text": "감사 로그의 해시 체인을 따라 검사한 뒤 종료합니다. 온전하면 0, 처음 끊긴 고리에서 1, 로그가 없으면 2를 반환합니다. 2.2 이전에 쓰인 레코드는 legacy로 보고되며 오류가 아닙니다." }
         ]
       },
       {
@@ -128,7 +130,7 @@
     },
     "keys": {
       "title": "API 키는 어떤 설정 파일에도 넣지 않기",
-      "text": "마스킹은 프로젝트 안의 파일을 다룹니다. 에이전트 자신의 키는 <code>--env NAME</code>으로 셸에서 넘기거나, 나만 읽을 수 있는 파일에서 <code>--env-from-file</code>로 넘기세요. 둘 다 <code>.ai-jail</code> 파일에 기록되지 않고, 프로젝트 파일에서는 설정할 수 없습니다.",
+      "text": "마스킹은 프로젝트 안의 파일을 다룹니다. 에이전트 자신의 키는 <code>--env NAME</code>으로 셸에서 넘기거나, 나만 읽을 수 있는 파일에서 <code>--env-from-file</code>로 넘기세요. 둘 다 <code>.ai-jail</code> 파일에 기록되지 않고, 프로젝트 파일에서는 설정할 수 없습니다. 필터링된 외부 연결이 켜져 있으면 <code>--secret KEY=host</code>로 실제 값을 샌드박스 밖에 둘 수도 있습니다. 아래 레시피에 예가 있습니다.",
       "shellTitle": "터미널",
       "shellNote": "# 파일은 내 소유, 권한 0600, 프로젝트 바깥이어야 합니다",
       "tomlTitle": "~/.ai-jail",
@@ -163,6 +165,7 @@
       { "title": "매일 쓰는 클라우드 에이전트", "text": "호스팅된 모델은 API에 닿아야 하고, 인증을 위한 자체 로그인이 필요합니다. 둘 다 전역 파일에 넣어 두면 명령이 짧게 유지됩니다. API 호스트만 허용하거나, <code>network = true</code>로 네트워크 전체를 여세요." },
       { "title": "에이전트의 API 호스트만", "text": "에이전트가 자기 API에만 닿습니다. Claude는 <code>api.anthropic.com</code>, Codex는 <code>api.openai.com</code>, Gemini는 <code>generativelanguage.googleapis.com</code>을 씁니다. 목록에 그 호스트가 없으면 실행 시 경고에 호스트 이름이 나옵니다." },
       { "title": "전역 파일의 허용 호스트", "text": "목록은 그 명령을 실행할 때마다 적용됩니다. 허용된 호스트는 통째로 신뢰됩니다. <code>github.com</code>을 넣으면 에이전트가 내 자격 증명이 닿는 어느 저장소에든 푸시할 수 있으니, 정말 원할 때만 추가하세요." },
+      { "title": "에이전트가 절대 보지 못하는 키", "text": "샌드박스의 <code>ANTHROPIC_API_KEY</code>에는 플레이스홀더가 들어가고, ai-jail의 프록시가 <code>api.anthropic.com</code>으로 가는 요청에만 실제 키를 넣습니다. 클라이언트는 그 호스트에 대해 프록시로 평문 HTTP를 보내야 하는데, <code>http://</code> 기본 URL이 그 역할을 합니다. 그러면 ai-jail이 요청을 TLS로 실제 호스트까지 나릅니다. HTTPS 터널만 여는 클라이언트는 치환 없이 그대로 동작합니다." },
       { "title": "SSH로 git push", "text": "<code>--ssh</code>는 <code>~/.ssh</code>를 읽기 전용으로 마운트하고 SSH 에이전트 소켓을 전달합니다. 푸시하려면 네트워크도 필요합니다." },
       { "title": "mise 툴체인", "text": "새 홈 디렉터리에는 mise로 설치한 것이 없어서 ai-jail이 mise를 건너뜁니다. mise 디렉터리 두 개를 읽기 전용으로 매핑하세요." },
       { "title": "에이전트용 브라우저", "text": "<code>--browser</code>만 주면 페이지를 불러올 수도 창을 열 수도 없는 브라우저가 됩니다. Linux에서는 <code>--network</code>와 <code>--display</code>가 함께 필요하고, X11 브라우저에는 <code>--display</code> 대신 <code>--x11</code>이 필요합니다." },
@@ -175,7 +178,8 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# 아니면 네트워크 전체를 열기: network = true",
-      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
+      "phantom": "# 키는 0600 파일에만 있고, 샌드박스에는 AIJAIL-PHANTOM-... 만 보입니다"
     }
   },
   "compat": {

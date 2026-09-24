@@ -41,6 +41,7 @@
       "A saída filtrada é só TCP. Não há UDP, então um programa que precisa dele não funciona; por outro lado, também não vaza por ali.",
       "DNS com <code>--allow-host</code>. No Linux, as consultas de nome dentro do sandbox falham, então não existe canal de DNS para fora. No macOS o resolver do sistema não fica cercado, então sobra um canal de DNS de baixa largura de banda, a mesma brecha que a Anthropic documenta para o sandbox-runtime dela.",
       "O proxy vê o host, a porta e o horário de cada conexão. O que passa lá dentro fica entre as duas pontas. <a class=\"link\" href=\"/how-it-works/#network\">Como a saída filtrada é construída</a>.",
+      "As credenciais fantasma transferem a confiança para o próprio ai-jail. Com <code>--secret</code>, as requisições para o host vinculado passam pelo ai-jail em claro, para que ele insira a chave real, e ele as criptografa de novo na saída. Os túneis para todos os outros hosts continuam opacos. Só cobre clientes que conseguem falar HTTP puro com o proxy para esse host.",
       "No macOS, o <code>sandbox-exec</code> foi marcado como obsoleto pela Apple e não equivale ao isolamento do Linux. <a class=\"link\" href=\"/how-it-works/\">Veja as diferenças no macOS</a>."
     ],
     "callout": {
@@ -55,6 +56,7 @@
     "rows": [
       "Enviar para qualquer lugar tudo o que consegue ler. O tráfego é irrestrito. <code>--allow-host</code> é a alternativa mais apertada.",
       "Alcançar exatamente os hosts que você lista, e seus subdomínios, por TCP, através de um proxy embutido. Cada host listado é confiável por inteiro.",
+      "Nada de novo. O valor real dessa chave nunca entra no sandbox: o agente vê um placeholder, e o proxy troca pelo valor real só nas requisições em HTTP puro para o único host ao qual você a vinculou. O próprio processo do ai-jail vê essa requisição em claro.",
       "Nada de novo. Esta opção não enfraquece nada: ela grava uma linha por inicialização num arquivo com modo 0600 fora do sandbox, então o agente nunca o vê.",
       "Agir como root na sua máquina por meio do daemon do Docker.",
       "Capturar teclas e tirar screenshots de outras janelas X11.",
@@ -117,7 +119,7 @@
     },
     "log": {
       "title": "Um log do que você liberou",
-      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar."
+      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Desde a 2.2, cada linha carrega o próprio número de sequência e o SHA-256 da linha anterior, e <code>ai-jail --audit-verify</code> percorre a cadeia e aponta o primeiro elo quebrado. Isso faz uma edição silenciosa virar barulho; não impede alguém de trocar o arquivo inteiro, porque nada é assinado. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar."
     }
   },
   "report": {

@@ -75,3 +75,12 @@ Terms decided while translating. One English term maps to one target term across
 | terminal sandbox | 터미널 샌드박스 |
 | browser subagent | 브라우저 서브에이전트 |
 | permission profile (Codex) | 권한 프로파일 |
+| phantom credentials | 팬텀 자격 증명 |
+| placeholder | 플레이스홀더 |
+| hash chain | 해시 체인 |
+| supervisor (nono) | 슈퍼바이저 |
+| plain HTTP | 평문 HTTP |
+| bound host (--secret) | 묶어 둔 호스트 |
+| injection (secret into a request) | 주입 |
+| sequence number | 순번 |
+| broken link (hash chain) | 끊긴 고리 |

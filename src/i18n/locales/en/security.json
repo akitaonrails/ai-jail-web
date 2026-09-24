@@ -53,6 +53,7 @@
       "Filtered egress is TCP only. There is no UDP, so a program that needs it does not work; it also cannot leak through it.",
       "DNS under <code>--allow-host</code>. On Linux, name lookups inside the sandbox fail, so there is no DNS channel out. On macOS the system resolver is not fenced, so a low-bandwidth DNS channel remains, the same gap Anthropic documents for its own sandbox-runtime.",
       "The proxy sees the host, the port and the timing of each connection. What travels inside stays between the two ends. <a class=\"link\" href=\"/how-it-works/#network\">How filtered egress is built</a>.",
+      "Phantom credentials move trust to ai-jail itself. With <code>--secret</code>, requests to the bound host pass through ai-jail in clear so it can insert the real key, and it re-encrypts them on the way out. Tunnels to every other host stay opaque. It only covers clients that can talk plain HTTP to the proxy for that host.",
       "On macOS, <code>sandbox-exec</code> is deprecated by Apple and is not equivalent to the Linux isolation. <a class=\"link\" href=\"/how-it-works/\">See the macOS differences</a>."
     ],
     "callout": {
@@ -70,6 +71,7 @@
     "rows": [
       "Send anywhere everything it can read. Traffic is unrestricted. <code>--allow-host</code> is the tighter alternative.",
       "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale.",
+      "Nothing new. The real value of that key never enters the sandbox: the agent sees a placeholder, and the proxy swaps in the real value only for plain-HTTP requests to the one host you bound it to. ai-jail's own process sees that request in clear.",
       "Nothing new. This switch weakens nothing: it writes one line per launch to a file with mode 0600 outside the sandbox, so the agent never sees it.",
       "Act as root on your machine through the Docker daemon.",
       "Log keystrokes and take screenshots of other X11 windows.",
@@ -138,7 +140,7 @@
     },
     "log": {
       "title": "A log of what you allowed",
-      "text": "<code>--audit-log</code> answers two questions: what did I let that agent do, and where did it try to reach. It appends one JSON line per launch, and with <code>--allow-host</code> on, one line per connection allowed or denied. It is off by default, and a project <code>.ai-jail</code> can only turn it off."
+      "text": "<code>--audit-log</code> answers two questions: what did I let that agent do, and where did it try to reach. It appends one JSON line per launch, and with <code>--allow-host</code> on, one line per connection allowed or denied. Since 2.2 each line carries its sequence number and the SHA-256 of the line before it, and <code>ai-jail --audit-verify</code> walks the chain and reports the first broken link. That makes a quiet edit loud; it does not stop someone replacing the whole file, because nothing is signed. It is off by default, and a project <code>.ai-jail</code> can only turn it off."
     }
   },
   "report": {

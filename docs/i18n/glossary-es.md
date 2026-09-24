@@ -56,3 +56,10 @@ Terms decided while translating. One English term maps to one target term across
 | headless (mode) | headless (modo headless) |
 | preset | preset |
 | browser subagent | subagente de navegador |
+| phantom credentials | credenciales fantasma |
+| placeholder (the value the agent sees) | marcador de posición (first time: "marcador de posición (placeholder)") |
+| hash chain | cadena de hashes |
+| wrapper (tool like ai-jail) | wrapper |
+| broken link (in the hash chain) | eslabón roto |
+| plain HTTP | HTTP plano |
+| bound host (with --secret) | host vinculado |

@@ -70,3 +70,14 @@ Terms decided while translating. One English term maps to one target term across
 | headless (mode) | modo headless |
 | preset | preset |
 | Dev Containers, Codex cloud | kept in English |
+| phantom credentials | credenciais fantasma |
+| placeholder | placeholder |
+| hash chain | cadeia de hashes |
+| broken link (in a hash chain) | elo quebrado |
+| plain HTTP | HTTP puro |
+| in clear (unencrypted) | em claro |
+| audit trail | trilha de auditoria |
+| supervisor | supervisor |
+| snapshot / restore | snapshot / restauração |
+| legacy (records) | legado |
+| In short (tldr heading) | Resumindo |

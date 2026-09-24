@@ -107,7 +107,7 @@ const next = withText(
 
   <Section title={t('facts.title')} lede={t('facts.lede')} hue="gold" id="facts">
     <Facts items={facts} />
-    <p class="mt-8 text-sm text-muted">{t('facts.note', { version: factsData.version })}</p>
+    <p class="mt-8 text-sm text-muted">{t('facts.note', { version: factsData.version, tests: factsData.testsCountedAt })}</p>
     <Callout title={t('limit.title')}>
       <p set:html={t('limit.text')} />
       <p><a class="link" href={href('/security/')}>{t('limit.link')}</a></p>

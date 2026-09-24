@@ -94,3 +94,11 @@ Terms decided while translating. One English term maps to one target term across
 | Codex cloud | Codex cloud (kept) |
 | hardened configuration | הגדרה מוקשחת |
 | outbound allowlist | רשימת היתרים ליציאה |
+| phantom credentials | פרטי גישה פנטום |
+| placeholder (the value --secret leaves in the sandbox) | placeholder (Latin, kept) |
+| hash chain | שרשרת hash |
+| wrapper (nono, zerobox, sandbox-runtime, ai-jail as a category) | עטיפה (as above; the Latin "wrapper" is not used) |
+| supervisor (nono's unsandboxed parent) | supervisor |
+| snapshot / restore | snapshot / שחזור |
+| audit verify (--audit-verify) | לעבור על שרשרת ה-hash (the flag stays --audit-verify) |
+| legacy (records before 2.2) | legacy |

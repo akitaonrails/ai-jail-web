@@ -53,6 +53,7 @@
           { "text": "Usa o diretório informado como estado do Claude e define <code>CLAUDE_CONFIG_DIR</code>." },
           { "text": "Repassa uma variável do seu shell, ou define uma com <code>NAME=VALUE</code>. Pode ser repetida e nunca é salva em disco." },
           { "text": "Lê linhas <code>KEY=VALUE</code> estritas de um arquivo e as repassa como <code>--env</code>, que ganha em caso de conflito. O arquivo precisa ser seu, um arquivo regular, com modo 0600 ou mais restrito e fora do projeto, senão a inicialização falha. O ai-jail nunca grava os valores em disco, e a chave de configuração só funciona a partir do arquivo global." },
+          { "text": "Mantém o valor real de <code>KEY</code> fora do sandbox. O agente vê um placeholder, e o proxy coloca o valor real só nas requisições para aquele único host. Precisa de <code>--allow-host</code>, e a chave já precisa entrar por <code>--env</code> ou <code>--env-from-file</code>. Só no arquivo global, nunca salva. Cobre clientes que conseguem falar HTTP puro com o proxy para esse host; túneis HTTPS não são tocados." },
           { "text": "Repassa o ambiente inteiro do seu shell, com todos os segredos que houver nele. Evite." },
           { "text": "O mesmo que <code>--env</code>, só a partir do arquivo global. Um arquivo de projeto que defina essa chave é ignorado." }
         ]
@@ -90,7 +91,8 @@
       {
         "title": "Visibilidade",
         "rows": [
-          { "text": "Acrescenta um registro por inicialização em <code>~/.local/share/ai-jail/history.jsonl</code> (diretório 0700, arquivo 0600): hora, comando, recursos efetivos, origens da configuração, código de saída e duração. Com <code>--allow-host</code>, cada conexão permitida ou negada também é registrada. Vem desligado por padrão, e um arquivo de projeto pode desligar, mas não ligar." }
+          { "text": "Acrescenta um registro por inicialização em <code>~/.local/share/ai-jail/history.jsonl</code> (diretório 0700, arquivo 0600): hora, comando, recursos efetivos, origens da configuração, código de saída e duração. Com <code>--allow-host</code>, cada conexão permitida ou negada também é registrada, e com <code>--secret</code>, cada injeção. Cada linha carrega o hash da linha anterior. Vem desligado por padrão, e um arquivo de projeto pode desligar, mas não ligar." },
+          { "text": "Percorre a cadeia de hashes do log de auditoria e sai: 0 quando ela está intacta, 1 no primeiro elo quebrado, 2 quando não há log. Registros gravados antes da 2.2 aparecem como legados, o que não é erro." }
         ]
       },
       {
@@ -128,7 +130,7 @@
     },
     "keys": {
       "title": "Mantenha chaves de API fora de todo arquivo de configuração",
-      "text": "Mascarar cobre arquivos do projeto. Para a chave do próprio agente, passe do seu shell com <code>--env NAME</code>, ou de um arquivo que só você consegue ler com <code>--env-from-file</code>. Nenhuma das duas é gravada num arquivo <code>.ai-jail</code>, e um arquivo de projeto não pode defini-las.",
+      "text": "Mascarar cobre arquivos do projeto. Para a chave do próprio agente, passe do seu shell com <code>--env NAME</code>, ou de um arquivo que só você consegue ler com <code>--env-from-file</code>. Nenhuma das duas é gravada num arquivo <code>.ai-jail</code>, e um arquivo de projeto não pode defini-las. Com a saída filtrada ligada, <code>--secret KEY=host</code> também mantém o valor real fora do sandbox; a receita abaixo mostra como.",
       "shellTitle": "terminal",
       "shellNote": "# o arquivo precisa ser seu, com modo 0600 e fora do projeto",
       "tomlTitle": "~/.ai-jail",
@@ -163,6 +165,7 @@
       { "title": "Um agente em nuvem, no dia a dia", "text": "Um modelo hospedado precisa chegar à API e do próprio login para autenticar. Coloque os dois no arquivo global e o comando continua curto. Libere só o host da API, ou abra a rede inteira com <code>network = true</code>." },
       { "title": "Só o host da API do agente", "text": "O agente alcança só a própria API. O Claude usa <code>api.anthropic.com</code>, o Codex <code>api.openai.com</code> e o Gemini <code>generativelanguage.googleapis.com</code>. Se o host estiver faltando na lista, o aviso de inicialização diz qual é." },
       { "title": "Hosts permitidos no arquivo global", "text": "A lista vale para toda execução daquele comando. Um host permitido é confiável por inteiro: <code>github.com</code> deixa o agente fazer push em qualquer repositório que as suas credenciais alcançam, então só adicione se for isso mesmo que você quer." },
+      { "title": "Uma chave que o agente nunca vê", "text": "O sandbox recebe um placeholder em <code>ANTHROPIC_API_KEY</code>, e o proxy do ai-jail coloca a chave real só nas requisições para <code>api.anthropic.com</code>. O cliente precisa enviar HTTP puro ao proxy para esse host, e é o que a URL base <code>http://</code> faz; o ai-jail então leva a requisição até o host real por TLS. Um cliente que só abre túneis HTTPS continua funcionando, sem substituição." },
       { "title": "Git push via SSH", "text": "<code>--ssh</code> monta <code>~/.ssh</code> como somente leitura e encaminha o socket do seu agente SSH. O push também precisa da rede." },
       { "title": "Toolchains do mise", "text": "O diretório home novo não tem nenhuma instalação do mise, então o ai-jail pula o mise. Mapeie os dois diretórios do mise para dentro, somente leitura." },
       { "title": "Um navegador para o agente", "text": "<code>--browser</code> sozinho entrega um navegador que não carrega página nem abre janela. No Linux ele também precisa de <code>--network</code> e <code>--display</code>, e um navegador X11 precisa de <code>--x11</code> no lugar de <code>--display</code>." },
@@ -175,7 +178,8 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# ou abra a rede inteira: network = true",
-      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
+      "phantom": "# a chave mora no arquivo 0600; o sandbox só vê AIJAIL-PHANTOM-..."
     }
   },
   "compat": {

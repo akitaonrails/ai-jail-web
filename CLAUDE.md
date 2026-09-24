@@ -20,7 +20,7 @@ Never silence a STALE error by stamping without translating.
 ## Other rules
 
 - Writing: `docs/design-system.md`, section "Writing". The reader has never heard of ai-jail. Short text, a picture wherever one can replace a paragraph. No em dashes, no "not X but Y", no hype words.
-- Facts come from the ai-jail repository (README, `docs/SECURITY.md`). Facts about other products come from `docs/research/builtin-sandboxes.md` and `docs/research/codex-antigravity.md` and carry a review date (`src/data/facts.json`). Keep the honest limits.
+- Facts come from the ai-jail repository (README, `docs/SECURITY.md`). Facts about other products come from `docs/research/builtin-sandboxes.md`, `docs/research/codex-antigravity.md` and `docs/research/nono-zerobox.md` and carry a review date (`src/data/facts.json`). Keep the honest limits.
 - Each subject has one canonical page (listed in the design system). Link instead of repeating.
 - Structure (hues, hrefs, ids, commands, flags) stays in code; words stay in catalogs. Use `withText()`, `href()`, `date()`, `number()`.
 - CSS uses logical properties so Hebrew mirrors. Terminals, diagrams and paths get `dir="ltr"`.

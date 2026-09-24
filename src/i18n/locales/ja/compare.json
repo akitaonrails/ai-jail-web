@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "ai-jailと組み込みサンドボックス、Docker、VMの比較",
-    "description": "Claude Code、Codex、Gemini CLIのサンドボックスが守る範囲と外に残るもの、ai-jailより優れている点、Docker、VM、NVIDIA OpenShellとの違いを出典付きで比較します。"
+    "description": "Claude Code、Codex、Gemini CLI、Antigravityのサンドボックスが守る範囲とai-jailより優れている点、nono、zerobox、Docker、VM、NVIDIA OpenShellとの違いを出典付きで比較します。"
   },
   "hero": {
     "title": "エージェントにもサンドボックスはある。ただし守る範囲が違う。",
@@ -10,12 +10,24 @@
     "how": "仕組み",
     "reviewed": "最終確認日は{date}です。他社製品は変化が速いため、それらに関する記述にはすべてベンダー自身のドキュメントへのリンクを付けています。"
   },
+  "tldr": {
+    "title": "要点",
+    "lede": "6つの状況に、答えを1つずつ。根拠はこのページの残りで示します。",
+    "items": [
+      { "title": "複数のエージェントを使う", "text": "ai-jailです。ポリシーファイル1つでどんなコマンドにも使え、プロセスツリー全体が中に入り、ホームと鍵はデフォルトで隠れます。<a class=\"link\" href=\"/install/\">インストール</a>。" },
+      { "title": "Claude Codeしか使わない", "text": "Anthropic自身の<code>sandbox-runtime</code>も、ベータ版ながらプロセス全体を包みます。ai-jailはそこに、空のホーム、無効なネットワーク、環境変数の許可リストをデフォルトで加えます。<a class=\"link\" href=\"#table\">カードを見る</a>。" },
+      { "title": "エージェント自身のサンドボックスとプロンプトを使いたい", "text": "そのまま有効にしておいてください。ai-jailの中でも動き、あなたなら承認しなかったはずのコマンドを止めてくれます。<a class=\"link\" href=\"#both\">両方使う</a>。" },
+      { "title": "ツールごとのポリシー、実行時の承認、署名付きの監査証跡が欲しい", "text": "そこではnonoがai-jailより先を行きます。代わりに、ポリシー言語とコマンドごとのスーパーバイザーが必要です。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。" },
+      { "title": "コードから、ツール呼び出し1回ずつサンドボックスに入れる", "text": "zeroboxにはそのためのSDKと、巻き戻し用のスナップショットがあります。読み取りは開いたままで、2026年5月以降リリースがありません。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。" },
+      { "title": "コードをまったく信用していない", "text": "使い捨ての仮想マシンです。このページのツールはどれも、ai-jailを含めてカーネルをホストと共有します。<a class=\"link\" href=\"#containers\">Docker、コンテナ、VM</a>。" }
+    ]
+  },
   "wall": {
     "title": "壁はどこにあるか",
     "lede": "執筆時点で、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Codeのサンドボックス</a>の対象はシェルコマンドとその子プロセスです。ファイル操作ツールのほうは許可システムで制御され、ドキュメントには<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">MCPサーバーとフックはホスト上で制約なしに動く</a>と書かれています。ai-jailはエージェント自体を壁の中で起動するので、エージェントが起動するものもすべて中に入ります。",
     "alt": "2枚のパネル。左では、組み込みサンドボックスが囲んでいるのはシェルコマンドだけで、エージェント、MCPサーバー、フックは壁の外にあり、ホームディレクトリへ線が伸びています。右では、ai-jailがエージェント、MCPサーバー、フック、シェルコマンド、プロジェクトをまとめて囲み、ホームディレクトリは外にあって暗く、格子がかかっています。",
     "caption": "左のパネルはClaude Codeのドキュメントに基づいています。",
-    "codex": "<a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a>も、自分が起動するコマンドをサンドボックスに入れ、<code>codex</code>プロセス自体は外に残します。ローカルのMCPサーバーがどこで動くかは、ドキュメントに書かれていません。"
+    "codex": "<a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a>も、自分が起動するコマンドをサンドボックスに入れ、<code>codex</code>プロセス自体は外に残します。ドキュメントによると、MCPサーバーは独自のプロセスやトランスポートを使い、サンドボックスの外で動きます。"
   },
   "prompts": {
     "title": "許可プロンプトは別の種類の保護",
@@ -37,7 +49,13 @@
     "lede": "ここに書いた内容はすべて、執筆時点の各製品のドキュメントに基づいています。私たちが読んだドキュメントに答えがなかった項目は、セルにそう記しています。",
     "undocumented": "記載なし",
     "cols": { "row": "", "claude": "Claude Codeのサンドボックス", "codex": "Codex CLIのサンドボックス", "gemini": "Gemini CLIのサンドボックス", "jail": "ai-jail" },
-    "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>。",
+    "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>。",
+    "wrappersTitle": "ai-jailに似たラッパー",
+    "wrappersLead": "ほかにも2つのオープンソースツールが、エージェントの周りにカーネルのサンドボックスを置きます。ai-jail 2.2は両方からアイデアを取り入れました。ファントム認証情報はzeroboxとnonoから、ハッシュチェーン付きの監査ログはnonoからです。どちらもRust製でApache-2.0、デーモンなしで動き、ai-jailと同じくカーネルはホストと共有します。",
+    "nonoTitle": "nono：ツールごとのポリシーと実行時の承認",
+    "nonoText": "執筆時点で、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a>（nolabs、2026年9月時点でバージョン0.78）は、サンドボックスの外にあるスーパーバイザーの下で、各コマンドを個別の子サンドボックスとして実行します。Linuxではファイルを開く操作にLandlockとseccompのトラップ、macOSではSeatbeltを使い、マウント名前空間はありません。プロファイルは名前を挙げたパスだけを許可し、<code>~/.ssh</code>は拒否グループに置いたままにします。環境はすべて引き継がれ、ネットワークは<code>--block-net</code>か<code>--allow-domain</code>を渡すまで開いています。認証情報プロキシはエージェントにセッショントークンを渡し、本物の鍵は上流で注入します。監査ログにはハッシュチェーン、Merkleルート、オプションの署名があり、Linuxではファイルを開く操作が拒否されたとき、あなたの承認を待って一時停止できます。目指すところがai-jailに最も近いツールで、動く部品も最も多いツールです。",
+    "zeroboxTitle": "zerobox：Codexのサンドボックスをどのコマンドにも、ホスト単位の秘密情報付きで",
+    "zeroboxText": "執筆時点で、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a>（作者1人、2026年5月にバージョン0.3.3、以降リリースなし）は、CodexリポジトリのSeatbeltとbubblewrapのランタイムを再利用します。コマンド1つを、あるいはNode、Python、RustのSDKを通じてツール呼び出し1回ずつを、サンドボックスに入れます。書き込み、ネットワーク、環境はデフォルトで拒否されます。読み取りは開いているので、拒否しない限りホームが見えます。<code>--secret KEY=VALUE</code>はプロセスにプレースホルダーを渡し、<code>--secret-host</code>は本物の値が届く先を絞ります。ai-jailの<code>--secret</code>はこのパターンに倣っています。スナップショットと復元はありますが、監査ログ、承認、エージェント用のプリセットはありません。",
     "groupJail": "エージェント全体を包むラッパーで加わるもの",
     "groupBuiltin": "組み込みサンドボックスのほうが優れている点",
     "rows": [
@@ -128,7 +146,7 @@
           "認証情報のマスク機能を使うと、本物の秘密情報をプロキシ側で注入できます。実験的な設定が必要です。",
           "",
           "",
-          "できません。マスクされたファイルは空のファイルです。"
+          "あり。2.2から<code>--secret KEY=host</code>で使えます。サンドボックスにはプレースホルダーが置かれ、プロキシは本物の値をそのホスト宛てのリクエストだけに入れます。対象は、そのホストに向けてプロキシへ平文のHTTPを送るクライアントで、HTTPSトンネルには触れません。マスクされたファイルは空のファイルのままです。"
         ]
       },
       {

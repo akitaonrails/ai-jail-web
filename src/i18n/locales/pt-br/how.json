@@ -130,7 +130,7 @@
       { "label": "testes unitários no código-fonte" },
       { "label": "testes que tentam escapar de um sandbox real" }
     ],
-    "note": "Contado no repositório do ai-jail na versão {version}."
+    "note": "Dependências contadas no repositório do ai-jail na versão {version}; testes na versão {tests}."
   },
   "limit": {
     "title": "O que as camadas não cobrem",

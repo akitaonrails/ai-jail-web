@@ -35,6 +35,7 @@ const platforms = raw<Platform[]>('platforms.rows');
 const RECIPE_FILTERED = 'cd ~/Projects/my-app\nai-jail --allow-host api.anthropic.com --agent-state claude';
 const RECIPE_OPEN = 'ai-jail --network --agent-state claude';
 
+const tldr = withText([{ hue: 'cyan' }, { hue: 'cyan' }, { hue: 'gold' }, { hue: 'orange' }, { hue: 'orange' }, { hue: 'red' }] as const, raw<{ title: string; text: string }[]>('tldr.items'));
 const together = withText([{ hue: 'cyan' }, { hue: 'orange' }] as const, raw<{ title: string; text: string }[]>('both.points'));
 const next = withText(
   [{ href: '/how-it-works/', hue: 'orange' }, { href: '/configure/', hue: 'gold' }, { href: '/security/', hue: 'red' }] as const,
@@ -49,6 +50,10 @@ const next = withText(
   <div class="wrap pb-6" data-hue="cyan">
     <p class="badge reviewed"><span class="bars" aria-hidden="true"><i></i></span><span>{t('hero.reviewed', { date: date(facts.reviewedAt) })}</span></p>
   </div>
+
+  <Section id="tldr" title={t('tldr.title')} lede={t('tldr.lede')} hue="cyan" tint>
+    <FeatureGrid items={tldr} />
+  </Section>
 
   <Section title={t('wall.title')} lede={t('wall.lede')} hue="cyan">
     <Figure name="home-wrap" alt={t('wall.alt')} caption={t('wall.caption')} />
@@ -100,6 +105,12 @@ const next = withText(
       <Callout title={t('table.codexTitle')} hue="cyan"><p set:html={t('table.codexText')} /></Callout>
       <Callout title={t('table.antigravityTitle')} hue="gold"><p set:html={t('table.antigravityText')} /></Callout>
       <Callout title={t('table.opencodeTitle')} hue="gold"><p set:html={t('table.opencodeText')} /></Callout>
+    </div>
+    <h3 id="wrappers" class="text-xl mt-12 scroll-mt-24">{t('table.wrappersTitle')}</h3>
+    <p class="mt-3 text-muted max-w-[46em]" set:html={t('table.wrappersLead')} />
+    <div class="grid gap-x-8 md:grid-cols-2">
+      <Callout title={t('table.nonoTitle')} hue="orange"><p set:html={t('table.nonoText')} /></Callout>
+      <Callout title={t('table.zeroboxTitle')} hue="orange"><p set:html={t('table.zeroboxText')} /></Callout>
     </div>
   </Section>
 

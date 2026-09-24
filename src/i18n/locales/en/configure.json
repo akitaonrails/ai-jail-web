@@ -53,6 +53,7 @@
           { "text": "Uses the given directory as Claude's state and sets <code>CLAUDE_CONFIG_DIR</code>." },
           { "text": "Passes one variable from your shell, or sets one with <code>NAME=VALUE</code>. Repeatable, never saved to disk." },
           { "text": "Reads strict <code>KEY=VALUE</code> lines from a file and passes them like <code>--env</code>, which wins on conflicts. The file must be yours, a regular file, mode 0600 or stricter, and outside the project, or the launch fails. ai-jail never saves the values to disk, and the config key works from the global file only." },
+          { "text": "Keeps the real value of <code>KEY</code> out of the sandbox. The agent sees a placeholder, and the proxy puts the real value only into requests to that one host. Needs <code>--allow-host</code>, and the key must already come in through <code>--env</code> or <code>--env-from-file</code>. Global file only, never saved. It covers clients that can talk plain HTTP to the proxy for that host; HTTPS tunnels are untouched." },
           { "text": "Passes your whole shell environment, every secret in it included. Avoid it." },
           { "text": "The same as <code>--env</code>, from the global file only. A project file that sets it is ignored." }
         ]
@@ -90,7 +91,8 @@
       {
         "title": "Visibility",
         "rows": [
-          { "text": "Appends one record per launch to <code>~/.local/share/ai-jail/history.jsonl</code> (directory 0700, file 0600): time, command, effective capabilities, config sources, exit code and duration. With <code>--allow-host</code>, every allowed or denied connection is recorded too. It is off by default, and a project file can turn it off but not on." }
+          { "text": "Appends one record per launch to <code>~/.local/share/ai-jail/history.jsonl</code> (directory 0700, file 0600): time, command, effective capabilities, config sources, exit code and duration. With <code>--allow-host</code>, every allowed or denied connection is recorded too, and with <code>--secret</code>, every injection. Each line carries the hash of the one before it. It is off by default, and a project file can turn it off but not on." },
+          { "text": "Walks the audit log's hash chain and exits: 0 when it is intact, 1 at the first broken link, 2 when there is no log. Records written before 2.2 are reported as legacy, which is not an error." }
         ]
       },
       {
@@ -128,7 +130,7 @@
     },
     "keys": {
       "title": "Keep API keys out of every config file",
-      "text": "Masking covers files in the project. For the agent's own key, pass it from your shell with <code>--env NAME</code>, or from a file only you can read with <code>--env-from-file</code>. Neither is ever written to a <code>.ai-jail</code> file, and a project file cannot set them.",
+      "text": "Masking covers files in the project. For the agent's own key, pass it from your shell with <code>--env NAME</code>, or from a file only you can read with <code>--env-from-file</code>. Neither is ever written to a <code>.ai-jail</code> file, and a project file cannot set them. With filtered egress on, <code>--secret KEY=host</code> also keeps the real value out of the sandbox; the recipe below shows it.",
       "shellTitle": "terminal",
       "shellNote": "# the file must be yours, mode 0600 and outside the project",
       "tomlTitle": "~/.ai-jail",
@@ -163,6 +165,7 @@
       { "title": "A cloud agent, day to day", "text": "A hosted model needs to reach its API and needs its own login to authenticate. Put both in the global file and the command stays short. Allow the API host alone, or open the whole network with <code>network = true</code>." },
       { "title": "Only the agent's API host", "text": "The agent reaches only its own API. Claude uses <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> and Gemini <code>generativelanguage.googleapis.com</code>. If the host is missing from the list, the launch warning names it." },
       { "title": "Allowed hosts in the global file", "text": "The list applies to every run of that command. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that." },
+      { "title": "A key the agent never sees", "text": "The sandbox gets a placeholder in <code>ANTHROPIC_API_KEY</code>, and ai-jail's proxy puts the real key only into requests to <code>api.anthropic.com</code>. The client must send plain HTTP to the proxy for that host, which the <code>http://</code> base URL does; ai-jail then carries the request to the real host over TLS. A client that only opens HTTPS tunnels keeps working, without substitution." },
       { "title": "Git push over SSH", "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. Pushing also needs the network." },
       { "title": "mise toolchains", "text": "The fresh home directory has no mise installs in it, so ai-jail skips mise. Map the two mise directories in, read only." },
       { "title": "A browser for the agent", "text": "<code>--browser</code> alone gives a browser that cannot load a page or open a window. On Linux it also needs <code>--network</code> and <code>--display</code>, and an X11 browser needs <code>--x11</code> in place of <code>--display</code>." },
@@ -175,7 +178,8 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# or open the whole network: network = true",
-      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
+      "phantom": "# the key lives in the 0600 file; the sandbox only ever sees AIJAIL-PHANTOM-..."
     }
   },
   "compat": {

@@ -209,7 +209,7 @@
         "label": "tests que intentan escapar de un sandbox real"
       }
     ],
-    "note": "Contado en el repositorio de ai-jail en la versión {version}."
+    "note": "Dependencias contadas en el repositorio de ai-jail en la versión {version}; tests en la versión {tests}."
   },
   "limit": {
     "title": "Lo que las capas no cubren",

@@ -77,3 +77,14 @@ Terms decided while translating. One English term maps to one target term across
 | permission profile | 権限プロファイル |
 | subagent | サブエージェント |
 | host (your host machine) | ホスト |
+| phantom credentials | ファントム認証情報 |
+| placeholder | プレースホルダー |
+| hash chain | ハッシュチェーン |
+| wrapper (ai-jail, sandbox-runtime, nono, zerobox) | ラッパー |
+| supervisor (nono) | スーパーバイザー |
+| Merkle root | Merkleルート |
+| snapshot / restore | スナップショット / 復元 |
+| credential proxy (nono) | 認証情報プロキシ |
+| plain HTTP / HTTPS tunnel | 平文のHTTP / HTTPSトンネル |
+| bound host (`--secret KEY=host`) | 結び付けたホスト |
+| audit trail | 監査証跡 |

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "ai-jail frente a sandboxes integrados, Docker y VMs",
-    "description": "Qué cubren los sandboxes de Claude Code, Codex y Gemini CLI, qué dejan fuera, en qué superan a ai-jail y cómo se comparan Docker, las VMs y NVIDIA OpenShell, con fuentes."
+    "description": "Qué cubren los sandboxes de Claude Code, Codex, Gemini CLI y Antigravity, en qué superan a ai-jail y cómo se comparan nono, zerobox, Docker, VMs y OpenShell, con fuentes."
   },
   "hero": {
     "title": "Tu agente ya tiene un sandbox. Cubre otra mitad.",
@@ -10,12 +10,42 @@
     "how": "Cómo funciona",
     "reviewed": "Última revisión: {date}. Los otros productos cambian rápido, así que cada afirmación sobre ellos enlaza a la documentación del propio fabricante."
   },
+  "tldr": {
+    "title": "En resumen",
+    "lede": "Seis situaciones, una respuesta para cada una. El resto de la página muestra la evidencia.",
+    "items": [
+      {
+        "title": "Usas más de un agente",
+        "text": "ai-jail. Un solo archivo de política, cualquier comando, todo el árbol de procesos dentro, home y claves ocultos por defecto. <a class=\"link\" href=\"/install/\">Instalar</a>."
+      },
+      {
+        "title": "Solo usas Claude Code",
+        "text": "El <code>sandbox-runtime</code> de Anthropic también envuelve el proceso entero, en beta. ai-jail añade por defecto un home vacío, la red apagada y una lista de permitidos para el entorno. <a class=\"link\" href=\"#table\">Mira las tarjetas</a>."
+      },
+      {
+        "title": "Quieres el sandbox y las solicitudes del propio agente",
+        "text": "Déjalos activados. Funcionan dentro de ai-jail y atrapan los comandos que tú no habrías aprobado. <a class=\"link\" href=\"#both\">Usa los dos</a>."
+      },
+      {
+        "title": "Quieres políticas por herramienta, aprobaciones en tiempo de ejecución y un registro de auditoría firmado",
+        "text": "nono llega más lejos que ai-jail ahí, a cambio de un lenguaje de políticas y un supervisor por comando. <a class=\"link\" href=\"#wrappers\">Compara los wrappers</a>."
+      },
+      {
+        "title": "Aíslas desde código, una llamada a herramienta a la vez",
+        "text": "zerobox tiene SDKs para eso y snapshots para volver atrás. Deja las lecturas abiertas y no tiene ninguna versión nueva desde mayo de 2026. <a class=\"link\" href=\"#wrappers\">Compara los wrappers</a>."
+      },
+      {
+        "title": "No confías en el código en absoluto",
+        "text": "Una máquina virtual desechable. Todas las herramientas de esta página comparten tu kernel, ai-jail incluido. <a class=\"link\" href=\"#containers\">Docker, contenedores y VMs</a>."
+      }
+    ]
+  },
   "wall": {
     "title": "Dónde está el muro",
     "lede": "Al momento de escribir esto, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">el sandbox de Claude Code</a> se aplica a los comandos de shell y a sus procesos hijos. Sus herramientas de archivos usan en cambio el sistema de permisos, y su documentación dice que <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">los servidores MCP y los hooks corren sin restricciones en el host</a>. ai-jail arranca al propio agente dentro del muro, así que todo lo que él lanza también queda dentro.",
     "alt": "Dos paneles. A la izquierda, un sandbox integrado encierra solo los comandos de shell, mientras el agente, sus servidores MCP y sus hooks quedan fuera del muro, con líneas que llegan a tu directorio home. A la derecha, ai-jail encierra juntos al agente, los servidores MCP, los hooks, los comandos de shell y el proyecto, y tu directorio home queda fuera, atenuado y tras barrotes.",
     "caption": "El panel izquierdo sigue la documentación de Claude Code.",
-    "codex": "<a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a> también aísla los comandos que lanza y deja fuera el proceso <code>codex</code>. Su documentación no dice dónde corren los servidores MCP locales."
+    "codex": "<a class=\"link\" href=\"https://learn.chatgpt.com/docs/sandboxing\">Codex</a> también aísla los comandos que lanza y deja fuera el proceso <code>codex</code>. Su documentación dice que los servidores MCP usan su propio proceso o transporte, fuera del sandbox."
   },
   "prompts": {
     "title": "Una solicitud de permiso es otro tipo de protección",
@@ -63,7 +93,13 @@
       "gemini": "Sandbox de Gemini CLI",
       "jail": "ai-jail"
     },
-    "sources": "Fuentes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>.",
+    "sources": "Fuentes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>.",
+    "wrappersTitle": "Wrappers como ai-jail",
+    "wrappersLead": "Otras dos herramientas de código abierto ponen un sandbox del kernel alrededor de un agente. ai-jail 2.2 tomó ideas de ambas: las credenciales fantasma de zerobox y nono, y el registro de auditoría con cadena de hashes de nono. Las dos están en Rust, bajo Apache-2.0 y corren sin daemon, y las dos comparten tu kernel, igual que ai-jail.",
+    "nonoTitle": "nono: una política por herramienta, aprobaciones en tiempo de ejecución",
+    "nonoText": "Al momento de escribir esto, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a> (nolabs, versión 0.78 en septiembre de 2026) ejecuta cada comando como un sandbox hijo propio bajo un supervisor sin sandbox. En Linux usa Landlock y una trampa de seccomp sobre las aperturas de archivos, en macOS Seatbelt, y no tiene namespaces de montaje. Los perfiles conceden solo las rutas que nombran y mantienen <code>~/.ssh</code> en un grupo denegado. El entorno se hereda completo, y la red está abierta hasta que pasas <code>--block-net</code> o <code>--allow-domain</code>. Su proxy de credenciales le entrega al agente un token de sesión e inyecta la clave real hacia el destino. Su registro de auditoría tiene una cadena de hashes, una raíz Merkle y una firma opcional, y en Linux una apertura de archivo denegada puede quedar en pausa hasta que la apruebes. Es la herramienta más cercana a ai-jail en ambición, y la que tiene más piezas móviles.",
+    "zeroboxTitle": "zerobox: el sandbox de Codex para cualquier comando, con secretos por host",
+    "zeroboxText": "Al momento de escribir esto, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a> (un solo autor, versión 0.3.3 en mayo de 2026, sin versiones nuevas desde entonces) reutiliza el runtime de Seatbelt y bubblewrap del repositorio de Codex. Aísla un comando, o una llamada a herramienta a la vez a través de sus SDKs de Node, Python y Rust. Las escrituras, la red y el entorno están denegados por defecto. Las lecturas están abiertas, así que tu home es visible salvo que lo deniegues. <code>--secret KEY=VALUE</code> le da al proceso un marcador de posición (placeholder) y <code>--secret-host</code> limita adónde va el valor real; el <code>--secret</code> de ai-jail sigue ese patrón. Tiene snapshots y restauración, y no tiene registro de auditoría, aprobaciones ni presets de agentes.",
     "groupJail": "Lo que añade envolver al agente entero",
     "groupBuiltin": "Lo que los sandboxes integrados hacen mejor",
     "rows": [
@@ -154,7 +190,7 @@
           "El enmascaramiento de credenciales puede inyectar el secreto real en el proxy. Requiere un ajuste experimental.",
           "",
           "",
-          "No. Un archivo enmascarado es un archivo vacío."
+          "Sí, desde la 2.2, con <code>--secret KEY=host</code>. El sandbox guarda un marcador de posición y el proxy pone el valor real solo en las peticiones a ese único host. Cubre a los clientes que envían HTTP plano al proxy para ese host; los túneles HTTPS no se tocan. Un archivo enmascarado sigue siendo un archivo vacío."
         ]
       },
       {

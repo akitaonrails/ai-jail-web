@@ -91,6 +91,9 @@
             "text": "Lee líneas <code>KEY=VALUE</code> estrictas de un archivo y las pasa como <code>--env</code>, que gana si hay conflicto. El archivo tiene que ser tuyo, un archivo regular, con modo 0600 o más estricto y fuera del proyecto, o el arranque falla. ai-jail nunca guarda los valores en disco, y la clave de configuración solo funciona desde el archivo global."
           },
           {
+            "text": "Mantiene el valor real de <code>KEY</code> fuera del sandbox. El agente ve un marcador de posición (placeholder), y el proxy pone el valor real solo en las peticiones a ese único host. Necesita <code>--allow-host</code>, y la clave tiene que entrar ya por <code>--env</code> o <code>--env-from-file</code>. Solo en el archivo global, nunca se guarda. Cubre a los clientes que pueden hablar HTTP plano con el proxy para ese host; los túneles HTTPS no se tocan."
+          },
+          {
             "text": "Pasa todo el entorno de tu shell, con cada secreto que contenga. Evítalo."
           },
           {
@@ -162,7 +165,10 @@
         "title": "Visibilidad",
         "rows": [
           {
-            "text": "Añade un registro por arranque a <code>~/.local/share/ai-jail/history.jsonl</code> (directorio 0700, archivo 0600): hora, comando, capacidades efectivas, fuentes de configuración, código de salida y duración. Con <code>--allow-host</code>, también registra cada conexión permitida o denegada. Está apagado por defecto, y un archivo de proyecto puede apagarlo pero no activarlo."
+            "text": "Añade un registro por arranque a <code>~/.local/share/ai-jail/history.jsonl</code> (directorio 0700, archivo 0600): hora, comando, capacidades efectivas, fuentes de configuración, código de salida y duración. Con <code>--allow-host</code>, también registra cada conexión permitida o denegada, y con <code>--secret</code>, cada inyección. Cada línea lleva el hash de la anterior. Está apagado por defecto, y un archivo de proyecto puede apagarlo pero no activarlo."
+          },
+          {
+            "text": "Recorre la cadena de hashes del registro de auditoría y termina: 0 si está intacta, 1 en el primer eslabón roto, 2 si no hay registro. Los registros escritos antes de la 2.2 se reportan como legacy, lo cual no es un error."
           }
         ]
       },
@@ -222,7 +228,7 @@
     },
     "keys": {
       "title": "Las claves de API, fuera de la config",
-      "text": "Enmascarar cubre los archivos del proyecto. Para la clave del propio agente, pásala desde tu shell con <code>--env NAME</code>, o desde un archivo que solo tú puedes leer con <code>--env-from-file</code>. Ninguna de las dos se escribe nunca en un archivo <code>.ai-jail</code>, y un archivo de proyecto no puede definirlas.",
+      "text": "Enmascarar cubre los archivos del proyecto. Para la clave del propio agente, pásala desde tu shell con <code>--env NAME</code>, o desde un archivo que solo tú puedes leer con <code>--env-from-file</code>. Ninguna de las dos se escribe nunca en un archivo <code>.ai-jail</code>, y un archivo de proyecto no puede definirlas. Con la salida filtrada activada, <code>--secret KEY=host</code> además mantiene el valor real fuera del sandbox; la receta de abajo lo muestra.",
       "shellTitle": "terminal",
       "shellNote": "# el archivo tiene que ser tuyo, con modo 0600 y fuera del proyecto",
       "tomlTitle": "~/.ai-jail",
@@ -281,6 +287,10 @@
         "text": "La lista se aplica a cada ejecución de ese comando. Un host permitido es de confianza por completo: <code>github.com</code> deja que el agente haga push a cualquier repositorio al que lleguen tus credenciales, así que añádelo solo cuando quieras eso."
       },
       {
+        "title": "Una clave que el agente nunca ve",
+        "text": "El sandbox recibe un marcador de posición en <code>ANTHROPIC_API_KEY</code>, y el proxy de ai-jail pone la clave real solo en las peticiones a <code>api.anthropic.com</code>. El cliente tiene que enviar HTTP plano al proxy para ese host, y la URL base <code>http://</code> hace justo eso; ai-jail lleva después la petición al host real por TLS. Un cliente que solo abre túneles HTTPS sigue funcionando, sin sustitución."
+      },
+      {
         "title": "Git push por SSH",
         "text": "<code>--ssh</code> monta <code>~/.ssh</code> en solo lectura y reenvía el socket de tu agente SSH. Para hacer push también hace falta la red."
       },
@@ -307,7 +317,8 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# o abre toda la red: network = true",
-      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com"
+      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
+      "phantom": "# la clave vive en el archivo 0600; el sandbox solo ve AIJAIL-PHANTOM-..."
     }
   },
   "compat": {

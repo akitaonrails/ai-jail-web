@@ -1,9 +1,10 @@
 {
-  "version": "2.0.0",
+  "version": "2.2.0",
   "license": "GPL-3.0-only",
   "rust": "1.97.1",
-  "unitTests": 790,
+  "unitTests": 816,
   "escapeTests": 19,
-  "reviewedAt": "2026-09-22",
-  "dependencies": 8
+  "testsCountedAt": "2.2.0",
+  "reviewedAt": "2026-09-24",
+  "dependencies": 11
 }

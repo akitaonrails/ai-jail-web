@@ -45,6 +45,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '--claude-dir <PATH>', key: 'claude_dir = "..."', risk: 'optin' },
     { flag: '--env <NAME[=VALUE]>', risk: 'optin' },
     { flag: '--env-from-file <PATH>', key: 'env_from_file = [...]', risk: 'optin' },
+    { flag: '--secret <KEY=host>', key: 'secret_hosts = { ... }', risk: 'optin' },
     { flag: '--inherit-env', key: 'inherit_env = true', risk: 'weakens' },
     { flag: '', key: 'env_pass = ["NAME"]', risk: 'optin' },
   ],
@@ -69,7 +70,10 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '--no-rlimits', key: 'no_rlimits = true', risk: 'weakens' },
     { flag: '--no-private-home', key: 'private_home = false', risk: 'weakens' },
   ],
-  [{ flag: '--audit-log', key: 'audit_log = true', risk: 'optin' }],
+  [
+    { flag: '--audit-log', key: 'audit_log = true', risk: 'optin' },
+    { flag: '--audit-verify' },
+  ],
   [
     { flag: '--dry-run' },
     { flag: '--init' },
@@ -114,6 +118,7 @@ const recipeCode = [
   { code: [t('recipes.comments.once'), '[commands.claude]', 'allow_hosts = ["api.anthropic.com"]', t('recipes.comments.open'), 'agent_state = true', '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
   { code: ['ai-jail --allow-host api.anthropic.com --agent-state claude', t('recipes.comments.hosts')].join('\n') },
   { code: '[commands.claude]\nallow_hosts = ["api.anthropic.com", "github.com"]', codeTitle: '~/.ai-jail' },
+  { code: [t('recipes.comments.phantom'), 'ai-jail --allow-host api.anthropic.com \\', '  --env-from-file ~/.secrets/claude.env \\', '  --secret ANTHROPIC_API_KEY=api.anthropic.com \\', '  --env ANTHROPIC_BASE_URL=http://api.anthropic.com claude'].join('\n') },
   { code: 'ai-jail --network --ssh --agent-state claude' },
   { code: '[commands.claude]\nro_maps = ["~/.config/mise", "~/.local/share/mise"]', codeTitle: '~/.ai-jail' },
   { code: [t('recipes.comments.wayland'), 'ai-jail --browser=soft --network --display chromium', t('recipes.comments.x11'), 'ai-jail --browser=soft --network --x11 chromium'].join('\n') },
