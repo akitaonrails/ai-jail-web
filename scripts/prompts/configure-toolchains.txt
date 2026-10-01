@@ -1,0 +1,9 @@
+A diagram of one sandbox and what a build inside it can use, read left to right.
+
+CENTER-LEFT: a rounded-square wall made of short thick vertical bars in the warm gold-to-orange spectrum. Inside the wall, a glowing cyan microchip labeled "Agent". Next to the chip, two objects drawn in warm gold outline: a small toolbox with a tiny warm padlock on its lid, labeled "Toolchains", and a stout storage box labeled "Jail cache". A thin cyan line runs from the chip to each of the two objects.
+
+OUTSIDE THE WALL, BELOW-LEFT: a second storage box labeled "Host cache", dim desaturated maroon-grey, with thin vertical prison bars across it. No line reaches it.
+
+RIGHT SIDE: the wall has one narrow gate on its right. Just outside the gate stands a small orange rectangular box labeled "Proxy". A thin cyan line runs from the chip through the gate into the box, and from the box one thin cyan line continues to a bright cyan cloud icon labeled "Registries". Above that cloud, a second cloud icon labeled "Model API", dim desaturated maroon-grey with thin vertical prison bars across it, with no line reaching it.
+
+Exactly seven labels: "Agent", "Toolchains", "Jail cache", "Host cache", "Proxy", "Registries", "Model API". The read-only padlock is a small shape with no text. The agent, the toolbox and the jail cache are all inside the wall; the host cache is outside and never connected.

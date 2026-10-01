@@ -15,7 +15,9 @@ import { faqPage, type Faq as FaqItem } from '@/lib/schema';
 import { localePaths, useI18n, withText } from '@/i18n';
 export const getStaticPaths = localePaths;
 
-const { t, raw, href } = useI18n(Astro, 'security');
+const { t, raw, href, date } = useI18n(Astro, 'security');
+// The two independent source audits of 2.3.0 (docs/SECURITY_AUDIT_2026-09-30*.md in the ai-jail repository).
+const auditDate = '2026-09-30';
 const advisory = `${site.repo}/security/advisories/new`;
 const faq = raw<FaqItem[]>('faq.items');
 type Point = { title: string; text: string };
@@ -26,7 +28,7 @@ const next = withText([
 ] as const, raw<Point[]>('next'));
 
 // Flags are structure; the consequence of each one is in the catalog, in the same order.
-const flags = ['--network', '--allow-host', '--secret', '--audit-log', '--docker', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--audio', '--no-private-home'];
+const flags = ['--network', '--allow-host', '--toolchains', '--secret', '--audit-log', '--docker', '--kvm', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--github', '--aws', '--kube', '--gcloud', '--docker-config', '--audio', '--no-private-home'];
 const consequences = raw<string[]>('switches.rows');
 
 // Counted in the ai-jail repository at facts.testsCountedAt: #[test] in tests/sandbox_escape.rs and in src/.
@@ -84,8 +86,12 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
     <Facts items={facts} />
 
     <Callout title={t('checked.audit.title')}>
-      <p set:html={t('checked.audit.text')} />
+      <p set:html={t('checked.audit.text', { date: date(auditDate) })} />
     </Callout>
+    <div class="max-w-[46em]" data-reveal>
+      <h3 class="text-xl mb-5">{t('checked.fixes.title')}</h3>
+      <ul class="ticks">{raw<string[]>('checked.fixes.items').map((item) => <li set:html={item} />)}</ul>
+    </div>
 
     <Callout title={t('checked.log.title')} hue="gold">
       <p set:html={t('checked.log.text')} />

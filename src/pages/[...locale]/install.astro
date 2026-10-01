@@ -60,7 +60,7 @@ const trouble = withText(
       altTitle: '/etc/apparmor.d/bwrap',
     },
     {},
-    { code: '[commands.claude]\nro_maps = ["~/.config/mise", "~/.local/share/mise"]', codeTitle: '~/.ai-jail' },
+    { code: '[commands.opencode]\ncommand = ["opencode", "--standalone"]', codeTitle: '~/.ai-jail' },
     { code: 'ai-jail --no-mise claude' },
   ] as { code?: string; codeTitle?: string; altCode?: string; altTitle?: string }[],
   raw<(Words & { alt?: string })[]>('trouble.items'),
@@ -69,7 +69,7 @@ const trouble = withText(
 const agentRows = [
   { cmd: 'ai-jail claude', state: ['~/.claude', '~/.claude.json'], note: 'claude' },
   { cmd: 'ai-jail codex', state: ['~/.codex'], note: 'codex' },
-  { cmd: 'ai-jail opencode', state: ['~/.config/opencode', '~/.local/share/opencode'] },
+  { cmd: 'ai-jail opencode', state: ['~/.config/opencode', '~/.local/share/opencode'], note: 'opencode' },
   { cmd: 'ai-jail gemini', state: ['~/.gemini'] },
   { cmd: 'ai-jail ai-memory run claude', state: [], note: 'aimemory' },
 ];

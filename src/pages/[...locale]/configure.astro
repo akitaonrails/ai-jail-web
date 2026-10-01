@@ -29,8 +29,8 @@ const globalToml = [
   'mask = ["*.pem"]',
 ].join('\n');
 
-// Structure of the switch tables. `risk`: optin (gold) opens one thing, weakens (red) is on the Security list.
-type Risk = 'optin' | 'weakens' | undefined;
+// Structure of the switch tables. `risk`: optin (gold) opens one thing, weakens (red) is on the Security list, default (cyan) is on unless turned off.
+type Risk = 'optin' | 'weakens' | 'default' | undefined;
 const rows: { flag: string; key?: string; risk?: Risk }[][] = [
   [
     { flag: '--network', key: 'network = true', risk: 'weakens' },
@@ -50,7 +50,16 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '', key: 'env_pass = ["NAME"]', risk: 'optin' },
   ],
   [
+    { flag: '--toolchains', key: 'no_toolchains = true', risk: 'default' },
+    { flag: '--github', key: 'github = true', risk: 'optin' },
+    { flag: '--aws', key: 'aws = true', risk: 'optin' },
+    { flag: '--kube', key: 'kube = true', risk: 'optin' },
+    { flag: '--gcloud', key: 'gcloud = true', risk: 'optin' },
+    { flag: '--docker-config', key: 'docker_config = true', risk: 'optin' },
+  ],
+  [
     { flag: '--gpu', key: 'no_gpu = false', risk: 'optin' },
+    { flag: '--kvm', key: 'kvm = true', risk: 'optin' },
     { flag: '--display', key: 'no_display = false', risk: 'optin' },
     { flag: '--x11', key: 'x11 = true', risk: 'weakens' },
     { flag: '--audio', key: 'audio = true', risk: 'optin' },
@@ -72,6 +81,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
   ],
   [
     { flag: '--audit-log', key: 'audit_log = true', risk: 'optin' },
+    { flag: '--audit-show' },
     { flag: '--audit-verify' },
   ],
   [
@@ -87,9 +97,9 @@ const groups = raw<{ title: string; rows: { text: string }[] }[]>('switches.grou
   title: g.title,
   rows: withText(rows[i], g.rows),
 }));
-const riskHue = { optin: 'gold', weakens: 'red' } as const;
+const riskHue = { optin: 'gold', weakens: 'red', default: 'cyan' } as const;
 const utility = rows.length - 1; // the last group has no config keys and no risk column
-const layers = 4;
+const layers = 5;
 
 const maskPoints = withText([{ hue: 'gold' }, { hue: 'red' }, { hue: 'orange' }] as const, raw<Text[]>('secrets.points'));
 const maskFlags = [
@@ -114,13 +124,26 @@ const keysToml = [
   'env_from_file = ["~/.secrets/claude.env"]',
 ].join('\n');
 
+const toolPoints = withText([{ hue: 'gold' }, { hue: 'gold' }, { hue: 'cyan' }] as const, raw<Text[]>('toolchains.points'));
+const toolCode = [
+  t('toolchains.code.default'),
+  'ai-jail claude',
+  '',
+  t('toolchains.code.offline'),
+  'ai-jail --no-network claude',
+  '',
+  t('toolchains.code.none'),
+  'ai-jail --no-toolchains --no-network claude',
+].join('\n');
+
 const recipeCode = [
   { code: [t('recipes.comments.once'), '[commands.claude]', 'allow_hosts = ["api.anthropic.com"]', t('recipes.comments.open'), 'agent_state = true', '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
   { code: ['ai-jail --allow-host api.anthropic.com --agent-state claude', t('recipes.comments.hosts')].join('\n') },
   { code: '[commands.claude]\nallow_hosts = ["api.anthropic.com", "github.com"]', codeTitle: '~/.ai-jail' },
   { code: [t('recipes.comments.phantom'), 'ai-jail --allow-host api.anthropic.com \\', '  --env-from-file ~/.secrets/claude.env \\', '  --secret ANTHROPIC_API_KEY=api.anthropic.com \\', '  --env ANTHROPIC_BASE_URL=http://api.anthropic.com claude'].join('\n') },
   { code: 'ai-jail --network --ssh --agent-state claude' },
-  { code: '[commands.claude]\nro_maps = ["~/.config/mise", "~/.local/share/mise"]', codeTitle: '~/.ai-jail' },
+  { code: [t('recipes.comments.build'), 'ai-jail claude', '', t('recipes.comments.offline'), 'ai-jail --no-toolchains --no-network claude'].join('\n') },
+  { code: 'ai-jail --github --agent-state --allow-host api.anthropic.com claude' },
   { code: [t('recipes.comments.wayland'), 'ai-jail --browser=soft --network --display chromium', t('recipes.comments.x11'), 'ai-jail --browser=soft --network --x11 chromium'].join('\n') },
   { code: 'ai-jail --network --claude-dir ~/.claude-work claude' },
   { code: 'ai-jail --network --agent-state --overlay-map ~/Projects/my-app/src claude' },
@@ -199,6 +222,18 @@ const next = withText(
         <CodeBlock code={keysShell} title={t('secrets.keys.shellTitle')} />
         <CodeBlock code={keysToml} title={t('secrets.keys.tomlTitle')} />
       </div>
+    </div>
+  </Section>
+
+  <Section id="toolchains" title={t('toolchains.title')} lede={t('toolchains.lede')} hue="gold" tint>
+    <Figure name="configure-toolchains" alt={t('toolchains.alt')} caption={t('toolchains.caption')} />
+    <FeatureGrid items={toolPoints} />
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-start">
+      <div class="grid gap-6">
+        <Callout title={t('toolchains.optout.title')} hue="gold"><p set:html={t('toolchains.optout.text')} /></Callout>
+        <Callout title={t('toolchains.caveat.title')}><p set:html={t('toolchains.caveat.text')} /></Callout>
+      </div>
+      <CodeBlock code={toolCode} title={t('toolchains.codeTitle')} />
     </div>
   </Section>
 

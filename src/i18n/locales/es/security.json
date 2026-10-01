@@ -22,7 +22,7 @@
         "text": "Los secretos de tu shell. Las variables de entorno se reducen a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera."
       },
       {
-        "text": "La red. Está apagada, así que nada de lo que el agente lee se puede enviar a ningún lado. Puedes abrirla a una lista de hosts, o del todo."
+        "text": "La red. Está apagada, salvo por una lista corta de registries de paquetes que el proxy filtrado deja pasar cuando el toolchain está activado, el valor por defecto en Linux. <code>--no-network</code> cierra eso también. La API del propio agente sigue cerrada hasta que la abras con <code>--allow-host</code> o <code>--network</code>."
       },
       {
         "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta."
@@ -46,6 +46,7 @@
       "Vulnerabilidades del kernel y de los drivers. Cada proceso aislado habla con el mismo kernel que el resto de tu máquina.",
       "Bugs en tu emulador de terminal, sobre todo con <code>--terminal-passthrough</code>, que apaga el filtro de salida.",
       "Defectos en el propio backend del sandbox: bubblewrap, Landlock y seccomp en Linux, <code>sandbox-exec</code> en macOS.",
+      "Landlock, las reglas del propio kernel, solo valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos, en modo best-effort. Los kernels más antiguos se quedan solo con las reglas de sistema de archivos y de red, así que con <code>--x11</code>, <code>--network</code> o <code>--systemd-user</code> los sockets abstractos y las señales del host no quedan vallados.",
       "Secretos dentro del proyecto. Un archivo <code>.env</code> en el repositorio se puede leer salvo que lo enmascares. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascarar archivos</a>.",
       "Las máscaras cubren solo las rutas que existen cuando arranca el sandbox. Un archivo con secretos creado después, durante la sesión, no queda oculto.",
       "Canales laterales y algunas clases de comunicación entre procesos.",
@@ -54,6 +55,7 @@
       "El DNS bajo <code>--allow-host</code>. En Linux, las consultas de nombres dentro del sandbox fallan, así que no hay canal DNS hacia fuera. En macOS el resolver del sistema no está vallado, así que queda un canal DNS de poco ancho de banda, la misma brecha que Anthropic documenta para su propio sandbox-runtime.",
       "El proxy ve el host, el puerto y el momento de cada conexión. Lo que viaja dentro queda entre los dos extremos. <a class=\"link\" href=\"/how-it-works/#network\">Cómo está construida la salida filtrada</a>.",
       "Las credenciales fantasma trasladan la confianza al propio ai-jail. Con <code>--secret</code>, las peticiones al host vinculado pasan por ai-jail en claro para que pueda insertar la clave real, y las vuelve a cifrar al salir. Los túneles hacia cualquier otro host siguen siendo opacos. Solo cubre a los clientes que pueden hablar HTTP plano con el proxy para ese host.",
+      "Credenciales que pasas con <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> o <code>--docker-config</code>. Solo lectura protege el archivo contra cambios, no la credencial contra el uso: cualquier cosa dentro del sandbox puede actuar como tú en ese servicio mientras siga siendo válida.",
       "En macOS, <code>sandbox-exec</code> está marcado como obsoleto por Apple y no equivale al aislamiento de Linux. <a class=\"link\" href=\"/how-it-works/\">Mira las diferencias en macOS</a>."
     ],
     "callout": {
@@ -63,7 +65,7 @@
   },
   "switches": {
     "title": "Interruptores que abren el muro",
-    "lede": "Todo lo de abajo está apagado hasta que lo activas, y la mayoría le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
+    "lede": "Todo lo de abajo está apagado hasta que lo activas, salvo <code>--toolchains</code>, que viene activado por defecto en Linux. La mayoría le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
     "head": {
       "flag": "Interruptor",
       "gives": "Lo que puede hacer entonces cualquier cosa dentro del sandbox"
@@ -71,13 +73,20 @@
     "rows": [
       "Enviar a cualquier parte todo lo que puede leer. El tráfico no tiene restricciones. <code>--allow-host</code> es la alternativa más estricta.",
       "Llegar exactamente a los hosts que listas, y a sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo.",
+      "Activado por defecto en Linux. Ejecutar tus toolchains: <code>~/.cargo/bin</code> y <code>~/.rustup</code> en solo lectura, una caché de dependencias propia de la jaula en <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre ejecuciones, y salida filtrada hacia los registries de paquetes. Las cachés reales del host nunca se montan. Apagado bajo <code>--lockdown</code> y con <code>--no-toolchains</code>.",
       "Nada nuevo. El valor real de esa clave nunca entra al sandbox: el agente ve un marcador de posición, y el proxy pone el valor real solo en las peticiones HTTP plano al único host al que la vinculaste. El propio proceso de ai-jail ve esa petición en claro.",
       "Nada nuevo. Este interruptor no debilita nada: escribe una línea por arranque en un archivo con modo 0600 fuera del sandbox, así que el agente nunca lo ve.",
       "Actuar como root en tu máquina a través del daemon de Docker.",
+      "Abrir <code>/dev/kvm</code>, la interfaz de virtualización del kernel, para que QEMU, Firecracker o el emulador de Android corran a velocidad de hardware. Solo en Linux. Los guests solo tienen la red del sandbox, y no se pasa ningún <code>/dev/net/tun</code>.",
       "Registrar pulsaciones de teclas y tomar capturas de otras ventanas de X11.",
       "Pedirle a tu gestor de usuario de systemd que ejecute servicios en el host.",
       "Leer todo el entorno de tu shell, secretos incluidos. Para las claves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> pasa un solo archivo en su lugar.",
       "Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude.",
+      "Actuar como tú en GitHub con el login de <code>~/.config/gh</code>, montado en solo lectura. Solo lectura protege el archivo, no la credencial: funciona mientras siga siendo válida.",
+      "Actuar como tú en AWS con <code>~/.aws</code>, montado en solo lectura.",
+      "Actuar como tú en todos los clústeres de <code>~/.kube</code>, montado en solo lectura.",
+      "Actuar como tú en Google Cloud con <code>~/.config/gcloud</code>, montado en solo lectura.",
+      "Usar tus logins de registries de contenedores en <code>~/.docker/config.json</code>, montado en solo lectura.",
       "Grabar y reproducir audio mientras esté activado.",
       "Ver tu directorio home real. Es una excepción amplia; mejor mapea la única ruta que necesitas."
     ]
@@ -92,11 +101,12 @@
       "<code>--allow-tcp-port</code>. Esa interfaz no puede restringir UDP, así que el flag se acepta por compatibilidad, el arranque falla y el error apunta a <code>--allow-host</code>.",
       "<code>--network</code> junto con <code>--allow-host</code>, o <code>--browser</code> con <code>--allow-host</code>. Los dos se contradicen, así que ai-jail se niega a arrancar.",
       "Un archivo de <code>--env-from-file</code> que es un symlink, que puede leer su grupo o todo el mundo, que pertenece a otra persona o que está dentro del proyecto.",
-      "Un <code>BWRAP_BIN</code> que apunta a un binario de bubblewrap que alguien distinto de root pudo haber reemplazado. Se ignora con una advertencia, y sin un bubblewrap de confianza el arranque falla."
+      "Un <code>BWRAP_BIN</code> que apunta a un binario de bubblewrap que alguien distinto de root pudo haber reemplazado. Se ignora con una advertencia, y sin un bubblewrap de confianza el arranque falla.",
+      "Un overlay que no se puede montar: falta el origen, el destino se solapa con otro mapeo o falla el almacenamiento. Desde la 2.4 el arranque aborta en vez de caer a un bind simple de lectura y escritura sobre los archivos reales."
     ],
     "counter": {
       "title": "Dónde solo advierte",
-      "text": "Fuera de <code>--lockdown</code>, un fallo de Landlock es una advertencia. En un kernel demasiado antiguo para Landlock, ai-jail lo avisa y continúa solo con la capa de bubblewrap. Lee las líneas de arranque."
+      "text": "Fuera de <code>--lockdown</code>, un fallo de Landlock es una advertencia. En un kernel demasiado antiguo para Landlock, ai-jail lo avisa y continúa solo con la capa de bubblewrap. El registro de auditoría también es best-effort: cuando no se puede preparar, ai-jail avisa, omite el registro en ese arranque y nunca escribe un registro de reserva en <code>/tmp</code>. Lee las líneas de arranque."
     }
   },
   "checked": {
@@ -114,8 +124,22 @@
       }
     ],
     "audit": {
-      "title": "Auditado internamente, no por un tercero",
-      "text": "Antes de la 1.0 el proyecto hizo su propia auditoría interna de código y una revisión de seguridad del refactor, y publicó ambas en el repositorio. Ninguna empresa externa ha auditado ai-jail. <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">Lee la revisión de seguridad</a>."
+      "title": "Auditado a la vista, no por una empresa externa",
+      "text": "Antes de la 1.0 el proyecto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">se auditó a sí mismo</a> y publicó los informes. El {date} se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0, con una comparación y un plan de corrección: la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoría A</a>, realizada por un modelo de IA como declara su propia cabecera, y la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoría B</a>, hecha de forma independiente. Produjeron dos advisories en GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> y <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos cerrados en la 2.4.0 con tests de regresión. Ninguna empresa externa ha auditado ai-jail."
+    },
+    "fixes": {
+      "title": "Qué corrigió la 2.4.0",
+      "items": [
+        "Los metadatos de worktree de un repositorio ya no pueden montar un directorio cualquiera del host en lectura y escritura.",
+        "Una entrada duplicada en el entorno ya no cuela el valor real de una clave <code>--secret</code> dentro del sandbox.",
+        "Un comando de navegador en un <code>.ai-jail</code> de proyecto no confiable ya no desactiva el lockdown.",
+        "<code>TIOCSTI</code> se compara como lo lee el kernel, en 32 bits, así que una variante con el bit alto ya no pasa el seccomp.",
+        "Landlock valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos.",
+        "macOS: el acceso al terminal se limita a los terminales de la propia ejecución, y no a todos los <code>/dev/ttys*</code>.",
+        "macOS: las rutas con <code>--mask</code> se deniegan también para escritura, además de lectura.",
+        "El filtro de salida ya no se descompone con un ESC doble, que podía colar una escritura en el portapapeles.",
+        "Los atajos de prueba del proxy quedan fuera de los builds de release."
+      ]
     },
     "release": {
       "title": "Cómo se hace una versión",
@@ -140,7 +164,7 @@
     },
     "log": {
       "title": "Un registro de lo que permitiste",
-      "text": "<code>--audit-log</code> responde dos preguntas: qué le dejé hacer a ese agente y adónde intentó llegar. Añade una línea JSON por arranque y, con <code>--allow-host</code> activado, una línea por cada conexión permitida o denegada. Desde la 2.2 cada línea lleva su número de secuencia y el SHA-256 de la línea anterior, y <code>ai-jail --audit-verify</code> recorre la cadena y reporta el primer eslabón roto. Eso hace ruidosa una edición silenciosa; no impide que alguien reemplace el archivo entero, porque nada está firmado. Está apagado por defecto, y un <code>.ai-jail</code> de proyecto solo puede apagarlo."
+      "text": "<code>--audit-log</code> responde dos preguntas: qué le dejé hacer a ese agente y adónde intentó llegar. Añade una línea JSON por arranque y, con <code>--allow-host</code> activado, una línea por cada conexión permitida o denegada. Desde la 2.2 cada línea lleva su número de secuencia y el SHA-256 de la línea anterior, y <code>ai-jail --audit-verify</code> recorre la cadena y reporta el primer eslabón roto. Eso hace ruidosa una edición silenciosa; no impide que alguien reemplace el archivo entero, porque nada está firmado. Está apagado por defecto, y un <code>.ai-jail</code> de proyecto solo puede apagarlo. <code>ai-jail --audit-show</code> imprime un resumen legible de los arranques, las decisiones de red y las sustituciones de credenciales, sin verificar la cadena. Desde la 2.3 el registro se abre sin seguir symlinks por debajo de tu home, y un registro que sea un archivo especial o de otro dueño se rechaza. Los registros por arranque pueden incluir los argumentos del comando, así que deja los secretos fuera de ellos."
     }
   },
   "report": {
@@ -161,7 +185,7 @@
       },
       {
         "q": "¿Ha sido auditado?",
-        "a": "Internamente, antes de la 1.0, con los informes publicados en el repositorio. No ha tenido ninguna auditoría de terceros. El código es abierto bajo GPL 3.0, y los reportes privados de vulnerabilidades son bienvenidos."
+        "a": "No por una empresa externa. El proyecto se auditó a sí mismo antes de la 1.0, y en septiembre de 2026 se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0; los dos advisories que produjeron se cerraron en la 2.4.0. El código es abierto bajo GPL 3.0, y los reportes privados de vulnerabilidades son bienvenidos."
       }
     ]
   },

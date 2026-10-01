@@ -21,7 +21,7 @@
       },
       {
         "title": "It builds the sandbox",
-        "text": "ai-jail sets up each layer below before the agent exists. If a config file is unreadable or invalid, ai-jail stops instead of starting with weaker rules."
+        "text": "ai-jail sets up each layer below before the agent exists, and maps <a class=\"link\" href=\"/configure/#toolchains\">the toolchains you have</a> (mise, cargo, npm and other caches) read-only or into a jail-owned cache. If a config file is unreadable or invalid, ai-jail stops instead of starting with weaker rules."
       },
       {
         "title": "It starts the agent inside",
@@ -47,20 +47,20 @@
       {
         "name": "Filesystem",
         "tag": "mounts",
-        "is": "Inside the namespace, only what ai-jail mounts exists. The project is read-write at its real path, system directories such as <code>/usr</code> are read-only, and the home directory and <code>/tmp</code> are fresh and held in memory.",
+        "is": "Inside the namespace, only what ai-jail mounts exists. The project is read-write at its real path, system directories such as <code>/usr</code> are read-only, and the home directory and <code>/tmp</code> are fresh and held in memory. <a class=\"link\" href=\"/configure/#toolchains\">The toolchains you have</a> (mise, cargo, npm caches) are mapped into that fresh home, read-only or as a jail-owned cache.",
         "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> and browser profiles are on a built-in list that is never mounted. Anything written outside the project vanishes when the session ends."
       },
       {
         "name": "Landlock",
         "tag": "kernel 5.13+",
         "is": "Landlock is a Linux kernel feature that lets a process give up access to files for good. ai-jail uses it to repeat the filesystem rules as a second allowlist inside the kernel.",
-        "stops": "A mistake or a trick in the mount layer is not enough to reach a path outside the list, and read-only stays read-only. On kernels too old for Landlock, ai-jail says so and continues with the other layers."
+        "stops": "A mistake or a trick in the mount layer is not enough to reach a path outside the list, and read-only stays read-only. On kernels 6.12 and newer it also scopes abstract Unix sockets and signals, best effort. On kernels too old for Landlock, ai-jail says so and continues with the other layers."
       },
       {
         "name": "seccomp",
         "tag": "system calls",
         "is": "Programs ask the kernel for things through system calls. seccomp is a filter on those calls, and ai-jail uses it to refuse the ones a coding agent never needs.",
-        "stops": "The filter blocks <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, kernel modules, <code>io_uring</code>, the kernel keyring, raw sockets, and <code>TIOCSTI</code>, the call that types keystrokes into a terminal. It is a blocklist on purpose, so compilers and runtimes keep working. The one process started before Landlock and seccomp apply is the small bridge that carries filtered network traffic out, so it alone stays unrestricted."
+        "stops": "The filter blocks <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, kernel modules, <code>io_uring</code>, the kernel keyring, raw sockets, and <code>TIOCSTI</code>, the call that types keystrokes into a terminal, compared the way the kernel reads it. It is a blocklist on purpose, so compilers and runtimes keep working. The one process started before Landlock and seccomp apply is the small bridge that carries filtered network traffic out, so it alone stays unrestricted."
       },
       {
         "name": "Resource limits",
@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "Three ways to the network",
-    "lede": "Every launch picks one of three network modes. The default is the strictest, and the other two are flags you pass on purpose.",
+    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except a short list of package registries through the filtered proxy when toolchains are on, the default on Linux. The other two are flags you pass on purpose.",
     "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
     "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
     "modes": [
       {
         "title": "Off",
-        "text": "The default. The sandbox gets a private network namespace with no route out, so nothing inside can reach the network at all."
+        "text": "The default. The sandbox gets a private network namespace with no route out. With toolchains on, the default on Linux, the filtered proxy still lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; <code>--no-network</code> makes it fully offline. The agent's own API stays closed until you open it."
       },
       {
         "title": "Filtered",
@@ -151,8 +151,8 @@
       },
       {
         "what": "Network",
-        "linux": "Off by default: a network namespace with no route out until <code>--allow-host</code> or <code>--network</code> opens one",
-        "macos": "Off by default, with the same two flags. In lockdown it is always blocked, even with <code>--network</code>."
+        "linux": "Off by default: no route out except the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--no-network</code> closes all",
+        "macos": "The same default and the same flags, without the toolchain cache maps, which are Linux only. In lockdown it is always blocked, even with <code>--network</code>."
       },
       {
         "what": "Other programs",

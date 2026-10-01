@@ -58,11 +58,11 @@
       },
       {
         "title": "Look around inside",
-        "text": "Start a plain shell in the jail. Your project is there at its real path and you can edit it. Your home directory is a fresh, empty one, and your shell's tokens are gone. Type <code>exit</code> to leave."
+        "text": "Start a plain shell in the jail. Your project is there at its real path and you can edit it. Your home directory is a fresh one, and your shell's tokens are gone. Type <code>exit</code> to leave."
       },
       {
         "title": "Run the agent with the two things it needs",
-        "text": "An agent that talks to a cloud model needs to reach its API, and its own saved login to prove who you are. Both are off by default. <code>--allow-host api.anthropic.com</code> opens exactly that host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>), and <code>--network</code> opens the whole network. <code>--agent-state</code> mounts the login. ai-jail warns, naming the host, if you start a known agent without a way to reach it."
+        "text": "An agent that talks to a cloud model needs to reach its API, and its own saved login to prove who you are. Both are off by default. <code>--allow-host api.anthropic.com</code> opens exactly that host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>), and <code>--network</code> opens the whole network. <code>--agent-state</code> mounts the login. On Linux, toolchains open package registries such as crates.io, npm and PyPI by default, so builds work; the agent's own API still needs <code>--allow-host</code> or <code>--network</code>. ai-jail warns, naming the host, if you start a known agent without a way to reach it."
       },
       {
         "title": "Make it the default for that agent",
@@ -90,7 +90,7 @@
   },
   "see": {
     "title": "What you will see inside",
-    "lede": "The prompt changes to <code>(jail)</code> and the project is where it always was. The things worth stealing are missing.",
+    "lede": "The prompt changes to <code>(jail)</code> and the project is where it always was. Your toolchains are there too, read only. The things worth stealing are missing.",
     "termTitle": "ai-jail bash, on Linux",
     "comments": [
       "# the project is at its real path",
@@ -99,8 +99,8 @@
       "# the jail has its own hostname"
     ],
     "note": "This is a Linux session. macOS has no way to build a separate file tree, so there the same paths exist and reading them is refused.",
-    "alt": "The view from inside the cell. The agent sits next to a large, bright project folder, with an empty home and the system tools behind it. Outside the bars, dim and barred: SSH keys, cloud logins, other projects and the network.",
-    "caption": "From inside, the project is the only thing of yours that exists. The network stays outside too until you open a host with <code>--allow-host</code> or all of it with <code>--network</code>."
+    "alt": "The view from inside the cell. The agent sits next to a large, bright project folder, with a fresh home and the system tools behind it. Outside the bars, dim and barred: SSH keys, cloud logins, other projects and the network.",
+    "caption": "From inside, the project is the only thing of yours that you can change. Your toolchains (mise, cargo, npm and others) are there, read only, with a dependency cache the jail owns. The network stays outside, apart from the package registries those toolchains fetch from, until you open a host with <code>--allow-host</code> or all of it with <code>--network</code>. <a class=\"link\" href=\"/configure/#toolchains\">How toolchains are mapped</a>."
   },
   "trouble": {
     "title": "If it does not start",
@@ -116,8 +116,8 @@
         "text": "You can point ai-jail at a specific bubblewrap with <code>BWRAP_BIN</code>. ai-jail accepts it only when it resolves to a program owned by root that other users cannot write, or to one in a standard multi-user <code>/nix/store</code>. It refuses a copy in your own home, because anyone who can replace that file controls the jail."
       },
       {
-        "title": "mise tools are missing inside",
-        "text": "ai-jail activates <a class=\"link\" href=\"https://mise.jdx.dev/\">mise</a> when it finds it, but the fresh home has neither mise's config nor its installed tools, so it skips activation. Map both in, read only, from your own config:"
+        "title": "opencode hangs at <code>Starting background server</code>",
+        "text": "opencode 2.x talks to a shared background server. The jail is a one-shot wrapper with a fresh home, so that server does not survive between runs. Start opencode self-contained with <code>--standalone</code>, and pin it in your config so you do not type it each time. ai-jail warns at launch when opencode starts without it:"
       },
       {
         "title": "<code>Failed to create stream fd</code> at startup",
@@ -136,6 +136,7 @@
     "notes": {
       "claude": "For a second Claude profile, point <code>--claude-dir</code> at its directory.",
       "codex": "After you resize the window, ai-jail sends Codex a redraw key so the screen repaints.",
+      "opencode": "Needs <code>--standalone</code>. See the troubleshooting item above.",
       "aimemory": "ai-jail recognizes the agent that <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> launches and applies that agent's settings, with both programs in one jail."
     },
     "aimemoryState": "The launched agent's folders",

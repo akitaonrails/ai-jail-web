@@ -21,7 +21,7 @@
       },
       {
         "title": "Construye el sandbox",
-        "text": "ai-jail prepara cada una de las capas de abajo antes de que el agente exista. Si un archivo de configuración es ilegible o inválido, ai-jail se detiene en lugar de arrancar con reglas más débiles."
+        "text": "ai-jail prepara cada una de las capas de abajo antes de que el agente exista y mapea <a class=\"link\" href=\"/configure/#toolchains\">las toolchains que tienes</a> (mise, cargo, cachés de npm y otras) en solo lectura o en una caché propia de la jaula. Si un archivo de configuración es ilegible o inválido, ai-jail se detiene en lugar de arrancar con reglas más débiles."
       },
       {
         "title": "Arranca al agente dentro",
@@ -47,20 +47,20 @@
       {
         "name": "Sistema de archivos",
         "tag": "montajes",
-        "is": "Dentro del namespace solo existe lo que ai-jail monta. El proyecto está en lectura y escritura en su ruta real, los directorios del sistema como <code>/usr</code> están en solo lectura, y el directorio home y <code>/tmp</code> son nuevos y viven en memoria.",
+        "is": "Dentro del namespace solo existe lo que ai-jail monta. El proyecto está en lectura y escritura en su ruta real, los directorios del sistema como <code>/usr</code> están en solo lectura, y el directorio home y <code>/tmp</code> son nuevos y viven en memoria. <a class=\"link\" href=\"/configure/#toolchains\">Las toolchains que tienes</a> (mise, cargo, cachés de npm) se mapean en ese home nuevo, en solo lectura o como una caché propia de la jaula.",
         "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> y los perfiles del navegador están en una lista integrada que nunca se monta. Todo lo que se escribe fuera del proyecto desaparece cuando termina la sesión."
       },
       {
         "name": "Landlock",
         "tag": "kernel 5.13+",
         "is": "Landlock es una función del kernel de Linux que permite a un proceso renunciar para siempre al acceso a archivos. ai-jail la usa para repetir las reglas del sistema de archivos como una segunda lista de permitidos dentro del kernel.",
-        "stops": "Un error o un truco en la capa de montajes no basta para llegar a una ruta fuera de la lista, y lo que es de solo lectura sigue siéndolo. En kernels demasiado antiguos para Landlock, ai-jail lo avisa y continúa con las demás capas."
+        "stops": "Un error o un truco en la capa de montajes no basta para llegar a una ruta fuera de la lista, y lo que es de solo lectura sigue siéndolo. En kernels 6.12 o más nuevos también acota los sockets Unix abstractos y las señales, en la medida de lo posible. En kernels demasiado antiguos para Landlock, ai-jail lo avisa y continúa con las demás capas."
       },
       {
         "name": "seccomp",
         "tag": "llamadas al sistema",
         "is": "Los programas le piden cosas al kernel mediante llamadas al sistema (syscalls). seccomp es un filtro sobre esas llamadas, y ai-jail lo usa para rechazar las que un agente de programación nunca necesita.",
-        "stops": "El filtro bloquea <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, los módulos del kernel, <code>io_uring</code>, el keyring del kernel, los sockets raw y <code>TIOCSTI</code>, la llamada que escribe pulsaciones de teclas en una terminal. Es una lista de bloqueo a propósito, para que los compiladores y runtimes sigan funcionando. El único proceso que arranca antes de que se apliquen Landlock y seccomp es el pequeño puente que saca el tráfico de red filtrado, así que solo él queda sin restricciones."
+        "stops": "El filtro bloquea <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, los módulos del kernel, <code>io_uring</code>, el keyring del kernel, los sockets raw y <code>TIOCSTI</code>, la llamada que escribe pulsaciones de teclas en una terminal, comparada tal como la lee el kernel. Es una lista de bloqueo a propósito, para que los compiladores y runtimes sigan funcionando. El único proceso que arranca antes de que se apliquen Landlock y seccomp es el pequeño puente que saca el tráfico de red filtrado, así que solo él queda sin restricciones."
       },
       {
         "name": "Límites de recursos",
@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "Tres caminos hacia la red",
-    "lede": "Cada arranque elige uno de tres modos de red. El predeterminado es el más estricto, y los otros dos son flags que pasas a propósito.",
+    "lede": "Cada arranque elige uno de tres modos de red. El predeterminado es el más estricto: sin salida, salvo una lista corta de registries de paquetes a través del proxy filtrado cuando las toolchains están activadas, el valor por defecto en Linux. Los otros dos son flags que pasas a propósito.",
     "alt": "Tres paneles, de izquierda a derecha. Apagada: el chip del agente dentro de un muro cerrado, con una nube atenuada y tras barrotes fuera. Filtrada: una puerta pequeña en el muro lleva a una caja de proxy, que conecta con una nube cian con la etiqueta api.anthropic.com mientras una segunda nube sigue atenuada y tras barrotes. Abierta: falta el lado de red del muro y el chip conecta directo con la nube.",
     "caption": "Apagada es el valor por defecto. Filtrada abre una puerta solo hacia hosts con nombre. Abierta quita el muro del lado de la red.",
     "modes": [
       {
         "title": "Apagada",
-        "text": "El valor por defecto. El sandbox recibe un namespace de red privado sin salida, así que nada de lo que hay dentro puede llegar a la red."
+        "text": "El valor por defecto. El sandbox recibe un namespace de red privado sin salida. Con las toolchains activadas, el valor por defecto en Linux, el proxy filtrado deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; <code>--no-network</code> lo deja del todo sin conexión. La API del propio agente sigue cerrada hasta que la abres."
       },
       {
         "title": "Filtrada",
@@ -151,8 +151,8 @@
       },
       {
         "what": "Red",
-        "linux": "Apagada por defecto: un namespace de red sin salida hasta que <code>--allow-host</code> o <code>--network</code> abren una",
-        "macos": "Apagada por defecto, con los mismos dos flags. En lockdown siempre está bloqueada, incluso con <code>--network</code>."
+        "linux": "Apagada por defecto: sin salida, salvo los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--no-network</code> lo cierra todo",
+        "macos": "El mismo valor por defecto y los mismos flags, sin los mapeos de caché de las toolchains, que solo existen en Linux. En lockdown siempre está bloqueada, incluso con <code>--network</code>."
       },
       {
         "what": "Otros programas",

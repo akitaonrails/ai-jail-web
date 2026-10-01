@@ -14,7 +14,7 @@
     "title": "In short",
     "lede": "Six situations, one answer each. The rest of the page shows the evidence.",
     "items": [
-      { "title": "You use more than one agent", "text": "ai-jail. One policy file, any command, the whole process tree inside, home and keys hidden by default. <a class=\"link\" href=\"/install/\">Install</a>." },
+      { "title": "You use more than one agent", "text": "ai-jail. One policy file, any command, the whole process tree inside, home and keys hidden by default, your toolchains and caches inside. <a class=\"link\" href=\"/install/\">Install</a>." },
       { "title": "You only use Claude Code", "text": "Anthropic's own <code>sandbox-runtime</code> wraps the whole process too, in beta. ai-jail adds an empty home, network off and an environment allowlist by default. <a class=\"link\" href=\"#table\">See the cards</a>." },
       { "title": "You want the agent's own sandbox and prompts", "text": "Keep them on. They work inside ai-jail, and they catch the commands you would not have approved. <a class=\"link\" href=\"#both\">Use both</a>." },
       { "title": "You want policies per tool, approvals at runtime and a signed audit trail", "text": "nono goes further than ai-jail there, at the cost of a policy language and a supervisor per command. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
@@ -145,7 +145,7 @@
           "A proxy with a per-domain allowlist. A new domain prompts you, and each command still gets its own approval. The documentation notes that the proxy trusts the hostname the client sends, so domain fronting can bypass it.",
           "Off by default in <code>workspace-write</code>. One setting turns it on, and an optional proxy adds per-domain allow and deny rules. The documentation says the proxy does not filter MCP server connections, web search or the browser.",
           "The default profile allows network. Stricter and proxied profiles are opt-in.",
-          "Three modes, off by default. <code>--allow-host</code> allows the listed hosts and their subdomains, enforced by the network namespace on Linux or a seatbelt endpoint rule on macOS, through a proxy that resolves each name once and dials the address it checked. <code>--network</code> opens everything. The filter is TCP only, has no per-path rules and never prompts: a host outside the list is denied and <code>--audit-log</code> records the attempt. An allowed host is trusted wholesale."
+          "Three modes, off by default. <code>--allow-host</code> allows the listed hosts and their subdomains, enforced by the network namespace on Linux or a seatbelt endpoint rule on macOS, through a proxy that resolves each name once and dials the address it checked. <code>--network</code> opens everything. The filter is TCP only, has no per-path rules and never prompts: a host outside the list is denied and <code>--audit-log</code> records the attempt. An allowed host is trusted wholesale. With toolchains on, the default on Linux, the proxy also allows a fixed list of package registries so builds work; <code>--no-network</code> turns that off. The agent's own API still needs <code>--allow-host</code>."
         ]
       },
       {
@@ -279,7 +279,7 @@
       {
         "label": "Credentials",
         "openshell": "Brokered by the gateway and injected per request, never written to the sandbox disk.",
-        "jail": "Ambient. What you pass with <code>--env</code>, <code>--env-from-file</code> or <code>--agent-state</code> is visible to everything inside."
+        "jail": "Ambient. What you pass with <code>--env</code>, <code>--env-from-file</code> or <code>--agent-state</code> is visible to everything inside. Tool credentials (<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>) are opt-in read-only mounts, and the documentation says read-only does not stop their use."
       },
       {
         "label": "Isolation ceiling",
@@ -294,7 +294,7 @@
       {
         "label": "Telemetry and stability",
         "openshell": "Anonymous telemetry on by default with an opt-out. The policy format is still changing.",
-        "jail": "No telemetry. Every new version keeps reading the configs older versions wrote, and tests enforce it."
+        "jail": "No telemetry. Every new version keeps reading the configs older versions wrote, and tests enforce it. Two independent source audits in September 2026, published in the repository, led to the fixes in 2.4.0."
       }
     ],
     "note": "The comparison in ai-jail's repository, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/openshell-comparison.md\">docs/openshell-comparison.md</a>, is written in both directions and is where the host allowlist came from."

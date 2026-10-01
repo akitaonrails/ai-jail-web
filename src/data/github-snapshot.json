@@ -1,8 +1,144 @@
 {
-  "fetchedAt": "2026-09-24T21:46:26.905Z",
-  "stars": 1291,
-  "forks": 115,
+  "fetchedAt": "2026-10-01T07:02:02.912Z",
+  "stars": 1309,
+  "forks": 120,
   "releases": [
+    {
+      "tag": "v2.4.1",
+      "name": "v2.4.1",
+      "date": "2026-10-01T03:32:38Z",
+      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.4.1",
+      "prerelease": false,
+      "body": "\nA fix release. mise is enabled by default and ai-jail already activates it\ninside the sandbox, but under the default private home its paths were never\nmounted, so the activation found nothing and every mise-managed tool — the\nagent executable included — vanished from `PATH`. No `.ai-jail` config field\nor CLI flag changed.\n\n## Fixed\n\n- **mise toolchains now work out of the box.** When mise is enabled, ai-jail\n  maps the mise data dir (`~/.local/share/mise`, honoring `MISE_DATA_DIR`), the\n  mise config dir (`~/.config/mise`, honoring `MISE_CONFIG_DIR`), and the\n  `mise` binary's directory **read-only automatically**. Previously the default\n  private home (which mounts only dotdirs) left `~/.local/share/mise` and the\n  `mise` binary under `~/.local/bin` invisible, so activation was skipped and a\n  mise-managed agent such as `claude` failed with\n  `executable ... not found in the host PATH`. Running the agent unsandboxed, or\n  adding the maps by hand, was the only workaround. (#113)\n\n  Only existing directories are mapped, so a host without mise is unchanged, and\n  the `mise` binary's directory is mapped only when it lives under the home tree\n  (a system `mise` is already mounted). `--no-mise` and `--lockdown` opt out —\n  both already disable mise activation, so neither maps these paths. The derived\n  paths are injected at launch after the status/`--init`/bootstrap early returns,\n  so they are never persisted into a saved `.ai-jail` nor shown as user maps in\n  `ai-jail status`.\n\n## Checksums (SHA256)\n```\n36d3cc0777a014e6227f31ff9274906ab48ef2f5861775ba9f7452b86b751540  ai-jail-linux-x86_64.tar.gz\n830786910c42e064c28c678e965d64cf0595f903a7981f4ebe52eb272ea5b3c1  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
+      "assets": [
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.1/ai-jail-linux-x86_64.tar.gz",
+          "size": 1584822,
+          "downloads": 10
+        },
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.1/ai-jail-linux-x86_64.tar.gz.sha256",
+          "size": 94,
+          "downloads": 1
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.1/ai-jail-macos-aarch64.tar.gz",
+          "size": 1333739,
+          "downloads": 6
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.1/ai-jail-macos-aarch64.tar.gz.sha256",
+          "size": 95,
+          "downloads": 1
+        }
+      ]
+    },
+    {
+      "tag": "v2.4.0",
+      "name": "v2.4.0",
+      "date": "2026-10-01T00:47:22Z",
+      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.4.0",
+      "prerelease": false,
+      "body": "\nA security release. It resolves both open advisories in full and the\nrelease-blocking findings from the 2026-09-30 source audits. No `.ai-jail`\nconfig field or CLI flag changed; a couple of behaviours now fail closed where\nthey previously degraded silently (noted below).\n\n## Security\n\nCloses **GHSA-w976-gw52-hvx2** (five findings) and **GHSA-frgp-q3qc-g78p**.\n\n- **Worktree metadata can no longer bind an arbitrary host directory\n  read-write.** `--worktree` validation now requires the linked-worktree layout\n  to be genuine — the per-worktree git dir must be `<commondir>/worktrees/<name>`\n  with both paths canonicalized — instead of trusting a repository-authored\n  `commondir` file to name any existing directory. (advisory #1)\n\n- **Duplicate environment entries no longer defeat phantom-secret injection.**\n  `--secret` now resolves a bound key with the same last-wins precedence the\n  child environment uses, removes every entry for that key, and inserts one\n  placeholder. Previously a later `KEY=real` entry (e.g. a credential file plus\n  `--env KEY`) delivered the real value into the sandbox.\n\n- **A browser command from an untrusted project can no longer clear a trusted\n  `lockdown`.** The browser profile only clears lockdown when the browser was\n  chosen by trusted input (an explicit `--browser`/global profile, or a command\n  on the CLI or from a trusted layer). A `command = [\"chromium\"]` in a cloned\n  repo's `.ai-jail` keeps lockdown; run the browser from the CLI to open a\n  window. (advisory #3)\n\n- **TIOCSTI is filtered as the kernel reads it.** The seccomp rule now compares\n  the ioctl request as a 32-bit value, closing a bypass where\n  `TIOCSTI | (1 << 32)` slipped past a 64-bit comparison and still reached the\n  same terminal-injection ioctl. (advisory #2)\n\n- **Landlock now scopes abstract Unix sockets and signals (ABI V6,\n  best-effort).** This is the backstop the threat model documented but did not\n  apply: without it, `--x11`/`--network` left the host's abstract X11 socket\n  reachable and `--systemd-user` left host signalling open. Kernels below V6\n  (< 6.12) keep the existing filesystem (V3) and network (V4) enforcement\n  unchanged. (advisory GHSA-frgp-q3qc-g78p)\n\n- **macOS: terminal read/write is scoped to this run's own terminals** — the\n  allocated PTY and the caller's own `/dev/tty` — not a blanket `/dev/ttys*`\n  grant, so a sandboxed process cannot open another of your terminals by path\n  and write escape sequences to it. (advisory #4)\n\n- **macOS: `--mask`ed project paths are denied for writes as well as reads**, so\n  a file the agent cannot read cannot be blindly overwritten through the project\n  write allowance either. (advisory #5)\n\n- **The primary-screen escape filter no longer collapses on a doubled\n  introducer.** A fresh `ESC` now aborts any partial sequence and is never\n  forwarded, so `ESC ESC ]52;…` and `ESC [ ESC ]…` — which terminals collapse\n  into a single introducer — can no longer smuggle an OSC (e.g. a clipboard\n  write) past the filter.\n\n- **The proxy's test-only escape hatches are gone from release builds.**\n  `AI_JAIL_TEST_PROXY_ALLOW_PRIVATE` (SSRF guard off) and\n  `AI_JAIL_TEST_PROXY_EXTRA_ROOTS` (extra TLS root) are now compiled in only\n  under the `test-hooks` feature; a release build and `cargo install` contain\n  neither the env-var reads nor their strings, so the environment is no longer a\n  control channel over them.\n\n## Changed (fail closed)\n\n- **Overlay setup failures now abort the launch.** A missing overlay source, an\n  overlapping destination, or a storage-creation failure previously warned and\n  continued with the plain read-write project bind — silently modifying the real\n  files a user expected copy-on-write to protect. Overlay storage directories are\n  also now collision-resistant (hashed from the canonical destination).\n\n## Testing\n\n- New regression tests for each fix, including runtime seccomp coverage of the\n  TIOCSTI high-bit bypass. The filtered-egress and phantom-secret end-to-end\n  suites now require `--features test-hooks` (which enables the hatches above);\n  CI runs the suite with that feature, and the files are gated so a plain\n  `cargo test` skips rather than fails them.\n\n## Checksums (SHA256)\n```\n86a92e4524284fb7210c887655253b98e5a9349699d23c60448fde4336a89ed0  ai-jail-linux-x86_64.tar.gz\n74b94c716b8e73080824397c99079ca27e4c88f3713bbc8f9954a527d66d2da1  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
+      "assets": [
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-linux-x86_64.tar.gz",
+          "size": 1583590,
+          "downloads": 15
+        },
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-linux-x86_64.tar.gz.sha256",
+          "size": 94,
+          "downloads": 1
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-macos-aarch64.tar.gz",
+          "size": 1333682,
+          "downloads": 3
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-macos-aarch64.tar.gz.sha256",
+          "size": 95,
+          "downloads": 1
+        }
+      ]
+    },
+    {
+      "tag": "v2.3.0",
+      "name": "v2.3.0",
+      "date": "2026-09-30T18:24:32Z",
+      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.3.0",
+      "prerelease": false,
+      "body": "# v2.3.0\n\nA focused audit-log usability and hardening release: readable local summaries,\nshared safe-open checks, and bounded record processing.\n\n## Added\n\n- **Readable local audit summaries with `ai-jail --audit-show`.** Launches,\n  filtered-network decisions, and credential-substitution records are rendered\n  as concise local text. The command exits 0 after a successful display,\n  including an empty log; 1 for malformed records or an I/O/security error;\n  and 2 when the log does not exist. Verification likewise uses 0 for an\n  intact chain, 1 for a broken chain or read/security error, and 2 when the log\n  is missing. The display view summarizes recognized record\n  syntax but intentionally does not verify hash-chain integrity — use\n  `--audit-verify` for that separate check. Displayed launch records may\n  include command arguments, so avoid secrets in argv.\n\n## Security\n\n- **Audit display, verification, and writing now share safe-open hardening.**\n  HOME is the trusted starting directory and may itself be a symlink, including\n  through symlinked ancestors. Once HOME is pinned as a directory descriptor,\n  no symlink is followed below it through\n  `.local/share/ai-jail/history.jsonl`. Readers reject special files,\n  foreign-owned logs, and logs with group or other permissions. The writer\n  rejects special or foreign-owned logs, while preserving compatibility by\n  tightening an existing user-owned regular log to mode 0600 through its opened\n  descriptor. Record handling is bounded for display, verification, and\n  append-time chain seeding,\n  so a malformed oversized record cannot cause unbounded memory growth. The\n  hash chain remains a tamper-evident internal-consistency check, not keyed\n  authenticity.\n- **Audit-logging failures remain best-effort.** Offline audit commands exit 1\n  when HOME is missing, empty, or invalid; a missing log below a valid HOME\n  still exits 2. Failures specific to optional launch logging, including an\n  unusable HOME at audit-log setup, disable logging with a warning but do not\n  prevent launch or override the child's status. Configuration and sandbox\n  validation errors remain fatal, and no fallback audit log is written under\n  `/tmp`.\n\n## Fixed\n\n- **`--audit-show` remains a valid child argument after the command.** As with\n  other command arguments, `ai-jail COMMAND --audit-show` passes the flag to\n  the child; only `ai-jail --audit-show` invokes ai-jail's audit summary. This\n  preserves positional-command compatibility.\n\n## Checksums (SHA256)\n```\ne603b7d8ee582a29cf00631aecbff2cbe906e2e5a829e7ff654f875d88b7ae03  ai-jail-linux-x86_64.tar.gz\nc6facf3905e930f952634e368aa2fbd2d470107b3c7731a388e3f608ffdf5d85  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
+      "assets": [
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-linux-x86_64.tar.gz",
+          "size": 1584002,
+          "downloads": 36
+        },
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-linux-x86_64.tar.gz.sha256",
+          "size": 94,
+          "downloads": 2
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-macos-aarch64.tar.gz",
+          "size": 1333224,
+          "downloads": 14
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-macos-aarch64.tar.gz.sha256",
+          "size": 95,
+          "downloads": 1
+        }
+      ]
+    },
+    {
+      "tag": "v2.2.1",
+      "name": "v2.2.1",
+      "date": "2026-09-28T21:52:45Z",
+      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.2.1",
+      "prerelease": false,
+      "body": "# v2.2.1\n\nA compatibility patch: a bwrap mount-ordering fix, an AUR build fix for\nLTO-enabled Arch systems, and a launch warning for opencode 2.x.\n\n## Fixed\n\n- **Private home no longer fails when a command's binary lives under a\n  directory that is also being bound** (#138, thanks @IgorEmerick, #139).\n  With `ai-memory` and the Claude Code installer symlink both in\n  `~/.local/bin`, binding the whole directory and then the symlink made\n  bwrap follow a dangling symlink while creating the mount point and abort.\n  Command paths that sit under another collected path are now skipped —\n  they are visible through the parent bind anyway, and the result is\n  independent of path order.\n\n- **AUR source package builds again with `lto` in `makepkg.conf`** (#140,\n  thanks @nnorakk for the pinpoint report). Arch's default enables LTO\n  globally, and ring's C/assembly cannot be consumed as GCC-LTO objects at\n  link time. The PKGBUILD now opts out with `options=('!debug' '!lto')`;\n  already published to the AUR as 2.2.0-2 and carried forward.\n\n## Added\n\n- **Launch warning when opencode runs without `--standalone`** (#137,\n  thanks @naranma). opencode 2.x is a client of a shared background server that cannot\n  persist across a one-shot jail with a tmpfs home; if startup hangs at\n  \"Starting background server...\", add `--standalone` to the command. Also\n  documented in the README's Troubleshooting section.\n\n## Checksums (SHA256)\n```\nef8f765bc00ebda47748464a8034eb288d402120aa33364f2dd8dda6878ebbdc  ai-jail-linux-x86_64.tar.gz\n3fc1645ee03effecba8e76c407272c443442abdac78830f5f16f3adf71912819  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
+      "assets": [
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-linux-x86_64.tar.gz",
+          "size": 1578971,
+          "downloads": 141
+        },
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-linux-x86_64.tar.gz.sha256",
+          "size": 94,
+          "downloads": 10
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-macos-aarch64.tar.gz",
+          "size": 1328023,
+          "downloads": 63
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-macos-aarch64.tar.gz.sha256",
+          "size": 95,
+          "downloads": 1
+        }
+      ]
+    },
     {
       "tag": "v2.2.0",
       "name": "v2.2.0",
@@ -15,25 +151,25 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.0/ai-jail-linux-x86_64.tar.gz",
           "size": 1578656,
-          "downloads": 5
+          "downloads": 254
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.0/ai-jail-linux-x86_64.tar.gz.sha256",
           "size": 94,
-          "downloads": 0
+          "downloads": 27
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.0/ai-jail-macos-aarch64.tar.gz",
           "size": 1328596,
-          "downloads": 0
+          "downloads": 87
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.0/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
-          "downloads": 0
+          "downloads": 4
         }
       ]
     },
@@ -49,13 +185,13 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.1.0/ai-jail-linux-x86_64.tar.gz",
           "size": 813374,
-          "downloads": 89
+          "downloads": 99
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.1.0/ai-jail-linux-x86_64.tar.gz.sha256",
           "size": 94,
-          "downloads": 6
+          "downloads": 7
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz",
@@ -83,25 +219,25 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.0.0/ai-jail-linux-x86_64.tar.gz",
           "size": 812919,
-          "downloads": 165
+          "downloads": 168
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.0.0/ai-jail-linux-x86_64.tar.gz.sha256",
           "size": 94,
-          "downloads": 13
+          "downloads": 14
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.0.0/ai-jail-macos-aarch64.tar.gz",
           "size": 654075,
-          "downloads": 53
+          "downloads": 54
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.0.0/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
-          "downloads": 4
+          "downloads": 5
         }
       ]
     },
@@ -117,7 +253,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.22.0/ai-jail-linux-x86_64.tar.gz",
           "size": 759465,
-          "downloads": 128
+          "downloads": 130
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -151,7 +287,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.21.0/ai-jail-linux-x86_64.tar.gz",
           "size": 760037,
-          "downloads": 248
+          "downloads": 250
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -185,7 +321,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.3/ai-jail-linux-x86_64.tar.gz",
           "size": 757333,
-          "downloads": 96
+          "downloads": 97
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -253,7 +389,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.1/ai-jail-linux-x86_64.tar.gz",
           "size": 757151,
-          "downloads": 937
+          "downloads": 1219
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -265,149 +401,13 @@
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.1/ai-jail-macos-aarch64.tar.gz",
           "size": 612652,
-          "downloads": 125
+          "downloads": 127
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.1/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
-          "downloads": 2
-        }
-      ]
-    },
-    {
-      "tag": "v1.20.0",
-      "name": "v1.20.0",
-      "date": "2026-08-23T22:56:49Z",
-      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v1.20.0",
-      "prerelease": false,
-      "body": "\n## Fixed\n\n- **`--display` delivers `WAYLAND_DISPLAY` again, so graphical apps start.**\n  bwrap applies argv in sequence, so `--clearenv` discards every `--setenv`\n  before it. The display and systemd-user variables were emitted ahead of the\n  environment-hardening block that carries `--clearenv`, so both were dropped\n  while their sockets stayed bound: `--display` bound the Wayland socket\n  without telling the client where it was, clients fell back to `wayland-0`,\n  and `ai-jail --browser=soft --network --display --gpu chromium` died with\n  `Failed to connect to Wayland display`. `--systemd-user` lost\n  `DBUS_SESSION_BUS_ADDRESS` the same way, which left the socket fix from\n  v1.19.1 unusable. Present since v1.18.0 (#122).\n\n  `XDG_RUNTIME_DIR` hid this for five releases. It is pushed alongside\n  `WAYLAND_DISPLAY` but also rescued independently by the `XDG_` prefix in the\n  default environment allowlist, so the one variable people check to confirm\n  the display is wired up was the one that survived by accident.\n\n  No capability widens. Both sets are still populated only under their existing\n  opt-in (`--display`, `--x11`, `--systemd-user`), both remain empty under\n  `--lockdown`, and the values are the ones discovery already validated. One\n  precedence note: `--env WAYLAND_DISPLAY=...` combined with `--display` now\n  loses to the discovered value, matching how the SSH and Claude variables have\n  always behaved.\n\n## Added\n\n- **`jcode` is a recognized agent.** It was in none of the agent tables, so\n  `--agent-state` did nothing for it and the private-home tmpfs hid everything\n  it needed — mapping its config directory by hand did not help, because agent\n  state is keyed off the invoked command name and `jcode` matched nothing.\n  `--agent-state jcode` now exposes `~/.jcode` (config, credentials, and the\n  per-provider OAuth files) and `~/.config/jcode` (provider env files on\n  Linux). Reported by @jschaeff (#108).\n\n  jcode also reads `~/.claude` for Claude Code compatibility, and that is\n  deliberately not included: mounting another agent's credential directory on\n  the strength of a command name is a broader exposure than this opt-in\n  implies. Ask for it by name under `[commands.jcode]` in the global config if\n  you want it. Agent state remains opt-in behind `--agent-state`.\n\n## Not planned\n\n- **Per-domain network allowlisting** (#107) is closed as out of scope. It is\n  achievable rootlessly — a network namespace, `slirp4netns` or `pasta`, denied\n  direct egress, and a name-aware proxy — but it would put a userspace network\n  stack in the path of every packet and force a choice between SNI inspection,\n  which stops working the moment SNI is absent or encrypted, and TLS\n  interception, which means terminating the agent's credentialed API traffic\n  inside ai-jail. A proxy the agent can decline to use is not a restriction,\n  which is the same reason `--allow-tcp-port` fails closed rather than\n  pretending. Filter where privilege already exists instead: an nftables rule\n  for the agent's uid, a systemd slice with `IPAddressAllow=`, or a container\n  or VM that owns the namespace.\n\n## Checksums (SHA256)\n```\n6794616ee58f5005cc01011af4e6b7b7db684423d06347b58257850c235ccebc  ai-jail-linux-x86_64.tar.gz\ne4d854492c12988a518abf73b69dbe6cee087f787b9551dc223e14c5fe02974f  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
-      "assets": [
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.0/ai-jail-linux-x86_64.tar.gz",
-          "size": 757155,
-          "downloads": 67
-        },
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.0/ai-jail-linux-x86_64.tar.gz.sha256",
-          "size": 94,
-          "downloads": 2
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.0/ai-jail-macos-aarch64.tar.gz",
-          "size": 611370,
-          "downloads": 29
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.20.0/ai-jail-macos-aarch64.tar.gz.sha256",
-          "size": 95,
-          "downloads": 1
-        }
-      ]
-    },
-    {
-      "tag": "v1.19.3",
-      "name": "v1.19.3",
-      "date": "2026-08-23T21:37:20Z",
-      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v1.19.3",
-      "prerelease": false,
-      "body": "# v1.19.3 (unreleased)\n\n## Fixed\n\n- **macOS agents installed by Homebrew can start again.** The seatbelt read\n  list is the counterpart of the Linux base mounts, and it never contained\n  `/opt`. Intel Homebrew installs under `/usr/local`, already reachable through\n  the `/usr` grant, so the gap was invisible on that architecture — but on\n  Apple Silicon everything Homebrew installs lives under `/opt/homebrew`, the\n  sandbox could not see it, and `sandbox-exec` failed the exec with\n  `execvp() of 'claude' failed: No such file or directory` before the agent\n  ever started. Reported by @commonsguy (#120).\n- **An agent may now live anywhere, not just under `$HOME`.** The read grant\n  for the invoked command searched only below the home directory. That is right\n  on Linux, where everything outside the private `$HOME` is bind-mounted\n  regardless, but a seatbelt profile denies by default _everywhere_, so an agent\n  under `/Applications` or `/nix/store` received nothing. macOS now resolves the\n  command the way `exec` does and grants its symlink chain plus the final\n  target's directory, wherever that is — still the binary and its install\n  directory, never the whole prefix.\n\n  **Correction (v1.20.1).** The claim above about the symlink chain was wrong\n  when it was written. The chain was resolved correctly and then canonicalized\n  before it reached the profile, so only the final target was ever named — the\n  `PATH` entry that `execvp` walks was not. Combined with `/opt` becoming\n  readable in this same release, that did not fail closed: `execvp` continued\n  down `PATH` and could run a different build of the agent than the one ai-jail\n  resolved and granted. Fixed in v1.20.1 (#124).\n- **`--inherit-env` on macOS passed no environment at all.** It is documented as\n  handing the child the entire parent environment, secrets included. Instead the\n  child got nothing — not even `PATH` — because the environment was cleared and\n  then rebuilt from an empty list. The Linux backend reaches the documented\n  result by omitting `--clearenv`; seatbelt now starts from the host environment\n  and applies `env_pass` on top.\n- **In-project maps are no longer refused when the project is reached through a\n  symlink.** The containment check walked past the project root: the root it\n  compares against is canonicalized and the candidate path is not, so when any\n  component above the root was a symlink the walk never recognised the root,\n  continued upward, and rejected on that symlink — the one case it explicitly\n  treats as irrelevant, since canonicalizing already resolved it. Every map with\n  a not-yet-existing destination inside the project was refused. This is\n  permanent on macOS, where `$TMPDIR` lives under `/var` → `private/var`, and\n  reachable on Linux through a symlinked home.\n- Every generated macOS profile carried a duplicate read rule, because `/etc`\n  and `/private/etc` are one directory and the rules are emitted canonically.\n\n## Packaging\n\n- The Nix package no longer drags the Rust toolchain into its runtime closure.\n  It is built with a minimal `rustc`/`cargo` instead of the aggregated\n  toolchain, and store paths are remapped out of the binary, so `rustfmt`,\n  `clippy`, `rust-analyzer`, `rust-src`, `rust-docs` and `rust-std` stop being\n  runtime dependencies: 47 store paths down to 12. Thanks to @wtf9880 (#116).\n\n## Continuous integration\n\nNone of the above is a new class of mistake. All of it was invisible because two\nchecks reported success without checking what they claimed.\n\n- **The macOS test suite had no runner.** It ran on tag push until v1.18.0 split\n  the release matrix and left the macOS leg building without testing.\n  `sandbox/seatbelt.rs` is `#[cfg(target_os = \"macos\")]`, so the Linux job only\n  ever compiled its tests through the cross-target clippy step. Every seatbelt\n  test written after that was merged unrun. `ci.yml` now runs the suite on\n  `macos-latest`; its first run failed 26 tests, and the release workflow's macOS\n  leg tests before building again, as it used to.\n- **`nix flake check` never built the package.** It realizes `checks.*` only,\n  reporting the package as `derivation evaluated to ...ai-jail.drv` and stopping\n  there, so the job added to stop NixOS regressions was verifying that `nixfmt`\n  and `treefmt` pass. `ci.yml` now runs `nix build .#default`, and asserts that\n  the runtime closure carries no Rust toolchain — the packaging fix above is\n  otherwise invisible to every check, since reverting it still builds and still\n  passes every test.\n",
-      "assets": [
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.3/ai-jail-linux-x86_64.tar.gz",
-          "size": 757329,
-          "downloads": 9
-        },
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.3/ai-jail-linux-x86_64.tar.gz.sha256",
-          "size": 94,
-          "downloads": 1
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.3/ai-jail-macos-aarch64.tar.gz",
-          "size": 611640,
-          "downloads": 7
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.3/ai-jail-macos-aarch64.tar.gz.sha256",
-          "size": 95,
-          "downloads": 1
-        }
-      ]
-    },
-    {
-      "tag": "v1.19.2",
-      "name": "v1.19.2",
-      "date": "2026-08-22T18:49:16Z",
-      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v1.19.2",
-      "prerelease": false,
-      "body": "\n## Fixed\n\n- **`getifaddrs()` works again inside a networked sandbox.** The seccomp filter\n  denied every `SOCK_RAW` socket, which also caught\n  `socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE)` — how libc enumerates local\n  interfaces. Anything calling it failed with `EPERM`, and `opencode web`\n  crashed outright instead of falling back to localhost. The carve-out is\n  deliberately narrow: that one netlink protocol, only when the sandbox already\n  has unrestricted network, never under `--lockdown`. Every other netlink\n  protocol and every other raw socket domain stays denied, so lockdown's\n  `/sys/class/net` mask cannot be walked around. Reported by @wtf9880, with the\n  security constraint identified by @pqitr (#118).\n- **NixOS commands resolve without an absolute path.** `/run` is always a\n  private tmpfs, so the system profile at `/run/current-system/sw/bin` was\n  hidden and `ai-jail bash` failed with `No such file or directory`. That\n  directory is now restored read-only, which also leaves a usable `PATH` inside\n  the sandbox. Thanks to @wtf9880 (#117, #119).\n- **`PATH` no longer advertises directories the sandbox does not have.** The\n  host's `PATH` describes the host's layout, so under private home entries such\n  as `~/.local/share/mise/installs/...` dangled: tools looked installed and\n  resolved to nothing. Entries that do not exist inside the sandbox are now\n  dropped, answering the open question in #113.\n\n## Security\n\n- **A group-writable Nix store now requires the sticky bit.** The store check\n  accepted `root:nixbld` mode `0775`, where a group member can delete and\n  replace files including `bwrap`. Mode `1775` — the standard multi-user layout\n  — is still trusted, because the sticky bit stops a member replacing someone\n  else's paths. Thanks to @pqitr (#115).\n\n## Internal\n\n- CI now runs `nix flake check`, so the Nix build path is verified before\n  release instead of by users afterwards. It had no coverage at all, which is\n  how v1.19.0 shipped refusing its own `bwrap`.\n\n## Checksums (SHA256)\n```\n0d74a048fe3b11af2a482894674e96002606efcc5483bd7663abb46d61945523  ai-jail-linux-x86_64.tar.gz\nbee0aaa6f2d6ac10f184b3b9ea96844da61d8c5843853ebe3f944900b1b1a643  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
-      "assets": [
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.2/ai-jail-linux-x86_64.tar.gz",
-          "size": 756539,
-          "downloads": 63
-        },
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.2/ai-jail-linux-x86_64.tar.gz.sha256",
-          "size": 94,
-          "downloads": 4
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.2/ai-jail-macos-aarch64.tar.gz",
-          "size": 611764,
-          "downloads": 22
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.2/ai-jail-macos-aarch64.tar.gz.sha256",
-          "size": 95,
-          "downloads": 1
-        }
-      ]
-    },
-    {
-      "tag": "v1.19.1",
-      "name": "v1.19.1",
-      "date": "2026-08-21T15:57:36Z",
-      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v1.19.1",
-      "prerelease": false,
-      "body": "\n## Fixed\n\n- **NixOS installs work again.** v1.19.0 refused the `bwrap` it was pointed at\n  and failed 78 tests during the build:\n\n  ```\n  BWRAP_BIN is set to /nix/store/…-bubblewrap-…/bin/bwrap but it is not a\n  trusted executable\n  ```\n\n  The store check had been extended to ask the kernel whether the process can\n  write `/nix/store`. A standard multi-user store is `root:nixbld` mode `1775`\n  and Nix builds run as a nixbld member, so that question answers \"yes\" for\n  exactly the legitimate layout. Being able to add a store path is not being\n  able to replace one — the sticky bit separates them, and the binary itself\n  must still carry no write bits — so the check is back to ownership and mode\n  only. Thanks to @wtf9880 (#114).\n- **`ai-jail --init` no longer copies your global config into the repository.**\n  It persisted the fully merged configuration, so a populated `~/.ai-jail`\n  landed in the project's `.ai-jail`: personal absolute paths, `claude_dir`,\n  and capability flags a project file cannot act on anyway. `--init` now saves\n  the project layer only, so `--init --no-network` writes exactly\n  `network = false`. Thanks to @zinga666 (#110).\n- **mise never blocks the launch.** The wrapper chained your command onto mise\n  activation with `&&`, so a mise that is not reachable inside the sandbox —\n  the binary under `~/.local/bin`, which private home does not mount — aborted\n  the whole launch and the agent never started. Activation is now best-effort\n  and the command always runs. Thanks to @jschaeff (#109).\n- **mise activation is skipped when it has nothing to activate against.**\n  Under the default private home, neither `~/.config/mise` nor\n  `~/.local/share/mise` is mounted. Running activation there made mise resolve\n  every declared tool over the network — a multi-second timeout each before the\n  agent started — and then fail on shims that could not resolve. Reported with\n  unusually good detail by @Augusto2803 (#113).\n\n## Documentation\n\n- `env_pass` is documented. It already worked from the global config and its\n  `[commands.<name>]` tables — it is only skipped when *writing*, because\n  `NAME=VALUE` entries can carry secrets — but nothing said so, and it read as\n  CLI-only. Entries in a project `.ai-jail` are ignored, since a repository\n  must not pull variables out of your shell. Thanks to @zinga666 (#111).\n- The README no longer promises mise integration that the default private home\n  cannot deliver, and gives the `ro_maps` recipe for making it real.\n\n## Packaging\n\n- `packaging/aur/publish.sh` assembles and validates both AUR packages, and\n  refuses to publish a version mismatch, a missing upstream tag, a checksum\n  that does not match the published artifact, or a `.SRCINFO` that disagrees\n  with its `PKGBUILD`.\n\n## Checksums (SHA256)\n```\nd91f16445ca1e367e36f405c5139a69d8232f503a54d484a1c97464aaba5b079  ai-jail-linux-x86_64.tar.gz\n584ffa99f0ada40e732e8fa63c7fa803df581cd4a529684d00e209d5868c77ab  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
-      "assets": [
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.1/ai-jail-linux-x86_64.tar.gz",
-          "size": 751059,
-          "downloads": 66
-        },
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.1/ai-jail-linux-x86_64.tar.gz.sha256",
-          "size": 94,
-          "downloads": 8
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.1/ai-jail-macos-aarch64.tar.gz",
-          "size": 608490,
-          "downloads": 20
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v1.19.1/ai-jail-macos-aarch64.tar.gz.sha256",
-          "size": 95,
-          "downloads": 2
+          "downloads": 3
         }
       ]
     }

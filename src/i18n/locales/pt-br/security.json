@@ -17,7 +17,7 @@
     "items": [
       { "text": "Seu diretório home e as credenciais que estão nele. O agente recebe um home novo e vazio, então <code>~/.ssh</code> e <code>~/.aws</code> não existem lá dentro." },
       { "text": "Segredos no seu shell. As variáveis de ambiente são reduzidas a uma allowlist pequena, então os tokens exportados ficam de fora." },
-      { "text": "A rede. Ela fica desligada, então nada do que o agente lê pode ser enviado para lugar nenhum. Você pode abri-la para uma lista de hosts, ou por completo." },
+      { "text": "A rede. Ela fica desligada, exceto para uma lista curta de registries de pacotes que o proxy filtrado deixa passar quando os toolchains estão ligados, o padrão no Linux. <code>--no-network</code> fecha isso também. A API do próprio agente continua fechada até você abri-la com <code>--allow-host</code> ou <code>--network</code>." },
       { "text": "A memória compartilhada do host, o seu servidor gráfico e o seu clipboard. A saída do agente passa por um filtro que descarta sequências de terminal de clipboard e de consulta." },
       { "text": "Digitar no seu terminal. O Linux bloqueia a chamada <code>TIOCSTI</code>, que simula teclas, e o macOS restringe o controle de terminal ao único terminal que o ai-jail criou para aquela execução." },
       { "text": "As próprias regras. Um arquivo <code>.ai-jail</code> dentro de um repositório não é confiável: ele pode apertar o sandbox, nunca abrir." }
@@ -34,6 +34,7 @@
       "Vulnerabilidades de kernel e de drivers. Todo processo em sandbox fala com o mesmo kernel que o resto da sua máquina.",
       "Bugs no seu emulador de terminal, principalmente com <code>--terminal-passthrough</code>, que desliga o filtro de saída.",
       "Defeitos no próprio backend do sandbox: bubblewrap, Landlock e seccomp no Linux, <code>sandbox-exec</code> no macOS.",
+      "O Landlock, as regras do próprio kernel, só cerca sockets Unix abstratos e sinais em kernels 6.12 ou mais novos, em modo best-effort. Kernels mais antigos ficam só com as regras de sistema de arquivos e de rede, então com <code>--x11</code>, <code>--network</code> ou <code>--systemd-user</code> os sockets abstratos e os sinais do host não ficam cercados.",
       "Segredos dentro do projeto. Um arquivo <code>.env</code> no repositório pode ser lido, a menos que você o mascare. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar arquivos</a>.",
       "As máscaras cobrem só os caminhos que existem quando o sandbox inicia. Um arquivo de segredos criado depois, durante a sessão, não fica escondido.",
       "Side channels e algumas classes de comunicação entre processos.",
@@ -42,6 +43,7 @@
       "DNS com <code>--allow-host</code>. No Linux, as consultas de nome dentro do sandbox falham, então não existe canal de DNS para fora. No macOS o resolver do sistema não fica cercado, então sobra um canal de DNS de baixa largura de banda, a mesma brecha que a Anthropic documenta para o sandbox-runtime dela.",
       "O proxy vê o host, a porta e o horário de cada conexão. O que passa lá dentro fica entre as duas pontas. <a class=\"link\" href=\"/how-it-works/#network\">Como a saída filtrada é construída</a>.",
       "As credenciais fantasma transferem a confiança para o próprio ai-jail. Com <code>--secret</code>, as requisições para o host vinculado passam pelo ai-jail em claro, para que ele insira a chave real, e ele as criptografa de novo na saída. Os túneis para todos os outros hosts continuam opacos. Só cobre clientes que conseguem falar HTTP puro com o proxy para esse host.",
+      "Credenciais que você passa com <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> ou <code>--docker-config</code>. Somente leitura protege o arquivo contra alterações, não a credencial contra o uso: qualquer coisa dentro do sandbox pode agir como você naquele serviço enquanto ela for válida.",
       "No macOS, o <code>sandbox-exec</code> foi marcado como obsoleto pela Apple e não equivale ao isolamento do Linux. <a class=\"link\" href=\"/how-it-works/\">Veja as diferenças no macOS</a>."
     ],
     "callout": {
@@ -51,18 +53,28 @@
   },
   "switches": {
     "title": "Opções que abrem o muro",
-    "lede": "Tudo o que está abaixo fica desligado até você ligar, e a maioria dá acesso real ao agente. <a class=\"link\" href=\"/configure/#switches\">Como definir cada um está na página Configurar</a>.",
-    "head": { "flag": "Opção", "gives": "O que qualquer coisa no sandbox passa a poder fazer" },
+    "lede": "Tudo o que está abaixo fica desligado até você ligar, exceto <code>--toolchains</code>, que vem ligado por padrão no Linux. A maioria dá acesso real ao agente. <a class=\"link\" href=\"/configure/#switches\">Como definir cada um está na página Configurar</a>.",
+    "head": {
+      "flag": "Opção",
+      "gives": "O que qualquer coisa no sandbox passa a poder fazer"
+    },
     "rows": [
       "Enviar para qualquer lugar tudo o que consegue ler. O tráfego é irrestrito. <code>--allow-host</code> é a alternativa mais apertada.",
       "Alcançar exatamente os hosts que você lista, e seus subdomínios, por TCP, através de um proxy embutido. Cada host listado é confiável por inteiro.",
+      "Ligado por padrão no Linux. Rodar seus toolchains: <code>~/.cargo/bin</code> e <code>~/.rustup</code> somente leitura, um cache de dependências próprio da jaula em <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre execuções, e saída filtrada para os registries de pacotes. Os caches reais do host nunca são montados. Desligado sob <code>--lockdown</code> e com <code>--no-toolchains</code>.",
       "Nada de novo. O valor real dessa chave nunca entra no sandbox: o agente vê um placeholder, e o proxy troca pelo valor real só nas requisições em HTTP puro para o único host ao qual você a vinculou. O próprio processo do ai-jail vê essa requisição em claro.",
       "Nada de novo. Esta opção não enfraquece nada: ela grava uma linha por inicialização num arquivo com modo 0600 fora do sandbox, então o agente nunca o vê.",
       "Agir como root na sua máquina por meio do daemon do Docker.",
+      "Abrir <code>/dev/kvm</code>, a interface de virtualização do kernel, para que QEMU, Firecracker ou o emulador do Android rodem na velocidade do hardware. Só no Linux. Os guests só têm a rede do sandbox, e nenhum <code>/dev/net/tun</code> é passado.",
       "Capturar teclas e tirar screenshots de outras janelas X11.",
       "Pedir ao seu gerenciador de usuário do systemd para rodar serviços no host.",
       "Ler o ambiente inteiro do seu shell, com os segredos. Para chaves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> passa um arquivo no lugar.",
       "Usar o login salvo do agente, por exemplo o <code>~/.claude</code> do Claude.",
+      "Agir como você no GitHub com o login em <code>~/.config/gh</code>, montado somente leitura. Somente leitura protege o arquivo, não a credencial: ela funciona enquanto for válida.",
+      "Agir como você na AWS com <code>~/.aws</code>, montado somente leitura.",
+      "Agir como você em todos os clusters de <code>~/.kube</code>, montado somente leitura.",
+      "Agir como você no Google Cloud com <code>~/.config/gcloud</code>, montado somente leitura.",
+      "Usar seus logins de registries de containers em <code>~/.docker/config.json</code>, montado somente leitura.",
       "Gravar e reproduzir áudio enquanto estiver ligada.",
       "Ver o seu diretório home real. É uma exceção ampla; prefira mapear só o caminho de que você precisa."
     ]
@@ -77,24 +89,45 @@
       "<code>--allow-tcp-port</code>. Essa interface não consegue restringir UDP, então a flag é aceita por compatibilidade, a inicialização falha e o erro aponta para <code>--allow-host</code>.",
       "<code>--network</code> junto com <code>--allow-host</code>, ou <code>--browser</code> com <code>--allow-host</code>. As duas se contradizem, então o ai-jail se recusa a iniciar.",
       "Um arquivo de <code>--env-from-file</code> que é um symlink, que o grupo ou todo mundo consegue ler, que pertence a outra pessoa ou que está dentro do projeto.",
-      "Um <code>BWRAP_BIN</code> que aponta para um binário do bubblewrap que alguém além do root poderia ter trocado. Ele é ignorado com um aviso, e sem um bubblewrap confiável a inicialização falha."
+      "Um <code>BWRAP_BIN</code> que aponta para um binário do bubblewrap que alguém além do root poderia ter trocado. Ele é ignorado com um aviso, e sem um bubblewrap confiável a inicialização falha.",
+      "Um overlay que não consegue ser montado: origem ausente, destino que se sobrepõe a outro mapeamento ou falha no armazenamento. Desde a 2.4 a inicialização aborta em vez de cair para um bind simples de leitura e escrita dos arquivos reais."
     ],
     "counter": {
       "title": "Onde ele só avisa",
-      "text": "Fora do <code>--lockdown</code>, uma falha do Landlock gera um aviso. Num kernel antigo demais para o Landlock, o ai-jail avisa e segue só com a camada do bubblewrap. Leia as linhas de inicialização."
+      "text": "Fora do <code>--lockdown</code>, uma falha do Landlock gera um aviso. Num kernel antigo demais para o Landlock, o ai-jail avisa e segue só com a camada do bubblewrap. O log de auditoria também é best-effort: quando não dá para configurá-lo, o ai-jail avisa, pula o log naquela inicialização e nunca grava um log reserva em <code>/tmp</code>. Leia as linhas de inicialização."
     }
   },
   "checked": {
     "title": "Como o projeto é verificado",
     "lede": "Um único mantenedor toca o projeto, tudo em aberto. Abaixo está o que é verificado e o que não é.",
     "facts": [
-      { "label": "testes de integração de fuga do sandbox, que tentam escrever em <code>/usr</code>, ler <code>~/.ssh</code>, chamar <code>ptrace</code> e <code>bpf</code>, e esperam falhar" },
-      { "label": "testes unitários na árvore de código-fonte na versão {version}" },
-      { "label": "requisições de rede na inicialização. A checagem de atualização é opt-in, com <code>--update-check</code>" }
+      {
+        "label": "testes de integração de fuga do sandbox, que tentam escrever em <code>/usr</code>, ler <code>~/.ssh</code>, chamar <code>ptrace</code> e <code>bpf</code>, e esperam falhar"
+      },
+      {
+        "label": "testes unitários na árvore de código-fonte na versão {version}"
+      },
+      {
+        "label": "requisições de rede na inicialização. A checagem de atualização é opt-in, com <code>--update-check</code>"
+      }
     ],
     "audit": {
-      "title": "Auditado internamente, não por terceiros",
-      "text": "Antes da 1.0, o projeto fez uma auditoria interna de código e uma revisão de segurança do refactor, e publicou as duas no repositório. Nenhuma empresa externa auditou o ai-jail. <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">Leia a revisão de segurança</a>."
+      "title": "Auditado às claras, não por uma empresa externa",
+      "text": "Antes da 1.0 o projeto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">auditou a si mesmo</a> e publicou os relatórios. Em {date} duas auditorias de código independentes da 2.3.0 foram publicadas no repositório, com uma comparação e um plano de correção: a <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoria A</a>, feita por um modelo de IA como o próprio cabeçalho declara, e a <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoria B</a>, feita de forma independente. Elas geraram dois advisories no GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> e <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos fechados na 2.4.0 com testes de regressão. Nenhuma empresa externa auditou o ai-jail."
+    },
+    "fixes": {
+      "title": "O que a 2.4.0 corrigiu",
+      "items": [
+        "Os metadados de worktree de um repositório não conseguem mais montar um diretório qualquer do host em leitura e escrita.",
+        "Uma entrada duplicada no ambiente não deixa mais o valor real de uma chave <code>--secret</code> escapar para dentro do sandbox.",
+        "Um comando de navegador num <code>.ai-jail</code> de projeto não confiável não desliga mais o lockdown.",
+        "<code>TIOCSTI</code> é comparado como o kernel lê, em 32 bits, então uma variante com bit alto não passa mais pelo seccomp.",
+        "O Landlock cerca sockets Unix abstratos e sinais em kernels 6.12 ou mais novos.",
+        "macOS: o acesso ao terminal fica restrito aos terminais da própria execução, e não a todos os <code>/dev/ttys*</code>.",
+        "macOS: caminhos com <code>--mask</code> são negados para escrita, além de leitura.",
+        "O filtro de saída não desmonta mais com um ESC duplicado, que podia contrabandear uma escrita no clipboard.",
+        "As saídas de emergência de teste do proxy ficam fora dos builds de release."
+      ]
     },
     "release": {
       "title": "Como uma release é feita",
@@ -119,7 +152,7 @@
     },
     "log": {
       "title": "Um log do que você liberou",
-      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Desde a 2.2, cada linha carrega o próprio número de sequência e o SHA-256 da linha anterior, e <code>ai-jail --audit-verify</code> percorre a cadeia e aponta o primeiro elo quebrado. Isso faz uma edição silenciosa virar barulho; não impede alguém de trocar o arquivo inteiro, porque nada é assinado. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar."
+      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Desde a 2.2, cada linha carrega o próprio número de sequência e o SHA-256 da linha anterior, e <code>ai-jail --audit-verify</code> percorre a cadeia e aponta o primeiro elo quebrado. Isso faz uma edição silenciosa virar barulho; não impede alguém de trocar o arquivo inteiro, porque nada é assinado. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar. <code>ai-jail --audit-show</code> imprime um resumo legível das inicializações, das decisões de rede e das substituições de credenciais, sem verificar a cadeia. Desde a 2.3 o log é aberto sem seguir symlink abaixo do seu home, e um log que seja arquivo especial ou de outro dono é recusado. Os registros de inicialização podem incluir os argumentos do comando, então deixe segredos fora deles."
     }
   },
   "report": {
@@ -130,14 +163,32 @@
   "faq": {
     "title": "Perguntas comuns",
     "items": [
-      { "q": "O agente consegue escapar?", "a": "Os padrões são feitos e testados para bloquear os caminhos comuns: arquivos, ambiente, rede e IPC do host. Um bug de kernel, de driver, de terminal ou do backend do sandbox ainda poderia deixá-lo sair. Todo sandbox de processo tem esse limite, e por isso o lugar de código hostil é uma VM descartável." },
-      { "q": "É seguro rodar com a rede ligada?", "a": "É mais seguro do que rodar o agente sem nada, porque as suas chaves e o seu diretório home continuam fora, sem ter como ser enviados. Com <code>--network</code>, tudo o que o agente consegue ler, ele consegue enviar. O meio-termo é <code>--allow-host</code>: só os hosts que você lista ficam alcançáveis, e cada um é confiável por inteiro. Mascare antes os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>." },
-      { "q": "Ele já foi auditado?", "a": "Internamente, antes da 1.0, com os relatórios publicados no repositório. Nunca passou por auditoria de terceiros. O código é aberto sob a GPL 3.0, e relatos privados de vulnerabilidade são bem-vindos." }
+      {
+        "q": "O agente consegue escapar?",
+        "a": "Os padrões são feitos e testados para bloquear os caminhos comuns: arquivos, ambiente, rede e IPC do host. Um bug de kernel, de driver, de terminal ou do backend do sandbox ainda poderia deixá-lo sair. Todo sandbox de processo tem esse limite, e por isso o lugar de código hostil é uma VM descartável."
+      },
+      {
+        "q": "É seguro rodar com a rede ligada?",
+        "a": "É mais seguro do que rodar o agente sem nada, porque as suas chaves e o seu diretório home continuam fora, sem ter como ser enviados. Com <code>--network</code>, tudo o que o agente consegue ler, ele consegue enviar. O meio-termo é <code>--allow-host</code>: só os hosts que você lista ficam alcançáveis, e cada um é confiável por inteiro. Mascare antes os segredos dentro do projeto. <a class=\"link\" href=\"/configure/#secrets\">Veja como mascarar</a>."
+      },
+      {
+        "q": "Ele já foi auditado?",
+        "a": "Não por uma empresa externa. O projeto auditou a si mesmo antes da 1.0, e em setembro de 2026 duas auditorias de código independentes da 2.3.0 foram publicadas no repositório; os dois advisories que elas geraram foram fechados na 2.4.0. O código é aberto sob a GPL 3.0, e relatos privados de vulnerabilidade são bem-vindos."
+      }
     ]
   },
   "next": [
-    { "title": "Como funciona", "text": "As camadas entre o agente e o seu sistema, e o que muda no macOS." },
-    { "title": "Configurar", "text": "Todas as opções, como mascarar segredos e o modo lockdown." },
-    { "title": "Comparar", "text": "Sandboxes embutidos dos agentes, Docker e máquinas virtuais, lado a lado." }
+    {
+      "title": "Como funciona",
+      "text": "As camadas entre o agente e o seu sistema, e o que muda no macOS."
+    },
+    {
+      "title": "Configurar",
+      "text": "Todas as opções, como mascarar segredos e o modo lockdown."
+    },
+    {
+      "title": "Comparar",
+      "text": "Sandboxes embutidos dos agentes, Docker e máquinas virtuais, lado a lado."
+    }
   ]
 }
