@@ -5,13 +5,13 @@
   },
   "hero": {
     "title": "A useful layer, with known edges",
-    "lede": "ai-jail is built to stop a trusted agent's mistakes and keep the damage inside the project: the project directory is the blast radius, and your home, your keys and the network stay outside it. It is a process sandbox, so it shares your kernel. It is not a boundary against hostile code or a motivated attacker, and it does not replace a disposable virtual machine.",
+    "lede": "ai-jail is built to stop a trusted agent's mistakes and keep the damage inside the project: the project directory is the blast radius, and your home, your keys and the network stay outside it. It is a process sandbox that shares your kernel, so it is not a boundary against hostile code or a motivated attacker and does not replace a disposable virtual machine.",
     "report": "Report a vulnerability",
     "doc": "Read SECURITY.md"
   },
   "stops": {
     "title": "What it is built to stop",
-    "lede": "A trusted agent still mistypes a command, runs a script that walks above the project root, or gets misled by a web page or a package. These are the things it then reaches for, and does not find.",
+    "lede": "A trusted agent still mistypes a command, runs a script that walks above the project root, or gets misled by a web page or a package. These are the things it reaches for next and does not find.",
     "alt": "The agent and the project sit inside a wall of bars. Six arrows leave the agent and bounce off the wall. Outside, dim and barred, are your home and keys, your shell secrets, the network, your screen and clipboard, your terminal and the jail policy.",
     "caption": "The defaults. Every item on the outside stays there until you open it yourself.",
     "items": [
@@ -19,7 +19,7 @@
         "text": "Your home directory and the credentials in it. The agent gets a fresh, empty home, so <code>~/.ssh</code> and <code>~/.aws</code> do not exist in there."
       },
       {
-        "text": "Secrets in your shell. Environment variables are cut down to a small allowlist, so exported tokens stay outside. The one exception is the invoked harness's own API key, for example <code>ANTHROPIC_API_KEY</code> for Claude, copied by default along with its login; <code>--no-agent-state</code> stops that."
+        "text": "Secrets in your shell. ai-jail cuts environment variables down to a small allowlist, so exported tokens stay outside. The one exception is the invoked harness's own API key, for example <code>ANTHROPIC_API_KEY</code> for Claude, copied by default along with its login; <code>--no-agent-state</code> stops that."
       },
       {
         "text": "The network. It is off, except for a short list of package registries that the filtered proxy lets through when toolchains are on, the default on Linux. <code>--no-network</code> closes that too. The agent's own API stays closed until you open it with <code>--allow-host</code> or <code>--network</code>."
@@ -56,7 +56,7 @@
       "The proxy sees the host, the port and the timing of each connection. What travels inside stays between the two ends. <a class=\"link\" href=\"/how-it-works/#network\">How filtered egress is built</a>.",
       "Phantom credentials move trust to ai-jail itself. With <code>--secret</code>, requests to the bound host pass through ai-jail in clear so it can insert the real key, and it re-encrypts them on the way out. Tunnels to every other host stay opaque. It only covers clients that can talk plain HTTP to the proxy for that host.",
       "Credentials you pass with <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> or <code>--docker-config</code>. Read-only protects the file from changes, not the credential from use: anything in the sandbox can act as you on that service while it is valid.",
-      "The agent's own login is mounted by default, read-write, so a misled agent can use it for the life of the launch. This is the convenience trade the project documents; <code>--no-agent-state</code> gives a logged-out run.",
+      "ai-jail mounts the agent's own login by default, read-write, so a misled agent can use it for the life of the launch. The project documents this as a convenience trade; <code>--no-agent-state</code> gives a logged-out run.",
       "On macOS, <code>sandbox-exec</code> is deprecated by Apple and is not equivalent to the Linux isolation. <a class=\"link\" href=\"/how-it-works/\">See the macOS differences</a>."
     ],
     "callout": {
@@ -180,11 +180,11 @@
     "items": [
       {
         "q": "Can the agent break out?",
-        "a": "ai-jail is not built to resist a determined attacker. The defaults are built and tested to block the ordinary routes a mistaken agent takes: files, environment, network and host IPC. Something that is actively trying to escape could use a kernel, driver, terminal or sandbox-backend bug, which is why hostile code belongs in a disposable VM."
+        "a": "The defaults are built and tested to block the ordinary routes a mistaken agent takes: files, environment, network and host IPC. They are not built to resist a determined attacker: something that actively tries to escape could use a kernel, driver, terminal or sandbox-backend bug, which is why hostile code belongs in a disposable VM."
       },
       {
         "q": "Is it safe to run with the network on?",
-        "a": "Safer than running the agent bare, because your keys and home directory are still not there to send. With <code>--network</code>, anything the agent can read, it can send, and ai-jail is not built to stop a determined attacker from doing so. The middle ground is <code>--allow-host</code>: only the hosts you list are reachable, and each one is trusted as a whole. Mask the secrets inside the project first. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>."
+        "a": "Safer than running the agent bare, because your keys and home directory are still not there to send. With <code>--network</code>, anything the agent can read, it can send, and ai-jail is not built to stop a determined attacker from doing so. The middle ground is <code>--allow-host</code>: the agent reaches only the hosts you list, and each one is trusted as a whole. Mask the secrets inside the project first. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>."
       },
       {
         "q": "Has it been audited?",

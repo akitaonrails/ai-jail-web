@@ -19,7 +19,7 @@
       { "title": "You want the agent's own sandbox and prompts", "text": "Keep them on. They work inside ai-jail, and they catch the commands you would not have approved. <a class=\"link\" href=\"#both\">Use both</a>." },
       { "title": "You want policies per tool, approvals at runtime and a signed audit trail", "text": "nono goes further than ai-jail there, at the cost of a policy language and a supervisor per command. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
       { "title": "You sandbox from code, one tool call at a time", "text": "zerobox has SDKs for that and snapshots to roll back. It leaves reads open and has had no release since May 2026. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
-      { "title": "You do not trust the code at all", "text": "A disposable virtual machine. ai-jail is an accident guard for a trusted agent, not a boundary against hostile code, and every tool on this page shares your kernel. <a class=\"link\" href=\"#containers\">Docker, containers and VMs</a>." }
+      { "title": "You do not trust the code at all", "text": "A disposable virtual machine. ai-jail is built for a trusted agent's mistakes, so hostile code is outside its scope, and every tool on this page shares your kernel. <a class=\"link\" href=\"#containers\">Docker, containers and VMs</a>." }
     ]
   },
   "wall": {

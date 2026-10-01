@@ -16,7 +16,7 @@
       { "title": "Start it through ai-jail", "text": "Type <code>ai-jail</code> in front of the command. The agent starts in its own namespaces, with your project mounted at the same path." },
       { "title": "Your home is not mounted", "text": "The agent gets a fresh, empty home directory. SSH keys, cloud credentials, browser profiles and your other projects do not exist in there." },
       { "title": "Secrets, network and devices are off", "text": "ai-jail cuts environment variables down to an allowlist, so tokens in your shell stay in your shell. The network is closed, apart from the package registries your toolchains fetch from. The Docker socket, the screen and the clipboard are off." },
-      { "title": "Open what the task needs", "text": "A cloud agent is already logged in, because its own login is mounted by default. The one thing to open is the route to its API: <code>--allow-host</code> with its API host, or <code>--network</code> for all of it. Everything else stays shut until you ask for it." }
+      { "title": "Open what the task needs", "text": "A cloud agent starts logged in, because ai-jail mounts its login by default. You open one thing, the route to its API: <code>--allow-host</code> with its API host, or <code>--network</code> for all of it. Everything else stays shut until you ask." }
     ]
   },
   "wrap": {

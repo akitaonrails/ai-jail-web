@@ -49,7 +49,7 @@
       {
         "title": "Agent and environment",
         "rows": [
-          { "text": "The agent's own login. The invoked harness's state, such as <code>~/.claude</code> or <code>~/.codex</code>, is mounted read and write, and its API key is copied from your shell when set: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> or <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. So it starts logged in, and anything in the jail can use that login. <code>--no-agent-state</code> gives a logged-out run. Off under lockdown, and a project file can only turn it off." },
+          { "text": "The agent's own login. The invoked harness's state, such as <code>~/.claude</code> or <code>~/.codex</code>, is mounted read and write, and its API key is copied from your shell when set: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> or <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. The agent starts logged in, and anything in the jail can use that login. <code>--no-agent-state</code> gives a logged-out run. Off under lockdown, and a project file can only turn it off." },
           { "text": "Uses the given directory as Claude's state and sets <code>CLAUDE_CONFIG_DIR</code>." },
           { "text": "Passes one variable from your shell, or sets one with <code>NAME=VALUE</code>. Repeatable, never saved to disk, and the value never appears on the launcher's command line." },
           { "text": "Reads strict <code>KEY=VALUE</code> lines from a file and passes them like <code>--env</code>, which wins on conflicts. The file must be yours, a regular file, mode 0600 or stricter, and outside the project, or the launch fails. ai-jail never saves the values to disk, and the config key works from the global file only." },
@@ -184,11 +184,11 @@
       { "text": "<code>--no-toolchains</code>: no dependency caches and no package registries." },
       { "text": "<code>--no-network</code>: fully offline, and <code>--allow-host</code> on top of it gives a short list of hosts through the proxy." },
       { "text": "<code>--mask</code>, <code>--deny-path</code> and <code>--hide-dotdir</code> take single paths away, and a narrow <code>--map</code> or <code>--rw-map</code> replaces a broad grant." },
-      { "text": "<code>--lockdown</code>: the project read only, no login, no toolchains, no registries, strict Landlock and seccomp. It is still not a VM." }
+      { "text": "<code>--lockdown</code>: the project read only, no login, no toolchains, no registries, strict Landlock and seccomp, and still not a VM." }
     ],
     "other": {
       "title": "One flag goes the other way",
-      "text": "<code>--no-private-home</code> is more exposure, not less: the agent gets your real home directory in place of the fresh one. For a single path, use <code>--map</code> or <code>--rw-map</code>."
+      "text": "<code>--no-private-home</code> adds exposure: the agent gets your real home directory in place of the fresh one. For a single path, use <code>--map</code> or <code>--rw-map</code> instead."
     }
   },
   "lockdown": {
@@ -211,7 +211,7 @@
     "codeTitle": "terminal",
     "network": {
       "title": "Lockdown and the network",
-      "text": "Lockdown always isolates the network namespace, even when you pass <code>--network</code>. <code>--allow-host</code> still works under lockdown: the listed hosts are reached through the proxy, and nothing else is."
+      "text": "Lockdown always isolates the network namespace, even when you pass <code>--network</code>. <code>--allow-host</code> still works under lockdown: the agent reaches the listed hosts through the proxy and nothing else."
     }
   },
   "recipes": {

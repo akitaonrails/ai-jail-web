@@ -48,7 +48,7 @@
         "name": "Filesystem",
         "tag": "mounts",
         "is": "Inside the namespace, only what ai-jail mounts exists. The project is read-write at its real path, system directories such as <code>/usr</code> are read-only, and the home directory and <code>/tmp</code> are fresh and held in memory. <a class=\"link\" href=\"/configure/#toolchains\">The toolchains you have</a> (mise, cargo, npm caches) are mapped into that fresh home, read-only or as a jail-owned cache.",
-        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> and browser profiles are on a built-in list that is never mounted. The harness's own state directory, for example Claude's <code>~/.claude</code>, is the exception: it is mounted read-write by default so the agent starts logged in, and <code>--no-agent-state</code> leaves it out. Anything written outside the project vanishes when the session ends."
+        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> and browser profiles are on a built-in list that is never mounted. The harness's own state directory, for example Claude's <code>~/.claude</code>, is the exception: ai-jail mounts it read-write by default so the agent starts logged in, and <code>--no-agent-state</code> leaves it out. Anything written outside the project vanishes when the session ends."
       },
       {
         "name": "Landlock",
@@ -84,7 +84,7 @@
   },
   "egress": {
     "title": "Three ways to the network",
-    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except on Linux a short list of package registries through the filtered proxy when toolchains are on, which they are by default. The other two are flags you pass on purpose.",
+    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except, on Linux with toolchains on (the default), a short list of package registries through the filtered proxy. The other two are flags you pass on purpose.",
     "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
     "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
     "modes": [
