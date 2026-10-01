@@ -31,6 +31,15 @@
     "Agent": "エージェント",
     "Your project": "あなたのプロジェクト"
   },
+  "configure-toolchains": {
+    "Agent": "エージェント",
+    "Toolchains": "ツールチェーン",
+    "Jail cache": "ジェイルのキャッシュ",
+    "Host cache": "ホストのキャッシュ",
+    "Proxy": "プロキシ",
+    "Registries": "レジストリ",
+    "Model API": "モデルAPI"
+  },
   "configure-lockdown": {
     "Normal": "通常",
     "Lockdown": "ロックダウン",

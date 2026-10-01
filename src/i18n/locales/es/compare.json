@@ -16,7 +16,7 @@
     "items": [
       {
         "title": "Usas más de un agente",
-        "text": "ai-jail. Un solo archivo de política, cualquier comando, todo el árbol de procesos dentro, home y claves ocultos por defecto. <a class=\"link\" href=\"/install/\">Instalar</a>."
+        "text": "ai-jail. Un solo archivo de política, cualquier comando, todo el árbol de procesos dentro, home y claves ocultos por defecto, tus toolchains y cachés dentro. <a class=\"link\" href=\"/install/\">Instalar</a>."
       },
       {
         "title": "Solo usas Claude Code",
@@ -163,7 +163,7 @@
           "Un proxy con una lista de permitidos por dominio. Un dominio nuevo te pide confirmación, y cada comando sigue teniendo su propia aprobación. La documentación señala que el proxy confía en el hostname que envía el cliente, así que el domain fronting puede saltárselo.",
           "Apagada por defecto en <code>workspace-write</code>. Un ajuste la activa, y un proxy opcional añade reglas de permitir y denegar por dominio. La documentación dice que el proxy no filtra las conexiones de los servidores MCP, la búsqueda web ni el navegador.",
           "El perfil por defecto permite la red. Los perfiles más estrictos y los que usan proxy son opt-in.",
-          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts que listas y sus subdominios, impuesto por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y se conecta a la dirección que comprobó. <code>--network</code> lo abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo."
+          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts que listas y sus subdominios, impuesto por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y se conecta a la dirección que comprobó. <code>--network</code> lo abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. Con las toolchains activadas, el valor por defecto en Linux, el proxy también permite una lista fija de registries de paquetes para que los builds funcionen; <code>--no-network</code> lo apaga. La API del propio agente sigue necesitando <code>--allow-host</code>."
         ]
       },
       {
@@ -297,7 +297,7 @@
       {
         "label": "Credenciales",
         "openshell": "Las gestiona el gateway y las inyecta en cada petición; nunca se escriben en el disco del sandbox.",
-        "jail": "Ambientales. Lo que pasas con <code>--env</code>, <code>--env-from-file</code> o <code>--agent-state</code> es visible para todo lo que hay dentro."
+        "jail": "Ambientales. Lo que pasas con <code>--env</code>, <code>--env-from-file</code> o <code>--agent-state</code> es visible para todo lo que hay dentro. Las credenciales de herramientas (<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>) son montajes opt-in en solo lectura, y la documentación dice que solo lectura no impide usarlas."
       },
       {
         "label": "Techo de aislamiento",
@@ -312,7 +312,7 @@
       {
         "label": "Telemetría y estabilidad",
         "openshell": "Telemetría anónima activada por defecto, con opt-out. El formato de políticas todavía cambia.",
-        "jail": "Sin telemetría. Cada versión nueva sigue leyendo las configs que escribieron las anteriores, y los tests lo garantizan."
+        "jail": "Sin telemetría. Cada versión nueva sigue leyendo las configs que escribieron las anteriores, y los tests lo garantizan. Dos auditorías de código independientes en septiembre de 2026, publicadas en el repositorio, llevaron a las correcciones de la 2.4.0."
       }
     ],
     "note": "La comparación del repositorio de ai-jail, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/openshell-comparison.md\">docs/openshell-comparison.md</a>, está escrita en ambas direcciones y es de donde salió la lista de hosts permitidos."

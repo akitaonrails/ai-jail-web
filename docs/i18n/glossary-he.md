@@ -102,3 +102,21 @@ Terms decided while translating. One English term maps to one target term across
 | snapshot / restore | snapshot / שחזור |
 | audit verify (--audit-verify) | לעבור על שרשרת ה-hash (the flag stays --audit-verify) |
 | legacy (records before 2.2) | legacy |
+| toolchains (plural, the feature) | toolchains (Latin, kept: ה-toolchains שלכם, כשה-toolchains דלוקים) |
+| package registry / registries | registry של חבילות / registries של חבילות |
+| cache / caches | cache / caches (Latin, kept; מטמון is not used) |
+| jail-owned cache | cache ששייך לכלא (image label: cache של הכלא; host cache: cache של המארח) |
+| store (the jail's cache store) | מאגר ששייך לכלא |
+| on by default | דלוק כברירת מחדל |
+| tool credentials (--github, --aws, --kube, --gcloud, --docker-config) | פרטי גישה של כלים |
+| act as you (on a service) | לפעול בשמכם |
+| security advisory (GitHub) | advisory (plural: advisories ב-GitHub) |
+| source audit | ביקורת קוד |
+| best effort | במאמץ מיטבי |
+| fails closed / stays offline | נכשל סגור / נשאר offline |
+| Linux only / on Linux | רק ב-Linux / ב-Linux (not בלינוקס) |
+| cyan (the on-by-default row) | ציאן |
+| build (a build, builds) | build / builds (Latin, kept) |
+| standalone (opencode --standalone) | עצמאי (the flag stays --standalone) |
+| background server | שרת רקע |
+| Registries / Toolchains (diagram labels) | Registries / Toolchains (Latin, kept: a mixed-direction label wraps wrongly in generated images) |

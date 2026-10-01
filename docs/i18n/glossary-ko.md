@@ -84,3 +84,16 @@ Terms decided while translating. One English term maps to one target term across
 | injection (secret into a request) | 주입 |
 | sequence number | 순번 |
 | broken link (hash chain) | 끊긴 고리 |
+| toolchains (--toolchains) | 툴체인 |
+| package registry | 패키지 레지스트리 |
+| jail-owned cache / store | 감옥 전용 캐시 / 감옥 전용 저장소 |
+| host cache | 호스트 캐시 |
+| on by default | 기본으로 켜짐 (badge: 기본 활성) |
+| security advisory (GitHub) | 보안 권고 |
+| tool credentials (--github, --aws, ...) | 도구 자격 증명 |
+| act as you (on a service) | 나처럼 행동 |
+| registry egress | 레지스트리 외부 연결 |
+| source audit | 소스 감사 |
+| regression tests | 회귀 테스트 |
+| standalone (opencode --standalone) | 단독 실행 |
+| fresh home | 새 홈 |

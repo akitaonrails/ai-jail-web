@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "הגדרת ai-jail: דגלים, קובצי הגדרות, מיסוך ו-lockdown",
-    "description": "כל יכולת ב-ai-jail מתחילה כבויה. כאן מופיעים כל הדגלים ומפתחות ההגדרה, הדרך להסתיר סודות בתוך הפרויקט, מה עושה מצב lockdown, ומתכונים מוכנים להעתקה."
+    "description": "כל יכולת ב-ai-jail מתחילה כבויה, חוץ מה-toolchains שלכם. כאן מופיעים כל הדגלים ומפתחות ההגדרה, הדרך להסתיר סודות בפרויקט, מה עושה מצב lockdown, ומתכונים להעתקה."
   },
   "hero": {
     "title": "סגור כברירת מחדל. המתגים אצלכם.",
-    "lede": "בלי שום אפשרות, הסוכן מקבל רק את הפרויקט שלכם, בלי רשת, בלי התחברות ובלי מפתחות. את מה שהמשימה צריכה פותחים מתג אחרי מתג, ואפשר גם לסגור את הכלא עוד יותר.",
+    "lede": "בלי שום אפשרות, הסוכן מקבל את הפרויקט ואת כלי ה-build שלכם, בלי התחברות ובלי מפתחות, ובלי רשת חוץ מרשימה קצרה של registries של חבילות. את מה שהמשימה צריכה פותחים מתג אחרי מתג, ואפשר גם לסגור את הכלא עוד יותר.",
     "switches": "למתגים",
     "install": "התקנה"
   },
@@ -30,15 +30,15 @@
   },
   "switches": {
     "title": "המתגים",
-    "lede": "כל שורה כבויה עד שתבקשו, ולכל דגל של יכולת יש תאום <code>--no-</code> שסוגר אותה בחזרה. תג אדום מסמן מתג שמחליש את הכלא. <a class=\"link\" href=\"/security/\">הרשימה המלאה והסיבות נמצאות בעמוד האבטחה</a>.",
+    "lede": "כל שורה כבויה עד שתבקשו, חוץ מהשורה האחת בצבע ציאן, שדלוקה כברירת מחדל. לכל דגל של יכולת יש תאום <code>--no-</code> שסוגר אותה בחזרה. תג אדום מסמן מתג שמחליש את הכלא. <a class=\"link\" href=\"/security/\">הרשימה המלאה והסיבות נמצאות בעמוד האבטחה</a>.",
     "cols": { "flag": "דגל", "key": "מפתח הגדרה", "opens": "מה הוא עושה", "risk": "סיכון" },
-    "risk": { "optin": "פותח דבר אחד", "weakens": "מחליש את הכלא" },
+    "risk": { "optin": "פותח דבר אחד", "weakens": "מחליש את הכלא", "default": "דלוק כברירת מחדל" },
     "none": "אין",
     "groups": [
       {
         "title": "רשת ושירותים",
         "rows": [
-          { "text": "כל הרשת. כל מה שהסוכן יכול לקרוא, הוא יכול לשלוח החוצה. אם הסוכן צריך רק כמה hosts, <code>--allow-host</code> הוא הבחירה ההדוקה יותר." },
+          { "text": "כל הרשת. כל מה שהסוכן יכול לקרוא, הוא יכול לשלוח החוצה. אם הסוכן צריך רק כמה hosts, <code>--allow-host</code> הוא הבחירה ההדוקה יותר. בלי אף אחד משני הדגלים, ה-sandbox מגיע רק אל <a class=\"link\" href=\"#toolchains\">registries של החבילות</a> שה-toolchains פותחים דרך הפרוקסי, ו-<code>--no-network</code> סוגר גם אותם." },
           { "text": "ה-sandbox מגיע רק ל-host שצוין ולתת-הדומיינים שלו, ב-TCP דרך הפרוקסי המובנה של ai-jail. אפשר לחזור על הדגל. אי אפשר לשלב אותו עם <code>--network</code> או עם <code>--browser</code>, וקובץ פרויקט יכול רק לקצר את הרשימה." },
           { "text": "התיקייה <code>~/.ssh</code> שלכם, לקריאה בלבד, וה-socket של ה-SSH agent, כדי ש-<code>git push</code> יעבוד." },
           { "text": "ה-socket של Docker. בפועל זה root על המחשב שלכם, כי ה-daemon יכול להעלות קונטיינרים שמעגנים את המארח." },
@@ -59,9 +59,21 @@
         ]
       },
       {
+        "title": "toolchains ופרטי גישה של כלים",
+        "rows": [
+          { "text": "הקומפיילרים ומנהלי החבילות שלכם לקריאה בלבד, ה-caches של התלויות שלהם במאגר ששייך לכלא, וה-registries של החבילות נגישים דרך הפרוקסי המסנן. דלוק כברירת מחדל ב-Linux. מצב lockdown מכבה אותו, וקובץ פרויקט יכול רק לכבות אותו. <a class=\"link\" href=\"#toolchains\">פרטים בהמשך</a>." },
+          { "text": "התיקייה <code>~/.config/gh</code> שלכם, לקריאה בלבד, כך ש-<code>gh</code> מחובר. קריאה בלבד מגינה על הקובץ מפני שינויים. כל מה שרץ בכלא עדיין יכול לפעול ב-GitHub בשמכם." },
+          { "text": "התיקייה <code>~/.aws</code> שלכם, לקריאה בלבד. כל מה שרץ בכלא יכול לפעול ב-AWS בשמכם כל עוד פרטי הגישה בתוקף." },
+          { "text": "התיקייה <code>~/.kube</code> שלכם, לקריאה בלבד. כל מה שרץ בכלא יכול לדבר עם ה-clusters שלכם בשמכם." },
+          { "text": "התיקייה <code>~/.config/gcloud</code> שלכם, לקריאה בלבד. כל מה שרץ בכלא יכול לפעול ב-Google Cloud בשמכם." },
+          { "text": "הקובץ <code>~/.docker/config.json</code> שלכם, לקריאה בלבד, ובו ההתחברויות שלכם ל-registries. כל מה שרץ בכלא יכול להשתמש בהן." }
+        ]
+      },
+      {
         "title": "דסקטופ וחומרה",
         "rows": [
           { "text": "התקני GPU, ויחד איתם משטח התקיפה של הדרייבר. רק ב-Linux." },
+          { "text": "<code>/dev/kvm</code>, למכונות וירטואליות עם האצת חומרה כמו QEMU או אמולטור של Android. הוא חושף את ממשק ה-KVM של הקרנל של המארח. האורחים מקבלים רק את הרשת של ה-sandbox, ובלי התקני tun או vhost. רק ב-Linux." },
           { "text": "ה-socket של Wayland, ושום דבר אחר מהסשן שלכם. רק ב-Linux." },
           { "text": "ה-socket של X11. תחת X11 תוכנה יכולה להקליט הקשות מקלדת ולצלם את המסך." },
           { "text": "ה-sockets של PipeWire ושל PulseAudio, וגם <code>/dev/snd</code>. כל מה שרץ בכלא יכול להקליט ולנגן אודיו. רק ב-Linux." },
@@ -92,6 +104,7 @@
         "title": "נראות",
         "rows": [
           { "text": "מוסיף רשומה אחת לכל הפעלה לקובץ <code>~/.local/share/ai-jail/history.jsonl</code> (תיקייה 0700, קובץ 0600): זמן, פקודה, היכולות בפועל, מקורות ההגדרות, קוד היציאה ומשך הריצה. עם <code>--allow-host</code> נרשם גם כל חיבור שאושר או נדחה, ועם <code>--secret</code> גם כל הזרקה. כל שורה נושאת את ה-hash של השורה שלפניה. כבוי כברירת מחדל, וקובץ פרויקט יכול לכבות אותו אבל לא להדליק." },
+          { "text": "מדפיס סיכום קריא של היומן ויוצא: הפעלות, החלטות של הרשת המסוננת והחלפות של סודות. הוא לא בודק את השרשרת. קוד יציאה 0 אחרי הצגה, 1 על רשומות פגומות או שגיאת קריאה, 2 כשאין יומן. רשומות ההפעלה יכולות לכלול את הארגומנטים של הפקודה, אז השאירו סודות מחוץ להן." },
           { "text": "עובר על שרשרת ה-hash של יומן הביקורת ויוצא: 0 כשהיא שלמה, 1 בחוליה השבורה הראשונה, 2 כשאין יומן. רשומות שנכתבו לפני 2.2 מדווחות כ-legacy, וזו לא שגיאה." }
         ]
       },
@@ -108,7 +121,7 @@
       }
     ],
     "layersLink": "בעמוד <a class=\"link\" href=\"/how-it-works/\">איך זה עובד</a> מוסבר מה כל שכבה עושה.",
-    "more": "את השאר תמצאו בפלט של <code>ai-jail --help</code>: שורת הסטטוס, worktrees, mise ואפשרויות טרמינל."
+    "more": "את השאר תמצאו בפלט של <code>ai-jail --help</code>: שורת הסטטוס, worktrees, mise ואפשרויות טרמינל. מפתח ה-toolchains הפוך כמו המפתחות הישנים: <code>no_toolchains = true</code> מכבה אותם."
   },
   "secrets": {
     "title": "מסתירים סודות בתוך הפרויקט",
@@ -137,6 +150,31 @@
       "tomlNote": "# רק בקובץ הגלובלי. קובץ פרויקט שמגדיר את זה לא נלקח בחשבון"
     }
   },
+  "toolchains": {
+    "title": "ה-toolchains שלכם באים איתכם",
+    "lede": "build צריך קומפיילרים, מנהלי חבילות ואת ה-caches שלהם. ב-Linux, ai-jail מכניס אותם כברירת מחדל: הכלים לקריאה בלבד, ה-caches במאגר ששייך לכלא, וה-registries של החבילות נגישים דרך הפרוקסי המסנן.",
+    "alt": "בתוך חומת הכלא, הסוכן מגיע לארגז כלים נעול עם התווית Toolchains ולקופסה עם התווית cache של הכלא. מחוץ לחומה, ה-cache של המארח מעומעם וחסום בסורגים, בלי קו אליו. מימין, קו מהסוכן עובר דרך שער וקופסת פרוקסי אל ענן עם התווית Registries. מעליו, הענן של ה-API של המודל מעומעם וחסום.",
+    "caption": "ה-caches של המארח עצמו נשארים בחוץ, ולכן build בכלא לא יכול להרעיל את מה שהמארח בונה ממנו. ה-API של הסוכן נשאר סגור עד שתפתחו אותו.",
+    "points": [
+      { "title": "כלים, לקריאה בלבד", "text": "מגרסה 2.4.1, ai-jail ממפה את ההתקנות ואת ההגדרות של mise לקריאה בלבד. ל-Rust הוא ממפה כך גם את <code>~/.cargo/bin</code> ואת <code>~/.rustup</code>, כדי ש-<code>cargo</code> ו-<code>rustc</code> יימצאו. פרטי הגישה של Cargo ו-<code>config.toml</code> נשארים בחוץ." },
+      { "title": "cache ששייך לכלא", "text": "ה-caches של התלויות נמצאים תחת <code>~/.local/share/ai-jail/cache/</code> ושורדים בין סשנים. ה-registry וה-cache של git של Cargo הולכים לשם. וכך גם ה-cache שבברירת המחדל של pip, uv, Go, npm, yarn, pnpm, bun, deno, Maven, Gradle, Coursier, Composer, Crystal ו-Zig, כשהתיקייה של הכלי קיימת אצלכם במחשב." },
+      { "title": "registries, דרך הפרוקסי", "text": "כשה-toolchains דלוקים ולא העברתם דגל רשת, ה-sandbox מגיע ל-crates.io, npm, PyPI, ה-proxy של Go, Maven Central, Clojars, Packagist ו-github.com, כל אחד עם תת-הדומיינים שלו, דרך אותו פרוקסי כמו <code>--allow-host</code>, ולשום מקום אחר. ה-API של הסוכן עצמו עדיין צריך <code>--allow-host</code> או <code>--network</code>." }
+    ],
+    "codeTitle": "טרמינל",
+    "code": {
+      "default": "# ברירת המחדל ב-Linux",
+      "offline": "# caches דלוקים, בלי רשת בכלל",
+      "none": "# שום דבר לא ממופה, שום דבר לא נגיש"
+    },
+    "optout": {
+      "title": "כיבוי",
+      "text": "<code>--no-toolchains</code>, או <code>no_toolchains = true</code>, מכבה יחד את ה-caches ואת ברירת המחדל של ה-registries. <code>--no-network</code> משאיר את ה-caches וסוגר את ה-registries. מצב lockdown מכבה את ה-toolchains, וקובץ פרויקט יכול רק לכבות אותם."
+    },
+    "caveat": {
+      "title": "שתי מגבלות",
+      "text": "<code>cargo install</code> אל ה-bin הגלובלי לא עובד בתוך הכלא; השתמשו ב-<code>cargo install --root</code>. ברירת המחדל של ה-registries צריכה network namespace ללא הרשאות. כשהקרנל מסרב לתת אחד כזה, ה-sandbox נשאר offline בלי להודיע על כך, בעוד ש-<code>--allow-host</code> מפורש עדיין נכשל סגור."
+    }
+  },
   "lockdown": {
     "title": "מצב lockdown: הסוכן קורא קוד שאסור לו לשנות",
     "lede": "הדגל <code>--lockdown</code> מיועד ל-code review ולביקורות (audits). הסוכן יכול לקרוא את הפרויקט ולענות על שאלות לגביו, ולא יכול לשנות בו אף קובץ.",
@@ -150,7 +188,8 @@
       { "text": "הסביבה מנוקה, ו-<code>PATH</code> מקובע לתיקיות המערכת" },
       { "text": "חובה שיהיה Landlock: אם אי אפשר להחיל אותו, ההפעלה נכשלת" },
       { "text": "מגבלות הדוקות יותר על תהליכים, על קבצים פתוחים ועל גודל קובץ" },
-      { "text": "בלי תצוגה, אודיו, GPU, Docker, SSH agent או mise, גם אם העברתם דגלים אחרים" }
+      { "text": "בלי תצוגה, אודיו, GPU, KVM, Docker, SSH agent או mise, גם אם העברתם דגלים אחרים" },
+      { "text": "בלי caches של toolchains, בלי יציאה ל-registries ובלי פרטי גישה של כלים" }
     ],
     "codeTitle": "טרמינל",
     "network": {
@@ -167,7 +206,8 @@
       { "title": "hosts מורשים בקובץ הגלובלי", "text": "הרשימה חלה על כל הרצה של אותה פקודה. host מורשה זוכה לאמון מלא: <code>github.com</code> מאפשר לסוכן לעשות push לכל ריפוזיטורי שפרטי הגישה שלכם מגיעים אליו, אז הוסיפו אותו רק אם לזה אתם מתכוונים." },
       { "title": "מפתח שהסוכן אף פעם לא רואה", "text": "ה-sandbox מקבל placeholder ב-<code>ANTHROPIC_API_KEY</code>, והפרוקסי של ai-jail מכניס את המפתח האמיתי רק לבקשות אל <code>api.anthropic.com</code>. הלקוח חייב לשלוח HTTP רגיל לפרוקסי בשביל אותו host, וזה מה שכתובת הבסיס <code>http://</code> עושה. משם ai-jail מעביר את הבקשה ל-host האמיתי דרך TLS. לקוח שפותח רק מנהרות HTTPS ממשיך לעבוד, בלי החלפה." },
       { "title": "פקודת git push דרך SSH", "text": "הדגל <code>--ssh</code> מעגן את <code>~/.ssh</code> לקריאה בלבד ומעביר פנימה את ה-socket של ה-SSH agent שלכם. כדי לעשות push צריך גם רשת." },
-      { "title": "ה-toolchains של mise", "text": "בתיקיית הבית החדשה אין התקנות של mise, ולכן ai-jail מדלג עליו. מפו פנימה את שתי התיקיות של mise, לקריאה בלבד." },
+      { "title": "build ובדיקות בתוך הכלא", "text": "ב-Linux אין מה להוסיף. <code>cargo build</code>, <code>npm install</code> או <code>go get</code> מושכים מה-registries דרך הפרוקסי ושומרים ב-cache של הכלא עצמו, וההתקנות של mise מגיעות יחד איתם לקריאה בלבד. להרצה שלא נוגעת בכלום ולא מגיעה לשום מקום, כבו את שניהם." },
+      { "title": "GitHub CLI בתוך הכלא", "text": "<code>--github</code> מעגן את <code>~/.config/gh</code> לקריאה בלבד, כך ש-<code>gh</code> מחובר. הוא מגיע ל-<code>api.github.com</code> דרך רשימת ה-registries שבברירת המחדל, שמכסה את <code>github.com</code> ואת תת-הדומיינים שלו, אז לא צריך להוסיף host. מרגע זה כל מה שרץ בכלא יכול לפעול ב-GitHub בשמכם." },
       { "title": "דפדפן לסוכן", "text": "הדגל <code>--browser</code> לבדו נותן דפדפן שלא יכול לטעון עמוד או לפתוח חלון. ב-Linux צריך להוסיף גם <code>--network</code> וגם <code>--display</code>, ודפדפן X11 צריך <code>--x11</code> במקום <code>--display</code>." },
       { "title": "פרופילים נפרדים של Claude", "text": "כדי להפריד בין ההתחברות של העבודה להתחברות הפרטית, הפנו כל הרצה לתיקיית Claude משלה." },
       { "title": "ריפקטור מסוכן, על עותק", "text": "עם overlay הכתיבות של הסוכן נשמרות בשכבה צדדית תחת <code>.ai-jail-overlays</code> בפרויקט. אחר כך משווים אותה למקור ושומרים את מה שמוצא חן בעיניכם. רק ב-Linux." }
@@ -179,13 +219,15 @@
       "x11": "# X11",
       "open": "# או פותחים את כל הרשת: network = true",
       "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
-      "phantom": "# המפתח נמצא בקובץ ה-0600; ה-sandbox רואה תמיד רק AIJAIL-PHANTOM-..."
+      "phantom": "# המפתח נמצא בקובץ ה-0600; ה-sandbox רואה תמיד רק AIJAIL-PHANTOM-...",
+      "build": "# ברירת המחדל ב-Linux: caches דלוקים, registries נגישים דרך הפרוקסי",
+      "offline": "# שום דבר לא ממופה, שום דבר לא נגיש"
     }
   },
   "compat": {
     "title": "הגדרות ישנות ממשיכות לעבוד",
     "text": "תאימות לאחור היא כלל של הפרויקט: דגל או מפתח הגדרה אף פעם לא מוסרים. מפתחות לא מוכרים לא נלקחים בחשבון, ומפתחות חסרים מקבלים את ברירת המחדל שלהם, כך שקובץ שנכתב לגרסה ישנה עדיין נטען.",
-    "legacy": "מתגים ותיקים שומרים על השמות ההפוכים שלהם, שבהם <code>true</code> מכבה את הדבר: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. זו הסיבה לכך ש-<code>--gpu</code> נשמר בתור <code>no_gpu = false</code>. מתגים חדשים יותר משתמשים בשמות ישירים כמו <code>network = true</code>. הדגל <code>--allow-tcp-port</code> עדיין מפוענח ועדיין מסרב להפעיל, כי הוא לא יכול לגדר UDP. השגיאה שלו מפנה אל <code>--allow-host</code>."
+    "legacy": "מתגים ותיקים שומרים על השמות ההפוכים שלהם, שבהם <code>true</code> מכבה את הדבר: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_toolchains</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. זו הסיבה לכך ש-<code>--gpu</code> נשמר בתור <code>no_gpu = false</code>. מתגים חדשים יותר משתמשים בשמות ישירים כמו <code>network = true</code>. הדגל <code>--allow-tcp-port</code> עדיין מפוענח ועדיין מסרב להפעיל, כי הוא לא יכול לגדר UDP. השגיאה שלו מפנה אל <code>--allow-host</code>."
   },
   "next": {
     "items": [

@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Configurar ai-jail: flags, archivos, máscaras y lockdown",
-    "description": "En ai-jail todo arranca apagado. Mira cada flag y clave de configuración, cómo ocultar secretos del proyecto, qué hace lockdown y recetas para copiar."
+    "description": "En ai-jail todo arranca apagado salvo tus toolchains. Cada flag y clave de config, cómo ocultar secretos del proyecto, qué hace lockdown y recetas para copiar."
   },
   "hero": {
     "title": "Cerrada por defecto. Los interruptores son tuyos.",
-    "lede": "Sin opciones, el agente recibe solo tu proyecto, sin red, sin login y sin claves. Abres lo que la tarea necesita, un interruptor a la vez, y también puedes cerrar más la jaula.",
+    "lede": "Sin opciones, el agente recibe tu proyecto y tus herramientas de build, sin login ni claves, y sin más red que una lista corta de registries de paquetes. Abres lo que la tarea necesita, un interruptor a la vez, y también puedes cerrar más la jaula.",
     "switches": "Ver los interruptores",
     "install": "Instalar"
   },
@@ -39,7 +39,7 @@
   },
   "switches": {
     "title": "Los interruptores",
-    "lede": "Cada fila está apagada hasta que lo pidas, y cada flag de capacidad tiene un gemelo <code>--no-</code> que la vuelve a cerrar. Una etiqueta roja marca un interruptor que debilita la jaula. <a class=\"link\" href=\"/security/\">Seguridad tiene la lista completa y los motivos</a>.",
+    "lede": "Cada fila está apagada hasta que lo pidas, salvo la única fila cian, que viene activada por defecto. Cada flag de capacidad tiene un gemelo <code>--no-</code> que la vuelve a cerrar. Una etiqueta roja marca un interruptor que debilita la jaula. <a class=\"link\" href=\"/security/\">Seguridad tiene la lista completa y los motivos</a>.",
     "cols": {
       "flag": "Flag",
       "key": "Clave de configuración",
@@ -48,7 +48,8 @@
     },
     "risk": {
       "optin": "Abre una cosa",
-      "weakens": "Debilita la jaula"
+      "weakens": "Debilita la jaula",
+      "default": "Activado por defecto"
     },
     "none": "ninguna",
     "groups": [
@@ -56,7 +57,7 @@
         "title": "Red y servicios",
         "rows": [
           {
-            "text": "Toda la red. Todo lo que el agente puede leer, lo puede enviar fuera. Si el agente solo necesita unos pocos hosts, <code>--allow-host</code> es la opción más estricta."
+            "text": "Toda la red. Todo lo que el agente puede leer, lo puede enviar fuera. Si el agente solo necesita unos pocos hosts, <code>--allow-host</code> es la opción más estricta. Sin ninguno de los dos flags, el sandbox llega solo a los <a class=\"link\" href=\"#toolchains\">registries de paquetes</a> que las toolchains abren a través del proxy, y <code>--no-network</code> cierra también esos."
           },
           {
             "text": "El sandbox llega solo al host indicado y a sus subdominios, por TCP a través del proxy integrado de ai-jail. Puedes repetir el flag. No se puede combinar con <code>--network</code> ni <code>--browser</code>, y un archivo de proyecto solo puede recortar la lista."
@@ -102,10 +103,36 @@
         ]
       },
       {
+        "title": "Toolchains y credenciales de herramientas",
+        "rows": [
+          {
+            "text": "Tus compiladores y gestores de paquetes en solo lectura, sus cachés de dependencias en un almacén propio de la jaula, y los registries de paquetes accesibles a través del proxy filtrado. Activado por defecto en Linux. Lockdown lo apaga, y un archivo de proyecto solo puede apagarlo. <a class=\"link\" href=\"#toolchains\">Detalles más abajo</a>."
+          },
+          {
+            "text": "Tu <code>~/.config/gh</code>, en solo lectura, para que <code>gh</code> tenga la sesión iniciada. Solo lectura protege el archivo contra cambios. Cualquier cosa dentro de la jaula puede igualmente actuar como tú en GitHub."
+          },
+          {
+            "text": "Tu <code>~/.aws</code>, en solo lectura. Cualquier cosa dentro de la jaula puede actuar como tú en AWS mientras la credencial siga siendo válida."
+          },
+          {
+            "text": "Tu <code>~/.kube</code>, en solo lectura. Cualquier cosa dentro de la jaula puede hablar con tus clústeres como tú."
+          },
+          {
+            "text": "Tu <code>~/.config/gcloud</code>, en solo lectura. Cualquier cosa dentro de la jaula puede actuar como tú en Google Cloud."
+          },
+          {
+            "text": "Tu <code>~/.docker/config.json</code>, en solo lectura, que guarda tus logins de registries. Cualquier cosa dentro de la jaula puede usarlos."
+          }
+        ]
+      },
+      {
         "title": "Escritorio y hardware",
         "rows": [
           {
             "text": "Los dispositivos de GPU y, con ellos, la superficie de ataque del driver. Solo Linux."
+          },
+          {
+            "text": "<code>/dev/kvm</code>, para máquinas virtuales con aceleración por hardware como QEMU o un emulador de Android. Expone la interfaz KVM del kernel del host. Los guests solo tienen la red del sandbox, y ningún dispositivo tun ni vhost. Solo Linux."
           },
           {
             "text": "El socket de Wayland y nada más de tu sesión. Solo Linux."
@@ -168,6 +195,9 @@
             "text": "Añade un registro por arranque a <code>~/.local/share/ai-jail/history.jsonl</code> (directorio 0700, archivo 0600): hora, comando, capacidades efectivas, fuentes de configuración, código de salida y duración. Con <code>--allow-host</code>, también registra cada conexión permitida o denegada, y con <code>--secret</code>, cada inyección. Cada línea lleva el hash de la anterior. Está apagado por defecto, y un archivo de proyecto puede apagarlo pero no activarlo."
           },
           {
+            "text": "Imprime un resumen legible del registro y termina: arranques, decisiones de la red filtrada y sustituciones de secretos. No comprueba la cadena. Sale con 0 tras mostrarlo, 1 si hay registros malformados o un error de lectura, 2 si no hay registro. Los registros por arranque pueden incluir los argumentos del comando, así que deja los secretos fuera de ellos."
+          },
+          {
             "text": "Recorre la cadena de hashes del registro de auditoría y termina: 0 si está intacta, 1 en el primer eslabón roto, 2 si no hay registro. Los registros escritos antes de la 2.2 se reportan como legacy, lo cual no es un error."
           }
         ]
@@ -197,7 +227,7 @@
       }
     ],
     "layersLink": "<a class=\"link\" href=\"/how-it-works/\">Cómo funciona</a> explica qué hace cada capa.",
-    "more": "Ejecuta <code>ai-jail --help</code> para ver el resto: la barra de estado, los worktrees, mise y las opciones de terminal."
+    "more": "Ejecuta <code>ai-jail --help</code> para ver el resto: la barra de estado, los worktrees, mise y las opciones de terminal. La clave de las toolchains está invertida como las más antiguas: <code>no_toolchains = true</code> las apaga."
   },
   "secrets": {
     "title": "Oculta los secretos dentro del proyecto",
@@ -235,6 +265,40 @@
       "tomlNote": "# solo en el archivo global; si un archivo de proyecto lo define, se ignora"
     }
   },
+  "toolchains": {
+    "title": "Tus toolchains vienen contigo",
+    "lede": "Un build necesita compiladores, gestores de paquetes y sus cachés. En Linux, ai-jail los trae por defecto: las herramientas en solo lectura, las cachés en un almacén propio de la jaula, y los registries de paquetes accesibles a través del proxy filtrado.",
+    "alt": "Dentro del muro de la jaula, el agente llega a una caja de herramientas con candado etiquetada Toolchains y a una caja etiquetada Caché de la jaula. Fuera del muro, la caché del host está atenuada y tras barrotes, sin ninguna línea hacia ella. A la derecha, una línea desde el agente cruza una puerta y una caja de proxy hasta una nube etiquetada Registries. Encima, la nube API del modelo está atenuada y tras barrotes.",
+    "caption": "Las cachés del propio host quedan fuera, así que un build enjaulado no puede envenenar lo que el host construye. La API del agente sigue cerrada hasta que la abres.",
+    "points": [
+      {
+        "title": "Herramientas, en solo lectura",
+        "text": "Desde la 2.4.1, ai-jail mapea las instalaciones y la configuración de mise en solo lectura. Para Rust mapea <code>~/.cargo/bin</code> y <code>~/.rustup</code> del mismo modo, para que <code>cargo</code> y <code>rustc</code> se resuelvan. Las credenciales de Cargo y su <code>config.toml</code> se quedan fuera."
+      },
+      {
+        "title": "Una caché propia de la jaula",
+        "text": "Las cachés de dependencias viven en <code>~/.local/share/ai-jail/cache/</code> y sobreviven entre sesiones. Ahí van las cachés de registry y de git de Cargo. También la caché por defecto de pip, uv, Go, npm, yarn, pnpm, bun, deno, Maven, Gradle, Coursier, Composer, Crystal y Zig, cuando el directorio de esa herramienta existe en tu máquina."
+      },
+      {
+        "title": "Registries, a través del proxy",
+        "text": "Con las toolchains activadas y sin ningún flag de red, el sandbox llega a crates.io, npm, PyPI, el proxy de Go, Maven Central, Clojars, Packagist y github.com, cada uno con sus subdominios, a través del mismo proxy que <code>--allow-host</code>, y a nada más. La API del propio agente sigue necesitando <code>--allow-host</code> o <code>--network</code>."
+      }
+    ],
+    "codeTitle": "terminal",
+    "code": {
+      "default": "# el valor por defecto en Linux",
+      "offline": "# cachés activadas, sin red de ningún tipo",
+      "none": "# nada mapeado, nada accesible"
+    },
+    "optout": {
+      "title": "Cómo apagarlo",
+      "text": "<code>--no-toolchains</code>, o <code>no_toolchains = true</code>, apaga las cachés y los registries por defecto a la vez. <code>--no-network</code> conserva las cachés y cierra los registries. Lockdown apaga las toolchains, y un archivo de proyecto solo puede apagarlas."
+    },
+    "caveat": {
+      "title": "Dos límites",
+      "text": "<code>cargo install</code> al bin global no funciona dentro de la jaula; usa <code>cargo install --root</code>. Los registries por defecto necesitan un namespace de red sin privilegios. Donde el kernel lo rechaza, el sandbox se queda sin conexión sin avisar, mientras que un <code>--allow-host</code> explícito sigue fallando en cerrado."
+    }
+  },
   "lockdown": {
     "title": "Lockdown: que un agente lea código que no debe cambiar",
     "lede": "<code>--lockdown</code> es para revisiones y auditorías. El agente puede leer el proyecto y responder preguntas sobre él, pero no puede cambiar ni un archivo.",
@@ -261,7 +325,10 @@
         "text": "Límites más estrictos de procesos, archivos abiertos y tamaño de archivo"
       },
       {
-        "text": "Sin pantalla, audio, GPU, Docker, agente SSH ni mise, pases lo que pases"
+        "text": "Sin pantalla, audio, GPU, KVM, Docker, agente SSH ni mise, pases lo que pases"
+      },
+      {
+        "text": "Sin cachés de toolchains, salida a registries ni credenciales de herramientas"
       }
     ],
     "codeTitle": "terminal",
@@ -295,8 +362,12 @@
         "text": "<code>--ssh</code> monta <code>~/.ssh</code> en solo lectura y reenvía el socket de tu agente SSH. Para hacer push también hace falta la red."
       },
       {
-        "title": "Toolchains de mise",
-        "text": "El directorio home nuevo no tiene ninguna instalación de mise, así que ai-jail omite mise. Mapea hacia dentro los dos directorios de mise, en solo lectura."
+        "title": "Build y tests dentro de la jaula",
+        "text": "Nada que añadir en Linux. <code>cargo build</code>, <code>npm install</code> o <code>go get</code> descargan de los registries a través del proxy y guardan en el almacén propio de la jaula, y las instalaciones de mise vienen en solo lectura. Para una ejecución que no toque nada ni llegue a nada, apaga ambas cosas."
+      },
+      {
+        "title": "GitHub CLI dentro de la jaula",
+        "text": "<code>--github</code> monta <code>~/.config/gh</code> en solo lectura, para que <code>gh</code> tenga la sesión iniciada. Llega a <code>api.github.com</code> a través de la lista de registries por defecto, que cubre <code>github.com</code> y sus subdominios, así que no añades ningún host. Cualquier cosa dentro de la jaula puede entonces actuar en GitHub como tú."
       },
       {
         "title": "Un navegador para el agente",
@@ -318,13 +389,15 @@
       "x11": "# X11",
       "open": "# o abre toda la red: network = true",
       "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
-      "phantom": "# la clave vive en el archivo 0600; el sandbox solo ve AIJAIL-PHANTOM-..."
+      "phantom": "# la clave vive en el archivo 0600; el sandbox solo ve AIJAIL-PHANTOM-...",
+      "build": "# por defecto en Linux: cachés activadas, registries accesibles a través del proxy",
+      "offline": "# nada mapeado, nada accesible"
     }
   },
   "compat": {
     "title": "Tus configs antiguas siguen sirviendo",
     "text": "La compatibilidad hacia atrás es una regla del proyecto: nunca se elimina un flag ni una clave de configuración. Las claves desconocidas se ignoran y las que faltan toman su valor por defecto, así que un archivo escrito para una versión antigua todavía carga.",
-    "legacy": "Los interruptores más antiguos conservan sus nombres invertidos, donde <code>true</code> apaga la cosa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. Por eso <code>--gpu</code> se guarda como <code>no_gpu = false</code>. Los más nuevos usan nombres directos como <code>network = true</code>. <code>--allow-tcp-port</code> todavía se parsea y todavía se niega a arrancar, porque no puede vallar UDP. Su error apunta a <code>--allow-host</code>."
+    "legacy": "Los interruptores más antiguos conservan sus nombres invertidos, donde <code>true</code> apaga la cosa: <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_toolchains</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>. Por eso <code>--gpu</code> se guarda como <code>no_gpu = false</code>. Los más nuevos usan nombres directos como <code>network = true</code>. <code>--allow-tcp-port</code> todavía se parsea y todavía se niega a arrancar, porque no puede vallar UDP. Su error apunta a <code>--allow-host</code>."
   },
   "next": {
     "items": [

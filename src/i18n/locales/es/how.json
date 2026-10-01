@@ -54,7 +54,7 @@
         "name": "Landlock",
         "tag": "kernel 5.13+",
         "is": "Landlock es una función del kernel de Linux que permite a un proceso renunciar para siempre al acceso a archivos. ai-jail la usa para repetir las reglas del sistema de archivos como una segunda lista de permitidos dentro del kernel.",
-        "stops": "Un error o un truco en la capa de montajes no basta para llegar a una ruta fuera de la lista, y lo que es de solo lectura sigue siéndolo. En kernels 6.12 o más nuevos también acota los sockets Unix abstractos y las señales, en la medida de lo posible. En kernels demasiado antiguos para Landlock, ai-jail lo avisa y continúa con las demás capas."
+        "stops": "Un error o un truco en la capa de montajes no basta para llegar a una ruta fuera de la lista, y lo que es de solo lectura sigue siéndolo. En kernels 6.12 o más nuevos también valla los sockets Unix abstractos y las señales, en modo best-effort. En kernels demasiado antiguos para Landlock, ai-jail lo avisa y continúa con las demás capas."
       },
       {
         "name": "seccomp",

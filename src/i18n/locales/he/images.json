@@ -31,6 +31,15 @@
     "Agent": "סוכן",
     "Your project": "הפרויקט שלכם"
   },
+  "configure-toolchains": {
+    "Agent": "סוכן",
+    "Toolchains": "Toolchains",
+    "Jail cache": "cache של הכלא",
+    "Host cache": "cache של המארח",
+    "Proxy": "פרוקסי",
+    "Registries": "Registries",
+    "Model API": "API של המודל"
+  },
   "configure-lockdown": {
     "Normal": "רגיל",
     "Lockdown": "Lockdown",

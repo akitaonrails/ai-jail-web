@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "ai-jail 설정: 플래그, 설정 파일, 마스킹, 락다운",
-    "description": "ai-jail의 모든 기능은 꺼진 상태에서 시작합니다. 플래그와 설정 키 전체 목록, 프로젝트 안의 .env 같은 시크릿을 에이전트에게 숨기는 마스킹 방법, 코드 리뷰와 감사에 쓰는 락다운 모드의 동작, 그대로 복사해서 쓸 수 있는 설정 레시피를 정리했습니다."
+    "description": "ai-jail의 모든 기능은 꺼진 상태에서 시작하고, 예외는 내 툴체인뿐입니다. 플래그와 설정 키 전체 목록, 프로젝트 안의 시크릿을 에이전트에게 숨기는 방법, 락다운 모드의 동작, 그대로 복사해서 쓸 수 있는 설정 레시피를 정리했습니다."
   },
   "hero": {
     "title": "기본은 닫힘, 스위치는 내 손에",
-    "lede": "옵션을 주지 않으면 에이전트는 프로젝트만 받습니다. 네트워크도 로그인도 키도 없습니다. 작업에 필요한 것을 스위치 하나씩 열면 되고, 감옥을 더 닫을 수도 있습니다.",
+    "lede": "옵션을 주지 않으면 에이전트는 프로젝트와 빌드 도구만 받습니다. 로그인도 키도 없고, 네트워크는 짧은 패키지 레지스트리 목록이 전부입니다. 작업에 필요한 것을 스위치 하나씩 열면 되고, 감옥을 더 닫을 수도 있습니다.",
     "switches": "스위치 보기",
     "install": "설치"
   },
@@ -30,15 +30,15 @@
   },
   "switches": {
     "title": "스위치 목록",
-    "lede": "모든 행은 요청하기 전까지 꺼져 있고, 기능 플래그마다 다시 닫는 <code>--no-</code> 짝이 있습니다. 빨간 배지는 감옥을 약하게 만드는 스위치를 뜻합니다. <a class=\"link\" href=\"/security/\">전체 목록과 이유는 보안 페이지에 있습니다</a>.",
+    "lede": "모든 행은 요청하기 전까지 꺼져 있습니다. 예외는 청록색 행 하나로, 기본으로 켜져 있습니다. 기능 플래그마다 다시 닫는 <code>--no-</code> 짝이 있습니다. 빨간 배지는 감옥을 약하게 만드는 스위치를 뜻합니다. <a class=\"link\" href=\"/security/\">전체 목록과 이유는 보안 페이지에 있습니다</a>.",
     "cols": { "flag": "플래그", "key": "설정 키", "opens": "하는 일", "risk": "위험" },
-    "risk": { "optin": "한 가지를 엶", "weakens": "감옥을 약하게 함" },
+    "risk": { "optin": "한 가지를 엶", "weakens": "감옥을 약하게 함", "default": "기본 활성" },
     "none": "없음",
     "groups": [
       {
         "title": "네트워크와 서비스",
         "rows": [
-          { "text": "네트워크 전체. 에이전트가 읽을 수 있는 것은 무엇이든 밖으로 보낼 수 있습니다. 호스트 몇 개만 필요하다면 <code>--allow-host</code>가 더 조이는 선택입니다." },
+          { "text": "네트워크 전체. 에이전트가 읽을 수 있는 것은 무엇이든 밖으로 보낼 수 있습니다. 호스트 몇 개만 필요하다면 <code>--allow-host</code>가 더 조이는 선택입니다. 둘 다 주지 않으면 샌드박스는 툴체인이 프록시를 통해 여는 <a class=\"link\" href=\"#toolchains\">패키지 레지스트리</a>에만 닿고, <code>--no-network</code>는 그것까지 닫습니다." },
           { "text": "샌드박스가 나열한 호스트와 그 서브도메인에만, ai-jail 내장 프록시를 거쳐 TCP로 닿습니다. 플래그는 여러 번 쓸 수 있습니다. <code>--network</code>나 <code>--browser</code>와는 함께 쓸 수 없고, 프로젝트 파일은 목록을 줄일 수만 있습니다." },
           { "text": "<code>~/.ssh</code>를 읽기 전용으로 열고 SSH 에이전트 소켓을 연결해서 <code>git push</code>가 되게 합니다." },
           { "text": "Docker 소켓. 데몬이 호스트를 마운트한 컨테이너를 띄울 수 있으므로 사실상 내 컴퓨터의 root 권한입니다." },
@@ -59,9 +59,21 @@
         ]
       },
       {
+        "title": "툴체인과 도구 자격 증명",
+        "rows": [
+          { "text": "내 컴파일러와 패키지 관리자는 읽기 전용으로, 의존성 캐시는 감옥 전용 저장소에, 패키지 레지스트리는 필터링 프록시를 통해 닿을 수 있게 합니다. Linux에서는 기본으로 켜져 있습니다. 락다운에서는 꺼지고, 프로젝트 파일은 끌 수만 있습니다. <a class=\"link\" href=\"#toolchains\">아래에 자세히</a>." },
+          { "text": "내 <code>~/.config/gh</code>를 읽기 전용으로 열어 <code>gh</code>가 로그인된 상태가 됩니다. 읽기 전용은 파일이 바뀌는 것만 막습니다. 감옥 안의 모든 것이 GitHub에서 나처럼 행동할 수 있습니다." },
+          { "text": "내 <code>~/.aws</code>, 읽기 전용. 자격 증명이 유효한 동안 감옥 안의 모든 것이 AWS에서 나처럼 행동할 수 있습니다." },
+          { "text": "내 <code>~/.kube</code>, 읽기 전용. 감옥 안의 모든 것이 내 클러스터에 나로서 접근할 수 있습니다." },
+          { "text": "내 <code>~/.config/gcloud</code>, 읽기 전용. 감옥 안의 모든 것이 Google Cloud에서 나처럼 행동할 수 있습니다." },
+          { "text": "내 <code>~/.docker/config.json</code>, 읽기 전용. 레지스트리 로그인이 들어 있어서 감옥 안의 모든 것이 그 로그인을 쓸 수 있습니다." }
+        ]
+      },
+      {
         "title": "데스크톱과 하드웨어",
         "rows": [
           { "text": "GPU 장치. 드라이버의 공격 표면도 함께 열립니다. Linux 전용." },
+          { "text": "<code>/dev/kvm</code>. QEMU나 Android 에뮬레이터 같은 하드웨어 가속 가상 머신용입니다. 호스트 커널의 KVM 인터페이스가 노출됩니다. 게스트는 샌드박스의 네트워크만 쓰고, tun이나 vhost 장치는 없습니다. Linux 전용." },
           { "text": "Wayland 소켓만 열고 세션의 다른 것은 열지 않습니다. Linux 전용." },
           { "text": "X11 소켓. X11에서는 프로그램이 키 입력을 기록하고 스크린샷을 찍을 수 있습니다." },
           { "text": "PipeWire와 PulseAudio 소켓, 그리고 <code>/dev/snd</code>. 감옥 안의 모든 것이 오디오를 녹음하고 재생할 수 있습니다. Linux 전용." },
@@ -92,6 +104,7 @@
         "title": "가시성",
         "rows": [
           { "text": "실행할 때마다 <code>~/.local/share/ai-jail/history.jsonl</code>(디렉터리 0700, 파일 0600)에 레코드 하나를 추가합니다. 시각, 명령, 실제 적용된 기능, 설정 출처, 종료 코드, 소요 시간이 들어갑니다. <code>--allow-host</code>를 쓰면 허용되거나 거부된 연결도 모두 기록하고, <code>--secret</code>을 쓰면 주입도 모두 기록합니다. 각 줄에는 바로 앞 줄의 해시가 들어갑니다. 기본으로 꺼져 있고, 프로젝트 파일은 끌 수만 있고 켤 수는 없습니다." },
+          { "text": "로그를 읽기 쉬운 요약으로 출력하고 종료합니다. 실행, 필터링된 네트워크 결정, 시크릿 치환이 나옵니다. 체인은 검사하지 않습니다. 출력하면 0, 레코드가 손상되었거나 읽기 오류면 1, 로그가 없으면 2를 반환합니다. 실행 기록에는 명령 인자가 들어갈 수 있으니 인자에 시크릿을 넣지 마세요." },
           { "text": "감사 로그의 해시 체인을 따라 검사한 뒤 종료합니다. 온전하면 0, 처음 끊긴 고리에서 1, 로그가 없으면 2를 반환합니다. 2.2 이전에 쓰인 레코드는 legacy로 보고되며 오류가 아닙니다." }
         ]
       },
@@ -108,7 +121,7 @@
       }
     ],
     "layersLink": "각 계층이 하는 일은 <a class=\"link\" href=\"/how-it-works/\">작동 방식</a>에서 설명합니다.",
-    "more": "나머지는 <code>ai-jail --help</code>로 확인하세요. 상태 표시줄, worktree, mise, 터미널 옵션이 있습니다."
+    "more": "나머지는 <code>ai-jail --help</code>로 확인하세요. 상태 표시줄, worktree, mise, 터미널 옵션이 있습니다. 툴체인 키는 예전 키들처럼 반전되어 있어서 <code>no_toolchains = true</code>가 끄는 쪽입니다."
   },
   "secrets": {
     "title": "프로젝트 안의 시크릿 숨기기",
@@ -137,6 +150,27 @@
       "tomlNote": "# 전역 파일 전용. 프로젝트 파일에 설정하면 무시됩니다"
     }
   },
+  "toolchains": {
+    "title": "내 툴체인도 함께 들어갑니다",
+    "lede": "빌드에는 컴파일러, 패키지 관리자, 그리고 그 캐시가 필요합니다. Linux에서는 ai-jail이 이것들을 기본으로 들여옵니다. 도구는 읽기 전용으로, 캐시는 감옥 전용 저장소에, 패키지 레지스트리는 필터링 프록시를 통해 닿게 합니다.",
+    "alt": "감옥 벽 안에서 에이전트가 툴체인이라고 적힌 잠긴 공구함과 감옥 캐시라고 적힌 상자에 닿아 있습니다. 벽 바깥의 호스트 캐시는 흐리고 창살에 막혀 있으며 연결선이 없습니다. 오른쪽에서는 에이전트에서 나온 선이 문과 프록시 상자를 지나 레지스트리라고 적힌 구름으로 이어집니다. 그 위의 모델 API 구름은 흐리고 창살에 막혀 있습니다.",
+    "caption": "호스트의 실제 캐시는 바깥에 남으므로, 감옥 안의 빌드가 호스트가 빌드에 쓰는 캐시를 오염시킬 수 없습니다. 에이전트의 API는 직접 열기 전까지 닫혀 있습니다.",
+    "points": [
+      { "title": "도구는 읽기 전용", "text": "2.4.1부터 ai-jail은 mise로 설치한 것과 그 설정을 읽기 전용으로 매핑합니다. Rust는 <code>~/.cargo/bin</code>과 <code>~/.rustup</code>을 같은 방식으로 매핑해서 <code>cargo</code>와 <code>rustc</code>가 잡힙니다. Cargo의 자격 증명과 <code>config.toml</code>은 들어가지 않습니다." },
+      { "title": "감옥 전용 캐시", "text": "의존성 캐시는 <code>~/.local/share/ai-jail/cache/</code> 아래에 두고 세션 사이에 유지됩니다. Cargo의 레지스트리 캐시와 git 캐시가 여기로 갑니다. pip, uv, Go, npm, yarn, pnpm, bun, deno, Maven, Gradle, Coursier, Composer, Crystal, Zig의 기본 캐시도 내 컴퓨터에 그 도구의 디렉터리가 있으면 여기로 갑니다." },
+      { "title": "레지스트리는 프록시를 통해", "text": "툴체인이 켜져 있고 네트워크 플래그를 주지 않으면, 샌드박스는 <code>--allow-host</code>와 같은 프록시를 통해 crates.io, npm, PyPI, Go 프록시, Maven Central, Clojars, Packagist, github.com과 각각의 서브도메인에만 닿고 그 밖에는 닿지 못합니다. 에이전트 자신의 API에는 여전히 <code>--allow-host</code>나 <code>--network</code>가 필요합니다." }
+    ],
+    "codeTitle": "터미널",
+    "code": { "default": "# Linux의 기본값", "offline": "# 캐시는 켜고 네트워크는 전혀 없음", "none": "# 아무것도 매핑하지 않고 아무 데도 닿지 않음" },
+    "optout": {
+      "title": "끄는 방법",
+      "text": "<code>--no-toolchains</code> 또는 <code>no_toolchains = true</code>는 캐시와 레지스트리 기본값을 함께 끕니다. <code>--no-network</code>는 캐시는 두고 레지스트리만 닫습니다. 락다운은 툴체인을 끄고, 프로젝트 파일은 끌 수만 있습니다."
+    },
+    "caveat": {
+      "title": "한계 두 가지",
+      "text": "전역 bin으로의 <code>cargo install</code>은 감옥 안에서 동작하지 않으니 <code>cargo install --root</code>를 쓰세요. 레지스트리 기본값에는 비특권 네트워크 네임스페이스가 필요합니다. 커널이 이를 거부하면 샌드박스는 아무 말 없이 오프라인으로 남지만, 명시적인 <code>--allow-host</code>는 여전히 페일 클로즈로 동작합니다."
+    }
+  },
   "lockdown": {
     "title": "락다운: 읽기만 하고 고치면 안 되는 코드",
     "lede": "<code>--lockdown</code>은 리뷰와 감사에 씁니다. 에이전트는 프로젝트를 읽고 질문에 답할 수 있지만 프로젝트 안의 파일은 바꿀 수 없습니다.",
@@ -150,7 +184,8 @@
       { "text": "환경을 비우고 <code>PATH</code>를 시스템 디렉터리로 고정합니다" },
       { "text": "Landlock이 필수입니다. 적용할 수 없으면 실행이 실패합니다" },
       { "text": "프로세스 수, 열린 파일 수, 파일 크기 제한이 더 엄격해집니다" },
-      { "text": "다른 플래그를 넘겼더라도 디스플레이, 오디오, GPU, Docker, SSH 에이전트, mise는 없습니다" }
+      { "text": "다른 플래그를 넘겼더라도 디스플레이, 오디오, GPU, KVM, Docker, SSH 에이전트, mise는 없습니다" },
+      { "text": "툴체인 캐시, 레지스트리 외부 연결, 도구 자격 증명은 없습니다" }
     ],
     "codeTitle": "터미널",
     "network": {
@@ -167,7 +202,8 @@
       { "title": "전역 파일의 허용 호스트", "text": "목록은 그 명령을 실행할 때마다 적용됩니다. 허용된 호스트는 통째로 신뢰됩니다. <code>github.com</code>을 넣으면 에이전트가 내 자격 증명이 닿는 어느 저장소에든 푸시할 수 있으니, 정말 원할 때만 추가하세요." },
       { "title": "에이전트가 절대 보지 못하는 키", "text": "샌드박스의 <code>ANTHROPIC_API_KEY</code>에는 플레이스홀더가 들어가고, ai-jail의 프록시가 <code>api.anthropic.com</code>으로 가는 요청에만 실제 키를 넣습니다. 클라이언트는 그 호스트에 대해 프록시로 평문 HTTP를 보내야 하는데, <code>http://</code> 기본 URL이 그 역할을 합니다. 그러면 ai-jail이 요청을 TLS로 실제 호스트까지 나릅니다. HTTPS 터널만 여는 클라이언트는 치환 없이 그대로 동작합니다." },
       { "title": "SSH로 git push", "text": "<code>--ssh</code>는 <code>~/.ssh</code>를 읽기 전용으로 마운트하고 SSH 에이전트 소켓을 전달합니다. 푸시하려면 네트워크도 필요합니다." },
-      { "title": "mise 툴체인", "text": "새 홈 디렉터리에는 mise로 설치한 것이 없어서 ai-jail이 mise를 건너뜁니다. mise 디렉터리 두 개를 읽기 전용으로 매핑하세요." },
+      { "title": "감옥 안에서 빌드하고 테스트하기", "text": "Linux에서는 더할 것이 없습니다. <code>cargo build</code>, <code>npm install</code>, <code>go get</code>은 프록시를 통해 레지스트리에서 받아 감옥 전용 저장소에 캐시하고, mise로 설치한 것도 읽기 전용으로 따라옵니다. 아무것도 건드리지 않고 아무 데도 닿지 않는 실행이 필요하면 둘 다 끄세요." },
+      { "title": "감옥 안에서 GitHub CLI 쓰기", "text": "<code>--github</code>은 <code>~/.config/gh</code>를 읽기 전용으로 마운트해서 <code>gh</code>가 로그인된 상태가 됩니다. <code>api.github.com</code>에는 기본 레지스트리 목록을 통해 닿는데, 이 목록이 <code>github.com</code>과 그 서브도메인을 포함하므로 호스트를 추가할 필요가 없습니다. 그 뒤로는 감옥 안의 모든 것이 GitHub에서 나처럼 행동할 수 있습니다." },
       { "title": "에이전트용 브라우저", "text": "<code>--browser</code>만 주면 페이지를 불러올 수도 창을 열 수도 없는 브라우저가 됩니다. Linux에서는 <code>--network</code>와 <code>--display</code>가 함께 필요하고, X11 브라우저에는 <code>--display</code> 대신 <code>--x11</code>이 필요합니다." },
       { "title": "Claude 프로필 분리", "text": "실행할 때마다 서로 다른 Claude 디렉터리를 지정해서 업무용 로그인과 개인용 로그인을 따로 관리합니다." },
       { "title": "위험한 리팩터링을 사본에서 해 보기", "text": "오버레이를 쓰면 에이전트가 쓴 내용은 프로젝트의 <code>.ai-jail-overlays</code> 아래 별도 레이어에 남습니다. 끝난 뒤 원본과 비교해서 마음에 드는 것만 가져오면 됩니다. Linux 전용." }
@@ -179,13 +215,15 @@
       "x11": "# X11",
       "open": "# 아니면 네트워크 전체를 열기: network = true",
       "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
-      "phantom": "# 키는 0600 파일에만 있고, 샌드박스에는 AIJAIL-PHANTOM-... 만 보입니다"
+      "phantom": "# 키는 0600 파일에만 있고, 샌드박스에는 AIJAIL-PHANTOM-... 만 보입니다",
+      "build": "# Linux의 기본값: 캐시는 켜고, 레지스트리는 프록시를 통해 닿음",
+      "offline": "# 아무것도 매핑하지 않고 아무 데도 닿지 않음"
     }
   },
   "compat": {
     "title": "예전 설정도 계속 동작합니다",
     "text": "하위 호환성은 프로젝트 규칙입니다. 이 프로젝트는 플래그나 설정 키를 없애지 않습니다. 모르는 키는 무시하고 빠진 키에는 기본값을 쓰므로, 예전 버전용으로 쓴 파일도 그대로 읽힙니다.",
-    "legacy": "오래된 스위치는 <code>true</code>가 끈다는 뜻인 반전된 이름을 그대로 씁니다. <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>가 그렇습니다. 그래서 <code>--gpu</code>는 <code>no_gpu = false</code>로 저장됩니다. 새로 생긴 스위치는 <code>network = true</code>처럼 평범한 이름을 씁니다. <code>--allow-tcp-port</code>는 지금도 파싱되지만 UDP에 울타리를 칠 수 없어서 여전히 실행을 거부합니다. 오류 메시지는 <code>--allow-host</code>를 가리킵니다."
+    "legacy": "오래된 스위치는 <code>true</code>가 끈다는 뜻인 반전된 이름을 그대로 씁니다. <code>no_gpu</code>, <code>no_docker</code>, <code>no_display</code>, <code>no_mise</code>, <code>no_toolchains</code>, <code>no_landlock</code>, <code>no_seccomp</code>, <code>no_rlimits</code>가 그렇습니다. 그래서 <code>--gpu</code>는 <code>no_gpu = false</code>로 저장됩니다. 새로 생긴 스위치는 <code>network = true</code>처럼 평범한 이름을 씁니다. <code>--allow-tcp-port</code>는 지금도 파싱되지만 UDP에 울타리를 칠 수 없어서 여전히 실행을 거부합니다. 오류 메시지는 <code>--allow-host</code>를 가리킵니다."
   },
   "next": {
     "items": [

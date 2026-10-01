@@ -15,7 +15,7 @@
       { "title": "Seu agente roda como você", "text": "Um agente de código é um programa rodando na sua conta de usuário. Ele abre tudo o que você consegue abrir, e o mesmo vale para cada script, pacote e servidor MCP que ele inicia." },
       { "title": "Inicie pelo ai-jail", "text": "Digite <code>ai-jail</code> na frente do comando. O agente sobe em namespaces próprios, com o seu projeto montado no mesmo caminho." },
       { "title": "Seu home não é montado", "text": "O agente recebe um diretório home novo e vazio. Chaves SSH, credenciais de nuvem, perfis de navegador e seus outros projetos não existem lá dentro." },
-      { "title": "Segredos, rede e dispositivos desligados", "text": "As variáveis de ambiente são reduzidas a uma allowlist, então os tokens do seu shell ficam no seu shell. A rede, o socket do Docker, a tela e o clipboard ficam desligados." },
+      { "title": "Segredos, rede e dispositivos desligados", "text": "As variáveis de ambiente são reduzidas a uma allowlist, então os tokens do seu shell ficam no seu shell. A rede fica fechada, fora os registries de pacotes de onde as suas toolchains baixam. O socket do Docker, a tela e o clipboard ficam desligados." },
       { "title": "Abra o que a tarefa precisa", "text": "Um agente em nuvem precisa do próprio login e de um caminho até a API dele, então você abre esses dois: o login, e só o host da API ou a rede inteira. Todo o resto fica fechado até você pedir." }
     ]
   },
@@ -28,10 +28,11 @@
   },
   "defaults": {
     "title": "O que você ganha sem configurar nada",
-    "lede": "Todo recurso começa desligado até você ligar. O que for escrito fora do projeto vai para a memória e some quando a sessão termina.",
+    "lede": "Tudo o que alcança a sua máquina começa desligado até você ligar, menos as suas toolchains e os registries de pacotes delas, que você pode desligar. O que for escrito fora do projeto vai para a memória e some quando a sessão termina.",
     "inside": [
       { "text": "O diretório do seu projeto, com leitura e escrita, no caminho real" },
       { "text": "As toolchains do sistema em <code>/usr</code>, somente leitura" },
+      { "text": "Suas toolchains (mise, cargo, npm e outras), somente leitura, com um cache da própria jaula" },
       { "text": "Um diretório home novo e um <code>/tmp</code> privado" }
     ],
     "blocked": [

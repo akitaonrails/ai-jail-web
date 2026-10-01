@@ -37,8 +37,8 @@
     "caption": "홈 디렉터리는 모든 단계에서 바깥에 있습니다. 무언가를 여는 것은 마지막 단계뿐이고, 그것도 클라우드 에이전트에 필요한 두 가지인 API 호스트와 로그인만 엽니다.",
     "steps": [
       { "title": "아무것도 실행하지 않고 계획 보기", "text": "프로젝트로 이동해서 드라이 런을 요청합니다. ai-jail은 사용할 샌드박스 명령을 출력하고 종료합니다. 드라이 런은 파일을 쓰지 않습니다." },
-      { "title": "안을 둘러보기", "text": "감옥 안에서 일반 셸을 시작합니다. 프로젝트는 실제 경로에 그대로 있고 편집할 수 있습니다. 홈 디렉터리는 새로 만든 빈 디렉터리이고 셸에 있던 토큰은 없습니다. 나가려면 <code>exit</code>를 입력합니다." },
-      { "title": "필요한 두 가지를 주고 에이전트 실행하기", "text": "클라우드 모델과 통신하는 에이전트는 API에 닿아야 하고, 내가 누구인지 증명하는 저장된 로그인이 필요합니다. 둘 다 기본으로 꺼져 있습니다. <code>--allow-host api.anthropic.com</code>은 딱 그 호스트만 엽니다(Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>). <code>--network</code>는 네트워크 전체를 엽니다. <code>--agent-state</code>는 로그인을 마운트합니다. 알려진 에이전트를 API에 닿을 길 없이 시작하면 ai-jail이 호스트 이름을 담은 경고를 출력합니다." },
+      { "title": "안을 둘러보기", "text": "감옥 안에서 일반 셸을 시작합니다. 프로젝트는 실제 경로에 그대로 있고 편집할 수 있습니다. 홈 디렉터리는 새로 만든 것이고 셸에 있던 토큰은 없습니다. 나가려면 <code>exit</code>를 입력합니다." },
+      { "title": "필요한 두 가지를 주고 에이전트 실행하기", "text": "클라우드 모델과 통신하는 에이전트는 API에 닿아야 하고, 내가 누구인지 증명하는 저장된 로그인이 필요합니다. 둘 다 기본으로 꺼져 있습니다. <code>--allow-host api.anthropic.com</code>은 딱 그 호스트만 엽니다(Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>). <code>--network</code>는 네트워크 전체를 엽니다. <code>--agent-state</code>는 로그인을 마운트합니다. Linux에서는 툴체인이 crates.io, npm, PyPI 같은 패키지 레지스트리를 기본으로 열어 빌드가 동작하지만, 에이전트 자신의 API에는 여전히 <code>--allow-host</code>나 <code>--network</code>가 필요합니다. 알려진 에이전트를 API에 닿을 길 없이 시작하면 ai-jail이 호스트 이름을 담은 경고를 출력합니다." },
       { "title": "그 에이전트의 기본값으로 만들기", "text": "두 설정을 내 설정 파일인 <code>~/.ai-jail</code>에 에이전트 이름 아래로 넣습니다. 그 뒤로는 짧은 명령만 입력하면 됩니다. 프로젝트에 생길 수 있는 <code>.ai-jail</code> 파일은 감옥을 더 조일 수만 있습니다. 호스트 목록을 줄일 수는 있어도 늘릴 수는 없고, 네트워크나 로그인을 켤 수도 없으므로, 클론한 저장소가 스스로 감옥을 열 수는 없습니다." }
     ],
     "codeTitles": ["드라이 런", "감옥 안의 셸", "실제 실행", "~/.ai-jail"],
@@ -50,19 +50,21 @@
       "title": "두 플래그가 내주는 것",
       "text": "허용한 호스트는 그 호스트가 제공하는 모든 것에 대해 신뢰됩니다. <code>github.com</code>을 허용하면 어느 저장소에든 푸시할 수 있습니다. <code>--network</code>는 네트워크 전체라서 에이전트가 읽을 수 있는 것은 무엇이든 보낼 수 있습니다. <code>--agent-state</code>를 켜면 감옥 안의 모든 것이 그 에이전트의 로그인을 쓸 수 있습니다. SSH 키, 클라우드 자격 증명, 다른 프로젝트는 여전히 그 안에 없어서 읽을 수 없습니다. 한계 전체는 <a class=\"link\" href=\"/security/\">보안</a> 페이지에 있습니다."
     },
-    "comments": [
-      "# 아니면 네트워크 전체를 열고:",
-      "# 이제부터는 어느 프로젝트에서든:"
-    ]
+    "comments": ["# 아니면 네트워크 전체를 열고:", "# 이제부터는 어느 프로젝트에서든:"]
   },
   "see": {
     "title": "안에서 보이는 것",
-    "lede": "프롬프트가 <code>(jail)</code>로 바뀌고 프로젝트는 원래 있던 자리에 있습니다. 훔칠 만한 것은 보이지 않습니다.",
+    "lede": "프롬프트가 <code>(jail)</code>로 바뀌고 프로젝트는 원래 있던 자리에 있습니다. 내 툴체인도 읽기 전용으로 거기 있습니다. 훔칠 만한 것은 보이지 않습니다.",
     "termTitle": "Linux에서 실행한 ai-jail bash",
-    "comments": ["# 프로젝트는 실제 경로에 있습니다", "# 셸에 export한 토큰은 따라오지 않았습니다", "# 이 홈에는 키가 없습니다", "# 감옥에는 전용 호스트 이름이 있습니다"],
+    "comments": [
+      "# 프로젝트는 실제 경로에 있습니다",
+      "# 셸에 export한 토큰은 따라오지 않았습니다",
+      "# 이 홈에는 키가 없습니다",
+      "# 감옥에는 전용 호스트 이름이 있습니다"
+    ],
     "note": "Linux 세션입니다. macOS에는 별도의 파일 트리를 만들 방법이 없어서 같은 경로가 존재하고, 읽으려고 하면 거부됩니다.",
-    "alt": "감방 안에서 본 모습. 에이전트가 크고 밝은 프로젝트 폴더 옆에 있고, 뒤에는 빈 홈과 시스템 도구가 있습니다. 창살 바깥에는 SSH 키, 클라우드 로그인, 다른 프로젝트, 네트워크가 흐리게 막혀 있습니다.",
-    "caption": "안에서 보면 내 것 중에 존재하는 것은 프로젝트뿐입니다. <code>--allow-host</code>로 호스트 하나를 열거나 <code>--network</code>로 전부 열기 전에는 네트워크도 바깥에 있습니다."
+    "alt": "감방 안에서 본 모습. 에이전트가 크고 밝은 프로젝트 폴더 옆에 있고, 뒤에는 새 홈과 시스템 도구가 있습니다. 창살 바깥에는 SSH 키, 클라우드 로그인, 다른 프로젝트, 네트워크가 흐리게 막혀 있습니다.",
+    "caption": "안에서 보면 내 것 중에 바꿀 수 있는 것은 프로젝트뿐입니다. 내 툴체인(mise, cargo, npm 등)은 읽기 전용으로 있고, 의존성 캐시는 감옥 전용입니다. 네트워크는 그 툴체인이 패키지를 받아 오는 레지스트리를 빼면 바깥에 있고, <code>--allow-host</code>로 호스트 하나를 열거나 <code>--network</code>로 전부 열기 전까지 그렇습니다. <a class=\"link\" href=\"/configure/#toolchains\">툴체인 매핑 방식</a>."
   },
   "trouble": {
     "title": "시작되지 않을 때",
@@ -73,18 +75,9 @@
         "text": "Ubuntu 24.04 이상과 Debian 13 이상에는 프로그램이 root 없이 사용자 네임스페이스를 만들지 못하게 하는 AppArmor 정책이 들어 있습니다. bubblewrap은 바로 이 방법으로 감옥을 격리합니다. root 없이 동작하는 같은 종류의 도구가 모두 영향을 받습니다. 시스템 전체에서 정책을 완화하려면 이렇게 합니다.",
         "alt": "정책은 그대로 두고 <code>bwrap</code>만 예외로 둘 수도 있습니다. 아래 내용을 <code>/etc/apparmor.d/bwrap</code>으로 저장한 뒤 <code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>을 실행하세요."
       },
-      {
-        "title": "<code>BWRAP_BIN</code>이 거부됩니다",
-        "text": "<code>BWRAP_BIN</code>으로 ai-jail이 쓸 bubblewrap을 지정할 수 있습니다. ai-jail은 그 경로가 root 소유이고 다른 사용자가 쓸 수 없는 프로그램이거나, 표준 다중 사용자 <code>/nix/store</code> 안의 프로그램일 때만 받아들입니다. 내 홈에 있는 사본은 거부합니다. 그 파일을 바꿔치기할 수 있는 사람이 감옥을 통제하게 되기 때문입니다."
-      },
-      {
-        "title": "안에서 mise 도구가 보이지 않습니다",
-        "text": "ai-jail은 <a class=\"link\" href=\"https://mise.jdx.dev/\">mise</a>를 찾으면 활성화합니다. 하지만 새 홈에는 mise 설정도 설치된 도구도 없어서 활성화를 건너뜁니다. 내 설정 파일에서 두 디렉터리를 읽기 전용으로 매핑하세요."
-      },
-      {
-        "title": "시작할 때 <code>Failed to create stream fd</code>가 나옵니다",
-        "text": "Ubuntu 데스크톱에서 mise를 준비하는 동안 로그인 스크립트가 내는 메시지입니다. 해롭지 않고 mise도 정상 동작합니다. <code>--no-mise</code>를 주면 mise 준비를 건너뛰고 메시지도 나오지 않습니다."
-      }
+      { "title": "<code>BWRAP_BIN</code>이 거부됩니다", "text": "<code>BWRAP_BIN</code>으로 ai-jail이 쓸 bubblewrap을 지정할 수 있습니다. ai-jail은 그 경로가 root 소유이고 다른 사용자가 쓸 수 없는 프로그램이거나, 표준 다중 사용자 <code>/nix/store</code> 안의 프로그램일 때만 받아들입니다. 내 홈에 있는 사본은 거부합니다. 그 파일을 바꿔치기할 수 있는 사람이 감옥을 통제하게 되기 때문입니다." },
+      { "title": "opencode가 <code>Starting background server</code>에서 멈춥니다", "text": "opencode 2.x는 공유 백그라운드 서버와 통신합니다. 감옥은 새 홈을 가진 일회성 래퍼라서 그 서버가 실행 사이에 살아남지 못합니다. <code>--standalone</code>으로 opencode를 단독 실행하고, 매번 입력하지 않도록 설정 파일에 고정하세요. opencode가 이 옵션 없이 시작되면 ai-jail이 실행 시점에 경고합니다:" },
+      { "title": "시작할 때 <code>Failed to create stream fd</code>가 나옵니다", "text": "Ubuntu 데스크톱에서 mise를 준비하는 동안 로그인 스크립트가 내는 메시지입니다. 해롭지 않고 mise도 정상 동작합니다. <code>--no-mise</code>를 주면 mise 준비를 건너뛰고 메시지도 나오지 않습니다." }
     ]
   },
   "agents": {
@@ -94,6 +87,7 @@
     "notes": {
       "claude": "두 번째 Claude 프로필을 쓰려면 <code>--claude-dir</code>로 해당 디렉터리를 지정하세요.",
       "codex": "창 크기를 바꾸면 ai-jail이 Codex에 다시 그리기 키를 보내 화면을 새로 그리게 합니다.",
+      "opencode": "<code>--standalone</code>이 필요합니다. 위의 문제 해결 항목을 보세요.",
       "aimemory": "ai-jail은 <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a>가 실행하는 에이전트를 인식해서 그 에이전트의 설정을 적용하고, 두 프로그램을 한 감옥 안에서 실행합니다."
     },
     "aimemoryState": "실행된 에이전트의 폴더",

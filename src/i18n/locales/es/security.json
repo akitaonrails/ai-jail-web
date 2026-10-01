@@ -22,7 +22,7 @@
         "text": "Los secretos de tu shell. Las variables de entorno se reducen a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera."
       },
       {
-        "text": "La red. Está apagada, salvo por una lista corta de registries de paquetes que el proxy filtrado deja pasar cuando el toolchain está activado, el valor por defecto en Linux. <code>--no-network</code> cierra eso también. La API del propio agente sigue cerrada hasta que la abras con <code>--allow-host</code> o <code>--network</code>."
+        "text": "La red. Está apagada, salvo por una lista corta de registries de paquetes que el proxy filtrado deja pasar cuando las toolchains están activadas, el valor por defecto en Linux. <code>--no-network</code> cierra eso también. La API del propio agente sigue cerrada hasta que la abras con <code>--allow-host</code> o <code>--network</code>."
       },
       {
         "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta."
@@ -46,7 +46,7 @@
       "Vulnerabilidades del kernel y de los drivers. Cada proceso aislado habla con el mismo kernel que el resto de tu máquina.",
       "Bugs en tu emulador de terminal, sobre todo con <code>--terminal-passthrough</code>, que apaga el filtro de salida.",
       "Defectos en el propio backend del sandbox: bubblewrap, Landlock y seccomp en Linux, <code>sandbox-exec</code> en macOS.",
-      "Landlock, las reglas del propio kernel, solo valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos, en modo best-effort. Los kernels más antiguos se quedan solo con las reglas de sistema de archivos y de red, así que con <code>--x11</code>, <code>--network</code> o <code>--systemd-user</code> los sockets abstractos y las señales del host no quedan vallados.",
+      "Landlock, las reglas del propio kernel, solo valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos, en modo best-effort. Los kernels más antiguos se quedan solo con las reglas de sistema de archivos y de red, así que con <code>--x11</code>, <code>--network</code> o <code>--systemd-user</code> los sockets abstractos y las señales del host siguen al alcance.",
       "Secretos dentro del proyecto. Un archivo <code>.env</code> en el repositorio se puede leer salvo que lo enmascares. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascarar archivos</a>.",
       "Las máscaras cubren solo las rutas que existen cuando arranca el sandbox. Un archivo con secretos creado después, durante la sesión, no queda oculto.",
       "Canales laterales y algunas clases de comunicación entre procesos.",
@@ -124,8 +124,8 @@
       }
     ],
     "audit": {
-      "title": "Auditado a la vista, no por una empresa externa",
-      "text": "Antes de la 1.0 el proyecto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">se auditó a sí mismo</a> y publicó los informes. El {date} se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0, con una comparación y un plan de corrección: la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoría A</a>, realizada por un modelo de IA como declara su propia cabecera, y la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoría B</a>, hecha de forma independiente. Produjeron dos advisories en GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> y <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos cerrados en la 2.4.0 con tests de regresión. Ninguna empresa externa ha auditado ai-jail."
+      "title": "Auditado a la vista de todos",
+      "text": "Antes de la 1.0 el proyecto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">se auditó a sí mismo</a> y publicó los informes. El {date} se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0, con una comparación y un plan de corrección: la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoría A</a>, que según su propia cabecera realizó un modelo de IA, y la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoría B</a>. Produjeron dos advisories en GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> y <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos cerrados en la 2.4.0 con tests de regresión. Ninguna empresa externa ha auditado ai-jail."
     },
     "fixes": {
       "title": "Qué corrigió la 2.4.0",
@@ -185,7 +185,7 @@
       },
       {
         "q": "¿Ha sido auditado?",
-        "a": "No por una empresa externa. El proyecto se auditó a sí mismo antes de la 1.0, y en septiembre de 2026 se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0; los dos advisories que produjeron se cerraron en la 2.4.0. El código es abierto bajo GPL 3.0, y los reportes privados de vulnerabilidades son bienvenidos."
+        "a": "A la vista de todos: el proyecto se auditó a sí mismo antes de la 1.0, y en septiembre de 2026 se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0; la 2.4.0 cerró los dos advisories que produjeron. Ninguna empresa externa lo ha auditado. El código es abierto bajo GPL 3.0, y los reportes privados de vulnerabilidades son bienvenidos."
       }
     ]
   },

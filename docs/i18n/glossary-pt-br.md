@@ -81,3 +81,13 @@ Terms decided while translating. One English term maps to one target term across
 | snapshot / restore | snapshot / restauração |
 | legacy (records) | legado |
 | In short (tldr heading) | Resumindo |
+| toolchains (feminine) | as toolchains |
+| package registry | registry de pacotes (plural: registries de pacotes) |
+| jail-owned cache | cache da própria jaula (diagram label: Cache da jaula) |
+| host cache | cache do host |
+| store (the jail's cache store) | store (masc.: o store) |
+| on by default | ligado por padrão |
+| tool credentials | credenciais de ferramentas |
+| security advisory | advisory (kept in English) |
+| source audit | auditoria de código |
+| standalone (opencode) | autônomo (flag kept: --standalone) |

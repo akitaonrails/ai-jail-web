@@ -69,7 +69,7 @@
       "ほかのX11ウィンドウのキー入力を記録し、スクリーンショットを撮る。",
       "systemdのユーザーマネージャーに、ホスト上でサービスを動かすよう依頼する。",
       "シェルの環境全体を、秘密情報も含めて読む。APIキーなら、<a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a>で代わりにファイル1つを渡せます。",
-      "エージェントの保存済みログインを使う。たとえばClaudeの<code>~/.claude</code>です。",
+      "エージェントの保存済みのログイン情報を使う。たとえばClaudeの<code>~/.claude</code>です。",
       "<code>~/.config/gh</code>のログイン情報で、あなたとしてGitHubを操作します。マウントは読み取り専用です。読み取り専用はファイルを守るだけで、認証情報は有効な限り使えます。",
       "<code>~/.aws</code>で、あなたとしてAWSを操作します。マウントは読み取り専用です。",
       "<code>~/.kube</code>にあるすべてのクラスタを、あなたとして操作します。マウントは読み取り専用です。",
@@ -112,7 +112,7 @@
       }
     ],
     "audit": {
-      "title": "公開の場で監査済み、第三者機関によるものはない",
+      "title": "公開の場での監査",
       "text": "1.0の前に、プロジェクトは<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">自分で監査</a>し、報告書を公開しました。{date}には、2.3.0に対する独立した2つのソースコード監査が、比較と修正計画とともにリポジトリで公開されました。<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">監査A</a>はヘッダーに記載のとおりAIモデルが実施し、<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">監査B</a>は独立して行われました。この2つからGitHubのアドバイザリ<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a>と<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>が生まれ、どちらも2.4.0で回帰テスト付きで解決済みです。第三者機関がai-jailを監査したことはありません。"
     },
     "fixes": {
@@ -173,7 +173,7 @@
       },
       {
         "q": "監査は受けていますか？",
-        "a": "第三者機関による監査は受けていません。1.0の前にプロジェクト自身が監査し、2026年9月には2.3.0に対する独立した2つのソースコード監査がリポジトリで公開されました。そこから出た2件のアドバイザリは2.4.0で解決済みです。コードはGPL 3.0で公開されており、脆弱性の非公開での報告を歓迎します。"
+        "a": "公開の場で行われています。1.0の前にはプロジェクト自身が監査し、2026年9月には2.3.0に対する独立した2つのソースコード監査がリポジトリで公開されました。そこから出た2件のアドバイザリは2.4.0で解決済みです。第三者機関による監査は受けていません。コードはGPL 3.0で公開されており、脆弱性の非公開での報告を歓迎します。"
       }
     ]
   },

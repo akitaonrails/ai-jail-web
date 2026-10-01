@@ -27,9 +27,15 @@
     "Project .ai-jail": "프로젝트 .ai-jail",
     "Global ~/.ai-jail": "전역 ~/.ai-jail"
   },
-  "configure-mask": {
+  "configure-mask": { "Agent": "에이전트", "Your project": "내 프로젝트" },
+  "configure-toolchains": {
     "Agent": "에이전트",
-    "Your project": "내 프로젝트"
+    "Toolchains": "툴체인",
+    "Jail cache": "감옥 캐시",
+    "Host cache": "호스트 캐시",
+    "Proxy": "프록시",
+    "Registries": "레지스트리",
+    "Model API": "모델 API"
   },
   "configure-lockdown": {
     "Normal": "일반",
@@ -46,17 +52,8 @@
     "Exit": "종료",
     "Project": "프로젝트"
   },
-  "how-layers": {
-    "Namespaces": "네임스페이스",
-    "Filesystem": "파일시스템",
-    "Limits": "제한",
-    "Agent": "에이전트",
-    "Your home": "내 홈"
-  },
-  "how-macos": {
-    "Five layers": "계층 다섯 개",
-    "One profile": "프로파일 하나"
-  },
+  "how-layers": { "Namespaces": "네임스페이스", "Filesystem": "파일시스템", "Limits": "제한", "Agent": "에이전트", "Your home": "내 홈" },
+  "how-macos": { "Five layers": "계층 다섯 개", "One profile": "프로파일 하나" },
   "install-first-run": {
     "Dry run": "드라이 런",
     "Look around": "둘러보기",
@@ -120,10 +117,5 @@
     "Your home": "내 홈",
     "Project": "프로젝트"
   },
-  "how-egress": {
-    "Off": "꺼짐",
-    "Filtered": "필터링",
-    "Open": "열림",
-    "Proxy": "프록시"
-  }
+  "how-egress": { "Off": "꺼짐", "Filtered": "필터링", "Open": "열림", "Proxy": "프록시" }
 }

@@ -88,3 +88,15 @@ Terms decided while translating. One English term maps to one target term across
 | plain HTTP / HTTPS tunnel | 平文のHTTP / HTTPSトンネル |
 | bound host (`--secret KEY=host`) | 結び付けたホスト |
 | audit trail | 監査証跡 |
+| toolchains (2.5, the capability) | ツールチェーン |
+| package registry / registries (diagram) | パッケージレジストリ / レジストリ |
+| jail-owned cache / Jail cache, Host cache (diagram) | ジェイル専用のキャッシュ / ジェイルのキャッシュ、ホストのキャッシュ |
+| store (the cache store) | ストア |
+| on by default | デフォルトで有効 |
+| tool credentials (`--github`, `--aws`...) | ツールの認証情報 |
+| act as you on GitHub | あなたとしてGitHubを操作する |
+| security advisory / GitHub advisory | セキュリティアドバイザリ / GitHubのアドバイザリ |
+| source audit | ソースコード監査 |
+| best effort | ベストエフォート |
+| standalone (`--standalone`) | 単体で起動 |
+| one-shot wrapper | 起動のたびに作り直すラッパー |

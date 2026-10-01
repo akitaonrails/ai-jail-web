@@ -30,7 +30,7 @@
       },
       {
         "title": "Secretos, red y dispositivos apagados",
-        "text": "Las variables de entorno se reducen a una lista de permitidos, así que los tokens de tu shell se quedan en tu shell. La red, el socket de Docker, la pantalla y el portapapeles están apagados."
+        "text": "ai-jail reduce las variables de entorno a una lista de permitidos, así que los tokens de tu shell se quedan en tu shell. La red está cerrada, salvo los registries de paquetes de los que descargan tus toolchains. El socket de Docker, la pantalla y el portapapeles están apagados."
       },
       {
         "title": "Abre lo que la tarea necesita",
@@ -47,13 +47,16 @@
   },
   "defaults": {
     "title": "Lo que obtienes sin configurar nada",
-    "lede": "Cada capacidad está apagada hasta que la activas. Las escrituras fuera del proyecto van a memoria y desaparecen cuando termina la sesión.",
+    "lede": "Todo lo que llega a tu máquina está apagado hasta que lo activas, salvo tus toolchains y sus registries de paquetes, que puedes apagar. Las escrituras fuera del proyecto van a memoria y desaparecen cuando termina la sesión.",
     "inside": [
       {
         "text": "El directorio del proyecto, en lectura y escritura, en su ruta real"
       },
       {
         "text": "Las toolchains del sistema en <code>/usr</code>, en solo lectura"
+      },
+      {
+        "text": "Tus toolchains (mise, cargo, npm y otras), en solo lectura, con una caché propia de la jaula"
       },
       {
         "text": "Un directorio home nuevo y un <code>/tmp</code> privado"

@@ -17,7 +17,7 @@
     "items": [
       { "text": "Seu diretório home e as credenciais que estão nele. O agente recebe um home novo e vazio, então <code>~/.ssh</code> e <code>~/.aws</code> não existem lá dentro." },
       { "text": "Segredos no seu shell. As variáveis de ambiente são reduzidas a uma allowlist pequena, então os tokens exportados ficam de fora." },
-      { "text": "A rede. Ela fica desligada, exceto para uma lista curta de registries de pacotes que o proxy filtrado deixa passar quando os toolchains estão ligados, o padrão no Linux. <code>--no-network</code> fecha isso também. A API do próprio agente continua fechada até você abri-la com <code>--allow-host</code> ou <code>--network</code>." },
+      { "text": "A rede. Ela fica desligada, exceto para uma lista curta de registries de pacotes que o proxy filtrado deixa passar quando as toolchains estão ligadas, o padrão no Linux. <code>--no-network</code> fecha isso também. A API do próprio agente continua fechada até você abri-la com <code>--allow-host</code> ou <code>--network</code>." },
       { "text": "A memória compartilhada do host, o seu servidor gráfico e o seu clipboard. A saída do agente passa por um filtro que descarta sequências de terminal de clipboard e de consulta." },
       { "text": "Digitar no seu terminal. O Linux bloqueia a chamada <code>TIOCSTI</code>, que simula teclas, e o macOS restringe o controle de terminal ao único terminal que o ai-jail criou para aquela execução." },
       { "text": "As próprias regras. Um arquivo <code>.ai-jail</code> dentro de um repositório não é confiável: ele pode apertar o sandbox, nunca abrir." }
@@ -61,7 +61,7 @@
     "rows": [
       "Enviar para qualquer lugar tudo o que consegue ler. O tráfego é irrestrito. <code>--allow-host</code> é a alternativa mais apertada.",
       "Alcançar exatamente os hosts que você lista, e seus subdomínios, por TCP, através de um proxy embutido. Cada host listado é confiável por inteiro.",
-      "Ligado por padrão no Linux. Rodar seus toolchains: <code>~/.cargo/bin</code> e <code>~/.rustup</code> somente leitura, um cache de dependências próprio da jaula em <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre execuções, e saída filtrada para os registries de pacotes. Os caches reais do host nunca são montados. Desligado sob <code>--lockdown</code> e com <code>--no-toolchains</code>.",
+      "Ligado por padrão no Linux. Rodar as suas toolchains: <code>~/.cargo/bin</code> e <code>~/.rustup</code> somente leitura, um cache de dependências próprio da jaula em <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre execuções, e saída filtrada para os registries de pacotes. Os caches reais do host nunca são montados. Desligado sob <code>--lockdown</code> e com <code>--no-toolchains</code>.",
       "Nada de novo. O valor real dessa chave nunca entra no sandbox: o agente vê um placeholder, e o proxy troca pelo valor real só nas requisições em HTTP puro para o único host ao qual você a vinculou. O próprio processo do ai-jail vê essa requisição em claro.",
       "Nada de novo. Esta opção não enfraquece nada: ela grava uma linha por inicialização num arquivo com modo 0600 fora do sandbox, então o agente nunca o vê.",
       "Agir como root na sua máquina por meio do daemon do Docker.",
@@ -112,7 +112,7 @@
       }
     ],
     "audit": {
-      "title": "Auditado às claras, não por uma empresa externa",
+      "title": "Auditado às claras",
       "text": "Antes da 1.0 o projeto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">auditou a si mesmo</a> e publicou os relatórios. Em {date} duas auditorias de código independentes da 2.3.0 foram publicadas no repositório, com uma comparação e um plano de correção: a <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoria A</a>, feita por um modelo de IA como o próprio cabeçalho declara, e a <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoria B</a>, feita de forma independente. Elas geraram dois advisories no GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> e <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos fechados na 2.4.0 com testes de regressão. Nenhuma empresa externa auditou o ai-jail."
     },
     "fixes": {
@@ -123,7 +123,7 @@
         "Um comando de navegador num <code>.ai-jail</code> de projeto não confiável não desliga mais o lockdown.",
         "<code>TIOCSTI</code> é comparado como o kernel lê, em 32 bits, então uma variante com bit alto não passa mais pelo seccomp.",
         "O Landlock cerca sockets Unix abstratos e sinais em kernels 6.12 ou mais novos.",
-        "macOS: o acesso ao terminal fica restrito aos terminais da própria execução, e não a todos os <code>/dev/ttys*</code>.",
+        "macOS: o acesso ao terminal fica restrito aos terminais da própria execução, em vez de todos os <code>/dev/ttys*</code>.",
         "macOS: caminhos com <code>--mask</code> são negados para escrita, além de leitura.",
         "O filtro de saída não desmonta mais com um ESC duplicado, que podia contrabandear uma escrita no clipboard.",
         "As saídas de emergência de teste do proxy ficam fora dos builds de release."
@@ -173,7 +173,7 @@
       },
       {
         "q": "Ele já foi auditado?",
-        "a": "Não por uma empresa externa. O projeto auditou a si mesmo antes da 1.0, e em setembro de 2026 duas auditorias de código independentes da 2.3.0 foram publicadas no repositório; os dois advisories que elas geraram foram fechados na 2.4.0. O código é aberto sob a GPL 3.0, e relatos privados de vulnerabilidade são bem-vindos."
+        "a": "Às claras: pelo próprio projeto antes da 1.0 e por duas auditorias de código independentes da 2.3.0, publicadas no repositório em setembro de 2026; a 2.4.0 fechou os dois advisories que elas geraram. Nenhuma empresa externa auditou o ai-jail. O código é aberto sob a GPL 3.0, e relatos privados de vulnerabilidade são bem-vindos."
       }
     ]
   },

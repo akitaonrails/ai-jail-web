@@ -63,3 +63,12 @@ Terms decided while translating. One English term maps to one target term across
 | broken link (in the hash chain) | eslabón roto |
 | plain HTTP | HTTP plano |
 | bound host (with --secret) | host vinculado |
+| toolchains | toolchains (fem.: las toolchains) |
+| package registry | registry de paquetes (pl.: registries de paquetes; kept in English, "registro" is the log) |
+| jail-owned cache / store | caché propia de la jaula / almacén propio de la jaula |
+| host cache | caché del host |
+| on by default | activado por defecto |
+| tool credentials (--github, --aws, ...) | credenciales de herramientas |
+| security advisory | aviso de seguridad (GitHub's: advisory) |
+| best effort | best-effort (kept in English) |
+| source audit | auditoría de código |

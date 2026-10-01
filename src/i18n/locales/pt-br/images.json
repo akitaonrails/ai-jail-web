@@ -31,6 +31,15 @@
     "Agent": "Agente",
     "Your project": "Seu projeto"
   },
+  "configure-toolchains": {
+    "Agent": "Agente",
+    "Toolchains": "Toolchains",
+    "Jail cache": "Cache da jaula",
+    "Host cache": "Cache do host",
+    "Proxy": "Proxy",
+    "Registries": "Registries",
+    "Model API": "API do modelo"
+  },
   "configure-lockdown": {
     "Normal": "Normal",
     "Lockdown": "Lockdown",

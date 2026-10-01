@@ -79,23 +79,11 @@
     "alt": "왼쪽에서 오른쪽으로 패널 세 개. 꺼짐: 닫힌 벽 안에 에이전트 칩이 있고 바깥에는 흐리게 막힌 구름이 있습니다. 필터링: 벽의 작은 문이 프록시 상자로 이어지고, 프록시는 api.anthropic.com이라고 적힌 청록색 구름에 연결되며 두 번째 구름은 흐리게 막혀 있습니다. 열림: 벽의 네트워크 쪽이 없고 칩이 구름에 바로 연결됩니다.",
     "caption": "기본은 꺼짐입니다. 필터링은 지정한 호스트로만 가는 문을 엽니다. 열림은 네트워크 쪽 벽을 없앱니다.",
     "modes": [
-      {
-        "title": "꺼짐",
-        "text": "기본값입니다. 샌드박스는 밖으로 나가는 경로가 없는 전용 네트워크 네임스페이스를 받습니다. 툴체인이 켜져 있으면(Linux의 기본값) 필터링 프록시가 <a class=\"link\" href=\"/configure/#toolchains\">고정된 패키지 레지스트리 목록</a>만은 통과시켜 <code>npm install</code>과 <code>cargo build</code>가 동작하고, <code>--no-network</code>를 주면 완전히 오프라인이 됩니다. 에이전트 자신의 API는 직접 열기 전까지 닫혀 있습니다."
-      },
-      {
-        "title": "필터링",
-        "text": "<code>--allow-host HOST</code>, 여러 번 쓸 수 있습니다. 네임스페이스는 닫힌 채로 두고, 안에 있는 작은 브리지가 트래픽을 바깥의 CONNECT 프록시로 전달합니다. 프록시는 나열한 호스트와 그 서브도메인에만 연결합니다. 이름은 바깥에서 한 번만 해석하고, 검사한 주소로만 연결합니다. ai-jail은 안에 <code>http_proxy</code>를 설정하고, 이를 무시하는 프로그램은 어디에도 닿지 못합니다."
-      },
-      {
-        "title": "열림",
-        "text": "<code>--network</code>. 네트워크 쪽 벽이 사라지고, 에이전트는 읽을 수 있는 것을 무엇이든 밖으로 보낼 수 있습니다."
-      }
+      { "title": "꺼짐", "text": "기본값입니다. 샌드박스는 밖으로 나가는 경로가 없는 전용 네트워크 네임스페이스를 받습니다. 툴체인이 켜져 있으면(Linux의 기본값) 필터링 프록시가 <a class=\"link\" href=\"/configure/#toolchains\">고정된 패키지 레지스트리 목록</a>만은 통과시켜 <code>npm install</code>과 <code>cargo build</code>가 동작하고, <code>--no-network</code>를 주면 완전히 오프라인이 됩니다. 에이전트 자신의 API는 직접 열기 전까지 닫혀 있습니다." },
+      { "title": "필터링", "text": "<code>--allow-host HOST</code>, 여러 번 쓸 수 있습니다. 네임스페이스는 닫힌 채로 두고, 안에 있는 작은 브리지가 트래픽을 바깥의 CONNECT 프록시로 전달합니다. 프록시는 나열한 호스트와 그 서브도메인에만 연결합니다. 이름은 바깥에서 한 번만 해석하고, 검사한 주소로만 연결합니다. ai-jail은 안에 <code>http_proxy</code>를 설정하고, 이를 무시하는 프로그램은 어디에도 닿지 못합니다." },
+      { "title": "열림", "text": "<code>--network</code>. 네트워크 쪽 벽이 사라지고, 에이전트는 읽을 수 있는 것을 무엇이든 밖으로 보낼 수 있습니다." }
     ],
-    "head": {
-      "linux": "Linux",
-      "macos": "macOS"
-    },
+    "head": { "linux": "Linux", "macos": "macOS" },
     "rows": [
       {
         "what": "필터링 모드의 울타리",
@@ -117,17 +105,38 @@
     "caption": "macOS에서는 정책과 플래그는 같고 벽의 수가 적습니다.",
     "head": { "linux": "Linux", "macos": "macOS" },
     "rows": [
-      { "what": "백엔드", "linux": "bubblewrap, 그 위에 Landlock, seccomp, 리소스 제한", "macos": "실행할 때마다 생성한 프로파일을 쓰는 <code>sandbox-exec</code>. Apple이 deprecated로 지정했지만 커널 확장 없이 쓸 수 있는 더 나은 대안이 없습니다." },
-      { "what": "홈 디렉터리", "linux": "메모리에 새로 만든 홈. 실제 홈은 마운트되지 않습니다.", "macos": "프로파일은 전역 읽기 권한이 전혀 없는 상태에서 시작해 에이전트에 필요한 경로만 허용하므로 실제 홈은 닫혀 있습니다." },
-      { "what": "<code>/tmp</code>", "linux": "전용이며 종료 시 폐기", "macos": "마운트 네임스페이스가 없어서 호스트의 <code>/tmp</code>를 씁니다. <code>TMPDIR</code>은 실행할 때 만든 전용 폴더를 가리키고, 허용되는 임시 경로는 이것뿐입니다." },
-      { "what": "Copy-on-write 매핑", "linux": "<code>--overlay-map</code>으로 에이전트가 사본에 쓰게 합니다", "macos": "읽기 전용 매핑으로 처리" },
-      { "what": "네트워크", "linux": "기본으로 꺼짐. 툴체인이 켜져 있을 때 허용되는 패키지 레지스트리 말고는 밖으로 나가는 경로가 없고, <code>--allow-host</code>나 <code>--network</code>로 더 열거나 <code>--no-network</code>로 전부 닫습니다", "macos": "같은 기본값, 같은 플래그를 쓰지만 툴체인 캐시 매핑은 Linux에만 있습니다. 락다운에서는 <code>--network</code>를 줘도 항상 차단됩니다." },
-      { "what": "다른 프로그램", "linux": "보이지 않음. 전용 프로세스 목록, 호스트 IPC 없음", "macos": "<code>--macos-host-ipc</code>를 넘기지 않으면 Mach, IOKit, 호스트 IPC를 거부" }
+      {
+        "what": "백엔드",
+        "linux": "bubblewrap, 그 위에 Landlock, seccomp, 리소스 제한",
+        "macos": "실행할 때마다 생성한 프로파일을 쓰는 <code>sandbox-exec</code>. Apple이 deprecated로 지정했지만 커널 확장 없이 쓸 수 있는 더 나은 대안이 없습니다."
+      },
+      {
+        "what": "홈 디렉터리",
+        "linux": "메모리에 새로 만든 홈. 실제 홈은 마운트되지 않습니다.",
+        "macos": "프로파일은 전역 읽기 권한이 전혀 없는 상태에서 시작해 에이전트에 필요한 경로만 허용하므로 실제 홈은 닫혀 있습니다."
+      },
+      {
+        "what": "<code>/tmp</code>",
+        "linux": "전용이며 종료 시 폐기",
+        "macos": "마운트 네임스페이스가 없어서 호스트의 <code>/tmp</code>를 씁니다. <code>TMPDIR</code>은 실행할 때 만든 전용 폴더를 가리키고, 허용되는 임시 경로는 이것뿐입니다."
+      },
+      {
+        "what": "Copy-on-write 매핑",
+        "linux": "<code>--overlay-map</code>으로 에이전트가 사본에 쓰게 합니다",
+        "macos": "읽기 전용 매핑으로 처리"
+      },
+      {
+        "what": "네트워크",
+        "linux": "기본으로 꺼짐. 툴체인이 켜져 있을 때 허용되는 패키지 레지스트리 말고는 밖으로 나가는 경로가 없고, <code>--allow-host</code>나 <code>--network</code>로 더 열거나 <code>--no-network</code>로 전부 닫습니다",
+        "macos": "같은 기본값, 같은 플래그를 쓰지만 툴체인 캐시 매핑은 Linux에만 있습니다. 락다운에서는 <code>--network</code>를 줘도 항상 차단됩니다."
+      },
+      {
+        "what": "다른 프로그램",
+        "linux": "보이지 않음. 전용 프로세스 목록, 호스트 IPC 없음",
+        "macos": "<code>--macos-host-ipc</code>를 넘기지 않으면 Mach, IOKit, 호스트 IPC를 거부"
+      }
     ],
-    "windows": {
-      "title": "Windows",
-      "text": "Windows 백엔드는 없습니다. WSL2를 설치하고 그 안에서 Linux 버전을 쓰면 Linux 계층을 모두 쓸 수 있습니다."
-    }
+    "windows": { "title": "Windows", "text": "Windows 백엔드는 없습니다. WSL2를 설치하고 그 안에서 Linux 버전을 쓰면 Linux 계층을 모두 쓸 수 있습니다." }
   },
   "blocks": {
     "title": "이 구성 요소를 고른 이유",
