@@ -4,7 +4,7 @@ FIRST PANEL (do not write the word "stage" or any number anywhere), with the sin
 
 SECOND PANEL, with the single heading "Look around": the cell wall is solid. Inside the cell there is a small terminal window showing only a prompt cursor, and one cyan folder labeled "Project". There is no microchip in this panel.
 
-THIRD PANEL, with the single heading "Run the agent": the cell wall is solid. Inside the cell sit the cyan microchip labeled "Agent" and the cyan folder labeled "Project". Two narrow openings in the wall glow gold: one on top with a small cloud icon labeled "API host", one on the right with a small key-card icon labeled "Login". A thin cyan line goes from the Agent chip through each opening.
+THIRD PANEL, with the single heading "Run the agent": the cell wall is solid. Inside the cell sit the cyan microchip labeled "Agent", the cyan folder labeled "Project", and, right next to the chip and fully inside the cell, a small cyan key-card icon labeled "Login". Exactly ONE narrow opening in the wall glows gold, on top, with a small cloud icon labeled "API host". A single thin cyan line goes from the Agent chip up through that opening. The right wall and both side walls are solid with no opening at all.
 
 Below all three panels, outside every wall, a single dim barred folder labeled "Your home" stays out of reach in every panel.
 

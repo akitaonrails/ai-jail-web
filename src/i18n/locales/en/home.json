@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "A jail for your AI coding agent",
-    "lede": "Your agent runs with your user account, so it can read everything you can. ai-jail starts it inside an OS sandbox instead: the project is writable, and your keys, tokens and home directory are not there.",
+    "lede": "Your agent runs with your user account, so it can read everything you can. ai-jail starts it inside an OS sandbox built to stop a trusted agent's mistakes: the project is writable, and your keys, shell secrets and home directory are not there.",
     "install": "Install",
     "why": "Do I need it?",
     "logoAlt": "A padlock made of circuit traces. Behind the bars in its window sits a glowing microchip: the agent."
@@ -16,7 +16,7 @@
       { "title": "Start it through ai-jail", "text": "Type <code>ai-jail</code> in front of the command. The agent starts in its own namespaces, with your project mounted at the same path." },
       { "title": "Your home is not mounted", "text": "The agent gets a fresh, empty home directory. SSH keys, cloud credentials, browser profiles and your other projects do not exist in there." },
       { "title": "Secrets, network and devices are off", "text": "ai-jail cuts environment variables down to an allowlist, so tokens in your shell stay in your shell. The network is closed, apart from the package registries your toolchains fetch from. The Docker socket, the screen and the clipboard are off." },
-      { "title": "Open what the task needs", "text": "A cloud agent needs its own login and a way to reach its API, so you open those two: the login, and either its API host alone or the whole network. Everything else stays shut until you ask for it." }
+      { "title": "Open what the task needs", "text": "A cloud agent is already logged in, because its own login is mounted by default. The one thing to open is the route to its API: <code>--allow-host</code> with its API host, or <code>--network</code> for all of it. Everything else stays shut until you ask for it." }
     ]
   },
   "wrap": {
@@ -28,21 +28,20 @@
   },
   "defaults": {
     "title": "What you get with no configuration",
-    "lede": "Everything that reaches your machine is off until you turn it on, except your toolchains and their package registries, which you can turn off. Writes outside the project land in memory and vanish when the session ends.",
+    "lede": "Everything that reaches your machine is off until you turn it on, except the agent's own login, your toolchains (on Linux) and their package registries, each with a <code>--no-</code> switch. Writes outside the project land in memory and vanish when the session ends.",
     "inside": [
       { "text": "Your project directory, read and write, at its real path" },
-      { "text": "System toolchains in <code>/usr</code>, read only" },
-      { "text": "Your toolchains (mise, cargo, npm and others), read only, with a cache the jail owns" },
+      { "text": "Your toolchains (mise, cargo, npm and others) and the system ones in <code>/usr</code>, read only, with a cache the jail owns on Linux" },
+      { "text": "The agent's own login, such as <code>~/.claude</code>, so it starts signed in" },
       { "text": "A fresh home directory and a private <code>/tmp</code>" }
     ],
     "blocked": [
       { "text": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, browser profiles" },
-      { "text": "Tokens and API keys in your shell environment" },
+      { "text": "Tokens and API keys in your shell environment, except the agent's own key, which is copied by default" },
       { "text": "Other processes, host IPC, kernel interfaces such as <code>ptrace</code> and <code>bpf</code>" }
     ],
     "optin": [
       { "text": "<code>--allow-host</code> for the hosts you list, or <code>--network</code> for all of it" },
-      { "text": "<code>--agent-state</code>, the agent's own login" },
       { "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> and more" }
     ],
     "link": "All the switches"
@@ -59,7 +58,7 @@
   },
   "limits": {
     "title": "What it is not",
-    "text": "ai-jail is a process sandbox. It shares your kernel, so a kernel or driver exploit is outside its boundary, and the capabilities you turn on are real: an agent with <code>--network</code> can send out anything it can read, and a host you allow with <code>--allow-host</code> is trusted for everything it offers. For code you believe is hostile, use a disposable virtual machine.",
+    "text": "ai-jail is built to stop a trusted agent's mistakes. It is not a boundary against hostile code: it shares your kernel, an agent with <code>--network</code> can send out anything it can read, and a host you allow with <code>--allow-host</code> is trusted for everything it offers. For code you believe is hostile, use a disposable virtual machine.",
     "link": "Read the threat model"
   },
   "pair": {

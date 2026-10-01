@@ -7,3 +7,4 @@ dist/
 research-assets/
 *.log
 .DS_Store
+.ai-jail

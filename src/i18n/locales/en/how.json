@@ -48,7 +48,7 @@
         "name": "Filesystem",
         "tag": "mounts",
         "is": "Inside the namespace, only what ai-jail mounts exists. The project is read-write at its real path, system directories such as <code>/usr</code> are read-only, and the home directory and <code>/tmp</code> are fresh and held in memory. <a class=\"link\" href=\"/configure/#toolchains\">The toolchains you have</a> (mise, cargo, npm caches) are mapped into that fresh home, read-only or as a jail-owned cache.",
-        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> and browser profiles are on a built-in list that is never mounted. Anything written outside the project vanishes when the session ends."
+        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> and browser profiles are on a built-in list that is never mounted. The harness's own state directory, for example Claude's <code>~/.claude</code>, is the exception: it is mounted read-write by default so the agent starts logged in, and <code>--no-agent-state</code> leaves it out. Anything written outside the project vanishes when the session ends."
       },
       {
         "name": "Landlock",
@@ -72,7 +72,7 @@
         "name": "Environment allowlist",
         "tag": "what goes in",
         "is": "Your shell is full of variables, and some of them are API keys. ai-jail clears the environment and passes only a short list: <code>PATH</code>, <code>HOME</code>, <code>TERM</code>, locale, proxy and certificate settings.",
-        "stops": "Tokens and cloud credentials exported in your shell never reach the agent. You pass one through by name with <code>--env</code> when a task needs it."
+        "stops": "Tokens and cloud credentials exported in your shell never reach the agent, except the invoked harness's own API key, for example <code>ANTHROPIC_API_KEY</code> for Claude, which is copied by default along with its login; <code>--no-agent-state</code> stops it. You pass another one through by name with <code>--env</code> when a task needs it."
       },
       {
         "name": "Terminal proxy",
@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "Three ways to the network",
-    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except a short list of package registries through the filtered proxy when toolchains are on, the default on Linux. The other two are flags you pass on purpose.",
+    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except on Linux a short list of package registries through the filtered proxy when toolchains are on, which they are by default. The other two are flags you pass on purpose.",
     "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
     "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
     "modes": [
       {
         "title": "Off",
-        "text": "The default. The sandbox gets a private network namespace with no route out. With toolchains on, the default on Linux, the filtered proxy still lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; <code>--no-network</code> makes it fully offline. The agent's own API stays closed until you open it."
+        "text": "The default. The sandbox gets a private network namespace with no route out. On Linux, with toolchains on (the default), the filtered proxy still lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; <code>--no-network</code> makes it fully offline. On macOS the registries stay closed too. The agent's own API stays closed until you open it."
       },
       {
         "title": "Filtered",
@@ -151,8 +151,8 @@
       },
       {
         "what": "Network",
-        "linux": "Off by default: no route out except the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--no-network</code> closes all",
-        "macos": "The same default and the same flags, without the toolchain cache maps, which are Linux only. In lockdown it is always blocked, even with <code>--network</code>."
+        "linux": "Off by default: no route out except the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--no-network</code> closes all. Under <code>--lockdown</code> the open network is always blocked, even with <code>--network</code>.",
+        "macos": "The same default and the same flags, without the registries or the toolchain cache maps, which are Linux only. Lockdown blocks the open network here too."
       },
       {
         "what": "Other programs",
@@ -213,7 +213,7 @@
   },
   "limit": {
     "title": "What the layers do not cover",
-    "text": "All of this shares your kernel. A kernel or driver exploit is outside the boundary, and so is anything you open yourself: an agent with <code>--network</code> can send out whatever it can read, and an allowed host is trusted wholesale. For code you believe is hostile, use a disposable virtual machine.",
+    "text": "All of this is built to stop a trusted agent's mistakes, and it shares your kernel: a kernel or driver exploit is outside the boundary, and so is a determined attacker who controls what runs inside. Anything you open yourself is outside it too: an agent with <code>--network</code> can send out whatever it can read, and an allowed host is trusted wholesale. For code you believe is hostile, use a disposable virtual machine.",
     "link": "The threat model and residual risks"
   },
   "next": [

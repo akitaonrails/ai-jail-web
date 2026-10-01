@@ -33,7 +33,8 @@
       { "title": "An honest mistake outside the project", "text": "A confused agent runs <code>rm -rf</code> on the wrong path, rewrites your global Git configuration or overwrites a dotfile. The files are gone even though nobody meant harm." }
     ],
     "alt": "Two rows. Without a jail, a poisoned page reaches the agent, the agent reads the SSH key and sends it to the internet. With ai-jail, the agent sits inside a wall of bars, no arrow leaves it, and the SSH key and the internet are dim and barred outside.",
-    "caption": "By default ai-jail answers all three the same way: your home directory is not mounted, the network is off, and writes outside the project vanish when the session ends."
+    "caption": "By default ai-jail answers all three the same way: your home directory is not mounted, the network is off, and writes outside the project vanish when the session ends.",
+    "note": "ai-jail is built for the third kind, a trusted agent's mistake, with the project directory as the blast radius. In the first two it limits what a misled agent can reach, and it is not designed to hold against code that actively tries to escape. <a class=\"link\" href=\"/security/\">Read the threat model</a>."
   },
   "prompts": {
     "title": "But my agent asks permission first",
@@ -72,10 +73,10 @@
     "codeTitle": "Terminal",
     "code": {
       "plain": "# the same command, inside the jail",
-      "optin": "# a cloud agent needs the network and its own login"
+      "optin": "# a cloud agent needs a route to its API"
     },
     "honestTitle": "The honest cost",
-    "honest": "Everything is off until you ask for it, and that includes things your agent needs. A cloud agent does not work until you pass <code>--agent-state</code> and either <code>--allow-host</code> with its API host or <code>--network</code>, and you can save the settings in a config file so you type them once. <a class=\"link\" href=\"/configure/\">See every switch</a>."
+    "honest": "Everything is off until you ask for it, and that includes the one thing a cloud agent needs: a route to its API. It does not work until you pass <code>--allow-host</code> with its API host or <code>--network</code>, and you can save the setting in a config file so you type it once. <a class=\"link\" href=\"/configure/\">See every switch</a>."
   },
   "faq": {
     "title": "Questions newcomers ask",
@@ -83,8 +84,8 @@
       { "q": "Is this only for paranoid people?", "a": "No. It is for people who keep credentials on the machine where an agent runs commands, which is most developers. You do not need to believe your agent is hostile, only that it reads text from strangers and sometimes gets things wrong." },
       { "q": "I already use Docker. Is that not enough?", "a": "If your agent already runs inside a container that holds no credentials, you may be fine. Most people run the agent on the host, next to their keys, because keeping an image per project is work, and ai-jail needs no image. <a class=\"link\" href=\"/compare/\">See the comparison</a>." },
       { "q": "Does the agent know it is in a jail?", "a": "It can find out, and nothing depends on hiding it. On Linux the hostname inside is <code>ai-sandbox</code> and a shell prompt shows <code>(jail)</code>. The project's <code>.ai-jail</code> policy file is masked, so the agent sees an empty file, and the agent has no way to lift the jail from inside." },
-      { "q": "Will it break my workflow?", "a": "Your project sits at the same path and your compilers and runtimes work as before. Since 2.5, your toolchains and their dependency caches work inside the jail too, and the package registries are reachable, so builds need no extra flags. Anything else outside the project needs a flag the first time: the network, the agent's login, SSH, Docker, the display. <code>ai-jail --dry-run claude</code> prints the sandbox command it would run, without starting anything." },
-      { "q": "Does it make my agent safe?", "a": "Safer. It is a process sandbox that shares your kernel, so a kernel exploit is outside its boundary, and an agent with <code>--network</code> can send out anything it can read, including your project. <a class=\"link\" href=\"/security/\">The security page</a> lists the limits." }
+      { "q": "Will it break my workflow?", "a": "Your project sits at the same path and your compilers and runtimes work as before. On Linux your toolchains and their dependency caches work inside the jail too, and the package registries are reachable, so builds need no extra flags. Anything else outside the project needs a flag the first time: the network, SSH, Docker, the display. <code>ai-jail --dry-run claude</code> prints the sandbox command it would run, without starting anything." },
+      { "q": "Does it make my agent safe?", "a": "Safer against its own mistakes, which is what it is built for. It is a process sandbox that shares your kernel, it is not a boundary against hostile code, and an agent with <code>--network</code> can send out anything it can read, including your project. <a class=\"link\" href=\"/security/\">The security page</a> lists the limits." }
     ]
   },
   "next": [

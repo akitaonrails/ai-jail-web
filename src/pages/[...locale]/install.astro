@@ -37,8 +37,8 @@ const steps = withText(
   [
     { code: 'cd ~/Projects/my-app\nai-jail --dry-run claude' },
     { code: 'ai-jail bash' },
-    { code: `ai-jail --allow-host api.anthropic.com --agent-state claude\n${k[0]}\nai-jail --network --agent-state claude` },
-    { code: `[commands.claude]\nallow_hosts = ["api.anthropic.com"]\nagent_state = true\n\n${k[1]}\n# ai-jail claude` },
+    { code: `ai-jail --allow-host api.anthropic.com claude\n${k[0]}\nai-jail --network claude` },
+    { code: `[commands.claude]\nallow_hosts = ["api.anthropic.com"]\n\n${k[1]}\n# ai-jail claude` },
   ].map((s, i) => ({ ...s, codeTitle: codeTitles[i] })),
   raw<Words[]>('first.steps'),
 );
@@ -71,6 +71,8 @@ const agentRows = [
   { cmd: 'ai-jail codex', state: ['~/.codex'], note: 'codex' },
   { cmd: 'ai-jail opencode', state: ['~/.config/opencode', '~/.local/share/opencode'], note: 'opencode' },
   { cmd: 'ai-jail gemini', state: ['~/.gemini'] },
+  { cmd: 'ai-jail antigravity', state: ['~/.gemini'], note: 'antigravity' },
+  { cmd: 'ai-jail kimi', state: ['~/.kimi'], note: 'kimi' },
   { cmd: 'ai-jail ai-memory run claude', state: [], note: 'aimemory' },
 ];
 

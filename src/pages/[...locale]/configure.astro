@@ -24,7 +24,6 @@ const globalToml = [
   t('authority.codeClaude'),
   '[commands.claude]',
   'network = true',
-  'agent_state = true',
   'env_pass = ["ANTHROPIC_BASE_URL"]',
   'mask = ["*.pem"]',
 ].join('\n');
@@ -41,7 +40,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '--systemd-user', key: 'systemd_user = true', risk: 'weakens' },
   ],
   [
-    { flag: '--agent-state', key: 'agent_state = true', risk: 'optin' },
+    { flag: '--agent-state', key: 'agent_state = false', risk: 'default' },
     { flag: '--claude-dir <PATH>', key: 'claude_dir = "..."', risk: 'optin' },
     { flag: '--env <NAME[=VALUE]>', risk: 'optin' },
     { flag: '--env-from-file <PATH>', key: 'env_from_file = [...]', risk: 'optin' },
@@ -137,18 +136,25 @@ const toolCode = [
 ].join('\n');
 
 const recipeCode = [
-  { code: [t('recipes.comments.once'), '[commands.claude]', 'allow_hosts = ["api.anthropic.com"]', t('recipes.comments.open'), 'agent_state = true', '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
-  { code: ['ai-jail --allow-host api.anthropic.com --agent-state claude', t('recipes.comments.hosts')].join('\n') },
+  { code: [t('recipes.comments.once'), '[commands.claude]', 'allow_hosts = ["api.anthropic.com"]', t('recipes.comments.open'), '', t('recipes.comments.then'), 'ai-jail claude'].join('\n'), codeTitle: '~/.ai-jail' },
+  { code: ['ai-jail --allow-host api.anthropic.com claude', t('recipes.comments.hosts')].join('\n') },
+  { code: 'ai-jail --no-agent-state claude' },
   { code: '[commands.claude]\nallow_hosts = ["api.anthropic.com", "github.com"]', codeTitle: '~/.ai-jail' },
   { code: [t('recipes.comments.phantom'), 'ai-jail --allow-host api.anthropic.com \\', '  --env-from-file ~/.secrets/claude.env \\', '  --secret ANTHROPIC_API_KEY=api.anthropic.com \\', '  --env ANTHROPIC_BASE_URL=http://api.anthropic.com claude'].join('\n') },
-  { code: 'ai-jail --network --ssh --agent-state claude' },
+  { code: 'ai-jail --network --ssh claude' },
   { code: [t('recipes.comments.build'), 'ai-jail claude', '', t('recipes.comments.offline'), 'ai-jail --no-toolchains --no-network claude'].join('\n') },
-  { code: 'ai-jail --github --agent-state --allow-host api.anthropic.com claude' },
+  { code: 'ai-jail --github --allow-host api.anthropic.com claude' },
   { code: [t('recipes.comments.wayland'), 'ai-jail --browser=soft --network --display chromium', t('recipes.comments.x11'), 'ai-jail --browser=soft --network --x11 chromium'].join('\n') },
   { code: 'ai-jail --network --claude-dir ~/.claude-work claude' },
-  { code: 'ai-jail --network --agent-state --overlay-map ~/Projects/my-app/src claude' },
+  { code: 'ai-jail --network --overlay-map ~/Projects/my-app/src claude' },
 ];
 const recipes = withText(recipeCode, raw<Text[]>('recipes.items'));
+
+// The ladder from the default down to lockdown: the first rung is what the agent has, every other rung closes something.
+const turnDown = withText(
+  [{ state: 'inside' }, { state: 'blocked' }, { state: 'blocked' }, { state: 'blocked' }, { state: 'blocked' }, { state: 'blocked' }] as const,
+  raw<{ text: string }[]>('turnDown.items'),
+);
 
 const next = withText(
   [{ hue: 'red', href: '/security/' }, { hue: 'orange', href: '/how-it-works/' }, { hue: 'cyan', href: '/install/' }] as const,
@@ -234,6 +240,13 @@ const next = withText(
         <Callout title={t('toolchains.caveat.title')}><p set:html={t('toolchains.caveat.text')} /></Callout>
       </div>
       <CodeBlock code={toolCode} title={t('toolchains.codeTitle')} />
+    </div>
+  </Section>
+
+  <Section id="turn-down" title={t('turnDown.title')} lede={t('turnDown.lede')} hue="red">
+    <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-start">
+      <Reach items={turnDown} />
+      <Callout title={t('turnDown.other.title')} hue="red"><p set:html={t('turnDown.other.text')} /></Callout>
     </div>
   </Section>
 

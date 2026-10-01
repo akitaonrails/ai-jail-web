@@ -6,11 +6,12 @@
 import { useI18n } from '@/i18n';
 const { t, raw } = useI18n(Astro, 'home');
 const steps = raw<{ title: string; text: string }[]>('scene.steps');
-// `off` is the step at which the tile goes dark; `optin` tiles come back in gold at the last step.
+// `off` is the step at which the tile goes dark; `optin` tiles come back in gold at the last step; an `inside` tile
+// (the agent's own login, mounted by default) stays reachable in the cyan inside style at every step.
 const tiles = [
   { label: '~/.ssh', off: 2 }, { label: '~/.aws', off: 2 }, { label: t('scene.tiles.projects'), off: 2 },
   { label: '$GITHUB_TOKEN', off: 3 }, null, { label: t('scene.tiles.network'), off: 3, optin: true },
-  { label: 'docker.sock', off: 3 }, { label: t('scene.tiles.display'), off: 3 }, { label: '~/.claude', off: 2, optin: true },
+  { label: 'docker.sock', off: 3 }, { label: t('scene.tiles.display'), off: 3 }, { label: '~/.claude', inside: true },
 ];
 ---
 <section class="scene on-ink" data-scene={steps.length} aria-label={t('scene.label')}>
@@ -26,7 +27,7 @@ const tiles = [
       </ol>
       <div class="map" dir="ltr" aria-hidden="true">
         {tiles.map((tile) => tile ? (
-          <div class="tile" data-off={tile.off} data-optin={tile.optin ? '' : undefined}><span>{tile.label}</span></div>
+          <div class="tile" data-off={tile.off} data-optin={tile.optin ? '' : undefined} data-inside={tile.inside ? '' : undefined}><span>{tile.label}</span></div>
         ) : (
           <div class="tile project">
             <span class="chip"><span>{t('scene.agent')}</span></span>
@@ -51,6 +52,8 @@ const tiles = [
   /* Final state, which is also the no-script state: everything blocked, opt-ins gold, project inside. */
   .tile:not(.project) { background: repeating-linear-gradient(90deg, color-mix(in oklch, var(--v-red) 22%, var(--ink)) 0 3px, var(--ink) 3px 11px); }
   .tile[data-optin] { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-gold) 12%, var(--ink)); color: var(--v-gold); }
+  /* An inside tile is reachable throughout: same cyan as the project, at every step, never dark. */
+  .tile[data-inside], .scene[data-step] .tile[data-inside]:not(.project) { border-color: var(--v-cyan); background: color-mix(in oklch, var(--v-cyan) 10%, var(--ink)); color: var(--on-ink); box-shadow: none; }
   .project { border: 2px solid var(--v-cyan); background: color-mix(in oklch, var(--v-cyan) 10%, var(--ink)); color: var(--on-ink); box-shadow: 0 0 60px -10px color-mix(in oklch, var(--v-cyan) 60%, transparent); font-family: var(--font-display); font-weight: 700; }
   .chip { display: grid; place-items: center; inline-size: clamp(2.6rem, 7vw, 4rem); aspect-ratio: 1; border-radius: 0.7rem; background: linear-gradient(135deg, var(--v-cyan), var(--v-cyan-deep)); color: var(--on-action); font-size: 0.7em; font-weight: 800; box-shadow: 0 0 30px color-mix(in oklch, var(--v-cyan) 70%, transparent); }
   .cellbars { position: absolute; inset: 0; display: flex; justify-content: space-evenly; pointer-events: none; }

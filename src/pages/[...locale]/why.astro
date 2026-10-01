@@ -27,7 +27,7 @@ const cost = [
   t('cost.code.plain'),
   'ai-jail claude',
   t('cost.code.optin'),
-  'ai-jail --network --agent-state claude',
+  'ai-jail --allow-host api.anthropic.com claude',
 ].join('\n');
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
@@ -47,6 +47,7 @@ const cost = [
   <Section title={t('wrong.title')} lede={t('wrong.lede')} hue="red" tint>
     <FeatureGrid items={scenarios} />
     <Figure name="why-injection" alt={t('wrong.alt')} caption={t('wrong.caption')} />
+    <p class="mt-10 max-w-[40em] text-muted" set:html={t('wrong.note')} />
   </Section>
 
   <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="cyan" narrow>

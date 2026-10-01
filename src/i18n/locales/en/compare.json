@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "Your agent already has a sandbox. It covers a different half.",
-    "lede": "Built-in sandboxes and permission prompts watch the commands the model runs. ai-jail decides what the whole agent program can see on your machine. The two work together.",
+    "lede": "Built-in sandboxes and permission prompts watch the commands the model runs. ai-jail decides what the whole agent program can see on your machine, and it is tuned for a trusted agent's mistakes. The two work together.",
     "install": "Install",
     "how": "How it works",
     "reviewed": "Last reviewed {date}. Other products change quickly, so every claim about them links to the vendor's own documentation."
@@ -19,7 +19,7 @@
       { "title": "You want the agent's own sandbox and prompts", "text": "Keep them on. They work inside ai-jail, and they catch the commands you would not have approved. <a class=\"link\" href=\"#both\">Use both</a>." },
       { "title": "You want policies per tool, approvals at runtime and a signed audit trail", "text": "nono goes further than ai-jail there, at the cost of a policy language and a supervisor per command. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
       { "title": "You sandbox from code, one tool call at a time", "text": "zerobox has SDKs for that and snapshots to roll back. It leaves reads open and has had no release since May 2026. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
-      { "title": "You do not trust the code at all", "text": "A disposable virtual machine. Every tool on this page shares your kernel, ai-jail included. <a class=\"link\" href=\"#containers\">Docker, containers and VMs</a>." }
+      { "title": "You do not trust the code at all", "text": "A disposable virtual machine. ai-jail is an accident guard for a trusted agent, not a boundary against hostile code, and every tool on this page shares your kernel. <a class=\"link\" href=\"#containers\">Docker, containers and VMs</a>." }
     ]
   },
   "wall": {
@@ -118,7 +118,7 @@
           "Sandboxed commands inherit the parent environment by default, credentials included. <code>sandbox.credentials</code> can deny or mask them.",
           "",
           "",
-          "A minimal allowlist of terminal, locale and toolchain variables. You add others by name with <code>--env</code>."
+          "A minimal allowlist of terminal, locale and toolchain variables, plus the invoked harness's own API key, copied by default with its login; <code>--no-agent-state</code> stops it. You add others by name with <code>--env</code>."
         ]
       },
       {
@@ -206,10 +206,10 @@
   },
   "both": {
     "title": "Use both",
-    "lede": "With the network off, a cloud agent cannot reach its own model API. You open two things: the model's host and the agent's login. Allow one host, or open the whole network.",
+    "lede": "With the network off, a cloud agent cannot reach its own model API. Its login is already inside, mounted by default, so you open one thing: the route to the API. Allow one host, or open the whole network.",
     "codeFiltered": "tighter: only the model API",
     "codeOpen": "simpler: the whole network",
-    "codeNote": "ai-jail knows the API host of Claude Code, Codex and Gemini CLI, and warns at launch when the list does not include it. <a class=\"link\" href=\"/configure/#switches\">Every flag is on Configure</a>.",
+    "codeNote": "ai-jail knows the API host of Claude Code, Codex and Gemini CLI, and warns at launch when the list does not include it. The login is mounted by default; <code>--no-agent-state</code> gives a logged-out run. <a class=\"link\" href=\"/configure/#switches\">Every flag is on Configure</a>.",
     "alt": "One large wall labeled ai-jail encloses the agent, its MCP servers, its hooks, the project and its shell commands. Between the agent and the shell commands sits the agent's own approval prompt. One line leaves the wall through a gate to the model API. Your home directory is outside the wall, dim and barred.",
     "caption": "The outer wall is ai-jail. Inside it, the agent's prompts and rules keep doing their job.",
     "points": [
@@ -219,7 +219,7 @@
       },
       {
         "title": "What ai-jail guarantees underneath",
-        "text": "The agent, its MCP servers and its hooks never see your home directory, your keys or the tokens in your shell, whatever you approve. What the agent can read, it can still send to any host you allowed, so <a class=\"link\" href=\"/configure/#secrets\">mask the secrets inside the project</a>."
+        "text": "The agent, its MCP servers and its hooks never see your home directory, your keys or the tokens in your shell, whatever you approve. The one exception is the agent's own login and API key, mounted by default so it starts signed in. What the agent can read, it can still send to any host you allowed, so <a class=\"link\" href=\"/configure/#secrets\">mask the secrets inside the project</a>."
       }
     ],
     "nestedTitle": "Keep the prompts, but do not count on a sandbox inside a sandbox",
@@ -279,7 +279,7 @@
       {
         "label": "Credentials",
         "openshell": "Brokered by the gateway and injected per request, never written to the sandbox disk.",
-        "jail": "Ambient. What you pass with <code>--env</code>, <code>--env-from-file</code> or <code>--agent-state</code> is visible to everything inside. Tool credentials (<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>) are opt-in read-only mounts, and the documentation says read-only does not stop their use."
+        "jail": "Ambient. The harness's own login is mounted by default, read-write, and what you pass with <code>--env</code> or <code>--env-from-file</code> is visible to everything inside; <code>--no-agent-state</code> gives a logged-out run. Tool credentials (<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>) are opt-in read-only mounts, and the documentation says read-only does not stop their use."
       },
       {
         "label": "Isolation ceiling",
