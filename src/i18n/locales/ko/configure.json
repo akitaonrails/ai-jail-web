@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "ai-jail 설정: 플래그, 설정 파일, 마스킹, 락다운",
-    "description": "ai-jail의 모든 기능은 꺼진 상태에서 시작하고, 예외는 내 툴체인뿐입니다. 플래그와 설정 키 전체 목록, 프로젝트 안의 시크릿을 에이전트에게 숨기는 방법, 락다운 모드의 동작, 그대로 복사해서 쓸 수 있는 설정 레시피를 정리했습니다."
+    "description": "ai-jail의 모든 기능은 꺼진 상태에서 시작하고, 예외는 내 툴체인과 에이전트 자신의 로그인뿐입니다. 플래그와 설정 키 전체 목록, 프로젝트 안의 시크릿을 숨기는 방법, 락다운 모드의 동작, 그대로 복사해서 쓸 수 있는 레시피를 정리했습니다."
   },
   "hero": {
     "title": "기본은 닫힘, 스위치는 내 손에",
-    "lede": "옵션을 주지 않으면 에이전트는 프로젝트와 빌드 도구만 받습니다. 로그인도 키도 없고, 네트워크는 짧은 패키지 레지스트리 목록이 전부입니다. 작업에 필요한 것을 스위치 하나씩 열면 되고, 감옥을 더 닫을 수도 있습니다.",
+    "lede": "옵션을 주지 않으면 에이전트는 프로젝트, Linux에서는 빌드 도구, 그리고 자신의 로그인을 받습니다. 네트워크는 짧은 패키지 레지스트리 목록이 전부입니다. 스위치 하나씩 줄여 나갈 수 있고, 락다운은 대부분을 한 번에 닫습니다.",
     "switches": "스위치 보기",
     "install": "설치"
   },
@@ -30,7 +30,7 @@
   },
   "switches": {
     "title": "스위치 목록",
-    "lede": "모든 행은 요청하기 전까지 꺼져 있습니다. 예외는 청록색 행 하나로, 기본으로 켜져 있습니다. 기능 플래그마다 다시 닫는 <code>--no-</code> 짝이 있습니다. 빨간 배지는 감옥을 약하게 만드는 스위치를 뜻합니다. <a class=\"link\" href=\"/security/\">전체 목록과 이유는 보안 페이지에 있습니다</a>.",
+    "lede": "모든 행은 요청하기 전까지 꺼져 있습니다. 예외는 청록색 행 두 개로, 기본으로 켜져 있습니다. 기능 플래그마다 다시 닫는 <code>--no-</code> 짝이 있습니다. 빨간 배지는 감옥을 약하게 만드는 스위치를 뜻합니다. <a class=\"link\" href=\"/security/\">전체 목록과 이유는 보안 페이지에 있습니다</a>.",
     "cols": { "flag": "플래그", "key": "설정 키", "opens": "하는 일", "risk": "위험" },
     "risk": { "optin": "한 가지를 엶", "weakens": "감옥을 약하게 함", "default": "기본 활성" },
     "none": "없음",
@@ -49,9 +49,9 @@
       {
         "title": "에이전트와 환경",
         "rows": [
-          { "text": "<code>~/.claude</code>, <code>~/.codex</code> 같은 에이전트 자신의 로그인과 설정. 켜면 감옥 안의 모든 것이 그 자격 증명을 쓸 수 있습니다." },
+          { "text": "에이전트 자신의 로그인. 실행한 하네스의 상태(<code>~/.claude</code>, <code>~/.codex</code> 등)를 읽기·쓰기로 마운트하고, 셸에 설정된 API 키를 복사합니다: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> 또는 <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. 에이전트는 로그인된 상태로 시작하고, 감옥 안의 모든 것이 그 로그인을 쓸 수 있습니다. <code>--no-agent-state</code>를 주면 로그아웃 상태로 실행됩니다. 락다운에서는 꺼지고, 프로젝트 파일은 끌 수만 있습니다." },
           { "text": "지정한 디렉터리를 Claude의 상태 디렉터리로 쓰고 <code>CLAUDE_CONFIG_DIR</code>을 설정합니다." },
-          { "text": "셸에 있는 변수 하나를 전달하거나 <code>NAME=VALUE</code>로 변수 하나를 설정합니다. 여러 번 쓸 수 있고 디스크에 저장되지 않습니다." },
+          { "text": "셸에 있는 변수 하나를 전달하거나 <code>NAME=VALUE</code>로 변수 하나를 설정합니다. 여러 번 쓸 수 있고 디스크에 저장되지 않으며, 값이 런처의 명령줄에 나타나지 않습니다." },
           { "text": "파일에서 엄격한 <code>KEY=VALUE</code> 줄을 읽어 <code>--env</code>처럼 전달합니다. 충돌하면 플래그 쪽이 이깁니다. 파일은 내 소유의 일반 파일이어야 하고, 권한이 0600 이하이며 프로젝트 바깥에 있어야 합니다. 아니면 실행이 실패합니다. ai-jail은 값을 디스크에 저장하지 않고, 설정 키는 전역 파일에서만 동작합니다." },
           { "text": "<code>KEY</code>의 실제 값을 샌드박스 밖에 둡니다. 에이전트에는 플레이스홀더가 보이고, 프록시가 그 호스트 하나로 가는 요청에만 실제 값을 넣습니다. <code>--allow-host</code>가 필요하고, 키는 <code>--env</code>나 <code>--env-from-file</code>로 먼저 들어와 있어야 합니다. 전역 파일 전용이고 저장되지 않습니다. 그 호스트에 대해 프록시로 평문 HTTP를 보낼 수 있는 클라이언트만 해당하고, HTTPS 터널은 건드리지 않습니다." },
           { "text": "셸 환경 전체를 그 안의 시크릿까지 모두 전달합니다. 쓰지 마세요." },
@@ -61,7 +61,7 @@
       {
         "title": "툴체인과 도구 자격 증명",
         "rows": [
-          { "text": "내 컴파일러와 패키지 관리자는 읽기 전용으로, 의존성 캐시는 감옥 전용 저장소에, 패키지 레지스트리는 필터링 프록시를 통해 닿을 수 있게 합니다. Linux에서는 기본으로 켜져 있습니다. 락다운에서는 꺼지고, 프로젝트 파일은 끌 수만 있습니다. <a class=\"link\" href=\"#toolchains\">아래에 자세히</a>." },
+          { "text": "내 컴파일러와 패키지 관리자는 읽기 전용으로, 의존성 캐시는 감옥 전용 저장소에, 패키지 레지스트리는 필터링 프록시를 통해 닿을 수 있게 합니다. Linux 전용이고 거기서는 기본으로 켜져 있습니다. macOS에서는 아무것도 매핑하지 않고 샌드박스는 오프라인으로 남습니다. 락다운에서는 꺼지고, 프로젝트 파일은 끌 수만 있습니다. <a class=\"link\" href=\"#toolchains\">아래에 자세히</a>." },
           { "text": "내 <code>~/.config/gh</code>를 읽기 전용으로 열어 <code>gh</code>가 로그인된 상태가 됩니다. 읽기 전용은 파일이 바뀌는 것만 막습니다. 감옥 안의 모든 것이 GitHub에서 나처럼 행동할 수 있습니다." },
           { "text": "내 <code>~/.aws</code>, 읽기 전용. 자격 증명이 유효한 동안 감옥 안의 모든 것이 AWS에서 나처럼 행동할 수 있습니다." },
           { "text": "내 <code>~/.kube</code>, 읽기 전용. 감옥 안의 모든 것이 내 클러스터에 나로서 접근할 수 있습니다." },
@@ -156,7 +156,7 @@
     "alt": "감옥 벽 안에서 에이전트가 툴체인이라고 적힌 잠긴 공구함과 감옥 캐시라고 적힌 상자에 닿아 있습니다. 벽 바깥의 호스트 캐시는 흐리고 창살에 막혀 있으며 연결선이 없습니다. 오른쪽에서는 에이전트에서 나온 선이 문과 프록시 상자를 지나 레지스트리라고 적힌 구름으로 이어집니다. 그 위의 모델 API 구름은 흐리고 창살에 막혀 있습니다.",
     "caption": "호스트의 실제 캐시는 바깥에 남으므로, 감옥 안의 빌드가 호스트가 빌드에 쓰는 캐시를 오염시킬 수 없습니다. 에이전트의 API는 직접 열기 전까지 닫혀 있습니다.",
     "points": [
-      { "title": "도구는 읽기 전용", "text": "2.4.1부터 ai-jail은 mise로 설치한 것과 그 설정을 읽기 전용으로 매핑합니다. Rust는 <code>~/.cargo/bin</code>과 <code>~/.rustup</code>을 같은 방식으로 매핑해서 <code>cargo</code>와 <code>rustc</code>가 잡힙니다. Cargo의 자격 증명과 <code>config.toml</code>은 들어가지 않습니다." },
+      { "title": "도구는 읽기 전용", "text": "2.4.1부터 ai-jail은 mise로 설치한 것과 그 설정을 읽기 전용으로 매핑합니다. Rust는 <code>~/.cargo/bin</code>과 <code>~/.rustup</code>을 같은 방식으로 매핑해서 <code>cargo</code>와 <code>rustc</code>가 잡힙니다. Cargo의 자격 증명과 <code>config.toml</code>은 들어가지 않습니다. mise는 읽기 전용 매핑에 아무것도 설치할 수 없으므로 ai-jail은 안쪽에 <code>MISE_NOT_FOUND_AUTO_INSTALL=false</code>를 설정해서, 없는 도구는 호출마다가 아니라 한 번만 실패하게 합니다." },
       { "title": "감옥 전용 캐시", "text": "의존성 캐시는 <code>~/.local/share/ai-jail/cache/</code> 아래에 두고 세션 사이에 유지됩니다. Cargo의 레지스트리 캐시와 git 캐시가 여기로 갑니다. pip, uv, Go, npm, yarn, pnpm, bun, deno, Maven, Gradle, Coursier, Composer, Crystal, Zig의 기본 캐시도 내 컴퓨터에 그 도구의 디렉터리가 있으면 여기로 갑니다." },
       { "title": "레지스트리는 프록시를 통해", "text": "툴체인이 켜져 있고 네트워크 플래그를 주지 않으면, 샌드박스는 <code>--allow-host</code>와 같은 프록시를 통해 crates.io, npm, PyPI, Go 프록시, Maven Central, Clojars, Packagist, github.com과 각각의 서브도메인에만 닿고 그 밖에는 닿지 못합니다. 에이전트 자신의 API에는 여전히 <code>--allow-host</code>나 <code>--network</code>가 필요합니다." }
     ],
@@ -169,6 +169,22 @@
     "caveat": {
       "title": "한계 두 가지",
       "text": "전역 bin으로의 <code>cargo install</code>은 감옥 안에서 동작하지 않으니 <code>cargo install --root</code>를 쓰세요. 레지스트리 기본값에는 비특권 네트워크 네임스페이스가 필요합니다. 커널이 이를 거부하면 샌드박스는 아무 말 없이 오프라인으로 남지만, 명시적인 <code>--allow-host</code>는 여전히 페일 클로즈로 동작합니다."
+    }
+  },
+  "turnDown": {
+    "title": "줄여 나가기",
+    "lede": "기본값은 일을 끝내는 데 맞춰져 있습니다. 아래 단계마다 하나씩 더 닫히고, <code>--lockdown</code>은 대부분을 한 번에 닫습니다. <a class=\"link\" href=\"/security/\">각각이 무엇을 막는지는 보안 페이지에 있습니다</a>.",
+    "items": [
+      { "text": "기본값: 에이전트의 로그인, Linux에서는 내 툴체인, 패키지 레지스트리, 그리고 읽기·쓰기 프로젝트." },
+      { "text": "<code>--no-agent-state</code>: 로그인 없음. 하네스의 상태는 바깥에 남고 API 키도 복사되지 않습니다." },
+      { "text": "<code>--no-toolchains</code>: 의존성 캐시도 패키지 레지스트리도 없습니다." },
+      { "text": "<code>--no-network</code>: 완전히 오프라인. 여기에 <code>--allow-host</code>를 더하면 프록시를 통해 짧은 호스트 목록만 열립니다." },
+      { "text": "<code>--mask</code>, <code>--deny-path</code>, <code>--hide-dotdir</code>는 경로를 하나씩 빼고, 좁은 <code>--map</code>이나 <code>--rw-map</code>은 넓은 허용을 대신합니다." },
+      { "text": "<code>--lockdown</code>: 프로젝트는 읽기 전용, 로그인도 툴체인도 레지스트리도 없고, Landlock과 seccomp는 엄격하게. 그래도 VM은 아닙니다." }
+    ],
+    "other": {
+      "title": "반대 방향 플래그 하나",
+      "text": "<code>--no-private-home</code>은 노출을 늘립니다. 에이전트가 새 홈 대신 내 실제 홈 디렉터리를 받습니다. 경로 하나만 필요하면 <code>--map</code>이나 <code>--rw-map</code>을 대신 쓰세요."
     }
   },
   "lockdown": {
@@ -185,20 +201,22 @@
       { "text": "Landlock이 필수입니다. 적용할 수 없으면 실행이 실패합니다" },
       { "text": "프로세스 수, 열린 파일 수, 파일 크기 제한이 더 엄격해집니다" },
       { "text": "다른 플래그를 넘겼더라도 디스플레이, 오디오, GPU, KVM, Docker, SSH 에이전트, mise는 없습니다" },
-      { "text": "툴체인 캐시, 레지스트리 외부 연결, 도구 자격 증명은 없습니다" }
+      { "text": "툴체인 캐시, 레지스트리 외부 연결, 도구 자격 증명은 없습니다" },
+      { "text": "에이전트 로그인이 없으므로 하네스는 로그아웃 상태로 시작합니다" }
     ],
     "codeTitle": "터미널",
     "network": {
       "title": "락다운과 네트워크",
-      "text": "락다운에서는 기본적으로 네트워크가 없습니다. <code>--allow-host</code>는 락다운에서도 동작하므로 네트워크를 열지 않고도 나열한 호스트에 닿을 수 있습니다. Linux에서는 <code>--network</code>가 여전히 락다운을 덮어쓰므로 정말 필요한 경우가 아니면 빼세요. macOS에서는 락다운이 열린 네트워크를 항상 차단합니다."
+      "text": "락다운은 <code>--network</code>를 넘겨도 항상 네트워크 네임스페이스를 격리합니다. <code>--allow-host</code>는 락다운에서도 동작합니다. 에이전트는 나열한 호스트에 프록시를 통해 닿고, 그 밖에는 아무 데도 닿지 못합니다."
     }
   },
   "recipes": {
     "title": "레시피",
     "lede": "하나를 골라 복사하세요. 무엇이 만들어지는지 보려면 먼저 <code>--dry-run</code>을 붙여 실행합니다.",
     "items": [
-      { "title": "매일 쓰는 클라우드 에이전트", "text": "호스팅된 모델은 API에 닿아야 하고, 인증을 위한 자체 로그인이 필요합니다. 둘 다 전역 파일에 넣어 두면 명령이 짧게 유지됩니다. API 호스트만 허용하거나, <code>network = true</code>로 네트워크 전체를 여세요." },
+      { "title": "매일 쓰는 클라우드 에이전트", "text": "호스팅된 모델은 API에 닿아야 합니다. 로그인은 기본으로 이미 들어 있으니 더할 것은 호스트뿐입니다. 전역 파일에 넣어 두면 명령이 짧게 유지됩니다. API 호스트만 허용하거나, <code>network = true</code>로 네트워크 전체를 여세요." },
       { "title": "에이전트의 API 호스트만", "text": "에이전트가 자기 API에만 닿습니다. Claude는 <code>api.anthropic.com</code>, Codex는 <code>api.openai.com</code>, Gemini는 <code>generativelanguage.googleapis.com</code>을 씁니다. 목록에 그 호스트가 없으면 실행 시 경고에 호스트 이름이 나옵니다." },
+      { "title": "로그아웃 상태 실행", "text": "에이전트에 자격 증명을 하나도 주지 않으려면 <code>--no-agent-state</code>를 씁니다. 상태 디렉터리와 API 키가 바깥에 남아 로그아웃 상태로 시작하고, 새 홈 안에서 로그인한 것은 실행이 끝나면 사라집니다." },
       { "title": "전역 파일의 허용 호스트", "text": "목록은 그 명령을 실행할 때마다 적용됩니다. 허용된 호스트는 통째로 신뢰됩니다. <code>github.com</code>을 넣으면 에이전트가 내 자격 증명이 닿는 어느 저장소에든 푸시할 수 있으니, 정말 원할 때만 추가하세요." },
       { "title": "에이전트가 절대 보지 못하는 키", "text": "샌드박스의 <code>ANTHROPIC_API_KEY</code>에는 플레이스홀더가 들어가고, ai-jail의 프록시가 <code>api.anthropic.com</code>으로 가는 요청에만 실제 키를 넣습니다. 클라이언트는 그 호스트에 대해 프록시로 평문 HTTP를 보내야 하는데, <code>http://</code> 기본 URL이 그 역할을 합니다. 그러면 ai-jail이 요청을 TLS로 실제 호스트까지 나릅니다. HTTPS 터널만 여는 클라이언트는 치환 없이 그대로 동작합니다." },
       { "title": "SSH로 git push", "text": "<code>--ssh</code>는 <code>~/.ssh</code>를 읽기 전용으로 마운트하고 SSH 에이전트 소켓을 전달합니다. 푸시하려면 네트워크도 필요합니다." },

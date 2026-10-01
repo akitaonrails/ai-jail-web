@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "Uma jaula para o seu agente de código com IA",
-    "lede": "Seu agente roda com a sua conta de usuário, então lê tudo o que você consegue ler. O ai-jail inicia o agente dentro de um sandbox do sistema operacional: o projeto continua gravável, e suas chaves, tokens e diretório home nem aparecem lá dentro.",
+    "lede": "Seu agente roda com a sua conta de usuário, então lê tudo o que você consegue ler. O ai-jail inicia o agente dentro de um sandbox do sistema operacional feito para conter os erros de um agente confiável: o projeto continua gravável, e suas chaves, os segredos do shell e o diretório home nem aparecem lá dentro.",
     "install": "Instalar",
     "why": "Preciso disso?",
     "logoAlt": "Um cadeado feito de trilhas de circuito. Atrás das grades da janela do cadeado há um microchip brilhando: o agente."
@@ -16,7 +16,7 @@
       { "title": "Inicie pelo ai-jail", "text": "Digite <code>ai-jail</code> na frente do comando. O agente sobe em namespaces próprios, com o seu projeto montado no mesmo caminho." },
       { "title": "Seu home não é montado", "text": "O agente recebe um diretório home novo e vazio. Chaves SSH, credenciais de nuvem, perfis de navegador e seus outros projetos não existem lá dentro." },
       { "title": "Segredos, rede e dispositivos desligados", "text": "As variáveis de ambiente são reduzidas a uma allowlist, então os tokens do seu shell ficam no seu shell. A rede fica fechada, fora os registries de pacotes de onde as suas toolchains baixam. O socket do Docker, a tela e o clipboard ficam desligados." },
-      { "title": "Abra o que a tarefa precisa", "text": "Um agente em nuvem precisa do próprio login e de um caminho até a API dele, então você abre esses dois: o login, e só o host da API ou a rede inteira. Todo o resto fica fechado até você pedir." }
+      { "title": "Abra o que a tarefa precisa", "text": "Um agente em nuvem começa logado, porque o ai-jail monta o login dele por padrão. Você abre uma coisa só, o caminho até a API dele: <code>--allow-host</code> com o host da API, ou <code>--network</code> para a rede inteira. Todo o resto fica fechado até você pedir." }
     ]
   },
   "wrap": {
@@ -28,21 +28,20 @@
   },
   "defaults": {
     "title": "O que você ganha sem configurar nada",
-    "lede": "Tudo o que alcança a sua máquina começa desligado até você ligar, menos as suas toolchains e os registries de pacotes delas, que você pode desligar. O que for escrito fora do projeto vai para a memória e some quando a sessão termina.",
+    "lede": "Tudo o que alcança a sua máquina começa desligado até você ligar, menos o login do próprio agente, as suas toolchains (no Linux) e os registries de pacotes delas, cada um com uma opção <code>--no-</code>. O que for escrito fora do projeto vai para a memória e some quando a sessão termina.",
     "inside": [
       { "text": "O diretório do seu projeto, com leitura e escrita, no caminho real" },
-      { "text": "As toolchains do sistema em <code>/usr</code>, somente leitura" },
-      { "text": "Suas toolchains (mise, cargo, npm e outras), somente leitura, com um cache da própria jaula" },
+      { "text": "Suas toolchains (mise, cargo, npm e outras) e as do sistema em <code>/usr</code>, somente leitura, com um cache da própria jaula no Linux" },
+      { "text": "O login do próprio agente, como <code>~/.claude</code>, para ele começar logado" },
       { "text": "Um diretório home novo e um <code>/tmp</code> privado" }
     ],
     "blocked": [
       { "text": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, perfis de navegador" },
-      { "text": "Tokens e chaves de API no ambiente do seu shell" },
+      { "text": "Tokens e chaves de API no ambiente do seu shell, menos a chave do próprio agente, que é copiada por padrão" },
       { "text": "Outros processos, IPC do host, interfaces do kernel como <code>ptrace</code> e <code>bpf</code>" }
     ],
     "optin": [
       { "text": "<code>--allow-host</code> para os hosts que você lista, ou <code>--network</code> para tudo" },
-      { "text": "<code>--agent-state</code>, o login do próprio agente" },
       { "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> e outras" }
     ],
     "link": "Todas as opções"
@@ -59,7 +58,7 @@
   },
   "limits": {
     "title": "O que ele não é",
-    "text": "O ai-jail é um sandbox de processo. Ele compartilha o seu kernel, então um exploit de kernel ou de driver está fora da fronteira dele, e os recursos que você liga são reais: um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler, e um host que você libera com <code>--allow-host</code> é confiável em tudo o que ele oferece. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
+    "text": "O ai-jail é feito para conter os erros de um agente confiável. Ele não é uma fronteira contra código hostil: compartilha o seu kernel, um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler, e um host que você libera com <code>--allow-host</code> é confiável em tudo o que ele oferece. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
     "link": "Ler o modelo de ameaças"
   },
   "pair": {

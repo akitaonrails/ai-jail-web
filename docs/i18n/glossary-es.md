@@ -72,3 +72,12 @@ Terms decided while translating. One English term maps to one target term across
 | security advisory | aviso de seguridad (GitHub's: advisory) |
 | best effort | best-effort (kept in English) |
 | source audit | auditoría de código |
+| accident guard | protección contra accidentes |
+| trusted-but-fallible agent / a trusted agent's mistakes | agente de confianza, pero falible / los errores de un agente de confianza |
+| blast radius | radio de impacto |
+| logged-out run | ejecución sin sesión |
+| signed in / logged in (the agent starts) | con la sesión iniciada |
+| turning it down (the Configure section) | cerrar más la jaula |
+| determined / motivated attacker | atacante decidido |
+| convenience trade | concesión por comodidad |
+| namespace (network) | namespace (kept in English) |

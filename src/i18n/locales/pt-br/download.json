@@ -57,7 +57,7 @@
   },
   "next": {
     "items": [
-      { "title": "Instalar", "text": "A primeira execução: um dry run, uma olhada lá dentro e depois o agente com as duas coisas de que ele precisa." },
+      { "title": "Instalar", "text": "A primeira execução: um dry run, uma olhada lá dentro e depois o agente com um caminho até a API dele." },
       { "title": "Configurar", "text": "Todas as flags e chaves de configuração, e como abrir só o que a tarefa precisa." },
       { "title": "Segurança", "text": "O modelo de ameaças, como uma release é assinada e o que ainda falta." }
     ]

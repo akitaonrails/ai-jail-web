@@ -48,7 +48,7 @@
         "name": "Sistema de archivos",
         "tag": "montajes",
         "is": "Dentro del namespace solo existe lo que ai-jail monta. El proyecto está en lectura y escritura en su ruta real, los directorios del sistema como <code>/usr</code> están en solo lectura, y el directorio home y <code>/tmp</code> son nuevos y viven en memoria. <a class=\"link\" href=\"/configure/#toolchains\">Las toolchains que tienes</a> (mise, cargo, cachés de npm) se mapean en ese home nuevo, en solo lectura o como una caché propia de la jaula.",
-        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> y los perfiles del navegador están en una lista integrada que nunca se monta. Todo lo que se escribe fuera del proyecto desaparece cuando termina la sesión."
+        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> y los perfiles del navegador están en una lista integrada que nunca se monta. El directorio de estado del propio harness, por ejemplo el <code>~/.claude</code> de Claude, es la excepción: ai-jail lo monta en lectura y escritura por defecto para que el agente arranque con la sesión iniciada, y <code>--no-agent-state</code> lo deja fuera. Todo lo que se escribe fuera del proyecto desaparece cuando termina la sesión."
       },
       {
         "name": "Landlock",
@@ -72,7 +72,7 @@
         "name": "Lista de permitidos del entorno",
         "tag": "lo que entra",
         "is": "Tu shell está llena de variables, y algunas son claves de API. ai-jail limpia el entorno y pasa solo una lista corta: <code>PATH</code>, <code>HOME</code>, <code>TERM</code>, el locale y los ajustes de proxy y de certificados.",
-        "stops": "Los tokens y las credenciales de la nube exportados en tu shell nunca llegan al agente. Dejas pasar uno por su nombre con <code>--env</code> cuando una tarea lo necesita."
+        "stops": "Los tokens y las credenciales de la nube exportados en tu shell nunca llegan al agente, salvo la clave de API del propio harness que arrancas, por ejemplo <code>ANTHROPIC_API_KEY</code> para Claude, que se copia por defecto junto con su login; <code>--no-agent-state</code> lo impide. Dejas pasar otra por su nombre con <code>--env</code> cuando una tarea lo necesita."
       },
       {
         "name": "Proxy de terminal",
@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "Tres caminos hacia la red",
-    "lede": "Cada arranque elige uno de tres modos de red. El predeterminado es el más estricto: sin salida, salvo una lista corta de registries de paquetes a través del proxy filtrado cuando las toolchains están activadas, el valor por defecto en Linux. Los otros dos son flags que pasas a propósito.",
+    "lede": "Cada arranque elige uno de tres modos de red. El predeterminado es el más estricto: sin salida, salvo, en Linux con las toolchains activadas (el valor por defecto), una lista corta de registries de paquetes a través del proxy filtrado. Los otros dos son flags que pasas a propósito.",
     "alt": "Tres paneles, de izquierda a derecha. Apagada: el chip del agente dentro de un muro cerrado, con una nube atenuada y tras barrotes fuera. Filtrada: una puerta pequeña en el muro lleva a una caja de proxy, que conecta con una nube cian con la etiqueta api.anthropic.com mientras una segunda nube sigue atenuada y tras barrotes. Abierta: falta el lado de red del muro y el chip conecta directo con la nube.",
     "caption": "Apagada es el valor por defecto. Filtrada abre una puerta solo hacia hosts con nombre. Abierta quita el muro del lado de la red.",
     "modes": [
       {
         "title": "Apagada",
-        "text": "El valor por defecto. El sandbox recibe un namespace de red privado sin salida. Con las toolchains activadas, el valor por defecto en Linux, el proxy filtrado deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; <code>--no-network</code> lo deja del todo sin conexión. La API del propio agente sigue cerrada hasta que la abres."
+        "text": "El valor por defecto. El sandbox recibe un namespace de red privado sin salida. En Linux, con las toolchains activadas (el valor por defecto), el proxy filtrado deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; <code>--no-network</code> lo deja del todo sin conexión. En macOS los registries también quedan cerrados. La API del propio agente sigue cerrada hasta que la abres."
       },
       {
         "title": "Filtrada",
@@ -151,8 +151,8 @@
       },
       {
         "what": "Red",
-        "linux": "Apagada por defecto: sin salida, salvo los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--no-network</code> lo cierra todo",
-        "macos": "El mismo valor por defecto y los mismos flags, sin los mapeos de caché de las toolchains, que solo existen en Linux. En lockdown siempre está bloqueada, incluso con <code>--network</code>."
+        "linux": "Apagada por defecto: sin salida, salvo los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--no-network</code> lo cierra todo. Bajo <code>--lockdown</code> la red abierta siempre está bloqueada, incluso con <code>--network</code>.",
+        "macos": "El mismo valor por defecto y los mismos flags, sin los registries ni los mapeos de caché de las toolchains, que solo existen en Linux. Lockdown también bloquea aquí la red abierta."
       },
       {
         "what": "Otros programas",
@@ -213,7 +213,7 @@
   },
   "limit": {
     "title": "Lo que las capas no cubren",
-    "text": "Todo esto comparte tu kernel. Un exploit del kernel o de un driver queda fuera de la frontera, igual que cualquier cosa que abras tú: un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, y un host permitido es de confianza por completo. Para código que crees hostil, usa una máquina virtual desechable.",
+    "text": "Todo esto está hecho para frenar los errores de un agente de confianza, y comparte tu kernel: un exploit del kernel o de un driver queda fuera de la frontera, igual que un atacante decidido que controla lo que se ejecuta dentro. Lo que abras tú también queda fuera: un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, y un host permitido es de confianza por completo. Para código que crees hostil, usa una máquina virtual desechable.",
     "link": "El modelo de amenazas y los riesgos residuales"
   },
   "next": [

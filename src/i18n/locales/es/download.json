@@ -74,7 +74,7 @@
     "items": [
       {
         "title": "Instalar",
-        "text": "La primera ejecución: un dry run, un vistazo dentro y luego el agente con las dos cosas que necesita."
+        "text": "La primera ejecución: un dry run, un vistazo dentro y luego el agente con una ruta a su API."
       },
       {
         "title": "Configurar",

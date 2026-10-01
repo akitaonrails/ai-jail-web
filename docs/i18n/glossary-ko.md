@@ -97,3 +97,16 @@ Terms decided while translating. One English term maps to one target term across
 | regression tests | 회귀 테스트 |
 | standalone (opencode --standalone) | 단독 실행 |
 | fresh home | 새 홈 |
+| accident guard | 사고 방지 장치 |
+| built to stop a trusted agent's mistakes | 신뢰하는 에이전트의 실수를 막도록 만든 |
+| trusted-but-fallible agent | 신뢰하지만 실수할 수 있는 에이전트 |
+| blast radius | 영향 범위 |
+| logged-out run | 로그아웃 상태 실행 |
+| agent's own login (agent state) | 에이전트 자신의 로그인 |
+| mounted by default | 기본으로 마운트 |
+| misled agent | 속아 넘어간 에이전트 |
+| determined / motivated attacker | 작정한 공격자 |
+| boundary against hostile code | 악의적인 코드를 막는 경계 |
+| threat model | 위협 모델 |
+| Turning it down (Configure section) | 줄여 나가기 |
+| convenience trade | 편의를 위한 맞교환 |

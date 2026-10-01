@@ -39,7 +39,7 @@
         "name": "Sistema de arquivos",
         "tag": "montagens",
         "is": "Dentro do namespace só existe o que o ai-jail monta. O projeto fica com leitura e escrita no caminho real, diretórios do sistema como <code>/usr</code> ficam somente leitura, e o diretório home e o <code>/tmp</code> são novos e ficam na memória. <a class=\"link\" href=\"/configure/#toolchains\">As toolchains que você tem</a> (mise, cargo, caches do npm) são mapeadas nesse home novo, somente leitura ou como um cache da própria jaula.",
-        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> e os perfis de navegador estão numa lista embutida que nunca é montada. Tudo o que for escrito fora do projeto some quando a sessão termina."
+        "stops": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, <code>~/.docker</code> e os perfis de navegador estão numa lista embutida que nunca é montada. O diretório de estado do próprio harness, por exemplo o <code>~/.claude</code> do Claude, é a exceção: o ai-jail monta com leitura e escrita por padrão, para o agente começar logado, e <code>--no-agent-state</code> deixa de fora. Tudo o que for escrito fora do projeto some quando a sessão termina."
       },
       {
         "name": "Landlock",
@@ -63,7 +63,7 @@
         "name": "Allowlist de ambiente",
         "tag": "o que entra",
         "is": "Seu shell está cheio de variáveis, e algumas delas são chaves de API. O ai-jail limpa o ambiente e repassa só uma lista curta: <code>PATH</code>, <code>HOME</code>, <code>TERM</code>, locale e configurações de proxy e de certificados.",
-        "stops": "Tokens e credenciais de nuvem exportados no seu shell nunca chegam ao agente. Quando uma tarefa precisa de uma variável, você a repassa pelo nome com <code>--env</code>."
+        "stops": "Tokens e credenciais de nuvem exportados no seu shell nunca chegam ao agente, menos a chave de API do próprio harness iniciado, por exemplo <code>ANTHROPIC_API_KEY</code> para o Claude, copiada por padrão junto com o login dele; <code>--no-agent-state</code> impede isso. Quando uma tarefa precisa de outra variável, você a repassa pelo nome com <code>--env</code>."
       },
       {
         "name": "Proxy de terminal",
@@ -75,11 +75,11 @@
   },
   "egress": {
     "title": "Três caminhos até a rede",
-    "lede": "Cada inicialização escolhe um de três modos de rede. O padrão é o mais restrito: nenhuma rota para fora, exceto uma lista curta de registries de pacotes pelo proxy filtrado quando as toolchains estão ligadas, o padrão no Linux. Os outros dois são flags que você passa de propósito.",
+    "lede": "Cada inicialização escolhe um de três modos de rede. O padrão é o mais restrito: nenhuma rota para fora, exceto, no Linux com as toolchains ligadas (o padrão), uma lista curta de registries de pacotes pelo proxy filtrado. Os outros dois são flags que você passa de propósito.",
     "alt": "Três painéis, da esquerda para a direita. Desligada: o chip do agente dentro de um muro fechado, com uma nuvem apagada e gradeada do lado de fora. Filtrada: um portão pequeno no muro leva a uma caixa de proxy, que se conecta a uma nuvem ciano com o rótulo api.anthropic.com enquanto uma segunda nuvem continua apagada e gradeada. Aberta: o lado da rede do muro não existe, e o chip se conecta direto à nuvem.",
     "caption": "Desligada é o padrão. Filtrada abre um portão só para hosts nomeados. Aberta remove o muro do lado da rede.",
     "modes": [
-      { "title": "Desligada", "text": "O padrão. O sandbox ganha um network namespace privado sem rota para fora. Com as toolchains ligadas, o padrão no Linux, o proxy filtrado ainda deixa passar <a class=\"link\" href=\"/configure/#toolchains\">uma lista fixa de registries de pacotes</a>, então <code>npm install</code> e <code>cargo build</code> funcionam; <code>--no-network</code> deixa tudo offline. A API do próprio agente continua fechada até você abri-la." },
+      { "title": "Desligada", "text": "O padrão. O sandbox ganha um network namespace privado sem rota para fora. No Linux, com as toolchains ligadas (o padrão), o proxy filtrado ainda deixa passar <a class=\"link\" href=\"/configure/#toolchains\">uma lista fixa de registries de pacotes</a>, então <code>npm install</code> e <code>cargo build</code> funcionam; <code>--no-network</code> deixa tudo offline. No macOS os registries também ficam fechados. A API do próprio agente continua fechada até você abri-la." },
       { "title": "Filtrada", "text": "<code>--allow-host HOST</code>, pode ser repetida. O namespace continua fechado; uma ponte pequena lá dentro encaminha o tráfego para um proxy CONNECT do lado de fora, que disca só para os hosts listados e seus subdomínios. O proxy resolve cada nome uma vez, do lado de fora, e disca o endereço que conferiu. O ai-jail define <code>http_proxy</code> lá dentro, e um programa que ignora isso não alcança nada." },
       { "title": "Aberta", "text": "<code>--network</code>. O muro some do lado da rede, e o agente pode enviar para fora o que conseguir ler." }
     ],
@@ -101,7 +101,7 @@
       { "what": "Diretório home", "linux": "Um home novo, na memória. O seu home real não é montado.", "macos": "O perfil começa sem nenhuma leitura global e depois libera só os caminhos de que o agente precisa, então o seu home real continua fechado." },
       { "what": "<code>/tmp</code>", "linux": "Privado, descartado na saída", "macos": "O <code>/tmp</code> do host, porque não existe mount namespace. <code>TMPDIR</code> aponta para uma pasta privada criada para aquela inicialização, e esse é o único caminho temporário liberado." },
       { "what": "Mapeamentos copy-on-write", "linux": "<code>--overlay-map</code> deixa o agente escrever numa cópia", "macos": "Tratado como um mapeamento somente leitura" },
-      { "what": "Rede", "linux": "Desligada por padrão: sem rota para fora, exceto os registries de pacotes liberados quando as toolchains estão ligadas. <code>--allow-host</code> ou <code>--network</code> abre mais, <code>--no-network</code> fecha tudo", "macos": "O mesmo padrão e as mesmas flags, sem os mapeamentos de cache das toolchains, que só existem no Linux. No lockdown fica sempre bloqueada, mesmo com <code>--network</code>." },
+      { "what": "Rede", "linux": "Desligada por padrão: sem rota para fora, exceto os registries de pacotes liberados quando as toolchains estão ligadas. <code>--allow-host</code> ou <code>--network</code> abre mais, <code>--no-network</code> fecha tudo. No <code>--lockdown</code> a rede aberta fica sempre bloqueada, mesmo com <code>--network</code>.", "macos": "O mesmo padrão e as mesmas flags, sem os registries nem os mapeamentos de cache das toolchains, que só existem no Linux. O lockdown bloqueia a rede aberta aqui também." },
       { "what": "Outros programas", "linux": "Invisíveis: lista de processos própria, sem IPC do host", "macos": "Mach, IOKit e IPC do host são negados, a menos que você passe <code>--macos-host-ipc</code>" }
     ],
     "windows": {
@@ -134,7 +134,7 @@
   },
   "limit": {
     "title": "O que as camadas não cobrem",
-    "text": "Tudo isso compartilha o seu kernel. Um exploit de kernel ou de driver está fora da fronteira, assim como tudo o que você mesmo abre: um agente com <code>--network</code> pode enviar para fora o que conseguir ler, e um host permitido é confiável por inteiro. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
+    "text": "Tudo isso é feito para conter os erros de um agente confiável, e compartilha o seu kernel: um exploit de kernel ou de driver está fora da fronteira, assim como um atacante determinado que controla o que roda lá dentro. O que você mesmo abre também fica fora dela: um agente com <code>--network</code> pode enviar para fora o que conseguir ler, e um host permitido é confiável por inteiro. Para código que você acredita ser hostil, use uma máquina virtual descartável.",
     "link": "O modelo de ameaças e os riscos residuais"
   },
   "next": [

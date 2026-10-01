@@ -5,13 +5,13 @@
   },
   "hero": {
     "title": "Una capa útil, con bordes conocidos",
-    "lede": "ai-jail mantiene a un agente de programación con IA lejos de tus claves, de tu directorio home y del resto de tu máquina. Es un sandbox de procesos, así que comparte tu kernel. No reemplaza a una máquina virtual desechable cuando el código es hostil.",
+    "lede": "ai-jail está hecho para frenar los errores de un agente de confianza y mantener el daño dentro del proyecto: el directorio del proyecto es el radio de impacto, y tu home, tus claves y la red quedan fuera de él. Es un sandbox de procesos que comparte tu kernel, así que no es una frontera contra código hostil ni contra un atacante decidido, y no reemplaza a una máquina virtual desechable.",
     "report": "Reportar una vulnerabilidad",
     "doc": "Leer SECURITY.md"
   },
   "stops": {
     "title": "Lo que está hecho para detener",
-    "lede": "Una página web, un paquete o un archivo del repositorio pueden convencer a un agente de portarse mal. Esto es lo que entonces intenta alcanzar, y no encuentra.",
+    "lede": "Un agente de confianza igual escribe mal un comando, ejecuta un script que sube por encima de la raíz del proyecto o se deja engañar por una página web o un paquete. Esto es lo que entonces intenta alcanzar, y no encuentra.",
     "alt": "El agente y el proyecto están dentro de un muro de barrotes. Seis flechas salen del agente y rebotan en el muro. Fuera, atenuados y tras barrotes, están tu home y tus claves, los secretos de tu shell, la red, tu pantalla y tu portapapeles, tu terminal y la política de la jaula.",
     "caption": "Los valores por defecto. Todo lo que está fuera se queda ahí hasta que lo abras tú.",
     "items": [
@@ -19,7 +19,7 @@
         "text": "Tu directorio home y las credenciales que contiene. El agente recibe un home nuevo y vacío, así que <code>~/.ssh</code> y <code>~/.aws</code> no existen ahí dentro."
       },
       {
-        "text": "Los secretos de tu shell. Las variables de entorno se reducen a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera."
+        "text": "Los secretos de tu shell. ai-jail reduce las variables de entorno a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera. La única excepción es la clave de API del propio harness que arrancas, por ejemplo <code>ANTHROPIC_API_KEY</code> para Claude, copiada por defecto junto con su login; <code>--no-agent-state</code> lo impide."
       },
       {
         "text": "La red. Está apagada, salvo por una lista corta de registries de paquetes que el proxy filtrado deja pasar cuando las toolchains están activadas, el valor por defecto en Linux. <code>--no-network</code> cierra eso también. La API del propio agente sigue cerrada hasta que la abras con <code>--allow-host</code> o <code>--network</code>."
@@ -56,6 +56,7 @@
       "El proxy ve el host, el puerto y el momento de cada conexión. Lo que viaja dentro queda entre los dos extremos. <a class=\"link\" href=\"/how-it-works/#network\">Cómo está construida la salida filtrada</a>.",
       "Las credenciales fantasma trasladan la confianza al propio ai-jail. Con <code>--secret</code>, las peticiones al host vinculado pasan por ai-jail en claro para que pueda insertar la clave real, y las vuelve a cifrar al salir. Los túneles hacia cualquier otro host siguen siendo opacos. Solo cubre a los clientes que pueden hablar HTTP plano con el proxy para ese host.",
       "Credenciales que pasas con <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> o <code>--docker-config</code>. Solo lectura protege el archivo contra cambios, no la credencial contra el uso: cualquier cosa dentro del sandbox puede actuar como tú en ese servicio mientras siga siendo válida.",
+      "ai-jail monta el login del propio agente por defecto, en lectura y escritura, así que un agente engañado puede usarlo mientras dure el arranque. El proyecto lo documenta como una concesión por comodidad; <code>--no-agent-state</code> da una ejecución sin sesión.",
       "En macOS, <code>sandbox-exec</code> está marcado como obsoleto por Apple y no equivale al aislamiento de Linux. <a class=\"link\" href=\"/how-it-works/\">Mira las diferencias en macOS</a>."
     ],
     "callout": {
@@ -65,7 +66,7 @@
   },
   "switches": {
     "title": "Interruptores que abren el muro",
-    "lede": "Todo lo de abajo está apagado hasta que lo activas, salvo <code>--toolchains</code>, que viene activado por defecto en Linux. La mayoría le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
+    "lede": "Todo lo de abajo está apagado hasta que lo activas, salvo dos interruptores que vienen activados por defecto: <code>--toolchains</code> en Linux y <code>--agent-state</code> en todas partes. La mayoría le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
     "head": {
       "flag": "Interruptor",
       "gives": "Lo que puede hacer entonces cualquier cosa dentro del sandbox"
@@ -81,7 +82,7 @@
       "Registrar pulsaciones de teclas y tomar capturas de otras ventanas de X11.",
       "Pedirle a tu gestor de usuario de systemd que ejecute servicios en el host.",
       "Leer todo el entorno de tu shell, secretos incluidos. Para las claves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> pasa un solo archivo en su lugar.",
-      "Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude.",
+      "Activado por defecto. Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude, montado en lectura y escritura, más su clave de API copiada de tu shell si está definida, para que arranque con la sesión iniciada. Cualquier cosa dentro del sandbox puede usar esas credenciales mientras dure el arranque. <code>--no-agent-state</code> da una ejecución aislada y sin sesión; apagado bajo <code>--lockdown</code>.",
       "Actuar como tú en GitHub con el login de <code>~/.config/gh</code>, montado en solo lectura. Solo lectura protege el archivo, no la credencial: funciona mientras siga siendo válida.",
       "Actuar como tú en AWS con <code>~/.aws</code>, montado en solo lectura.",
       "Actuar como tú en todos los clústeres de <code>~/.kube</code>, montado en solo lectura.",
@@ -128,17 +129,19 @@
       "text": "Antes de la 1.0 el proyecto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">se auditó a sí mismo</a> y publicó los informes. El {date} se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0, con una comparación y un plan de corrección: la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoría A</a>, que según su propia cabecera realizó un modelo de IA, y la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoría B</a>. Produjeron dos advisories en GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> y <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos cerrados en la 2.4.0 con tests de regresión. Ninguna empresa externa ha auditado ai-jail."
     },
     "fixes": {
-      "title": "Qué corrigió la 2.4.0",
+      "title": "Correcciones de seguridad recientes",
       "items": [
-        "Los metadatos de worktree de un repositorio ya no pueden montar un directorio cualquiera del host en lectura y escritura.",
-        "Una entrada duplicada en el entorno ya no cuela el valor real de una clave <code>--secret</code> dentro del sandbox.",
-        "Un comando de navegador en un <code>.ai-jail</code> de proyecto no confiable ya no desactiva el lockdown.",
-        "<code>TIOCSTI</code> se compara como lo lee el kernel, en 32 bits, así que una variante con el bit alto ya no pasa el seccomp.",
-        "Landlock valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos.",
-        "macOS: el acceso al terminal se limita a los terminales de la propia ejecución, y no a todos los <code>/dev/ttys*</code>.",
-        "macOS: las rutas con <code>--mask</code> se deniegan también para escritura, además de lectura.",
-        "El filtro de salida ya no se descompone con un ESC doble, que podía colar una escritura en el portapapeles.",
-        "Los atajos de prueba del proxy quedan fuera de los builds de release."
+        "2.6.2: <code>--lockdown</code> siempre aísla el namespace de red, incluso con <code>--network</code>. Antes, ese par contradictorio dejaba el namespace compartido.",
+        "2.6.2: los valores de <code>--env</code> y <code>--env-from-file</code> ya no van en la línea de comandos del lanzador, donde cualquier proceso que corra como tú podía leerlos. Pasan por un archivo en memoria.",
+        "2.4.0: los metadatos de worktree de un repositorio ya no pueden montar un directorio cualquiera del host en lectura y escritura.",
+        "2.4.0: una entrada duplicada en el entorno ya no cuela el valor real de una clave <code>--secret</code> dentro del sandbox.",
+        "2.4.0: un comando de navegador en un <code>.ai-jail</code> de proyecto no confiable ya no desactiva el lockdown.",
+        "2.4.0: <code>TIOCSTI</code> se compara como lo lee el kernel, en 32 bits, así que una variante con el bit alto ya no pasa el seccomp.",
+        "2.4.0: Landlock valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos.",
+        "2.4.0: macOS: el acceso al terminal se limita a los terminales de la propia ejecución, y no a todos los <code>/dev/ttys*</code>.",
+        "2.4.0: macOS: las rutas con <code>--mask</code> se deniegan también para escritura, además de lectura.",
+        "2.4.0: el filtro de salida ya no se descompone con un ESC doble, que podía colar una escritura en el portapapeles.",
+        "2.4.0: los atajos de prueba del proxy quedan fuera de los builds de release."
       ]
     },
     "release": {
@@ -177,11 +180,11 @@
     "items": [
       {
         "q": "¿El agente puede escaparse?",
-        "a": "Los valores por defecto están hechos y probados para bloquear las rutas habituales: archivos, entorno, red e IPC del host. Un bug del kernel, de un driver, de la terminal o del backend del sandbox todavía podría dejarlo salir. Todo sandbox de procesos tiene ese límite, y por eso el código hostil va en una VM desechable."
+        "a": "Los valores por defecto están hechos y probados para bloquear las rutas habituales de un agente que se equivoca: archivos, entorno, red e IPC del host. No están hechos para resistir a un atacante decidido: algo que intente escapar a propósito podría usar un bug del kernel, de un driver, de la terminal o del backend del sandbox, y por eso el código hostil va en una VM desechable."
       },
       {
         "q": "¿Es seguro ejecutarlo con la red activada?",
-        "a": "Es más seguro que ejecutar el agente sin jaula, porque tus claves y tu directorio home siguen sin estar ahí para enviarlos. Con <code>--network</code>, todo lo que el agente puede leer, lo puede enviar. El punto medio es <code>--allow-host</code>: solo se llega a los hosts que listas, y cada uno es de confianza por completo. Enmascara primero los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
+        "a": "Es más seguro que ejecutar el agente sin jaula, porque tus claves y tu directorio home siguen sin estar ahí para enviarlos. Con <code>--network</code>, todo lo que el agente puede leer, lo puede enviar, y ai-jail no está hecho para impedir que un atacante decidido lo haga. El punto medio es <code>--allow-host</code>: el agente llega solo a los hosts que listas, y cada uno es de confianza por completo. Enmascara primero los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
       },
       {
         "q": "¿Ha sido auditado?",

@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "Una jaula para tu agente de IA",
-    "lede": "Tu agente se ejecuta con tu cuenta de usuario, así que puede leer todo lo que tú puedes leer. ai-jail lo arranca dentro de un sandbox del sistema operativo: el proyecto es escribible, y tus claves, tus tokens y tu directorio home no están ahí.",
+    "lede": "Tu agente se ejecuta con tu cuenta de usuario, así que puede leer todo lo que tú puedes leer. ai-jail lo arranca dentro de un sandbox del sistema operativo hecho para frenar los errores de un agente de confianza: el proyecto es escribible, y tus claves, los secretos de tu shell y tu directorio home no están ahí.",
     "install": "Instalar",
     "why": "¿Lo necesito?",
     "logoAlt": "Un candado hecho de pistas de circuito. Tras las rejas de su ventana hay un microchip que brilla: el agente."
@@ -34,7 +34,7 @@
       },
       {
         "title": "Abre lo que la tarea necesita",
-        "text": "Un agente en la nube necesita su propio login y una forma de llegar a su API, así que abres esas dos cosas: el login, y o bien solo el host de su API o bien toda la red. Todo lo demás sigue cerrado hasta que lo pidas."
+        "text": "Un agente en la nube arranca con la sesión iniciada, porque ai-jail monta su login por defecto. Abres una sola cosa, la ruta hacia su API: <code>--allow-host</code> con el host de su API, o <code>--network</code> para toda la red. Todo lo demás sigue cerrado hasta que lo pidas."
       }
     ]
   },
@@ -47,16 +47,16 @@
   },
   "defaults": {
     "title": "Lo que obtienes sin configurar nada",
-    "lede": "Todo lo que llega a tu máquina está apagado hasta que lo activas, salvo tus toolchains y sus registries de paquetes, que puedes apagar. Las escrituras fuera del proyecto van a memoria y desaparecen cuando termina la sesión.",
+    "lede": "Todo lo que llega a tu máquina está apagado hasta que lo activas, salvo el login del propio agente, tus toolchains (en Linux) y sus registries de paquetes, cada uno con su interruptor <code>--no-</code>. Las escrituras fuera del proyecto van a memoria y desaparecen cuando termina la sesión.",
     "inside": [
       {
         "text": "El directorio del proyecto, en lectura y escritura, en su ruta real"
       },
       {
-        "text": "Las toolchains del sistema en <code>/usr</code>, en solo lectura"
+        "text": "Tus toolchains (mise, cargo, npm y otras) y las del sistema en <code>/usr</code>, en solo lectura, con una caché propia de la jaula en Linux"
       },
       {
-        "text": "Tus toolchains (mise, cargo, npm y otras), en solo lectura, con una caché propia de la jaula"
+        "text": "El login del propio agente, como <code>~/.claude</code>, para que arranque con la sesión iniciada"
       },
       {
         "text": "Un directorio home nuevo y un <code>/tmp</code> privado"
@@ -67,7 +67,7 @@
         "text": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, perfiles del navegador"
       },
       {
-        "text": "Tokens y claves de API del entorno de tu shell"
+        "text": "Tokens y claves de API del entorno de tu shell, salvo la clave del propio agente, que se copia por defecto"
       },
       {
         "text": "Otros procesos, el IPC del host, interfaces del kernel como <code>ptrace</code> y <code>bpf</code>"
@@ -76,9 +76,6 @@
     "optin": [
       {
         "text": "<code>--allow-host</code> para los hosts que listas, o <code>--network</code> para toda la red"
-      },
-      {
-        "text": "<code>--agent-state</code>, el login del propio agente"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> y más"
@@ -107,7 +104,7 @@
   },
   "limits": {
     "title": "Lo que no es",
-    "text": "ai-jail es un sandbox de procesos. Comparte tu kernel, así que un exploit del kernel o de un driver queda fuera de su frontera, y las capacidades que activas son reales: un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, y un host que permites con <code>--allow-host</code> es de confianza para todo lo que ofrece. Para código que crees hostil, usa una máquina virtual desechable.",
+    "text": "ai-jail está hecho para frenar los errores de un agente de confianza. No es una frontera contra código hostil: comparte tu kernel, un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, y un host que permites con <code>--allow-host</code> es de confianza para todo lo que ofrece. Para código que crees hostil, usa una máquina virtual desechable.",
     "link": "Leer el modelo de amenazas"
   },
   "pair": {

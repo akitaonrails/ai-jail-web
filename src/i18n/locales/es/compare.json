@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "Tu agente ya tiene un sandbox. Cubre otra mitad.",
-    "lede": "Los sandboxes integrados y las solicitudes de permiso vigilan los comandos que ejecuta el modelo. ai-jail decide qué puede ver en tu máquina el programa del agente entero. Los dos trabajan juntos.",
+    "lede": "Los sandboxes integrados y las solicitudes de permiso vigilan los comandos que ejecuta el modelo. ai-jail decide qué puede ver en tu máquina el programa del agente entero, y está pensado para los errores de un agente de confianza. Los dos trabajan juntos.",
     "install": "Instalar",
     "how": "Cómo funciona",
     "reviewed": "Última revisión: {date}. Los otros productos cambian rápido, así que cada afirmación sobre ellos enlaza a la documentación del propio fabricante."
@@ -36,7 +36,7 @@
       },
       {
         "title": "No confías en el código en absoluto",
-        "text": "Una máquina virtual desechable. Todas las herramientas de esta página comparten tu kernel, ai-jail incluido. <a class=\"link\" href=\"#containers\">Docker, contenedores y VMs</a>."
+        "text": "Una máquina virtual desechable. ai-jail está hecho para los errores de un agente de confianza, así que el código hostil queda fuera de su alcance, y todas las herramientas de esta página comparten tu kernel. <a class=\"link\" href=\"#containers\">Docker, contenedores y VMs</a>."
       }
     ]
   },
@@ -136,7 +136,7 @@
           "Los comandos aislados heredan por defecto el entorno del proceso padre, credenciales incluidas. <code>sandbox.credentials</code> puede denegarlas o enmascararlas.",
           "",
           "",
-          "Una lista de permitidos mínima con variables de terminal, locale y toolchain. Añades otras por su nombre con <code>--env</code>."
+          "Una lista de permitidos mínima con variables de terminal, locale y toolchain, más la clave de API del propio harness que arrancas, copiada por defecto junto con su login; <code>--no-agent-state</code> lo impide. Añades otras por su nombre con <code>--env</code>."
         ]
       },
       {
@@ -224,10 +224,10 @@
   },
   "both": {
     "title": "Usa los dos",
-    "lede": "Con la red apagada, un agente en la nube no puede llegar a la API de su propio modelo. Abres dos cosas: el host del modelo y el login del agente. Permite un solo host, o abre toda la red.",
+    "lede": "Con la red apagada, un agente en la nube no puede llegar a la API de su propio modelo. Su login ya está dentro, montado por defecto, así que abres una sola cosa: la ruta hacia la API. Permite un solo host, o abre toda la red.",
     "codeFiltered": "más estricto: solo la API del modelo",
     "codeOpen": "más simple: toda la red",
-    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex y Gemini CLI, y avisa al arrancar cuando la lista no lo incluye. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
+    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex y Gemini CLI, y avisa al arrancar cuando la lista no lo incluye. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
     "alt": "Un muro grande con la etiqueta ai-jail encierra al agente, sus servidores MCP, sus hooks, el proyecto y sus comandos de shell. Entre el agente y los comandos de shell está la solicitud de aprobación del propio agente. Una línea sale del muro por una puerta hacia la API del modelo. Tu directorio home queda fuera del muro, atenuado y tras barrotes.",
     "caption": "El muro exterior es ai-jail. Dentro, las solicitudes y las reglas del agente siguen haciendo su trabajo.",
     "points": [
@@ -237,7 +237,7 @@
       },
       {
         "title": "Lo que ai-jail garantiza por debajo",
-        "text": "El agente, sus servidores MCP y sus hooks nunca ven tu directorio home, tus claves ni los tokens de tu shell, apruebes lo que apruebes. Lo que el agente puede leer, todavía lo puede enviar a cualquier host que hayas permitido, así que <a class=\"link\" href=\"/configure/#secrets\">enmascara los secretos dentro del proyecto</a>."
+        "text": "El agente, sus servidores MCP y sus hooks nunca ven tu directorio home, tus claves ni los tokens de tu shell, apruebes lo que apruebes. La única excepción es el login y la clave de API del propio agente, montados por defecto para que arranque con la sesión iniciada. Lo que el agente puede leer, todavía lo puede enviar a cualquier host que hayas permitido, así que <a class=\"link\" href=\"/configure/#secrets\">enmascara los secretos dentro del proyecto</a>."
       }
     ],
     "nestedTitle": "Conserva las solicitudes, pero no cuentes con un sandbox dentro de otro",
@@ -297,7 +297,7 @@
       {
         "label": "Credenciales",
         "openshell": "Las gestiona el gateway y las inyecta en cada petición; nunca se escriben en el disco del sandbox.",
-        "jail": "Ambientales. Lo que pasas con <code>--env</code>, <code>--env-from-file</code> o <code>--agent-state</code> es visible para todo lo que hay dentro. Las credenciales de herramientas (<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>) son montajes opt-in en solo lectura, y la documentación dice que solo lectura no impide usarlas."
+        "jail": "Ambientales. El login del propio harness se monta por defecto, en lectura y escritura, y lo que pasas con <code>--env</code> o <code>--env-from-file</code> es visible para todo lo que hay dentro; <code>--no-agent-state</code> da una ejecución sin sesión. Las credenciales de herramientas (<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>) son montajes opt-in en solo lectura, y la documentación dice que solo lectura no impide usarlas."
       },
       {
         "label": "Techo de aislamiento",

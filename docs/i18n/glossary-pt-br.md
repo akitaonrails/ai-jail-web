@@ -91,3 +91,16 @@ Terms decided while translating. One English term maps to one target term across
 | security advisory | advisory (kept in English) |
 | source audit | auditoria de código |
 | standalone (opencode) | autônomo (flag kept: --standalone) |
+| accident guard | proteção contra acidentes |
+| built to stop a trusted agent's mistakes | feito para conter os erros de um agente confiável |
+| trusted-but-fallible agent | agente confiável, mas falível |
+| blast radius | raio de impacto |
+| logged-out run | execução sem login (the harness "começa deslogado") |
+| agent login / agent state | login do agente (flag kept: --agent-state, --no-agent-state) |
+| mounted by default | montado por padrão |
+| turning it down (section) | Apertando a jaula |
+| route to its API | caminho até a API |
+| motivated / determined attacker | atacante motivado / atacante determinado |
+| misled agent | agente enganado |
+| convenience trade | troca por conveniência |
+| network namespace | network namespace |

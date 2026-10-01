@@ -120,3 +120,17 @@ Terms decided while translating. One English term maps to one target term across
 | standalone (opencode --standalone) | עצמאי (the flag stays --standalone) |
 | background server | שרת רקע |
 | Registries / Toolchains (diagram labels) | Registries / Toolchains (Latin, kept: a mixed-direction label wraps wrongly in generated images) |
+| accident guard | הגנה מפני תאונות |
+| built to stop a trusted agent's mistakes / tuned for a trusted agent's mistakes | נבנה לעצור טעויות של סוכן אמין / מכוון לטעויות של סוכן אמין |
+| trusted-but-fallible agent | סוכן אמין אבל לא מושלם |
+| blast radius | רדיוס הפגיעה |
+| not a boundary against hostile code | לא גבול מול קוד עוין |
+| motivated / determined attacker | תוקף נחוש |
+| mounted by default (the login) | מעוגן כברירת מחדל |
+| starts logged in / signed in | עולה מחובר |
+| logged-out run | הרצה ללא התחברות |
+| state directory (the harness's) | תיקיית המצב |
+| convenience trade | פשרה לטובת הנוחות |
+| launcher (bwrap's command line) | launcher (Latin, kept: שורת הפקודה של ה-launcher) |
+| Turning it down (Configure section) | מהדקים את הכלא |
+| turn down (a capability) | לכבות / לסגור (מתג אחרי מתג) |

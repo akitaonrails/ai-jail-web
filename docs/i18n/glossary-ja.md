@@ -100,3 +100,14 @@ Terms decided while translating. One English term maps to one target term across
 | best effort | ベストエフォート |
 | standalone (`--standalone`) | 単体で起動 |
 | one-shot wrapper | 起動のたびに作り直すラッパー |
+| accident guard (2.6 framing) | 事故防止の仕組み（本文では「信頼できるエージェントの誤りを止めるために作られた」） |
+| trusted-but-fallible agent | 信頼できるが誤りもするエージェント（短く「信頼できるエージェントの誤り」） |
+| blast radius | 影響範囲 |
+| logged-out run (`--no-agent-state`) | ログアウト状態での実行 |
+| determined / motivated attacker | 本気の攻撃者 |
+| hostile code | 悪意のあるコード |
+| boundary against hostile code | 悪意のあるコードに対する境界 |
+| Turning it down (Configure section) | さらに絞る |
+| convenience trade | 利便性とのトレードオフ |
+| harness's state (directory) | ハーネスの状態（ディレクトリ） |
+| misled agent | 騙されたエージェント |

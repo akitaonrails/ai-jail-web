@@ -33,7 +33,8 @@
       { "title": "Um erro honesto fora do projeto", "text": "Um agente confuso roda <code>rm -rf</code> no caminho errado, reescreve a sua configuração global do Git ou sobrescreve um dotfile. Os arquivos se foram, mesmo sem ninguém querer fazer mal." }
     ],
     "alt": "Duas linhas. Sem jaula, uma página envenenada chega ao agente, o agente lê a chave SSH e a envia para a internet. Com o ai-jail, o agente fica dentro de um muro de grades, nenhuma seta sai dele, e a chave SSH e a internet aparecem apagadas e gradeadas do lado de fora.",
-    "caption": "Por padrão, o ai-jail responde aos três casos do mesmo jeito: seu diretório home não é montado, a rede fica desligada e o que for escrito fora do projeto some quando a sessão termina."
+    "caption": "Por padrão, o ai-jail responde aos três casos do mesmo jeito: seu diretório home não é montado, a rede fica desligada e o que for escrito fora do projeto some quando a sessão termina.",
+    "note": "O ai-jail é feito para o terceiro caso, o erro de um agente confiável, com o diretório do projeto como raio de impacto. Nos dois primeiros ele limita o que um agente enganado consegue alcançar, mas não é feito para resistir a código que tenta escapar. <a class=\"link\" href=\"/security/\">Leia o modelo de ameaças</a>."
   },
   "prompts": {
     "title": "Mas o meu agente pede permissão antes",
@@ -72,10 +73,10 @@
     "codeTitle": "Terminal",
     "code": {
       "plain": "# o mesmo comando, dentro da jaula",
-      "optin": "# um agente em nuvem precisa da rede e do próprio login"
+      "optin": "# um agente em nuvem precisa de um caminho até a API"
     },
     "honestTitle": "O custo real",
-    "honest": "Tudo fica desligado até você pedir, e isso inclui coisas de que o seu agente precisa. Um agente em nuvem não funciona enquanto você não passar <code>--agent-state</code> e, junto, <code>--allow-host</code> com o host da API dele ou <code>--network</code>, e dá para salvar tudo num arquivo de configuração e digitar uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
+    "honest": "Tudo fica desligado até você pedir, inclusive a única coisa de que um agente em nuvem precisa: um caminho até a API dele. O agente não funciona enquanto você não passar <code>--allow-host</code> com o host da API dele ou <code>--network</code>. Salve a configuração num arquivo e você digita uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
   },
   "faq": {
     "title": "Perguntas de quem está chegando",
@@ -83,8 +84,8 @@
       { "q": "Isso é só para gente paranoica?", "a": "Não. É para quem guarda credenciais na máquina em que um agente roda comandos, ou seja, a maioria dos desenvolvedores. Você não precisa achar que o seu agente é hostil, só que ele lê texto de desconhecidos e às vezes erra." },
       { "q": "Já uso Docker. Não basta?", "a": "Se o seu agente já roda dentro de um container que não guarda credenciais, talvez baste. A maioria roda o agente direto no host, ao lado das chaves, porque manter uma imagem por projeto dá trabalho, e o ai-jail não precisa de imagem. <a class=\"link\" href=\"/compare/\">Veja a comparação</a>." },
       { "q": "O agente sabe que está numa jaula?", "a": "Ele consegue descobrir, e nada depende de esconder isso. No Linux, o hostname lá dentro é <code>ai-sandbox</code> e o prompt do shell mostra <code>(jail)</code>. O arquivo de política <code>.ai-jail</code> do projeto é mascarado, então o agente vê um arquivo vazio, e ele não tem como abrir a jaula por dentro." },
-      { "q": "Vai quebrar o meu fluxo de trabalho?", "a": "Seu projeto fica no mesmo caminho e seus compiladores e runtimes funcionam como antes. Desde a 2.5, suas toolchains e os caches de dependências delas também funcionam dentro da jaula, e os registries de pacotes ficam alcançáveis, então os builds não precisam de flag extra. Qualquer outra coisa fora do projeto pede uma flag na primeira vez: a rede, o login do agente, SSH, Docker, a tela. O <code>ai-jail --dry-run claude</code> imprime o comando de sandbox que ele rodaria, sem iniciar nada." },
-      { "q": "Isso deixa o meu agente seguro?", "a": "Mais seguro. É um sandbox de processo que compartilha o seu kernel, então um exploit de kernel está fora da fronteira dele, e um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler, inclusive o seu projeto. <a class=\"link\" href=\"/security/\">A página de segurança</a> lista os limites." }
+      { "q": "Vai quebrar o meu fluxo de trabalho?", "a": "Seu projeto fica no mesmo caminho e seus compiladores e runtimes funcionam como antes. No Linux, suas toolchains e os caches de dependências delas também funcionam dentro da jaula, e os registries de pacotes ficam alcançáveis, então os builds não precisam de flag extra. Qualquer outra coisa fora do projeto pede uma flag na primeira vez: a rede, SSH, Docker, a tela. O <code>ai-jail --dry-run claude</code> imprime o comando de sandbox que ele rodaria, sem iniciar nada." },
+      { "q": "Isso deixa o meu agente seguro?", "a": "Mais seguro contra os próprios erros, que é para isso que ele foi feito. É um sandbox de processo que compartilha o seu kernel, então não é uma fronteira contra código hostil, e um agente com <code>--network</code> pode enviar para fora tudo o que consegue ler, inclusive o seu projeto. <a class=\"link\" href=\"/security/\">A página de segurança</a> lista os limites." }
     ]
   },
   "next": [

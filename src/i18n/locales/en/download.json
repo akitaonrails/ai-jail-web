@@ -57,7 +57,7 @@
   },
   "next": {
     "items": [
-      { "title": "Install", "text": "The first run: a dry run, a look inside, then the agent with the two things it needs." },
+      { "title": "Install", "text": "The first run: a dry run, a look inside, then the agent with a route to its API." },
       { "title": "Configure", "text": "Every flag and config key, and how to open only what a task needs." },
       { "title": "Security", "text": "The threat model, how a release is signed, and what is still missing." }
     ]

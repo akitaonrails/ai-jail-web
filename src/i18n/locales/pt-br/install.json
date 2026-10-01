@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Instalar o ai-jail e rodar seu primeiro agente na jaula",
-    "description": "Instale o ai-jail com Homebrew, AUR, cargo ou Nix, veja o sandbox antes com um dry run e depois inicie o Claude Code ou o Codex só com a rede e o login dele."
+    "description": "Instale o ai-jail com Homebrew, AUR, cargo ou Nix, veja o sandbox com um dry run e inicie o Claude Code ou o Codex já logado, com um caminho até a API dele."
   },
   "hero": {
     "title": "Instale, olhe lá dentro, rode o seu agente",
@@ -32,14 +32,14 @@
   },
   "first": {
     "title": "Sua primeira execução",
-    "lede": "Três comandos levam você de um plano a uma olhada lá dentro e, por fim, a um agente funcionando. O ai-jail não abre nada até você pedir.",
-    "alt": "Três painéis da esquerda para a direita. Dry run: a cela é só um contorno tracejado e o agente espera do lado de fora. Dar uma olhada: a cela é sólida e contém um terminal e a pasta do projeto. Rodar o agente: o agente e o projeto estão lá dentro, com duas aberturas no muro, um portão para o host da API do agente e outro para o login do agente. A sua pasta home fica gradeada do lado de fora nos três.",
-    "caption": "Seu diretório home fica de fora em todas as etapas. Só a última etapa abre alguma coisa, e só as duas de que um agente em nuvem precisa: o host da API e o login.",
+    "lede": "Três comandos levam você de um plano a uma olhada lá dentro e, por fim, a um agente funcionando. O login do agente já está lá, então o único portão que você abre é o host da API dele.",
+    "alt": "Três painéis da esquerda para a direita. Dry run: a cela é só um contorno tracejado e o agente espera do lado de fora. Dar uma olhada: a cela é sólida e contém um terminal e a pasta do projeto. Rodar o agente: o agente, o projeto e o cartão de login do agente estão lá dentro, com uma abertura no muro, um portão para o host da API do agente. A sua pasta home fica gradeada do lado de fora nos três.",
+    "caption": "Seu diretório home fica de fora em todas as etapas, e o login do agente está dentro desde o início. A última etapa abre a única coisa de que um agente em nuvem ainda precisa: o host da API dele.",
     "steps": [
       { "title": "Veja o plano sem rodar nada", "text": "Vá até o seu projeto e peça um dry run. O ai-jail imprime o comando de sandbox que usaria e sai. Um dry run nunca grava arquivo nenhum." },
       { "title": "Dê uma olhada lá dentro", "text": "Abra um shell comum na jaula. Seu projeto está lá, no caminho real, e você pode editá-lo. Seu diretório home é um novo, e os tokens do seu shell sumiram. Digite <code>exit</code> para sair." },
-      { "title": "Rode o agente com as duas coisas de que ele precisa", "text": "Um agente que conversa com um modelo em nuvem precisa chegar à API dele e do próprio login salvo para provar quem você é. Os dois vêm desligados por padrão. <code>--allow-host api.anthropic.com</code> abre exatamente esse host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>), e <code>--network</code> abre a rede inteira. <code>--agent-state</code> monta o login. No Linux, as toolchains abrem por padrão registries de pacotes como crates.io, npm e PyPI, para os builds funcionarem; a API do próprio agente ainda precisa de <code>--allow-host</code> ou <code>--network</code>. Se você iniciar um agente conhecido sem um caminho até a API dele, o ai-jail avisa e diz qual é o host." },
-      { "title": "Torne isso o padrão para esse agente", "text": "Coloque as duas configurações em <code>~/.ai-jail</code>, o seu arquivo de configuração, embaixo do nome do agente. Depois disso o comando curto basta. O arquivo <code>.ai-jail</code> que pode aparecer no projeto só consegue apertar a jaula: ele pode encurtar a lista de hosts, mas não aumentar, e não liga a rede nem um login, então um repositório que você clona não consegue abrir a jaula para si mesmo." }
+      { "title": "Rode o agente com a única coisa de que ele precisa", "text": "O ai-jail monta a pasta de estado do próprio agente por padrão, então ele já está logado. Ainda falta um caminho até a API dele. <code>--allow-host api.anthropic.com</code> abre exatamente esse host (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>); <code>--network</code> abre a rede inteira. No Linux, as toolchains abrem por padrão registries de pacotes como crates.io, npm e PyPI, para os builds funcionarem, mas a API do próprio agente ainda precisa de <code>--allow-host</code> ou <code>--network</code>. Se você iniciar um agente conhecido sem um caminho até a API dele, o ai-jail avisa e diz qual é o host." },
+      { "title": "Torne isso o padrão para esse agente", "text": "Coloque a lista de hosts em <code>~/.ai-jail</code>, o seu arquivo de configuração, embaixo do nome do agente. Depois disso o comando curto basta. Para uma execução sem login, passe <code>--no-agent-state</code>. O arquivo <code>.ai-jail</code> dentro do projeto só consegue apertar a jaula: pode encurtar a lista de hosts e desligar o login, nunca o contrário, então um repositório que você clona não consegue abrir a jaula para si mesmo." }
     ],
     "codeTitles": ["dry run", "um shell na jaula", "a execução de verdade", "~/.ai-jail"],
     "gitignore": {
@@ -47,14 +47,14 @@
       "text": "Uma execução comum pode salvar as configurações do projeto em <code>.ai-jail</code>. O ai-jail nunca grava nele os valores que você passa com <code>--env</code>. O agente vê esse arquivo como vazio. O README sugere adicionar <code>.ai-jail</code> ao <code>.gitignore</code> para o <code>git status</code> continuar limpo dentro da jaula. <a class=\"link\" href=\"/configure/\">Configurar</a> explica os dois arquivos de configuração."
     },
     "exposure": {
-      "title": "O que essas duas flags entregam",
-      "text": "Um host que você libera é confiável em tudo o que ele oferece: liberar <code>github.com</code> libera push para qualquer repositório. <code>--network</code> é a rede inteira, então tudo o que o agente consegue ler, ele consegue enviar. <code>--agent-state</code> deixa tudo o que roda na jaula usar o login desse agente. Suas chaves SSH, credenciais de nuvem e outros projetos continuam fora, sem ter como ser lidos. <a class=\"link\" href=\"/security/\">Segurança</a> tem a lista completa de limites."
+      "title": "O que os padrões entregam",
+      "text": "O login do agente é montado com leitura e escrita, e a variável da chave de API dele (<code>ANTHROPIC_API_KEY</code> no Claude Code) é copiada do seu shell quando estiver definida, então tudo o que roda na jaula pode usar esse login enquanto a execução durar. <code>--no-agent-state</code> desliga os dois. Um host que você libera é confiável em tudo o que ele oferece: liberar <code>github.com</code> libera push para qualquer repositório. <code>--network</code> é a rede inteira, então tudo o que o agente consegue ler, ele consegue enviar. Suas chaves SSH, credenciais de nuvem e outros projetos continuam fora, sem ter como ser lidos. <a class=\"link\" href=\"/security/\">Segurança</a> tem a lista completa de limites."
     },
     "comments": ["# ou, com a rede inteira aberta:", "# daqui em diante, em qualquer projeto:"]
   },
   "see": {
     "title": "O que você vai ver lá dentro",
-    "lede": "O prompt muda para <code>(jail)</code> e o projeto está onde sempre esteve. Suas toolchains também estão lá, somente leitura. O que valeria a pena roubar não está.",
+    "lede": "O prompt muda para <code>(jail)</code> e o projeto está onde sempre esteve. Suas toolchains também estão lá, somente leitura. O que valeria a pena roubar não está, menos o login do próprio agente, que está lá de propósito.",
     "termTitle": "ai-jail bash, no Linux",
     "comments": ["# o projeto está no caminho real", "# um token exportado no seu shell não veio junto", "# suas chaves não estão neste home", "# a jaula tem hostname próprio"],
     "note": "Esta é uma sessão no Linux. O macOS não tem como montar uma árvore de arquivos separada, então lá os mesmos caminhos existem e a leitura deles é recusada.",
@@ -86,16 +86,18 @@
   },
   "agents": {
     "title": "Por agente",
-    "lede": "O ai-jail sabe onde cada agente guarda o login. <code>--agent-state</code> monta só as pastas do agente que você inicia, e só se elas existirem.",
-    "head": ["Você roda", "<code>--agent-state</code> monta", "Bom saber"],
+    "lede": "O ai-jail sabe onde cada agente guarda o login e monta por padrão: só as pastas do agente que você inicia, e só se elas existirem. <code>--no-agent-state</code> desliga isso. Quando estiver definida no seu shell, a variável da chave de API desse agente vai junto: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> ou <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>.",
+    "head": ["Você roda", "Montado por padrão", "Bom saber"],
     "notes": {
       "claude": "Para um segundo perfil do Claude, aponte <code>--claude-dir</code> para o diretório dele.",
       "codex": "Depois que você redimensiona a janela, o ai-jail envia ao Codex uma tecla de redesenho para a tela ser repintada.",
       "opencode": "Precisa de <code>--standalone</code>. Veja o item de troubleshooting acima.",
+      "antigravity": "Compartilha o login do Google com o Gemini, então um único login serve para os dois.",
+      "kimi": "<code>~/.kimi-code</code>, o local antigo, também é montado quando existe.",
       "aimemory": "O ai-jail reconhece o agente que o <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> inicia e aplica as configurações desse agente, com os dois programas na mesma jaula."
     },
     "aimemoryState": "As pastas do agente iniciado",
-    "more": "O mesmo vale para <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code>, <code>omp</code> e os comandos do <code>kimi</code>. Qualquer outro comando também roda. Ele recebe a mesma jaula e nenhuma pasta de login."
+    "more": "O mesmo vale para <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> e <code>omp</code>. Qualquer outro comando também roda, com a mesma jaula e nenhuma pasta de login."
   },
   "next": {
     "items": [

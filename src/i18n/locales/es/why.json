@@ -42,7 +42,8 @@
       }
     ],
     "alt": "Dos filas. Sin jaula, una página envenenada llega al agente, el agente lee la clave SSH y la envía a internet. Con ai-jail, el agente está dentro de un muro de barrotes, ninguna flecha sale de él, y la clave SSH e internet aparecen atenuados y tras barrotes, fuera.",
-    "caption": "Por defecto, ai-jail responde a los tres casos igual: tu directorio home no está montado, la red está apagada y las escrituras fuera del proyecto desaparecen cuando termina la sesión."
+    "caption": "Por defecto, ai-jail responde a los tres casos igual: tu directorio home no está montado, la red está apagada y las escrituras fuera del proyecto desaparecen cuando termina la sesión.",
+    "note": "ai-jail está hecho para el tercer caso, el error de un agente de confianza, con el directorio del proyecto como radio de impacto. En los dos primeros limita lo que un agente engañado puede alcanzar, pero no está hecho para resistir a código que intente escapar. <a class=\"link\" href=\"/security/\">Lee el modelo de amenazas</a>."
   },
   "prompts": {
     "title": "Pero mi agente pide permiso antes",
@@ -81,10 +82,10 @@
     "codeTitle": "Terminal",
     "code": {
       "plain": "# el mismo comando, dentro de la jaula",
-      "optin": "# un agente en la nube necesita la red y su propio login"
+      "optin": "# un agente en la nube necesita una ruta hacia su API"
     },
     "honestTitle": "El costo real",
-    "honest": "Todo está apagado hasta que lo pidas, y eso incluye cosas que tu agente necesita. Un agente en la nube no funciona hasta que pasas <code>--agent-state</code> y, además, <code>--allow-host</code> con el host de su API o <code>--network</code>, y puedes guardar los ajustes en un archivo de configuración para escribirlos una sola vez. <a class=\"link\" href=\"/configure/\">Mira todos los interruptores</a>."
+    "honest": "Todo está apagado hasta que lo pidas, incluida la única cosa que un agente en la nube necesita: una ruta hacia su API. El agente no funciona hasta que pasas <code>--allow-host</code> con el host de su API o <code>--network</code>. Guarda el ajuste en un archivo de configuración y lo escribes una sola vez. <a class=\"link\" href=\"/configure/\">Mira todos los interruptores</a>."
   },
   "faq": {
     "title": "Preguntas de quien recién llega",
@@ -103,11 +104,11 @@
       },
       {
         "q": "¿Va a romper mi flujo de trabajo?",
-        "a": "Tu proyecto está en la misma ruta y tus compiladores y runtimes funcionan como antes. Desde la 2.5, tus toolchains y sus cachés de dependencias también funcionan dentro de la jaula, y los registries de paquetes son accesibles, así que los builds no necesitan flags extra. Todo lo demás que queda fuera del proyecto necesita un flag la primera vez: la red, el login del agente, SSH, Docker, la pantalla. <code>ai-jail --dry-run claude</code> imprime el comando de sandbox que ejecutaría, sin arrancar nada."
+        "a": "Tu proyecto está en la misma ruta y tus compiladores y runtimes funcionan como antes. En Linux, tus toolchains y sus cachés de dependencias también funcionan dentro de la jaula, y los registries de paquetes son accesibles, así que los builds no necesitan flags extra. Todo lo demás que queda fuera del proyecto necesita un flag la primera vez: la red, SSH, Docker, la pantalla. <code>ai-jail --dry-run claude</code> imprime el comando de sandbox que ejecutaría, sin arrancar nada."
       },
       {
         "q": "¿Hace que mi agente sea seguro?",
-        "a": "Más seguro. Es un sandbox de procesos que comparte tu kernel, así que un exploit del kernel queda fuera de su frontera, y un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, incluido tu proyecto. <a class=\"link\" href=\"/security/\">La página de seguridad</a> enumera los límites."
+        "a": "Más seguro frente a sus propios errores, que es para lo que está hecho. Es un sandbox de procesos y comparte tu kernel, así que no es una frontera contra código hostil, y un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, incluido tu proyecto. <a class=\"link\" href=\"/security/\">La página de seguridad</a> enumera los límites."
       }
     ]
   },

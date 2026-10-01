@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Configurar ai-jail: flags, archivos, máscaras y lockdown",
-    "description": "En ai-jail todo arranca apagado salvo tus toolchains. Cada flag y clave de config, cómo ocultar secretos del proyecto, qué hace lockdown y recetas para copiar."
+    "description": "En ai-jail todo arranca apagado salvo tus toolchains y el login del agente. Cada flag, cómo ocultar secretos, qué hace lockdown y recetas para copiar."
   },
   "hero": {
     "title": "Cerrada por defecto. Los interruptores son tuyos.",
-    "lede": "Sin opciones, el agente recibe tu proyecto y tus herramientas de build, sin login ni claves, y sin más red que una lista corta de registries de paquetes. Abres lo que la tarea necesita, un interruptor a la vez, y también puedes cerrar más la jaula.",
+    "lede": "Sin opciones, el agente recibe tu proyecto, tus herramientas de build en Linux y su propio login, sin más red que una lista corta de registries de paquetes. Cierras cosas un interruptor a la vez, y lockdown cierra la mayoría de golpe.",
     "switches": "Ver los interruptores",
     "install": "Instalar"
   },
@@ -39,7 +39,7 @@
   },
   "switches": {
     "title": "Los interruptores",
-    "lede": "Cada fila está apagada hasta que lo pidas, salvo la única fila cian, que viene activada por defecto. Cada flag de capacidad tiene un gemelo <code>--no-</code> que la vuelve a cerrar. Una etiqueta roja marca un interruptor que debilita la jaula. <a class=\"link\" href=\"/security/\">Seguridad tiene la lista completa y los motivos</a>.",
+    "lede": "Cada fila está apagada hasta que lo pidas, salvo las dos filas cian, que vienen activadas por defecto. Cada flag de capacidad tiene un gemelo <code>--no-</code> que la vuelve a cerrar. Una etiqueta roja marca un interruptor que debilita la jaula. <a class=\"link\" href=\"/security/\">Seguridad tiene la lista completa y los motivos</a>.",
     "cols": {
       "flag": "Flag",
       "key": "Clave de configuración",
@@ -80,13 +80,13 @@
         "title": "Agente y entorno",
         "rows": [
           {
-            "text": "El login y los ajustes del propio agente, como <code>~/.claude</code> o <code>~/.codex</code>. Cualquier cosa dentro de la jaula puede entonces usar esas credenciales."
+            "text": "El login del propio agente. El estado del harness que arrancas, como <code>~/.claude</code> o <code>~/.codex</code>, se monta en lectura y escritura, y su clave de API se copia de tu shell si está definida: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> o <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. El agente arranca con la sesión iniciada, y cualquier cosa dentro de la jaula puede usar ese login. <code>--no-agent-state</code> da una ejecución sin sesión. Apagado bajo lockdown, y un archivo de proyecto solo puede apagarlo."
           },
           {
             "text": "Usa el directorio indicado como estado de Claude y define <code>CLAUDE_CONFIG_DIR</code>."
           },
           {
-            "text": "Pasa una variable de tu shell, o define una con <code>NAME=VALUE</code>. Se puede repetir y nunca se guarda en disco."
+            "text": "Pasa una variable de tu shell, o define una con <code>NAME=VALUE</code>. Se puede repetir, nunca se guarda en disco y el valor nunca aparece en la línea de comandos del lanzador."
           },
           {
             "text": "Lee líneas <code>KEY=VALUE</code> estrictas de un archivo y las pasa como <code>--env</code>, que gana si hay conflicto. El archivo tiene que ser tuyo, un archivo regular, con modo 0600 o más estricto y fuera del proyecto, o el arranque falla. ai-jail nunca guarda los valores en disco, y la clave de configuración solo funciona desde el archivo global."
@@ -106,7 +106,7 @@
         "title": "Toolchains y credenciales de herramientas",
         "rows": [
           {
-            "text": "Tus compiladores y gestores de paquetes en solo lectura, sus cachés de dependencias en un almacén propio de la jaula, y los registries de paquetes accesibles a través del proxy filtrado. Activado por defecto en Linux. Lockdown lo apaga, y un archivo de proyecto solo puede apagarlo. <a class=\"link\" href=\"#toolchains\">Detalles más abajo</a>."
+            "text": "Tus compiladores y gestores de paquetes en solo lectura, sus cachés de dependencias en un almacén propio de la jaula, y los registries de paquetes accesibles a través del proxy filtrado. Solo en Linux, y ahí activado por defecto; en macOS no se mapea nada y el sandbox se queda sin conexión. Lockdown lo apaga, y un archivo de proyecto solo puede apagarlo. <a class=\"link\" href=\"#toolchains\">Detalles más abajo</a>."
           },
           {
             "text": "Tu <code>~/.config/gh</code>, en solo lectura, para que <code>gh</code> tenga la sesión iniciada. Solo lectura protege el archivo contra cambios. Cualquier cosa dentro de la jaula puede igualmente actuar como tú en GitHub."
@@ -273,7 +273,7 @@
     "points": [
       {
         "title": "Herramientas, en solo lectura",
-        "text": "Desde la 2.4.1, ai-jail mapea las instalaciones y la configuración de mise en solo lectura. Para Rust mapea <code>~/.cargo/bin</code> y <code>~/.rustup</code> del mismo modo, para que <code>cargo</code> y <code>rustc</code> se resuelvan. Las credenciales de Cargo y su <code>config.toml</code> se quedan fuera."
+        "text": "Desde la 2.4.1, ai-jail mapea las instalaciones y la configuración de mise en solo lectura. Para Rust mapea <code>~/.cargo/bin</code> y <code>~/.rustup</code> del mismo modo, para que <code>cargo</code> y <code>rustc</code> se resuelvan. Las credenciales de Cargo y su <code>config.toml</code> se quedan fuera. Como mise no puede instalar nada en un mapeo de solo lectura, ai-jail define <code>MISE_NOT_FOUND_AUTO_INSTALL=false</code> dentro, así que una herramienta que falta falla una sola vez y no en cada llamada."
       },
       {
         "title": "Una caché propia de la jaula",
@@ -297,6 +297,34 @@
     "caveat": {
       "title": "Dos límites",
       "text": "<code>cargo install</code> al bin global no funciona dentro de la jaula; usa <code>cargo install --root</code>. Los registries por defecto necesitan un namespace de red sin privilegios. Donde el kernel lo rechaza, el sandbox se queda sin conexión sin avisar, mientras que un <code>--allow-host</code> explícito sigue fallando en cerrado."
+    }
+  },
+  "turnDown": {
+    "title": "Cerrar más la jaula",
+    "lede": "El valor por defecto está pensado para trabajar. Cada paso de abajo cierra una cosa más, y <code>--lockdown</code> cierra la mayoría de golpe. <a class=\"link\" href=\"/security/\">Seguridad explica de qué protege cada uno</a>.",
+    "items": [
+      {
+        "text": "El valor por defecto: el login del agente, tus toolchains en Linux, los registries de paquetes y el proyecto en lectura y escritura."
+      },
+      {
+        "text": "<code>--no-agent-state</code>: sin login. El estado del harness se queda fuera y su clave de API no se copia."
+      },
+      {
+        "text": "<code>--no-toolchains</code>: sin cachés de dependencias ni registries de paquetes."
+      },
+      {
+        "text": "<code>--no-network</code>: del todo sin conexión, y <code>--allow-host</code> encima de eso da una lista corta de hosts a través del proxy."
+      },
+      {
+        "text": "<code>--mask</code>, <code>--deny-path</code> y <code>--hide-dotdir</code> quitan rutas sueltas, y un <code>--map</code> o <code>--rw-map</code> estrecho sustituye a un permiso amplio."
+      },
+      {
+        "text": "<code>--lockdown</code>: el proyecto en solo lectura, sin login, sin toolchains, sin registries, Landlock y seccomp estrictos, y sigue sin ser una VM."
+      }
+    ],
+    "other": {
+      "title": "Un flag va en sentido contrario",
+      "text": "<code>--no-private-home</code> añade exposición: el agente recibe tu directorio home real en lugar del nuevo. Para una sola ruta, usa <code>--map</code> o <code>--rw-map</code>."
     }
   },
   "lockdown": {
@@ -329,12 +357,15 @@
       },
       {
         "text": "Sin cachés de toolchains, salida a registries ni credenciales de herramientas"
+      },
+      {
+        "text": "Sin login del agente, así que el harness arranca sin sesión"
       }
     ],
     "codeTitle": "terminal",
     "network": {
       "title": "Lockdown y la red",
-      "text": "Lockdown no tiene red por defecto. <code>--allow-host</code> sigue funcionando bajo lockdown, así que puedes llegar a los hosts de la lista sin abrir la red. En Linux, <code>--network</code> sigue pudiendo anular lockdown, así que no lo pases salvo que de verdad lo quieras. En macOS, lockdown siempre bloquea la red abierta."
+      "text": "Lockdown siempre aísla el namespace de red, incluso si pasas <code>--network</code>. <code>--allow-host</code> sigue funcionando bajo lockdown: el agente llega a los hosts de la lista a través del proxy y a nada más."
     }
   },
   "recipes": {
@@ -343,11 +374,15 @@
     "items": [
       {
         "title": "Un agente en la nube, a diario",
-        "text": "Un modelo alojado necesita llegar a su API y necesita su propio login para autenticarse. Pon ambos en el archivo global y el comando sigue siendo corto. Permite solo el host de la API, o abre toda la red con <code>network = true</code>."
+        "text": "Un modelo alojado necesita llegar a su API. Su login ya está ahí por defecto, así que lo único que hay que añadir es el host. Ponlo en el archivo global y el comando sigue siendo corto. Permite solo el host de la API, o abre toda la red con <code>network = true</code>."
       },
       {
         "title": "Solo el host de la API del agente",
         "text": "El agente llega solo a su propia API. Claude usa <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> y Gemini <code>generativelanguage.googleapis.com</code>. Si el host falta en la lista, la advertencia de arranque lo nombra."
+      },
+      {
+        "title": "Una ejecución sin sesión",
+        "text": "Cuando el agente no debe tener ninguna credencial, <code>--no-agent-state</code> deja fuera su directorio de estado y su clave de API. Arranca sin sesión, y cualquier login que haga dentro del home nuevo desaparece cuando termina la ejecución."
       },
       {
         "title": "Hosts permitidos en el archivo global",
