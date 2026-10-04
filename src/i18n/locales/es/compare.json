@@ -87,7 +87,7 @@
     "lede": "Todo lo que aparece aquí describe la documentación de cada producto al momento de escribir esto. Cuando la documentación que leímos no responde una pregunta, la celda lo dice.",
     "undocumented": "No documentado",
     "cols": {
-      "row": "Capacidad",
+      "row": "",
       "claude": "Sandbox de Claude Code",
       "codex": "Sandbox de Codex CLI",
       "gemini": "Sandbox de Gemini CLI",
@@ -247,7 +247,7 @@
     "title": "Docker, dev containers y máquinas virtuales",
     "lede": "Estas también son buenas respuestas, y una máquina virtual es una más fuerte. Se diferencian en lo que tienes que construir y mantener al día.",
     "cols": {
-      "tool": "Herramienta",
+      "tool": "",
       "gives": "Qué te da",
       "costs": "Qué cuesta"
     },
@@ -279,7 +279,7 @@
     "title": "Plataformas de runtime para agentes",
     "lede": "<a class=\"link\" href=\"https://github.com/NVIDIA/OpenShell\">NVIDIA OpenShell</a> es otra categoría: un gateway en ejecución que le da a cada agente su propio contenedor o MicroVM, con un motor de políticas delante de la red. ai-jail es un proceso que envuelve un comando y termina con él. Esto sigue la documentación de OpenShell al momento de escribir esto, cuando todavía no había llegado a su versión 1.0.",
     "cols": {
-      "row": "Capacidad",
+      "row": "",
       "openshell": "OpenShell",
       "jail": "ai-jail"
     },

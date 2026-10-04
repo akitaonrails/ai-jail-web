@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
 import Figure from '@/components/Figure.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
 import Reach from '@/components/Reach.astro';
 import Callout from '@/components/Callout.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
@@ -11,7 +12,7 @@ import CtaBand from '@/components/CtaBand.astro';
 import { localePaths, useI18n, withText } from '@/i18n';
 export const getStaticPaths = localePaths;
 
-const { t, raw, href, number } = useI18n(Astro, 'configure');
+const { t, raw, href } = useI18n(Astro, 'configure');
 type Text = { title: string; text: string };
 
 const sources = withText([{ hue: 'red' }, { hue: 'gold' }, { hue: 'orange' }] as const, raw<Text[]>('authority.points'));
@@ -161,39 +162,15 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <div class="policy-manual">
   <PageHero hue="gold" kicker={t('kicker.configure')} title={t('hero.title')} lede={t('hero.lede')}>
     <a href="#switches" class="btn btn-primary">{t('hero.switches')}</a>
     <a href={href('/install/')} class="btn btn-ghost">{t('hero.install')}</a>
   </PageHero>
 
-  <nav class="manual-index wrap" aria-label={t('kicker.configure')}>
-    <ul>
-      {[
-        ['authority', 'authority.title'], ['switches', 'switches.title'],
-        ['secrets', 'secrets.title'], ['toolchains', 'toolchains.title'],
-        ['turn-down', 'turnDown.title'], ['lockdown', 'lockdown.title'],
-        ['recipes', 'recipes.title'], ['compat', 'compat.title'],
-      ].map(([id, key]) => <li><a href={`#${id}`}>{t(key)}</a></li>)}
-    </ul>
-  </nav>
-
-  <Section id="authority" title={t('authority.title')} lede={t('authority.lede')} hue="gold">
-    <div class="manual-overview">
-      <ol class="authority-ledger">
-        {sources.map((source, i) => (
-          <li data-hue={source.hue}>
-            <span class="manual-number" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
-            <div>
-              <h3 class="text-xl" set:html={source.title} />
-              <p class="mt-3 text-muted" set:html={source.text} />
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div class="manual-figure"><Figure name="configure-authority" alt={t('authority.alt')} caption={t('authority.caption')} /></div>
-    </div>
-    <div class="manual-example">
+  <Section title={t('authority.title')} lede={t('authority.lede')} hue="gold">
+    <Figure name="configure-authority" alt={t('authority.alt')} caption={t('authority.caption')} />
+    <FeatureGrid items={sources} />
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-start">
       <div>
         <p class="lede" set:html={t('authority.merge')} />
         <Callout title={t('authority.trust.title')} hue="gold"><p set:html={t('authority.trust.text')} /></Callout>
@@ -202,68 +179,44 @@ const next = withText(
     </div>
   </Section>
 
-  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold">
-    <div class="switch-reference">
-      <aside class="switch-index">
-        <nav aria-label={t('switches.title')}>
-          <ol>
-            {groups.map((g, gi) => <li><a href={`#switches-${gi + 1}`}>{g.title}</a></li>)}
-          </ol>
-        </nav>
-        <div class="risk-legend">
-          <h3 class="text-base">{t('switches.cols.risk')}</h3>
-          {(['default', 'optin', 'weakens'] as const).map((risk) => (
-            <span class="badge" data-hue={riskHue[risk]}>{t(`switches.risk.${risk}`)}</span>
-          ))}
-        </div>
-      </aside>
-      <div class="switch-groups">
-        {groups.map((g, gi) => (
-          <section id={`switches-${gi + 1}`} class="switch-group">
-            <h3 id={`switches-${gi + 1}-title`} class="text-xl mb-4">{g.title}</h3>
-            <div class="table-wrap" role="region" tabindex="0" aria-label={g.title}>
-              <table class="table-site switches">
-                <thead>
+  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold" tint>
+    <div class="grid gap-14">
+      {groups.map((g, gi) => (
+        <div>
+          <h3 class="text-xl mb-4">{g.title}</h3>
+          <div class="table-wrap">
+            <table class="table-site switches">
+              <thead>
+                <tr>
+                  <th scope="col">{t('switches.cols.flag')}</th>
+                  {gi !== utility && <th scope="col">{t('switches.cols.key')}</th>}
+                  <th scope="col">{t('switches.cols.opens')}</th>
+                  {gi !== utility && <th scope="col">{t('switches.cols.risk')}</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {g.rows.map((r) => (
                   <tr>
-                    <th scope="col">{t('switches.cols.flag')}</th>
-                    {gi !== utility && <th scope="col">{t('switches.cols.key')}</th>}
-                    <th scope="col">{t('switches.cols.opens')}</th>
-                    {gi !== utility && <th scope="col">{t('switches.cols.risk')}</th>}
+                    <td>{r.flag ? <code dir="ltr">{r.flag}</code> : <span class="text-muted font-normal">{t('switches.none')}</span>}</td>
+                    {gi !== utility && <td>{r.key ? <code dir="ltr">{r.key}</code> : <span class="text-muted">{t('switches.none')}</span>}</td>}
+                    <td class="opens" set:html={r.text} />
+                    {gi !== utility && <td>{r.risk && <span class="badge whitespace-nowrap" data-hue={riskHue[r.risk]}>{t(`switches.risk.${r.risk}`)}</span>}</td>}
                   </tr>
-                </thead>
-                <tbody>
-                  {g.rows.map((r) => (
-                    <tr>
-                      <td>{r.flag ? <code dir="ltr">{r.flag}</code> : <span class="text-muted font-normal">{t('switches.none')}</span>}</td>
-                      {gi !== utility && <td>{r.key ? <code dir="ltr">{r.key}</code> : <span class="text-muted">{t('switches.none')}</span>}</td>}
-                      <td class="opens" set:html={r.text} />
-                      {gi !== utility && <td>{r.risk && <span class="badge whitespace-nowrap" data-hue={riskHue[r.risk]}>{t(`switches.risk.${r.risk}`)}</span>}</td>}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {gi === layers && <p class="mt-4 text-muted" set:html={t('switches.layersLink')} />}
-          </section>
-        ))}
-      </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {gi === layers && <p class="mt-4 text-muted" set:html={t('switches.layersLink')} />}
+        </div>
+      ))}
     </div>
     <p class="mt-10 text-muted" set:html={t('switches.more')} />
   </Section>
 
   <Section id="secrets" title={t('secrets.title')} lede={t('secrets.lede')} hue="gold">
-    <div class="manual-overview">
-      <ol class="authority-ledger">
-        {maskPoints.map((point, i) => (
-          <li data-hue={point.hue}>
-            <span class="manual-number" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
-            <div><h3 class="text-xl" set:html={point.title} /><p class="mt-3 text-muted" set:html={point.text} /></div>
-          </li>
-        ))}
-      </ol>
-      <div class="manual-figure"><Figure name="configure-mask" alt={t('secrets.alt')} caption={t('secrets.caption')} /></div>
-    </div>
-    <div class="mt-12 code-pair">
+    <Figure name="configure-mask" alt={t('secrets.alt')} caption={t('secrets.caption')} />
+    <FeatureGrid items={maskPoints} />
+    <div class="mt-12 grid gap-6 lg:grid-cols-2 items-start">
       <CodeBlock code={maskFlags} title={t('secrets.flagsTitle')} />
       <CodeBlock code={maskToml} title={t('secrets.tomlTitle')} />
     </div>
@@ -271,26 +224,17 @@ const next = withText(
     <div id="api-keys" class="mt-14">
       <h3 class="text-xl mb-3">{t('secrets.keys.title')}</h3>
       <p class="lede max-w-[46em]" set:html={t('secrets.keys.text')} />
-      <div class="mt-6 code-pair">
+      <div class="mt-6 grid gap-6 lg:grid-cols-2 items-start">
         <CodeBlock code={keysShell} title={t('secrets.keys.shellTitle')} />
         <CodeBlock code={keysToml} title={t('secrets.keys.tomlTitle')} />
       </div>
     </div>
   </Section>
 
-  <Section id="toolchains" title={t('toolchains.title')} lede={t('toolchains.lede')} hue="gold">
-    <div class="manual-overview">
-      <ol class="authority-ledger">
-        {toolPoints.map((point, i) => (
-          <li data-hue={point.hue}>
-            <span class="manual-number" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
-            <div><h3 class="text-xl" set:html={point.title} /><p class="mt-3 text-muted" set:html={point.text} /></div>
-          </li>
-        ))}
-      </ol>
-      <div class="manual-figure"><Figure name="configure-toolchains" alt={t('toolchains.alt')} caption={t('toolchains.caption')} /></div>
-    </div>
-    <div class="manual-example">
+  <Section id="toolchains" title={t('toolchains.title')} lede={t('toolchains.lede')} hue="gold" tint>
+    <Figure name="configure-toolchains" alt={t('toolchains.alt')} caption={t('toolchains.caption')} />
+    <FeatureGrid items={toolPoints} />
+    <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-start">
       <div class="grid gap-6">
         <Callout title={t('toolchains.optout.title')} hue="gold"><p set:html={t('toolchains.optout.text')} /></Callout>
         <Callout title={t('toolchains.caveat.title')}><p set:html={t('toolchains.caveat.text')} /></Callout>
@@ -300,95 +244,49 @@ const next = withText(
   </Section>
 
   <Section id="turn-down" title={t('turnDown.title')} lede={t('turnDown.lede')} hue="red">
-    <div class="policy-diff">
+    <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-start">
       <Reach items={turnDown} />
       <Callout title={t('turnDown.other.title')} hue="red"><p set:html={t('turnDown.other.text')} /></Callout>
     </div>
   </Section>
 
-  <Section id="lockdown" title={t('lockdown.title')} lede={t('lockdown.lede')} hue="red">
-    <div class="policy-diff">
+  <Section id="lockdown" title={t('lockdown.title')} lede={t('lockdown.lede')} hue="red" tint>
+    <Figure name="configure-lockdown" alt={t('lockdown.alt')} caption={t('lockdown.caption')} />
+    <div class="grid gap-10 lg:grid-cols-2 items-start">
       <Reach title={t('lockdown.changes')} items={raw<{ text: string }[]>('lockdown.items')} state="blocked" />
       <div>
         <CodeBlock code="ai-jail --lockdown claude" title={t('lockdown.codeTitle')} />
         <Callout title={t('lockdown.network.title')}><p set:html={t('lockdown.network.text')} /></Callout>
       </div>
     </div>
-    <Figure name="configure-lockdown" alt={t('lockdown.alt')} caption={t('lockdown.caption')} />
   </Section>
 
-  <Section id="recipes" title={t('recipes.title')} lede={t('recipes.lede')} hue="gold">
-    <ol class="recipe-ledger">
-      {recipes.map((r, i) => (
-        <li>
-          <span class="manual-number" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
-          <div class="grid gap-4 content-start min-w-0">
-            <h3 class="text-xl">{r.title}</h3>
-            <p class="text-muted max-w-[40em]" set:html={r.text} />
-          </div>
+  <Section title={t('recipes.title')} lede={t('recipes.lede')} hue="gold">
+    <div class="grid gap-x-8 gap-y-12 lg:grid-cols-2" data-reveal="children">
+      {recipes.map((r) => (
+        <div class="grid gap-4 content-start min-w-0">
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h3 class="text-xl">{r.title}</h3>
+          <p class="text-muted max-w-[40em]" set:html={r.text} />
           <CodeBlock code={r.code} title={r.codeTitle} />
-        </li>
+        </div>
       ))}
-    </ol>
+    </div>
   </Section>
 
-  <Section id="compat" title={t('compat.title')} hue="gold" narrow>
+  <Section title={t('compat.title')} hue="gold" narrow tint>
     <div class="prose-site">
       <p set:html={t('compat.text')} />
       <p class="text-muted" set:html={t('compat.legacy')} />
     </div>
   </Section>
 
-  </div>
   <NextPages title={t('next.title')} items={next} />
   <CtaBand />
 </Base>
 
 <style>
-  .policy-manual :global(.page-hero) { padding-block: 7rem 2rem; }
-  .policy-manual :global(.page-hero-body) { gap: 1.25rem; padding-block-start: 1.5rem; }
-  .policy-manual :global(.page-hero h1) { font-size: var(--text-3xl); max-inline-size: 22em; }
-  .policy-manual :global(.section-manual) { padding-block: clamp(3rem, 6vw, 5rem); }
-  .policy-manual :global(.section-heading) { gap: 1rem; }
-  .policy-manual :global(.section-heading h2) { font-size: var(--text-2xl); }
-  .policy-manual :global(.section-content) { margin-block-start: 2rem; }
-  .policy-manual :global(.term), .policy-manual .table-wrap { border-radius: 0; }
-  .policy-manual :global(.callout) { background: var(--surface); border-inline-start-width: .2rem; }
-  .policy-manual .table-wrap:focus-visible { outline: 2px solid var(--gold); }
-  .policy-manual .table-site th { font-family: var(--font-display); }
-  .policy-manual .badge { border-radius: 0; background: var(--surface); }
-  .policy-diff :global(.reach) { gap: 0; border-block-start: 1px solid var(--line); }
-  .policy-diff :global(.reach > li) { padding-block: .85rem; border-block-end: 1px solid var(--line); }
-  .manual-index { padding-block: 1.25rem; border-block-end: 1px solid var(--line); }
-  .manual-index ul { display: flex; flex-wrap: wrap; border-block-start: 1px solid var(--line); border-inline-start: 1px solid var(--line); }
-  .manual-index li { flex: 1 1 12rem; border-inline-end: 1px solid var(--line); border-block-end: 1px solid var(--line); }
-  .manual-index a { display: block; block-size: 100%; padding: .75rem 1rem; font-family: var(--font-display); font-weight: 700; }
-  .manual-index a:hover { background: var(--gold-soft); color: var(--gold); }
-  .manual-overview, .manual-example, .policy-diff, .code-pair { display: grid; gap: 2rem; align-items: start; }
-  .manual-figure :global(.fig) { margin-block: 0; }
-  .authority-ledger, .recipe-ledger { border-block-start: 1px solid var(--line); }
-  .authority-ledger > li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 1rem; padding-block: 1.5rem; border-block-end: 1px solid var(--line); }
-  .manual-number { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue, var(--muted)); font-variant-numeric: tabular-nums; }
-  .manual-example { margin-block-start: 3rem; padding-block-start: 2rem; border-block-start: 1px solid var(--line); }
-  .switch-reference { display: grid; gap: 3rem; align-items: start; }
-  .switch-index { border-block-start: 1px solid var(--line); }
-  .switch-index li { border-block-end: 1px solid var(--line); }
-  .switch-index a { display: block; padding: .65rem .75rem; font-weight: 650; }
-  .switch-index a:hover { background: var(--gold-soft); color: var(--gold); }
-  .risk-legend { display: flex; flex-wrap: wrap; gap: .6rem; padding: 1rem .75rem; border-block-end: 1px solid var(--line); }
-  .risk-legend h3 { flex-basis: 100%; }
-  .switch-groups { display: grid; gap: 3.5rem; }
-  .switch-group { scroll-margin-block-start: 5rem; }
   .switches code { white-space: nowrap; }
-  .switches .opens { min-inline-size: 18rem; }
+  .switches .opens { min-width: 18rem; }
   .switches .opens :global(code) { white-space: normal; }
-  .recipe-ledger > li { display: grid; gap: 1rem; padding-block: 2rem; border-block-end: 1px solid var(--line); }
-  @media (min-width: 64rem) {
-    .manual-overview { grid-template-columns: minmax(18rem, .8fr) minmax(0, 1.2fr); }
-    .manual-example, .policy-diff { grid-template-columns: minmax(18rem, .8fr) minmax(0, 1.2fr); }
-    .code-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .switch-reference { grid-template-columns: minmax(14rem, .28fr) minmax(0, 1fr); }
-    .switch-index { position: sticky; inset-block-start: 5rem; }
-    .recipe-ledger > li { grid-template-columns: 3rem minmax(18rem, .75fr) minmax(0, 1.25fr); gap: 1.5rem; }
-  }
 </style>

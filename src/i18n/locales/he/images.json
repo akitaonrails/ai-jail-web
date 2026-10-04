@@ -131,11 +131,8 @@
   },
   "how-egress": {
     "Off": "כבויה",
-    "Default: Linux": "ברירת מחדל: Linux",
-    "Default: macOS": "ברירת מחדל: macOS",
     "Filtered": "מסוננת",
     "Open": "פתוחה",
-    "Proxy": "פרוקסי",
-    "Registries (toolchains on)": "מאגרי חבילות (toolchains דולקים)"
+    "Proxy": "פרוקסי"
   }
 }

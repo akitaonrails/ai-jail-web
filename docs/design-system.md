@@ -8,7 +8,7 @@ The logo is a padlock made of warm circuit traces, gold on the left through oran
 
 1. The warm spectrum is the jail. Walls, layers, rules and limits use it.
 2. Cyan is the agent and what it is allowed to do. It is also the one action color: the primary button is cyan and nothing else is.
-3. Vertical bars are the only ornament (`.bars`, blocked states and structural boundaries).
+3. Vertical bars are the only ornament (`.bars`, the blocked state in `.reach`, the scene tiles).
 
 ai-memory, the sister project, is the inverse: a cool spectrum with a warm chip. The two sites are meant to look like a pair, never like copies. See [color-study.md](color-study.md).
 
@@ -38,7 +38,7 @@ Red Hat Display for headings (weight 750), Red Hat Text for body, Red Hat Mono f
 
 - `.wrap` is the 76rem column, `.wrap-narrow` is 52rem for reading. `.band` is the vertical rhythm.
 - Left aligned. Nothing is centered except the CTA band.
-- Prefer open layouts, rules, ledgers and technical records over floating cards. `.cell` is for things you click.
+- Prefer open layouts (bars on top, whitespace) over boxes. `.cell` is for things you click.
 - Mobile first. Every grid collapses to one column. Tables scroll sideways inside `.table-wrap`. The page must never scroll sideways at 360px.
 - CSS uses logical properties (`margin-inline-start`, `ms-4`, `text-start`) so Hebrew mirrors. Terminals, diagrams and file paths get `dir="ltr"`.
 
@@ -48,14 +48,14 @@ Red Hat Display for headings (weight 750), Red Hat Text for body, Red Hat Mono f
 |---|---|
 | `Base` (layout) | Every page. Props: `title`, `description` (140 to 160 characters), `schema`. |
 | `PageHero` | Top of every detail page. Props: `hue`, `kicker` (`t('kicker.<page>')`), `title`, `lede`. Slot: one or two buttons. |
-| `Section` | A band with an h2. Props: `title`, `lede`, `hue`, `id`, `tint`, `narrow`, `ink` (always-dark band). |
-| `Figure` | A deterministic technical diagram selected by `name`, with localized labels from `images.json`. `src` remains available for a real screenshot. Props: `name` or `src`, `alt`, `caption`. |
+| `Section` | A band with an h2. Props: `title`, `lede`, `hue`, `id`, `tint`, `narrow`, `fill` (scroll-lit lede, one per page), `ink` (always-dark band). |
+| `Figure` | A generated diagram. Props: `name` (file in `src/assets/img/gen/`), `alt` (say what the diagram says), `caption`. |
 | `FeatureGrid` | Two to six short points. Props: `items[{title,text,hue,href,link}]`, `cols`. |
 | `Reach` | What the agent can touch. Props: `items[{text,state}]`, `state` (`inside`, `blocked`, `optin`), `title`. |
 | `Steps` | A numbered procedure with terminals. Props: `steps[{title,text,code,codeTitle}]`. |
 | `CodeBlock` | A terminal with a copy button. Props: `code`, `title`. Lines starting with `#` dim. |
 | `Tabs` | Props: `id`, `labels[]`. Panels are slots named `"0"`, `"1"`... |
-| `Facts` | A static ledger of verified numbers. Props: `items[{n,label}]`. Numbers come from `src/data/facts.json`. |
+| `Facts` | A strip of verified numbers that count up. Props: `items[{n,label,count}]`. Numbers come from `src/data/facts.json`. |
 | `Callout` | Limits and caveats. Props: `title`, `hue`. |
 | `Faq` | Accordion fed by the same list as `faqPage()`. Props: `items`, `title`, `hue`. |
 | `NextPages` | Two or three onward links. Props: `title` (`t('next.title')`), `items[{title,text,hue,href}]`. |
@@ -64,13 +64,24 @@ Red Hat Display for headings (weight 750), Red Hat Text for body, Red Hat Mono f
 
 Classes in `global.css`: `btn btn-primary`, `btn btn-ghost`, `cell`, `lede`, `kicker`, `badge`, `bars`, `reach`, `ticks`, `table-wrap` + `table-site`, `prose-site`, `spectrum-rule`, `link`, `on-ink`. A page's own `<style>` is for what only that page has.
 
-A detail page is: `PageHero`, three to six `Section`s, an optional `Faq`, `NextPages`, `CtaBand`. Explanatory pages use at least two `Figure`s. Artifact and reference pages such as Download may use release ledgers, commands and tables instead.
+A detail page is: `PageHero`, three to six `Section`s with at least two `Figure`s, an optional `Faq`, `NextPages`, `CtaBand`.
 
 ## Motion
 
-Motion explains a state change or gives direct interaction feedback. The homepage access ledger is the only scroll-linked sequence: `data-scene="5"` gives it `data-step` as the reader moves through the containment states. It becomes a static complete ledger on narrow or short screens and under `prefers-reduced-motion`.
+Declared in markup, run by `src/scripts/motion.ts`, scrubbed to the scroll position so the page responds to the reader.
 
-Do not add parallax, generic entrance reveals, count-ups, image zooms, word-fill effects or hero recession. Content is complete without JavaScript.
+| Attribute | Effect |
+|---|---|
+| `data-exit` | The section recedes as the next one scrolls over it. Hero sections. |
+| `data-scene="5"` | A tall section with a sticky stage that gets `data-step`. One per page at most. |
+| `data-fill` | Words light up as the paragraph crosses the viewport. One per page (`Section fill`). |
+| `data-zoom` | Media grows into place. `Figure` does this by default. |
+| `data-parallax="0.1"` | The element drifts against the scroll. |
+| `data-reveal` / `data-reveal="children"` | Settles in once. Grids and h1. |
+| `data-focus-list` | Children get `data-state="ahead|active|past"` as they cross the reading line. One per page, for a real sequence. |
+| `data-count="343"` | Counts up once. |
+
+Everything is off under `prefers-reduced-motion`, and the content is complete without JavaScript.
 
 ## Writing
 
@@ -88,6 +99,6 @@ The reader has never heard of ai-jail and may not know what a sandbox is. Tell t
 
 Every visible string lives in `src/i18n/locales/`, never in an `.astro` file. Structure (hues, hrefs, ids, commands, flags) stays in code; words go in the catalog; `withText()` joins them. See [i18n.md](i18n.md).
 
-## Diagrams and images
+## Images
 
-Technical explainers are deterministic HTML/CSS diagrams rendered by `Figure` from localized labels in `images.json`. Keep topology in code and words in catalogs. Real screenshots may be passed through `Figure` with `src`. The old generated artwork is retained only as source history; see [images.md](images.md).
+Diagrams are generated, then checked by a person. See [images.md](images.md).

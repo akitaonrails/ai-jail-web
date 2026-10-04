@@ -65,7 +65,7 @@
     "lede": "아래 내용은 모두 이 글을 쓰는 시점의 각 제품 문서를 기준으로 합니다. 우리가 읽은 문서에서 답을 찾지 못한 항목은 칸에 그렇게 적었습니다.",
     "undocumented": "문서에 없음",
     "cols": {
-      "row": "기능",
+      "row": "",
       "claude": "Claude Code 샌드박스",
       "codex": "Codex CLI 샌드박스",
       "gemini": "Gemini CLI 샌드박스",
@@ -218,7 +218,7 @@
   "heavy": {
     "title": "Docker, 개발 컨테이너, 가상 머신",
     "lede": "이들도 좋은 답이고, 가상 머신은 더 강한 답입니다. 차이는 무엇을 직접 빌드하고 최신으로 관리해야 하느냐에 있습니다.",
-    "cols": { "tool": "도구", "gives": "얻는 것", "costs": "치르는 비용" },
+    "cols": { "tool": "", "gives": "얻는 것", "costs": "치르는 비용" },
     "rows": [
       {
         "tool": "Docker 컨테이너",
@@ -246,7 +246,7 @@
   "platforms": {
     "title": "에이전트 런타임 플랫폼",
     "lede": "<a class=\"link\" href=\"https://github.com/NVIDIA/OpenShell\">NVIDIA OpenShell</a>은 다른 범주입니다. 상시 실행되는 게이트웨이가 에이전트마다 컨테이너나 MicroVM을 주고 네트워크 앞에 정책 엔진을 둡니다. ai-jail은 명령 하나를 감싸고 그 명령과 함께 종료되는 프로세스 하나입니다. 이 내용은 이 글을 쓰는 시점, 아직 1.0 릴리스 전인 OpenShell 문서를 따릅니다.",
-    "cols": { "row": "기능", "openshell": "OpenShell", "jail": "ai-jail" },
+    "cols": { "row": "", "openshell": "OpenShell", "jail": "ai-jail" },
     "rows": [
       {
         "label": "샌드박스를 실행하는 것",

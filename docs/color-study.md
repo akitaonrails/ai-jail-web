@@ -66,7 +66,7 @@ Vivid is the same in both themes because it is the logo's own color. Ink and sof
 
 ## 4. Light and dark
 
-The themes are mirrors: text lightness 0.2 on ground 0.985 in light, 0.955 on 0.145 in dark. Accent ink flips from 0.47 to 0.83. Terminals, technical diagrams, the scroll scene and the CTA band stay on the dark ink ground in both themes (`.on-ink`), the way a terminal does on a real desktop.
+The themes are mirrors: text lightness 0.2 on ground 0.985 in light, 0.955 on 0.145 in dark. Accent ink flips from 0.47 to 0.83. Terminals, generated diagrams, the scroll scene and the CTA band stay on the dark ink ground in both themes (`.on-ink`), the way a terminal does on a real desktop. That also means every diagram is generated once.
 
 The theme follows the operating system until the visitor picks one. The footer has a "System" option that clears the choice. An inline script sets the theme before first paint, so there is no flash.
 
@@ -109,10 +109,6 @@ WCAG 2.x ratios, computed from the tokens by `scripts/check-contrast.mjs`. Targe
 | `on-ink` #f5eef0 | `ink` #11070b | 17.37 | 7 | pass |
 | `on-ink` #f5eef0 | `ink-raised` #1f0f15 | 16.11 | 7 | pass |
 | `on-ink-muted` #b9a9ae | `ink-raised` #1f0f15 | 8.20 | 4.5 | pass |
-| `v-gold` #ffcd43 | `ink-raised` #1f0f15 | 12.36 | 3 | pass |
-| `v-orange` #ff9138 | `ink-raised` #1f0f15 | 8.18 | 3 | pass |
-| `v-red` #f84c45 | `ink-raised` #1f0f15 | 5.37 | 3 | pass |
-| `v-cyan` #5bdefb | `ink-raised` #1f0f15 | 11.68 | 3 | pass |
 | `line` #e1d5d9 | `bg` #fdf9fa | 1.36 | 1.2 | pass |
 
 ### dark
@@ -150,12 +146,8 @@ WCAG 2.x ratios, computed from the tokens by `scripts/check-contrast.mjs`. Targe
 | `on-ink` #f5eef0 | `ink` #11070b | 17.37 | 7 | pass |
 | `on-ink` #f5eef0 | `ink-raised` #1f0f15 | 16.11 | 7 | pass |
 | `on-ink-muted` #b9a9ae | `ink-raised` #1f0f15 | 8.20 | 4.5 | pass |
-| `v-gold` #ffcd43 | `ink-raised` #1f0f15 | 12.36 | 3 | pass |
-| `v-orange` #ff9138 | `ink-raised` #1f0f15 | 8.18 | 3 | pass |
-| `v-red` #f84c45 | `ink-raised` #1f0f15 | 5.37 | 3 | pass |
-| `v-cyan` #5bdefb | `ink-raised` #1f0f15 | 11.68 | 3 | pass |
 | `line` #442e36 | `bg` #11070b | 1.60 | 1.2 | pass |
 
-## 6. Technical diagrams
+## 6. Generated images
 
-`src/components/Figure.astro` renders named explainers as deterministic HTML/CSS. It uses the same tokens and semantic rules: warm boundaries represent the jail, cyan marks the agent and permitted routes, and blocked objects use red bars. Labels come from each locale's `images.json`; geometry remains left to right while labels preserve their own direction. No glow or simulated depth is used. The legacy generated artwork and prompts remain on disk for reference, but are not rendered by named figures.
+The art direction in `scripts/prompts/_style.txt` names the same hex values and the same rules: the warm spectrum is the jail, cyan is only ever the agent and what it may reach, blocked things are dim and barred. The logo is attached to every request as a style reference. That is why the diagrams look like they belong to the logo.

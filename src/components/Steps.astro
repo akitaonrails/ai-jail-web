@@ -1,15 +1,14 @@
 ---
+// A numbered procedure with terminal blocks. `text` accepts inline HTML.
 import CodeBlock from './CodeBlock.astro';
 interface Step { title: string; text?: string; code?: string; codeTitle?: string }
 interface Props { steps: Step[] }
-import { useI18n } from '@/i18n';
 const { steps } = Astro.props;
-const { number } = useI18n(Astro);
 ---
-<ol class="steps">
+<ol class="grid gap-12" data-reveal="children">
   {steps.map((s, i) => (
-    <li>
-      <span class="step-index" style="color:var(--hue)" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
+    <li class="grid gap-5 md:grid-cols-[4rem_1fr]">
+      <span class="font-display font-extrabold text-3xl leading-none" style="color:var(--hue-vivid)" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
       <div class="grid gap-4">
         <h3 class="text-xl" set:html={s.title} />
         {s.text && <p class="text-muted max-w-[40em]" set:html={s.text} />}
@@ -18,9 +17,3 @@ const { number } = useI18n(Astro);
     </li>
   ))}
 </ol>
-<style>
-  .steps { border-block-start: 1px solid var(--line); }
-  .steps > li { display: grid; gap: 1.25rem; padding-block: 2rem; border-block-end: 1px solid var(--line); }
-  .step-index { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; line-height: 1; }
-  @media (min-width: 48rem) { .steps > li { grid-template-columns: 4rem 1fr; gap: 1.5rem; } }
-</style>

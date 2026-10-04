@@ -8,7 +8,7 @@ const { t, href, locale } = useI18n(Astro);
 const path = Astro.url.pathname;
 const languages = languageLinks(path);
 ---
-<header class="site-nav" data-nav data-hue="cyan">
+<header class="site-nav" data-nav>
   <div class="wrap flex h-16 items-center gap-5">
     <a href={href('/')} class="flex items-center gap-2 shrink-0" aria-label={t('a11y.home')}>
       <Image src={logo} alt="" width={36} height={36} densities={[1, 2, 3]} class="size-9" loading="eager" />
@@ -37,23 +37,6 @@ const languages = languageLinks(path);
       <button type="button" class="icon-btn lg:!hidden" data-drawer-open aria-label={t('a11y.openMenu')} aria-controls="drawer">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <noscript>
-        <style>[data-drawer-open] { display: none !important; }</style>
-        <details class="no-js-menu lg:hidden">
-          <summary class="icon-btn" aria-label={t('a11y.openMenu')}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          </summary>
-          <nav class="no-js-menu-panel" aria-label={t('a11y.mainNav')}>
-            {nav.map((l) => (
-              <a href={href(l.href)} data-hue={l.hue} class="drawer-link" aria-current={path === href(l.href) ? 'page' : undefined}>
-                <span class="bars" aria-hidden="true"><i></i></span>
-                <span><span class="block font-display font-bold text-lg leading-tight">{t(`nav.${l.id}.label`)}</span><span class="block text-sm text-muted">{t(`nav.${l.id}.note`)}</span></span>
-              </a>
-            ))}
-            <a href={href('/install/')} class="btn btn-primary mt-5">{t('nav.install.label')}</a>
-          </nav>
-        </details>
-      </noscript>
     </div>
   </div>
 </header>
@@ -77,23 +60,19 @@ const languages = languageLinks(path);
 </dialog>
 
 <style is:global>
-  .site-nav { position: fixed; inset-inline: 0; top: 0; z-index: 50; background: var(--bg); transition: border-color 0.15s; border-block-end: 1px solid transparent; }
-  .site-nav[data-scrolled] { border-color: var(--line); }
-  .nav-link { padding: 0.45rem 0.65rem; border-block-end: 0.2rem solid transparent; font-weight: 600; font-size: 0.97rem; color: var(--muted); transition: color 0.15s, border-color 0.15s; }
-  .nav-link:hover, .nav-link[aria-current] { color: var(--hue); border-color: var(--hue-vivid); }
-  .icon-btn { display: inline-grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: 0.15rem; border: 1px solid transparent; color: var(--muted); transition: color 0.15s, background-color 0.15s, border-color 0.15s; }
-  .icon-btn:hover { color: var(--text); background: var(--tint); border-color: var(--line); }
-  .menu-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 0.5rem); min-width: 12rem; padding: 0.3rem; background: var(--surface); border: 1.5px solid var(--line); border-radius: 0.15rem; display: none; }
+  .site-nav { position: fixed; inset-inline: 0; top: 0; z-index: 50; transition: background 0.3s, border-color 0.3s; border-block-end: 1px solid transparent; }
+  .site-nav[data-scrolled] { background: color-mix(in oklch, var(--bg) 82%, transparent); backdrop-filter: blur(14px) saturate(1.4); border-color: var(--line); }
+  .nav-link { padding: 0.45rem 0.8rem; border-radius: 99px; font-weight: 600; font-size: 0.97rem; color: var(--muted); transition: color 0.2s, background 0.2s; }
+  .nav-link:hover, .nav-link[aria-current] { color: var(--hue); background: var(--hue-soft); }
+  .icon-btn { display: inline-grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: 99px; color: var(--muted); transition: color 0.2s, background 0.2s; }
+  .icon-btn:hover { color: var(--text); background: var(--tint); }
+  .menu-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 0.5rem); min-width: 12rem; padding: 0.4rem; background: var(--surface); border: 1.5px solid var(--line); border-radius: 1rem; box-shadow: var(--shadow); display: none; }
   [data-menu][data-open] .menu-panel { display: grid; }
-  .menu-panel a { padding: 0.5rem 0.65rem; border-inline-start: 0.2rem solid transparent; }
+  .menu-panel a { padding: 0.5rem 0.8rem; border-radius: 0.65rem; }
   .menu-panel a:hover { background: var(--tint); }
-  .menu-panel a[aria-current] { color: var(--cyan); border-color: var(--v-cyan); font-weight: 700; }
+  .menu-panel a[aria-current] { color: var(--cyan); font-weight: 700; }
   .drawer { margin: 0; margin-inline-start: auto; inline-size: min(24rem, 100%); max-inline-size: none; block-size: 100dvh; max-block-size: none; background: var(--bg); color: var(--text); border-inline-start: 1.5px solid var(--line); }
-  .drawer::backdrop { background: var(--veil); }
-  .drawer-link { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: 0.8rem 0.6rem; border-block-end: 1px solid var(--line); }
+  .drawer::backdrop { background: var(--veil); backdrop-filter: blur(4px); }
+  .drawer-link { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: 0.8rem 0.6rem; border-radius: 1rem; }
   .drawer-link:hover { background: var(--tint); }
-  .no-js-menu { position: relative; }
-  .no-js-menu summary { list-style: none; cursor: pointer; }
-  .no-js-menu summary::-webkit-details-marker { display: none; }
-  .no-js-menu-panel { position: fixed; inset-inline: 0; top: 4rem; max-block-size: calc(100dvh - 4rem); overflow-y: auto; padding: 1rem 1.25rem 2rem; background: var(--bg); border-block-start: 1px solid var(--line); border-block-end: 1px solid var(--line); display: grid; gap: 0.25rem; }
 </style>

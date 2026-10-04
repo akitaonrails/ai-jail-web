@@ -56,8 +56,7 @@
   },
   "code": {
     "copy": "Copy",
-    "copied": "Copied",
-    "terminal": "Terminal"
+    "copied": "Copied"
   },
   "reach": {
     "inside": "Inside the jail",

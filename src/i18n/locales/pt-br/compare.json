@@ -48,7 +48,7 @@
     "title": "Lado a lado",
     "lede": "Tudo aqui descreve a documentação de cada produto no momento em que este texto foi escrito. Quando a documentação que lemos não responde a uma pergunta, a célula diz isso.",
     "undocumented": "Não documentado",
-    "cols": { "row": "Capacidade", "claude": "Sandbox do Claude Code", "codex": "Sandbox do Codex CLI", "gemini": "Sandbox do Gemini CLI", "jail": "ai-jail" },
+    "cols": { "row": "", "claude": "Sandbox do Claude Code", "codex": "Sandbox do Codex CLI", "gemini": "Sandbox do Gemini CLI", "jail": "ai-jail" },
     "sources": "Fontes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">sandboxing do Claude Code</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">ambientes de sandbox do Claude Code</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">aprovações e segurança do Codex</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">permissões do Codex</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">sandbox de Linux do Codex</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">sandbox do Gemini CLI</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">sandbox de terminal do Antigravity</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">permissões do Antigravity</a>, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">modelo de segurança do nono</a>, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">README do zerobox</a>.",
     "wrappersTitle": "Wrappers como o ai-jail",
     "wrappersLead": "Duas outras ferramentas open source colocam um sandbox do kernel em volta de um agente. O ai-jail 2.2 pegou ideias das duas: as credenciais fantasma do zerobox e do nono, o log de auditoria com cadeia de hashes do nono. As duas são em Rust, Apache-2.0 e rodam sem daemon, e as duas compartilham o seu kernel, como o ai-jail.",
@@ -196,7 +196,7 @@
   "heavy": {
     "title": "Docker, dev containers e máquinas virtuais",
     "lede": "Essas também são boas respostas, e uma máquina virtual é uma resposta mais forte. Elas diferem no que você precisa montar e manter atualizado.",
-    "cols": { "tool": "Ferramenta", "gives": "O que você ganha", "costs": "O que custa" },
+    "cols": { "tool": "", "gives": "O que você ganha", "costs": "O que custa" },
     "rows": [
       { "tool": "Container Docker", "gives": "Sistema de arquivos, lista de processos e rede próprios. O agente vê só o que você monta.", "costs": "Uma imagem para montar e manter, com as suas toolchains instaladas pela segunda vez. Se você montar o socket do Docker, o container equivale a root no host." },
       { "tool": "Dev container", "gives": "O mesmo isolamento de um container, descrito num arquivo que o seu editor entende e o seu time pode compartilhar.", "costs": "A mesma manutenção de imagem, mais um editor ou uma ferramenta que entenda o formato." },
@@ -208,7 +208,7 @@
   "platforms": {
     "title": "Plataformas de runtime para agentes",
     "lede": "O <a class=\"link\" href=\"https://github.com/NVIDIA/OpenShell\">NVIDIA OpenShell</a> é outra categoria: um gateway em execução que dá a cada agente o próprio container ou MicroVM, com um motor de políticas na frente da rede. O ai-jail é um processo que envolve um comando e termina junto com ele. Isto segue a documentação do OpenShell no momento em que este texto foi escrito, quando ele ainda estava antes da release 1.0.",
-    "cols": { "row": "Capacidade", "openshell": "OpenShell", "jail": "ai-jail" },
+    "cols": { "row": "", "openshell": "OpenShell", "jail": "ai-jail" },
     "rows": [
       { "label": "O que roda o sandbox", "openshell": "Um daemon de gateway sobre Docker, Podman, Kubernetes ou KVM. O agente mora numa imagem de container que vem junto.", "jail": "Só o binário. O agente roda no seu projeto com os compiladores e runtimes que já estão na sua máquina." },
       { "label": "Rede", "openshell": "Negada por padrão. As regras casam programa, host e porta, com inspeção opcional de métodos, caminhos e ferramentas MCP. Um endpoint negado pode ser aprovado do lado do operador.", "jail": "Desligada, filtrada por host ou aberta. O filtro é uma cerca de namespace mais um proxy CONNECT; ele vê hosts e portas, não o conteúdo, e um host permitido é confiável por inteiro." },
