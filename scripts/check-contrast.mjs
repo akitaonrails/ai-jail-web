@@ -27,6 +27,7 @@ for (const [name, t] of Object.entries(themes)) {
     ['muted', 'bg', 4.5], ['muted', 'surface', 4.5], ['muted', 'tint', 4.5],
     ...hues.flatMap((h) => [[h, 'bg', 4.5], [h, 'surface', 4.5], [h, 'tint', 4.5], [h, `${h}-soft`, 4.5]]),
     ['on-action', 'action', 7], ['on-action', 'action-hi', 7], ['on-ink', 'ink', 7], ['on-ink', 'ink-raised', 7], ['on-ink-muted', 'ink-raised', 4.5],
+    ['v-gold', 'ink-raised', 3], ['v-orange', 'ink-raised', 3], ['v-red', 'ink-raised', 3], ['v-cyan', 'ink-raised', 3],
     ['line', 'bg', 1.2],
   ];
   console.log(md ? `\n### ${name}\n\n| Foreground | Background | Ratio | Target | |\n|---|---|---|---|---|` : `\n== ${name} ==`);

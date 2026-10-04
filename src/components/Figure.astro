@@ -1,30 +1,1065 @@
 ---
-// A generated diagram or illustration. Art is drawn on the dark ink ground, so it is framed the same in both themes.
-// Pass `name` for a generated diagram: the component shows src/assets/img/gen/<locale>/<name>.webp when that
-// translation exists and falls back to the English original in src/assets/img/gen/<name>.webp.
-// Pass `src` for any other imported image (screenshots).
 import { Image } from 'astro:assets';
 import { useI18n } from '@/i18n';
-interface Props { name?: string; src?: ImageMetadata; alt: string; caption?: string; zoom?: boolean }
-const { name, src, alt, caption, zoom = true } = Astro.props;
-const { locale } = useI18n(Astro);
 
-const originals = import.meta.glob<{ default: ImageMetadata }>('/src/assets/img/gen/*.webp', { eager: true });
-const localized = import.meta.glob<{ default: ImageMetadata }>('/src/assets/img/gen/*/*.webp', { eager: true });
-const image = src
-  ?? localized[`/src/assets/img/gen/${locale}/${name}.webp`]?.default
-  ?? originals[`/src/assets/img/gen/${name}.webp`]?.default;
-if (!image) throw new Error(`Figure: no image for name="${name}"`);
+interface Props {
+  name?: string;
+  src?: ImageMetadata;
+  alt: string;
+  caption?: string;
+}
+
+type Tone = 'agent' | 'allowed' | 'wall' | 'blocked' | 'option' | 'neutral' | 'strong';
+type Kind = 'item' | 'boundary' | 'plan' | 'cluster' | 'layer' | 'foundation' | 'readonly' | 'reachable' | 'flow' | 'fanout';
+type Mode = 'flow' | 'grid' | 'stack' | 'map' | 'layers';
+type Layout = 'flow' | 'compare' | 'stack' | 'boundary' | 'map';
+
+interface DiagramNode {
+  labels: string[];
+  tone: Tone;
+  kind?: Kind;
+  children?: Omit<DiagramNode, 'children' | 'linkAfter'>[];
+  linkAfter?: 'pass' | 'stop';
+}
+
+interface DiagramPanel {
+  title?: string;
+  mode: Mode;
+  boundary?: boolean | 'open';
+  nodes: DiagramNode[];
+  egress?: DiagramNode[];
+  outside?: DiagramNode[];
+  foundation?: DiagramNode;
+  sharedKernel?: boolean;
+  blockedRoutes?: number;
+  routes?: number;
+  command?: string;
+  topology?: 'authority' | 'home-outside';
+}
+
+interface Diagram {
+  layout: Layout;
+  panels: DiagramPanel[];
+}
+
+const { name, src, alt, caption } = Astro.props;
+const { raw } = useI18n(Astro, 'images');
+
+if (!src && !name) throw new Error('Figure: pass either "name" or "src"');
+
+const catalog = !src && name ? raw<Record<string, string>>(name) : {};
+const label = (key: string, source = name) => {
+  const value = source === name ? catalog[key] : raw<Record<string, string>>(source!)[key];
+  if (!value) throw new Error(`Figure: missing label "${key}" for name="${source}"`);
+  return value;
+};
+const node = (key: string | null, tone: Tone = 'neutral', kind: Kind = 'item', children?: DiagramNode[], linkAfter?: 'pass' | 'stop'): DiagramNode => ({
+  labels: key ? [label(key)] : [],
+  tone,
+  kind,
+  children,
+  linkAfter,
+});
+const labels = (keys: string[], tone: Tone = 'neutral', kind: Kind = 'item', children?: DiagramNode[], linkAfter?: 'pass' | 'stop'): DiagramNode => ({
+  labels: keys.map((key) => label(key)),
+  tone,
+  kind,
+  children,
+  linkAfter,
+});
+const literal = (text: string | string[], tone: Tone = 'neutral', kind: Kind = 'item', children?: DiagramNode[], linkAfter?: 'pass' | 'stop'): DiagramNode => ({
+  labels: Array.isArray(text) ? text : [text],
+  tone,
+  kind,
+  children,
+  linkAfter,
+});
+const mapRouteEnds = [
+  [16.7, 16.7], [83.3, 16.7], [16.7, 50], [83.3, 50], [16.7, 83.3], [83.3, 83.3],
+];
+const narrowMapRouteEnds = [
+  [25, 37.5], [75, 37.5], [25, 62.5], [75, 62.5], [25, 87.5], [75, 87.5],
+];
+let diagram: Diagram | undefined;
+
+if (!src) {
+  switch (name) {
+    case 'compare-prompts-vs-walls':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          { title: label('Permission prompt'), mode: 'flow', nodes: [node('Agent', 'agent', 'item', undefined, 'pass'), node('Approve', 'option', 'item', undefined, 'pass'), node('Your keys', 'allowed')] },
+          { title: label('Sandbox'), mode: 'flow', nodes: [node('Agent', 'agent', 'item', undefined, 'pass'), node('Kernel rule', 'wall', 'boundary', undefined, 'stop'), node('Your keys', 'blocked')] },
+        ],
+      };
+      break;
+    case 'compare-layers-together':
+      diagram = {
+        layout: 'boundary',
+        panels: [{
+          title: 'ai-jail',
+          mode: 'grid',
+          boundary: true,
+          nodes: [
+            node(null, 'neutral', 'flow', [node('Agent', 'agent'), node("Agent's prompts", 'option'), node('Shell commands', 'allowed')]),
+            node(null, 'neutral', 'cluster', [node('MCP servers', 'allowed'), node('Hooks', 'allowed'), node('Project', 'allowed')]),
+          ],
+          egress: [node('Model API', 'allowed')],
+          outside: [node('Your home', 'blocked')],
+        }],
+      };
+      break;
+    case 'configure-authority':
+      diagram = {
+        layout: 'flow',
+        panels: [{
+          mode: 'stack',
+          topology: 'authority',
+          nodes: [
+            node(null, 'neutral', 'fanout', [
+              labels(['Project .ai-jail', 'Can only tighten'], 'neutral'),
+              labels(['Global ~/.ai-jail', 'Trusted'], 'option'),
+              labels(['Command-line flags', 'Wins'], 'strong'),
+            ]),
+            node('The jail', 'wall', 'boundary', [node('Agent', 'agent')]),
+          ],
+        }],
+      };
+      break;
+    case 'configure-mask':
+      diagram = {
+        layout: 'flow',
+        panels: [{
+          mode: 'flow',
+          nodes: [
+            node('Agent', 'agent', 'item', undefined, 'pass'),
+            node('Your project', 'wall', 'boundary', [
+              literal('src/', 'allowed', 'reachable'),
+              literal('package.json', 'allowed', 'reachable'),
+              literal('README.md', 'allowed', 'reachable'),
+              literal(['.env', '--mask'], 'blocked'),
+              literal(['secrets/', '--deny-path'], 'blocked'),
+            ]),
+          ],
+        }],
+      };
+      break;
+    case 'configure-toolchains':
+      diagram = {
+        layout: 'flow',
+        panels: [{
+          mode: 'flow',
+          boundary: true,
+          nodes: [
+            node('Agent', 'agent', 'item', undefined, 'pass'),
+            node(null, 'neutral', 'cluster', [node('Toolchains', 'allowed', 'reachable'), node('Jail cache', 'allowed', 'reachable')]),
+          ],
+          egress: [node('Proxy', 'wall'), node('Registries', 'allowed')],
+          outside: [node('Host cache', 'blocked'), node('Model API', 'blocked')],
+        }],
+      };
+      break;
+    case 'configure-lockdown':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          { title: label('Normal'), mode: 'grid', boundary: true, nodes: [node('Agent', 'agent'), node('Project: read and write', 'allowed')] },
+          { title: label('Lockdown'), mode: 'grid', boundary: true, nodes: [node('Agent', 'agent'), node('Project: read only', 'allowed', 'readonly')] },
+        ],
+      };
+      break;
+    case 'how-launch':
+      diagram = {
+        layout: 'flow',
+        panels: [{
+          mode: 'flow',
+          nodes: [
+            node('Your command', 'option', 'item', undefined, 'pass'), node('Read config', 'option', 'item', undefined, 'pass'), node('Build the sandbox', 'wall', 'item', undefined, 'pass'),
+            node('Start the agent', 'agent', 'boundary', [node('Project', 'allowed')], 'pass'),
+            labels(['Exit', 'Project'], 'allowed'),
+          ],
+        }],
+      };
+      break;
+    case 'how-layers':
+      diagram = {
+        layout: 'stack',
+        panels: [{
+          mode: 'layers',
+          nodes: [
+            literal([label('Namespaces'), 'bubblewrap'], 'option', 'layer'),
+            node('Filesystem', 'wall', 'layer'),
+            literal('Landlock', 'wall', 'layer'),
+            literal('seccomp', 'strong', 'layer'),
+            literal([label('Limits'), 'rlimits'], 'strong', 'layer'),
+            node('Agent', 'agent'),
+          ],
+          outside: [node('Your home', 'blocked')],
+        }],
+      };
+      break;
+    case 'how-macos':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          {
+            title: 'Linux',
+            mode: 'layers',
+            nodes: [
+              literal(label('Namespaces', 'how-layers'), 'option', 'layer'),
+              literal(label('Filesystem', 'how-layers'), 'wall', 'layer'),
+              literal('Landlock', 'wall', 'layer'),
+              literal('seccomp', 'strong', 'layer'),
+              literal(label('Limits', 'how-layers'), 'strong', 'layer'),
+              literal([label('Agent', 'how-layers'), label('Project', 'how-launch')], 'agent'),
+            ],
+            foundation: node('Five layers', 'neutral', 'foundation'),
+          },
+          {
+            title: 'macOS',
+            mode: 'layers',
+            nodes: [literal(['sandbox-exec', label('One profile')], 'wall', 'layer'), literal([label('Agent', 'how-layers'), label('Project', 'how-launch')], 'agent')],
+            foundation: node('One profile', 'neutral', 'foundation'),
+          },
+        ],
+      };
+      break;
+    case 'install-first-run':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          { title: label('Dry run'), mode: 'stack', nodes: [literal('', 'neutral', 'plan'), node('Agent', 'agent')], outside: [node('Your home', 'blocked')] },
+          { title: label('Look around'), mode: 'grid', boundary: true, nodes: [literal('>_', 'allowed'), node('Project', 'allowed')], outside: [node('Your home', 'blocked')] },
+          { title: label('Run the agent'), mode: 'grid', boundary: true, nodes: [node('Agent', 'agent'), node('Project', 'allowed'), node('Login', 'allowed')], egress: [node('API host', 'allowed')], outside: [node('Your home', 'blocked')] },
+        ],
+      };
+      break;
+    case 'install-inside':
+      diagram = {
+        layout: 'boundary',
+        panels: [{
+          mode: 'grid',
+          boundary: true,
+          nodes: [node('Agent', 'agent'), node('Project', 'allowed'), node('Empty home', 'allowed'), node('System tools', 'allowed')],
+          outside: [node('SSH keys', 'blocked'), node('Cloud logins', 'blocked'), node('Other projects', 'blocked'), node('Network', 'blocked')],
+        }],
+      };
+      break;
+    case 'security-boundary':
+      diagram = {
+        layout: 'boundary',
+        panels: [{
+          mode: 'stack',
+          boundary: true,
+          nodes: [labels(['Agent', 'Project'], 'agent')],
+          blockedRoutes: 6,
+          outside: [
+            node('Home and keys', 'blocked'), node('Shell secrets', 'blocked'), node('Network', 'blocked'),
+            node('Screen and clipboard', 'blocked'), node('Your terminal', 'blocked'), node('Jail policy', 'blocked'),
+          ],
+        }],
+      };
+      break;
+    case 'security-shared-kernel':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          { mode: 'grid', nodes: [node('Your system', 'option'), node('Agent', 'agent', 'boundary')], foundation: node('Your kernel', 'wall', 'foundation'), sharedKernel: true },
+          { title: label('Disposable VM'), mode: 'stack', boundary: true, nodes: [node('Agent', 'agent')], foundation: node('Its own kernel', 'strong', 'foundation') },
+        ],
+      };
+      break;
+    case 'why-reach':
+      diagram = {
+        layout: 'map',
+        panels: [{
+          mode: 'map',
+          routes: 6,
+          nodes: [
+            node('Agent', 'agent'), node('SSH keys', 'option'), node('Cloud credentials', 'option'), node('Browser profiles', 'option'),
+            node('Shell tokens', 'option'), node('Other projects', 'option'), node('Your project', 'allowed'),
+          ],
+        }],
+      };
+      break;
+    case 'why-injection':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          { title: label('Without a jail'), mode: 'flow', nodes: [node('Poisoned page', 'option', 'item', undefined, 'pass'), node('Agent', 'agent', 'item', undefined, 'pass'), node('SSH key', 'option', 'item', undefined, 'pass'), node('Internet', 'allowed')] },
+          { title: label('With ai-jail'), mode: 'flow', nodes: [node('Poisoned page', 'option', 'item', undefined, 'pass'), node('Agent', 'agent', 'boundary', undefined, 'stop'), node('SSH key', 'blocked'), node('Internet', 'blocked')] },
+        ],
+      };
+      break;
+    case 'home-wrap':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          {
+            title: label('Built-in sandbox'),
+            mode: 'grid',
+            topology: 'home-outside',
+            nodes: [
+              node('Shell commands', 'wall', 'boundary'),
+              node(null, 'neutral', 'fanout', [node('Agent', 'agent'), node('MCP servers', 'allowed'), node('Hooks', 'allowed')]),
+              node('Your home', 'option'),
+            ],
+          },
+          {
+            title: 'ai-jail',
+            mode: 'grid',
+            boundary: true,
+            nodes: [node('Agent', 'agent'), node('MCP servers', 'allowed'), node('Hooks', 'allowed'), node('Shell commands', 'allowed'), node('Project', 'allowed')],
+            outside: [node('Your home', 'blocked')],
+          },
+        ],
+      };
+      break;
+    case 'how-egress':
+      diagram = {
+        layout: 'compare',
+        panels: [
+          {
+            title: label('Default: Linux'),
+            mode: 'stack',
+            boundary: true,
+            nodes: [literal(label('Agent', 'how-layers'), 'agent')],
+            egress: [node('Proxy', 'wall'), node('Registries (toolchains on)', 'allowed')],
+            outside: [literal(label('Internet', 'why-injection'), 'blocked')],
+          },
+          {
+            title: label('Default: macOS'),
+            mode: 'stack',
+            boundary: true,
+            nodes: [literal(label('Agent', 'how-layers'), 'agent')],
+            outside: [literal(label('Internet', 'why-injection'), 'blocked')],
+          },
+          {
+            title: label('Filtered'),
+            command: '--allow-host api.anthropic.com',
+            mode: 'stack',
+            boundary: true,
+            nodes: [literal(label('Agent', 'how-layers'), 'agent')],
+            egress: [node('Proxy', 'wall'), literal('api.anthropic.com', 'allowed')],
+            outside: [literal('example.com', 'blocked')],
+          },
+          { title: label('Open'), command: '--network', mode: 'stack', boundary: 'open', nodes: [literal(label('Agent', 'how-layers'), 'agent')], egress: [literal(label('Internet', 'why-injection'), 'allowed')] },
+        ],
+      };
+      break;
+    default:
+      throw new Error(`Figure: no semantic diagram for name="${name}"`);
+  }
+}
 ---
 <figure class="fig">
-  {/* Diagrams read left to right in every language, like the logo. */}
-  <div class="frame" dir="ltr" data-zoom={zoom ? '' : undefined}>
-    <Image src={image} alt={alt} widths={[640, 960, 1280, 1920]} sizes="(min-width: 1280px) 1216px, 94vw" quality={82} class="w-full h-auto block" />
-  </div>
-  {caption && <figcaption>{caption}</figcaption>}
+  {src ? (
+    <div class="image-frame" dir="ltr">
+      <Image src={src} alt={alt} widths={[640, 960, 1280, 1920]} sizes="(min-width: 1280px) 1216px, 94vw" quality={82} class="w-full h-auto block" />
+    </div>
+  ) : diagram && (
+    <div class="diagram" dir="ltr" role="img" aria-label={alt} data-layout={diagram.layout} data-diagram={name}>
+      <div class="diagram-art" aria-hidden="true">
+        {diagram.panels.map((panel) => (
+          <section class="panel" data-mode={panel.mode} data-topology={panel.topology} data-shared-kernel={panel.sharedKernel} data-blocked-routes={panel.blockedRoutes} data-routes={panel.routes}>
+            {panel.title && <div class="panel-title"><bdi dir="auto">{panel.title}</bdi></div>}
+            {panel.command && <code class="panel-command">{panel.command}</code>}
+            <div class:list={['panel-body', `mode-${panel.mode}`, { boundary: panel.boundary === true, 'boundary-open': panel.boundary === 'open', hasEgress: panel.egress }]}>
+              <div class="nodes">
+                {panel.nodes.map((item) => (
+                  <div class="node" data-tone={item.tone} data-kind={item.kind ?? 'item'} data-link-after={item.linkAfter}>
+                    {item.labels.length > 0 && (
+                      <div class="node-label">
+                        {item.labels.map((text) => <bdi dir="auto">{text}</bdi>)}
+                      </div>
+                    )}
+                    {item.children && (
+                      <div class="node-children">
+                        {item.children.map((child) => (
+                          <div class="node child" data-tone={child.tone} data-kind={child.kind ?? 'item'}>
+                            {child.labels.length > 0 && (
+                              <div class="node-label">
+                                {child.labels.map((text) => <bdi dir="auto">{text}</bdi>)}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {panel.routes && (
+                  <>
+                    <svg class="map-routes map-routes-wide" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      {mapRouteEnds.map(([x, y], index) => (
+                        <path data-reachable={index === 5} d={`M 50 50 L ${x} ${y}`} />
+                      ))}
+                    </svg>
+                    <svg class="map-routes map-routes-narrow" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      {narrowMapRouteEnds.map(([x, y], index) => (
+                        <path data-reachable={index === 5} d={`M 50 12.5 L ${x} ${y}`} />
+                      ))}
+                    </svg>
+                  </>
+                )}
+              </div>
+              {panel.blockedRoutes && (
+                <svg class="blocked-routes" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {Array.from({ length: panel.blockedRoutes }, (_, index) => {
+                    const y = (index + .5) * 100 / panel.blockedRoutes!;
+                    return <g><path d={`M 50 50 L 100 ${y}`} /><path class="route-stop" d={`M 100 ${y - 3} V ${y + 3}`} /><path d={`M 100 ${y} L 94 ${y - 4}`} /></g>;
+                  })}
+                </svg>
+              )}
+              {panel.foundation && (
+                <div class="node foundation" data-tone={panel.foundation.tone} data-kind="foundation">
+                  <div class="node-label">
+                    {panel.foundation.labels.map((text) => <bdi dir="auto">{text}</bdi>)}
+                  </div>
+                </div>
+              )}
+            </div>
+            {panel.egress && (
+              <div class="egress">
+                {panel.egress.map((item) => (
+                  <div class="node" data-tone={item.tone} data-kind={item.kind ?? 'item'}>
+                    {item.labels.length > 0 && <div class="node-label">{item.labels.map((text) => <bdi dir="auto">{text}</bdi>)}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+            {panel.outside && (
+              <div class="outside">
+                {panel.outside.map((item) => (
+                  <div class="node" data-tone={item.tone} data-kind={item.kind ?? 'item'}>
+                    {item.labels.length > 0 && <div class="node-label">{item.labels.map((text) => <bdi dir="auto">{text}</bdi>)}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        ))}
+      </div>
+    </div>
+  )}
+  {caption && <figcaption set:html={caption} />}
 </figure>
+
 <style>
-  .fig { margin-block: clamp(2.5rem, 6vw, 5rem); }
-  .frame { border-radius: 1.25rem; overflow: hidden; background: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow); will-change: transform; }
-  figcaption { margin-top: 1rem; color: var(--muted); font-size: .95rem; max-width: 46em; }
+  .fig {
+    margin-block: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .image-frame,
+  .diagram {
+    overflow: hidden;
+    background: var(--ink);
+    border: 1px solid var(--ink-line);
+  }
+
+  .diagram {
+    container-type: inline-size;
+    color: var(--on-ink);
+    padding: clamp(1rem, 3vw, 2.25rem);
+  }
+
+  .diagram-art {
+    display: grid;
+    gap: 1rem;
+  }
+
+  [data-layout='compare'] .diagram-art {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  }
+
+  [data-layout='compare'] .diagram-art:has(> .panel:nth-child(4)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container (max-width: 47rem) {
+    [data-layout='compare'] .diagram-art:has(> .panel:nth-child(4)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .panel {
+    container-type: inline-size;
+    display: grid;
+    align-content: start;
+    gap: .75rem;
+    min-inline-size: 0;
+  }
+
+  .panel-title {
+    color: var(--on-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .panel-command {
+    display: block;
+    min-inline-size: 0;
+    color: var(--on-ink-muted);
+    font-size: clamp(.68rem, 1.6vw, .8rem);
+    overflow-wrap: anywhere;
+  }
+
+  .panel-body {
+    display: grid;
+    gap: .75rem;
+    min-block-size: 8rem;
+    padding: .75rem;
+    background: var(--ink-raised);
+    border: 1px solid var(--ink-line);
+  }
+
+  .panel-body.boundary,
+  .panel-body.boundary-open,
+  .node[data-kind='boundary'],
+  .node[data-kind='plan'] {
+    position: relative;
+    border: 2px solid var(--v-orange);
+    padding-block-start: 1.2rem;
+  }
+
+  .node[data-kind='plan'] {
+    min-block-size: 6rem;
+    background: transparent;
+    border-style: dashed;
+  }
+
+  .panel-body.boundary::before,
+  .panel-body.boundary-open::before,
+  .node[data-kind='boundary']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: .45rem;
+    background: repeating-linear-gradient(90deg, var(--v-gold) 0 .28rem, transparent .28rem .62rem, var(--v-orange) .62rem .9rem, transparent .9rem 1.24rem, var(--v-red) 1.24rem 1.52rem, transparent 1.52rem 1.86rem, var(--v-magenta) 1.86rem 2.14rem, transparent 2.14rem 2.48rem);
+  }
+
+  .nodes,
+  .node-children,
+  .egress,
+  .outside {
+    display: grid;
+    gap: .65rem;
+    min-inline-size: 0;
+  }
+
+  .egress {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    inline-size: 80%;
+    margin-inline: auto;
+    padding-block-start: .75rem;
+  }
+
+  .egress::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: -.95rem;
+    block-size: 1.7rem;
+    border-inline-start: 2px solid var(--v-cyan);
+    outline: .2rem solid var(--ink);
+  }
+
+  .egress > .node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 100%;
+    inset-inline-start: 50%;
+    block-size: .65rem;
+    border-inline-start: 2px solid var(--v-cyan);
+  }
+
+  .panel-body.boundary-open {
+    border-inline-end: 2px solid var(--v-orange);
+    border-block-end: 0;
+  }
+
+  .mode-flow > .nodes,
+  .mode-stack > .nodes,
+  .mode-grid > .nodes,
+  .mode-map > .nodes,
+  .mode-layers > .nodes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mode-layers > .nodes {
+    position: relative;
+    display: block;
+    inline-size: min(32rem, 100%);
+    min-block-size: 24rem;
+    margin-inline: auto;
+  }
+
+  .mode-layers > .nodes > .node[data-kind='layer'] {
+    position: absolute;
+    inset-inline: calc(var(--layer-index, 0) * .5rem);
+    inset-block-start: calc(var(--layer-index, 0) * 3.25rem);
+    inset-block-end: calc(var(--layer-index, 0) * .5rem);
+    place-content: start;
+    min-block-size: 0;
+    background: transparent;
+    color: var(--on-ink);
+  }
+
+  .mode-layers > .nodes > .node[data-kind='layer'] > .node-label {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .2rem .5rem;
+    justify-content: start;
+  }
+
+  .mode-layers > .nodes > .node:nth-child(1) { --layer-index: 0; }
+  .mode-layers > .nodes > .node:nth-child(2) { --layer-index: 1; }
+  .mode-layers > .nodes > .node:nth-child(3) { --layer-index: 2; }
+  .mode-layers > .nodes > .node:nth-child(4) { --layer-index: 3; }
+  .mode-layers > .nodes > .node:nth-child(5) { --layer-index: 4; }
+
+  .mode-layers > .nodes > .node:not([data-kind='layer']) {
+    position: absolute;
+    inset-inline: 20%;
+    inset-block: 30% 20%;
+  }
+
+  .mode-layers > .nodes:has(> :nth-child(6)) > .node:not([data-kind='layer']) {
+    inset-inline: 20%;
+    inset-block: 17.5rem 2rem;
+  }
+
+  .node {
+    position: relative;
+    display: grid;
+    place-content: center;
+    min-block-size: 3.25rem;
+    min-inline-size: 0;
+    padding: .65rem;
+    color: var(--on-ink);
+    background: var(--ink);
+    border: 1px solid var(--ink-line);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .node-label {
+    display: grid;
+    gap: .15rem;
+    justify-items: center;
+    inline-size: 100%;
+    font-size: clamp(.78rem, 1.7vw, .92rem);
+    font-weight: 650;
+    line-height: 1.25;
+  }
+
+  .node-label bdi {
+    max-inline-size: 100%;
+  }
+
+  .node-label bdi + bdi {
+    color: inherit;
+    font-size: .88em;
+    font-weight: 550;
+  }
+
+  .node[data-tone='neutral'][data-kind='item'],
+  .node[data-tone='neutral'][data-kind='foundation'] {
+    border-color: var(--on-ink-muted);
+  }
+
+  .node[data-tone='agent'],
+  .node[data-tone='allowed'] {
+    color: var(--on-ink);
+    background: var(--ink);
+    border-color: var(--v-cyan);
+  }
+
+  .node[data-tone='agent'] {
+    border-width: 2px;
+  }
+
+  .node[data-tone='wall'] {
+    color: var(--on-ink);
+    background: var(--ink);
+    border-color: var(--v-orange);
+  }
+
+  .node[data-tone='option'] {
+    color: var(--on-ink);
+    background: var(--ink);
+    border-color: var(--v-gold);
+  }
+
+  .node[data-tone='strong'] {
+    color: var(--on-ink);
+    background: var(--ink);
+    border-color: var(--v-magenta);
+  }
+
+  .node[data-tone='blocked'] {
+    color: var(--on-ink);
+    background: var(--ink);
+    border: 2px dashed var(--v-red);
+    padding-block-start: 1rem;
+  }
+
+  .node[data-tone='blocked']::before {
+    content: '';
+    position: absolute;
+    inset-block-start: .35rem;
+    inset-inline: .45rem;
+    block-size: .28rem;
+    background: repeating-linear-gradient(90deg, var(--v-red) 0 .2rem, transparent .2rem .45rem);
+  }
+
+  .node[data-kind='cluster'],
+  .node[data-kind='flow'],
+  .node[data-kind='fanout'] {
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+
+  .node:is([data-kind='cluster'], [data-kind='flow'], [data-kind='fanout']) > .node-children {
+    inline-size: 100%;
+  }
+
+  .node[data-kind='cluster'] > .node-children,
+  .node[data-kind='fanout'] > .node-children {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  }
+
+  .node[data-kind='flow'] > .node-children {
+    grid-auto-flow: row;
+  }
+
+  .node[data-kind='flow'] > .node-children > .node:not(:last-child)::after,
+  .mode-flow > .nodes > .node[data-link-after='pass']::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset-inline-start: 50%;
+    inset-block-start: 100%;
+    inline-size: 0;
+    block-size: .65rem;
+    border-block-start: 0;
+    border-inline-start: 2px solid var(--v-cyan);
+  }
+
+  .mode-flow > .nodes > .node[data-link-after='stop']::after {
+    content: '';
+    position: absolute;
+    inset-inline: 25%;
+    inset-block-end: .15rem;
+    border-block-end: 3px solid var(--v-red);
+  }
+
+  .panel[data-topology] .nodes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .node[data-kind='fanout'] {
+    place-content: stretch;
+    padding-inline-end: 1.25rem;
+  }
+
+  .node[data-kind='fanout'] > .node-children {
+    grid-template-columns: minmax(0, 1fr);
+    border-inline-end: 2px solid var(--v-cyan);
+    padding-inline-end: 1rem;
+  }
+
+  .node[data-kind='fanout'] > .node-children > .node::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 100%;
+    inline-size: calc(1rem + 2px);
+    border-block-start: 2px solid var(--v-cyan);
+  }
+
+  .node[data-kind='fanout']::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: 1.25rem;
+    inset-block-start: 100%;
+    block-size: .65rem;
+    border-inline-start: 2px solid var(--v-cyan);
+  }
+
+  .node[data-kind='readonly'] {
+    border-style: double;
+    border-width: 3px;
+  }
+
+  .node[data-kind='reachable']::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -.65rem;
+    inset-block-start: 50%;
+    inline-size: .65rem;
+    border-block-start: 2px solid var(--v-cyan);
+  }
+
+  .node[data-kind='flow'] .node[data-tone='allowed']::after {
+    border-block-start-color: var(--v-cyan);
+  }
+
+  .mode-flow > .nodes > .node[data-kind='boundary'][data-link-after='stop'] {
+    padding-inline-end: 1.25rem;
+  }
+
+  .node[data-kind='boundary'] > .node-children {
+    margin-block-start: .35rem;
+  }
+
+  .node[data-kind='layer'] {
+    min-block-size: 2.25rem;
+    border-inline-start-width: .5rem;
+    border-inline-end-width: .5rem;
+  }
+
+  .foundation {
+    min-block-size: 2.5rem;
+    border-block-start-width: .45rem;
+  }
+
+  .panel[data-shared-kernel='true'] .foundation::after {
+    content: '';
+    position: absolute;
+    inset-inline: 25%;
+    inset-block-start: -1rem;
+    block-size: 1.4rem;
+    border-inline: 2px dashed var(--v-cyan);
+    border-block-end: 2px dashed var(--v-cyan);
+  }
+
+  .panel[data-blocked-routes] {
+    position: relative;
+  }
+
+  .panel[data-blocked-routes] .panel-body,
+  .panel[data-blocked-routes] .outside {
+    position: relative;
+  }
+
+  .blocked-routes {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .blocked-routes path {
+    fill: none;
+    stroke: var(--v-cyan);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .blocked-routes .route-stop {
+    stroke: var(--v-red);
+    stroke-width: 4;
+  }
+
+  .outside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-block-start: .75rem;
+    border-block-start: 1px dashed var(--ink-line);
+  }
+
+  [data-layout='map'] .panel-body {
+    min-block-size: auto;
+  }
+
+  .mode-map > .nodes {
+    position: relative;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    aspect-ratio: 1;
+  }
+
+  .mode-map > .nodes > .node {
+    z-index: 1;
+  }
+
+  .mode-map > .nodes > .node:first-child {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    inline-size: 50%;
+    margin-inline: auto;
+  }
+
+  .mode-map > .nodes > .node:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .mode-map > .nodes > .node:nth-child(3) { grid-column: 2; grid-row: 2; }
+  .mode-map > .nodes > .node:nth-child(4) { grid-column: 1; grid-row: 3; }
+  .mode-map > .nodes > .node:nth-child(5) { grid-column: 2; grid-row: 3; }
+  .mode-map > .nodes > .node:nth-child(6) { grid-column: 1; grid-row: 4; }
+  .mode-map > .nodes > .node:nth-child(7) { grid-column: 2; grid-row: 4; }
+
+  .map-routes {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+  }
+
+  .map-routes path {
+    fill: none;
+    stroke: var(--v-gold);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .map-routes-wide {
+    display: none;
+  }
+
+  .map-routes path[data-reachable='true'] {
+    stroke: var(--v-cyan);
+  }
+
+  figcaption {
+    margin-block-start: 1rem;
+    color: var(--muted);
+    font-size: .95rem;
+    max-inline-size: 46em;
+  }
+
+  .panel-body {
+    container-type: inline-size;
+    min-inline-size: 0;
+  }
+
+  .node[data-kind='flow'] {
+    container-type: inline-size;
+    place-content: stretch;
+  }
+
+  .mode-grid > .nodes {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+
+  .outside {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  }
+
+  .panel[data-blocked-routes] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .panel[data-blocked-routes] .panel-body {
+    padding: .75rem;
+  }
+
+  .panel[data-blocked-routes] .nodes {
+    place-items: center;
+  }
+
+  .panel[data-blocked-routes] .nodes > .node {
+    z-index: 3;
+    inline-size: 80%;
+    max-inline-size: 12rem;
+  }
+
+  .panel[data-blocked-routes] .outside {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+    padding: 0;
+    border: 0;
+  }
+
+  .mode-map > .nodes {
+    grid-auto-rows: 1fr;
+  }
+
+  .mode-map > .nodes > .node[data-tone='option'] {
+    border-style: dashed;
+  }
+
+  @container (min-width: 32rem) {
+    .mode-map > .nodes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      aspect-ratio: 3 / 2;
+    }
+
+    .mode-map > .nodes > .node:first-child {
+      grid-column: 2;
+      grid-row: 2;
+      inline-size: auto;
+      margin-inline: 0;
+    }
+
+    .mode-map > .nodes > .node:nth-child(2) { grid-column: 1; grid-row: 1; }
+    .mode-map > .nodes > .node:nth-child(3) { grid-column: 3; grid-row: 1; }
+    .mode-map > .nodes > .node:nth-child(4) { grid-column: 1; grid-row: 2; }
+    .mode-map > .nodes > .node:nth-child(5) { grid-column: 3; grid-row: 2; }
+    .mode-map > .nodes > .node:nth-child(6) { grid-column: 1; grid-row: 3; }
+    .mode-map > .nodes > .node:nth-child(7) { grid-column: 3; grid-row: 3; }
+
+    .map-routes-narrow {
+      display: none;
+    }
+
+    .map-routes-wide {
+      display: block;
+    }
+
+    .node[data-kind='flow'] > .node-children,
+    .mode-flow > .nodes:not(:has(> :nth-child(4))) {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+
+    .node[data-kind='flow'] > .node-children > .node:not(:last-child)::after,
+    .mode-flow > .nodes:not(:has(> :nth-child(4))) > .node[data-link-after='pass']::after {
+      inset-inline-start: 100%;
+      inset-block-start: 50%;
+      inline-size: .65rem;
+      block-size: 0;
+      border-inline-start: 0;
+      border-block-start: 2px solid var(--v-cyan);
+    }
+
+    .mode-flow > .nodes:not(:has(> :nth-child(4))) > .node[data-link-after='stop']::after {
+      inset-inline: auto .15rem;
+      inset-block: 25%;
+      border-block-end: 0;
+      border-inline-end: 3px solid var(--v-red);
+    }
+  }
+
+  @container (min-width: 52rem) {
+    .mode-flow > .nodes:has(> :nth-child(4)) {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+
+    .mode-flow > .nodes:has(> :nth-child(4)) > .node[data-link-after='pass']::after {
+      inset-inline-start: 100%;
+      inset-block-start: 50%;
+      inline-size: .65rem;
+      block-size: 0;
+      border-inline-start: 0;
+      border-block-start: 2px solid var(--v-cyan);
+    }
+
+    .mode-flow > .nodes:has(> :nth-child(4)) > .node[data-link-after='stop']::after {
+      inset-inline: auto .15rem;
+      inset-block: 25%;
+      border-block-end: 0;
+      border-inline-end: 3px solid var(--v-red);
+    }
+  }
 </style>

@@ -87,10 +87,8 @@ const detect = locale === defaultLocale && !noindex
         try { saved = localStorage.getItem('theme'); } catch {}
         const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         document.documentElement.dataset.theme = saved === 'light' || saved === 'dark' ? saved : system;
-        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
       })();
     </script>
-    <noscript><style>[data-reveal],[data-reveal] > *{opacity:1!important}</style></noscript>
   </head>
   <body>
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:z-[100] focus:top-3 focus:start-3 btn btn-primary">{t('a11y.skip')}</a>
@@ -100,7 +98,6 @@ const detect = locale === defaultLocale && !noindex
     <Analytics />
     <script>
       import '@/scripts/theme';
-      import '@/scripts/motion';
       import '@/scripts/copy';
       import '@/scripts/nav';
     </script>

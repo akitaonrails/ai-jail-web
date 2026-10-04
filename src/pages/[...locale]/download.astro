@@ -71,31 +71,35 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
+  <div class="download-ledger">
   <PageHero hue="cyan" kicker={t('kicker.download')} title={t('hero.title', { tag })} lede={t('hero.lede', { date: date(latest.date), license: facts.license })}>
     <a href="#builds" class="btn btn-primary">{t('hero.jump')}</a>
     <a href="#changelog" class="btn btn-ghost">{t('hero.changelog')}</a>
   </PageHero>
 
   <Section id="builds" title={t('builds.title')} lede={t('builds.lede')} hue="cyan">
-    <div class="grid gap-6 md:grid-cols-2" data-reveal="children" data-builds>
-      {builds.map((b) => (
-        <div data-hue={b.hue} data-platform={b.platform} class="cell build grid gap-4 content-start min-w-0">
-          <div class="flex items-center justify-between gap-3">
-            <span class="bars" aria-hidden="true"><i></i></span>
+    <div class="artifact-ledger" data-builds>
+      {builds.map((b, i) => (
+        <article data-hue={b.hue} data-platform={b.platform} class="artifact-record">
+          <header>
+            <span class="artifact-index" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
+            <h3 class="text-xl">{b.title}</h3>
             <span class="badge" data-yours hidden>{t('builds.yours')}</span>
+          </header>
+          <div class="artifact-description">
+            <p class="artifact-file"><code dir="ltr">{b.file}</code></p>
+            <p class="text-muted" set:html={b.text} />
           </div>
-          <h3 class="text-xl">{b.title}</h3>
-          <p class="text-muted" set:html={b.text} />
-          <p class="text-sm text-muted break-all" dir="ltr"><code>{b.file}</code> · {t('builds.size', { size: mb(b.size) })}</p>
-          <div class="flex flex-wrap gap-3 mt-2">
+          <div class="artifact-actions">
+            <p class="artifact-size">{t('builds.size', { size: mb(b.size) })}</p>
             <a href={latestDownload(b.file)} class="btn btn-primary">{t('builds.download')}</a>
             <a href={latestDownload(`${b.file}.sha256`)} class="btn btn-ghost">{t('builds.checksum')}</a>
           </div>
-        </div>
+        </article>
       ))}
     </div>
 
-    <div class="grid gap-x-10 gap-y-8 md:grid-cols-2 mt-14 items-start">
+    <div class="verification-record">
       <div class="grid gap-4 min-w-0">
         <h3 class="text-xl">{t('builds.verify.title')}</h3>
         <p class="text-muted max-w-[40em]" set:html={t('builds.verify.text')} />
@@ -106,17 +110,19 @@ const next = withText(
     </div>
   </Section>
 
-  <Section id="channels" title={t('channels.title')} lede={t('channels.lede')} hue="cyan" tint>
-    <div class="grid gap-x-8 gap-y-10 md:grid-cols-2" data-reveal="children">
-      {channels.map((c) => (
-        <div class="grid gap-3 content-start min-w-0">
-          <span class="bars" aria-hidden="true"><i></i></span>
-          <h3 class="text-xl">{c.title}</h3>
-          <p class="text-muted max-w-[40em]" set:html={c.text} />
+  <Section id="channels" title={t('channels.title')} lede={t('channels.lede')} hue="cyan">
+    <ol class="channel-ledger">
+      {channels.map((c, i) => (
+        <li>
+          <span class="artifact-index" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
+          <div class="grid gap-3 content-start min-w-0">
+            <h3 class="text-xl">{c.title}</h3>
+            <p class="text-muted max-w-[40em]" set:html={c.text} />
+          </div>
           <CodeBlock code={c.code} />
-        </div>
+        </li>
       ))}
-    </div>
+    </ol>
     <a href={href('/install/')} class="btn btn-ghost mt-10">{t('channels.link')}</a>
   </Section>
 
@@ -141,6 +147,7 @@ const next = withText(
     <a href={`${site.repo}/releases`} class="btn btn-ghost mt-10">{t('changelog.all')}</a>
   </Section>
 
+  </div>
   <NextPages title={t('next.title')} items={next} />
   <CtaBand />
 </Base>
@@ -156,7 +163,28 @@ const next = withText(
 </script>
 
 <style>
-  /* The same accordion as the Faq component, self-contained because this page does not use Faq. */
+  .download-ledger :global(.page-hero) { padding-block: 7rem 2rem; }
+  .download-ledger :global(.page-hero-body) { gap: 1.25rem; padding-block-start: 1.5rem; }
+  .download-ledger :global(.page-hero h1) { font-size: var(--text-3xl); max-inline-size: 22em; }
+  .download-ledger :global(.section-manual) { padding-block: clamp(2.5rem, 5vw, 4rem); }
+  .download-ledger :global(.section-heading) { gap: 1rem; }
+  .download-ledger :global(.section-heading h2) { font-size: var(--text-2xl); }
+  .download-ledger :global(.section-content) { margin-block-start: 2rem; }
+  .download-ledger :global(.term) { border-radius: 0; }
+  .download-ledger :global(.callout) { background: var(--surface); border-inline-start-width: .2rem; }
+  .artifact-ledger, .channel-ledger { border-block-start: 1px solid var(--line); }
+  .artifact-record { display: grid; gap: 1.5rem; padding-block: 1.5rem; border-block-end: 1px solid var(--line); }
+  .artifact-record > header { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: .75rem 1rem; align-content: start; align-items: baseline; }
+  .artifact-record [data-yours] { grid-column: 2; justify-self: start; }
+  .artifact-index { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue, var(--muted)); font-variant-numeric: tabular-nums; }
+  .artifact-description { display: grid; gap: 1rem; align-content: start; }
+  .artifact-file { font-size: var(--text-base); overflow-wrap: anywhere; }
+  .artifact-file code { display: inline-block; border: 0; border-radius: 0; padding: 0; background: none; }
+  .artifact-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: start; }
+  .artifact-size { flex-basis: 100%; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .artifact-record .badge { border-radius: 0; background: var(--surface); }
+  .verification-record { display: grid; gap: 2rem; align-items: start; margin-block-start: 3.5rem; padding-block-start: 2rem; border-block-start: 1px solid var(--line); }
+  .channel-ledger > li { display: grid; gap: 1rem; padding-block: 2rem; border-block-end: 1px solid var(--line); }
   .rel summary { display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding-block: 1.25rem; cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); }
   .rel summary::-webkit-details-marker { display: none; }
   .rel .bars { block-size: 1.1rem; gap: 0.3rem; flex-shrink: 0; transition: transform 0.3s; }
@@ -165,8 +193,17 @@ const next = withText(
   .notes :global(:is(h3, h4, h5)) { color: var(--text); font-size: var(--text-base); margin-block-start: 1.6em; }
   .notes :global(ul) { list-style: disc; padding-inline-start: 1.4em; }
   .notes :global(li + li) { margin-block-start: 0.5em; }
-  .notes :global(pre) { overflow-x: auto; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: 0.8rem; background: var(--tint); font-size: 0.9rem; line-height: 1.6; }
+  .notes :global(pre) { overflow-x: auto; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: 0; background: var(--tint); font-size: 0.9rem; line-height: 1.6; }
   .notes :global(p code), .notes :global(li code) { overflow-wrap: anywhere; }
   .notes :global(strong) { color: var(--text); }
   .badge[hidden] { display: none; }
+  @media (min-width: 48rem) {
+    .artifact-record { grid-template-columns: minmax(12rem, .5fr) minmax(0, 1fr) auto; align-items: start; }
+    .artifact-actions { justify-content: flex-end; max-inline-size: 18rem; }
+    .artifact-size { text-align: end; }
+  }
+  @media (min-width: 64rem) {
+    .verification-record { grid-template-columns: minmax(0, 1.25fr) minmax(18rem, .75fr); }
+    .channel-ledger > li { grid-template-columns: 3rem minmax(16rem, .65fr) minmax(0, 1.35fr); gap: 1.5rem; }
+  }
 </style>

@@ -56,7 +56,8 @@
   },
   "code": {
     "copy": "복사",
-    "copied": "복사됨"
+    "copied": "복사됨",
+    "terminal": "터미널"
   },
   "reach": {
     "inside": "감옥 안",

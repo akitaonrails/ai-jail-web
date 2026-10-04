@@ -48,7 +48,7 @@
     "title": "זה לצד זה",
     "lede": "כל מה שכתוב כאן מתאר את התיעוד של כל מוצר נכון לזמן הכתיבה. כשהתיעוד שקראנו לא עונה על שאלה, זה מה שכתוב בתא.",
     "undocumented": "לא מתועד",
-    "cols": { "row": "", "claude": "ה-sandbox של Claude Code", "codex": "ה-sandbox של Codex CLI", "gemini": "ה-sandbox של Gemini CLI", "jail": "ai-jail" },
+    "cols": { "row": "יכולת", "claude": "ה-sandbox של Claude Code", "codex": "ה-sandbox של Codex CLI", "gemini": "ה-sandbox של Gemini CLI", "jail": "ai-jail" },
     "sources": "מקורות: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>.",
     "wrappersTitle": "עטיפות כמו ai-jail",
     "wrappersLead": "שני כלי קוד פתוח נוספים מציבים sandbox של הקרנל סביב סוכן. גרסה 2.2 של ai-jail לקחה רעיונות משניהם: פרטי גישה פנטום מ-zerobox ומ-nono, ויומן ביקורת עם שרשרת hash מ-nono. שניהם כתובים ב-Rust, ברישיון Apache-2.0 ורצים בלי daemon, ושניהם חולקים איתכם את הקרנל, כמו ai-jail.",
@@ -186,7 +186,7 @@
   "heavy": {
     "title": "קונטיינרים של Docker, dev containers ומכונות וירטואליות",
     "lede": "גם אלה תשובות טובות, ומכונה וירטואלית היא תשובה חזקה יותר. ההבדל ביניהן הוא במה שצריך לבנות ולעדכן.",
-    "cols": { "tool": "", "gives": "מה מקבלים", "costs": "מה זה עולה" },
+    "cols": { "tool": "כלי", "gives": "מה מקבלים", "costs": "מה זה עולה" },
     "rows": [
       { "tool": "קונטיינר Docker", "gives": "מערכת קבצים, רשימת תהליכים ורשת משלו. הסוכן רואה רק את מה שאתם מעגנים.", "costs": "צריך לבנות ולתחזק image, ולהתקין בו את ה-toolchains שלכם פעם נוספת. אם מעגנים את ה-socket של Docker, הקונטיינר שקול ל-root על המארח." },
       { "tool": "Dev container", "gives": "אותו בידוד כמו של קונטיינר, מתואר בקובץ שהעורך שלכם מבין והצוות יכול לשתף.", "costs": "אותה תחזוקת image, ובנוסף עורך או כלי שמבין את הפורמט." },
@@ -198,7 +198,7 @@
   "platforms": {
     "title": "פלטפורמות להרצת סוכנים",
     "lede": "<a class=\"link\" href=\"https://github.com/NVIDIA/OpenShell\">NVIDIA OpenShell</a> הוא קטגוריה אחרת: gateway שרץ ברקע, נותן לכל סוכן קונטיינר או MicroVM משלו ומציב מנוע מדיניות לפני הרשת. הכלי ai-jail הוא תהליך אחד שעוטף פקודה אחת ויוצא יחד איתה. הכתוב כאן מבוסס על התיעוד של OpenShell נכון לזמן הכתיבה, עוד לפני גרסה 1.0 שלו.",
-    "cols": { "row": "", "openshell": "OpenShell", "jail": "ai-jail" },
+    "cols": { "row": "יכולת", "openshell": "OpenShell", "jail": "ai-jail" },
     "rows": [
       { "label": "מה מריץ את ה-sandbox", "openshell": "daemon של gateway על Docker, Podman, Kubernetes או KVM. הסוכן חי בתוך image של קונטיינר שמגיע עם הכלי.", "jail": "רק הקובץ הבינארי. הסוכן רץ מול הפרויקט שלכם עם הקומפיילרים וה-runtimes שכבר מותקנים במחשב." },
       { "label": "רשת", "openshell": "חסימה כברירת מחדל. הכללים מתאימים תוכנית, host ופורט, עם בדיקה אופציונלית של methods, נתיבים וכלי MCP. endpoint שנדחה אפשר לאשר מצד המפעיל.", "jail": "כבויה, מסוננת לפי host, או פתוחה. הסינון הוא גדר של namespace ופרוקסי CONNECT. הוא רואה hosts ופורטים ולא תוכן, ו-host מורשה זוכה לאמון מלא." },

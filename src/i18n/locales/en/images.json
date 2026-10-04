@@ -131,8 +131,11 @@
   },
   "how-egress": {
     "Off": "Off",
+    "Default: Linux": "Default: Linux",
+    "Default: macOS": "Default: macOS",
     "Filtered": "Filtered",
     "Open": "Open",
-    "Proxy": "Proxy"
+    "Proxy": "Proxy",
+    "Registries (toolchains on)": "Registries (toolchains on)"
   }
 }

@@ -16,7 +16,6 @@ import { localePaths, useI18n, withText } from '@/i18n';
 export const getStaticPaths = localePaths;
 
 const { t, raw, href, date } = useI18n(Astro, 'security');
-// The two independent source audits of 2.3.0 (docs/SECURITY_AUDIT_2026-09-30*.md in the ai-jail repository).
 const auditDate = '2026-09-30';
 const advisory = `${site.repo}/security/advisories/new`;
 const faq = raw<FaqItem[]>('faq.items');
@@ -27,13 +26,11 @@ const next = withText([
   { href: '/compare/', hue: 'cyan' },
 ] as const, raw<Point[]>('next'));
 
-// Flags are structure; the consequence of each one is in the catalog, in the same order.
 const flags = ['--network', '--allow-host', '--toolchains', '--secret', '--audit-log', '--docker', '--kvm', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--github', '--aws', '--kube', '--gcloud', '--docker-config', '--audio', '--no-private-home'];
 const consequences = raw<string[]>('switches.rows');
 
-// Counted in the ai-jail repository at facts.testsCountedAt: #[test] in tests/sandbox_escape.rs and in src/.
 const factLabels = raw<{ label: string }[]>('checked.facts').map((f, i) => (i === 1 ? { label: t('checked.facts.1.label', { version: factsData.testsCountedAt }) } : f));
-const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0, count: false }], factLabels);
+const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0 }], factLabels);
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
   <PageHero hue="red" kicker={t('kicker.security')} title={t('hero.title')} lede={t('hero.lede')}>
@@ -42,31 +39,41 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
   </PageHero>
 
   <Section title={t('stops.title')} lede={t('stops.lede')} hue="red">
-    <Figure name="security-boundary" alt={t('stops.alt')} caption={t('stops.caption')} />
-    <div class="max-w-[46em]" data-reveal>
-      <Reach title={t('reach.blocked')} items={raw<{ text: string }[]>('stops.items')} state="blocked" />
+    <div class="boundary-overview">
+      <div class="blocked-register">
+        <Reach title={t('reach.blocked')} items={raw<{ text: string }[]>('stops.items')} state="blocked" />
+        <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('stops.link')}</a>
+      </div>
+      <div class="boundary-choice">
+        <Callout title={t('edge.callout.title')}>
+          <p set:html={t('edge.callout.text')} />
+        </Callout>
+      </div>
     </div>
-    <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('stops.link')}</a>
+    <div class="technical-figure" data-figure="01">
+      <Figure name="security-boundary" alt={t('stops.alt')} caption={t('stops.caption')} />
+    </div>
   </Section>
 
-  <Section id="limits" title={t('edge.title')} lede={t('edge.lede')} hue="red" tint fill>
-    <Figure name="security-shared-kernel" alt={t('edge.alt')} caption={t('edge.caption')} />
-    <h3 class="text-xl mb-5">{t('edge.listTitle')}</h3>
-    <ul class="ticks max-w-[46em]">
-      {raw<string[]>('edge.items').map((item) => <li set:html={item} />)}
-    </ul>
-    <Callout title={t('edge.callout.title')}>
-      <p set:html={t('edge.callout.text')} />
-    </Callout>
+  <Section id="limits" title={t('edge.title')} lede={t('edge.lede')} hue="red" tint>
+    <div class="technical-figure" data-figure="02">
+      <Figure name="security-shared-kernel" alt={t('edge.alt')} caption={t('edge.caption')} />
+    </div>
+    <div class="evidence-record risk-record">
+      <h3 class="text-xl">{t('edge.listTitle')}</h3>
+      <ul class="evidence-list risk-list">
+        {raw<string[]>('edge.items').map((item) => <li set:html={item} />)}
+      </ul>
+    </div>
   </Section>
 
   <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold">
-    <div class="table-wrap">
+    <div class="table-wrap switch-register" tabindex="0" role="region" aria-label={t('switches.title')}>
       <table class="table-site">
-        <thead><tr><th>{t('switches.head.flag')}</th><th>{t('switches.head.gives')}</th></tr></thead>
+        <thead><tr><th scope="col">{t('switches.head.flag')}</th><th scope="col">{t('switches.head.gives')}</th></tr></thead>
         <tbody>
           {flags.map((flag, i) => (
-            <tr><td dir="ltr"><code>{flag}</code></td><td set:html={consequences[i]} /></tr>
+            <tr><th scope="row"><code dir="ltr">{flag}</code></th><td set:html={consequences[i]} /></tr>
           ))}
         </tbody>
       </table>
@@ -74,39 +81,46 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
   </Section>
 
   <Section id="fails-closed" title={t('closed.title')} lede={t('closed.lede')} hue="orange" tint>
-    <ul class="ticks max-w-[46em]">
-      {raw<string[]>('closed.items').map((item) => <li set:html={item} />)}
-    </ul>
-    <Callout title={t('closed.counter.title')} hue="gold">
-      <p set:html={t('closed.counter.text')} />
-    </Callout>
+    <div class="refusal-register">
+      <ul class="evidence-list refusal-list">
+        {raw<string[]>('closed.items').map((item) => <li set:html={item} />)}
+      </ul>
+      <div class="warning-record">
+        <Callout title={t('closed.counter.title')} hue="gold">
+          <p set:html={t('closed.counter.text')} />
+        </Callout>
+      </div>
+    </div>
   </Section>
 
   <Section id="checked" title={t('checked.title')} lede={t('checked.lede')} hue="red">
     <Facts items={facts} />
-
-    <Callout title={t('checked.audit.title')}>
-      <p set:html={t('checked.audit.text', { date: date(auditDate) })} />
-    </Callout>
-    <div class="max-w-[46em]" data-reveal>
-      <h3 class="text-xl mb-5">{t('checked.fixes.title')}</h3>
-      <ul class="ticks">{raw<string[]>('checked.fixes.items').map((item) => <li set:html={item} />)}</ul>
+    <div class="audit-register">
+      <article class="evidence-record">
+        <h3 class="text-xl">{t('checked.audit.title')}</h3>
+        <p set:html={t('checked.audit.text', { date: date(auditDate) })} />
+      </article>
+      <article class="evidence-record">
+        <h3 class="text-xl">{t('checked.fixes.title')}</h3>
+        <ul class="evidence-list">
+          {raw<string[]>('checked.fixes.items').map((item) => <li set:html={item} />)}
+        </ul>
+      </article>
+      <article class="evidence-record" data-hue="gold">
+        <h3 class="text-xl">{t('checked.log.title')}</h3>
+        <p set:html={t('checked.log.text')} />
+      </article>
     </div>
-
-    <Callout title={t('checked.log.title')} hue="gold">
-      <p set:html={t('checked.log.text')} />
-    </Callout>
-
-    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2 mt-12">
-      <div data-hue="orange">
-        <h3 class="text-xl mb-5">{t('checked.release.title')}</h3>
-        <ul class="ticks">{raw<string[]>('checked.release.items').map((item) => <li set:html={item} />)}</ul>
-      </div>
-      <div data-hue="red">
-        <h3 class="text-xl mb-5">{t('checked.missing.title')}</h3>
-        <ul class="ticks">{raw<string[]>('checked.missing.items').map((item) => <li set:html={item} />)}</ul>
+    <div class="release-register">
+      <article data-hue="orange">
+        <h3 class="text-xl">{t('checked.release.title')}</h3>
+        <ul class="evidence-list">{raw<string[]>('checked.release.items').map((item) => <li set:html={item} />)}</ul>
+      </article>
+      <article data-hue="red">
+        <h3 class="text-xl">{t('checked.missing.title')}</h3>
+        <ul class="evidence-list">{raw<string[]>('checked.missing.items').map((item) => <li set:html={item} />)}</ul>
         <p class="mt-6"><a class="link" href={`${site.docs}/RELEASE_SECURITY.md`}>{t('checked.missing.link')}</a></p>
-      </div>
+      </article>
     </div>
   </Section>
 
@@ -120,4 +134,39 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
 </Base>
 
 <style>
+  .boundary-overview { display: grid; gap: 2rem; align-items: start; }
+  .blocked-register { padding-block: 1.5rem; padding-inline-start: clamp(1rem, 3vw, 2rem); border-block: 1px solid var(--line); border-inline-start: 0.35rem solid var(--red); }
+  .blocked-register :global(.reach) { gap: 0; }
+  .blocked-register :global(.reach > li) { padding-block: 1rem; border-block-start: 1px solid var(--line); }
+  .blocked-register :global(.reach > li:last-child) { border-block-end: 1px solid var(--line); }
+  .boundary-choice :global(.callout), .warning-record :global(.callout) { margin-block: 0; }
+  .technical-figure { position: relative; margin-block-start: 2.5rem; padding-block-start: 2.25rem; border-block-start: 1px solid var(--line); }
+  .technical-figure :global(.fig) { margin-block: 0 2rem; }
+  .technical-figure::before { content: attr(data-figure) / ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue); font-variant-numeric: tabular-nums; }
+  .evidence-record { display: grid; gap: 1.5rem 3rem; padding-block: clamp(1.5rem, 4vw, 2.5rem); padding-inline-start: clamp(1rem, 3vw, 2rem); border-block-start: 1px solid var(--line); border-inline-start: 0.35rem solid var(--hue); }
+  .evidence-record h3, .release-register h3 { color: var(--hue); }
+  .evidence-record > p { max-inline-size: 46em; }
+  .evidence-list { display: grid; }
+  .evidence-list > li { padding-block: 1rem; border-block-start: 1px solid var(--line); max-inline-size: 52em; }
+  .evidence-list > li:first-child { padding-block-start: 0; border-block-start: 0; }
+  .evidence-list > li:last-child { padding-block-end: 0; }
+  .risk-record { border-inline-start-style: dashed; border-block-end: 1px solid var(--line); }
+  .switch-register { border-inline-start: 0.35rem solid var(--gold); }
+  .table-site th { font-family: var(--font-sans); white-space: normal; }
+  .table-site tbody th { padding: 0.75rem 1rem; border-block-start: 1px solid var(--line); text-align: start; vertical-align: top; }
+  .table-site tbody th code { display: inline-block; white-space: nowrap; }
+  .table-site td { min-inline-size: 21rem; }
+  .switch-register:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+  .refusal-register { display: grid; gap: 2.5rem; align-items: start; }
+  .refusal-list { padding: 1.5rem; border-block: 1px solid var(--line); border-inline-start: 0.35rem solid var(--orange); }
+  .audit-register { margin-block-start: clamp(2rem, 5vw, 4rem); border-block-end: 1px solid var(--line); }
+  .release-register { display: grid; gap: 2.5rem; margin-block-start: clamp(2rem, 5vw, 4rem); }
+  .release-register article { padding-block: 1.5rem; padding-inline-start: clamp(1rem, 3vw, 2rem); border-block: 1px solid var(--line); border-inline-start: 0.35rem solid var(--hue); }
+  .release-register h3 { margin-block-end: 1.5rem; }
+
+  @media (min-width: 64rem) {
+    .boundary-overview, .refusal-register { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+    .evidence-record { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+    .release-register { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
 </style>

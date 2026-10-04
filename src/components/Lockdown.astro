@@ -1,40 +1,49 @@
 ---
-// The homepage scroll scene: what the agent can reach, before and after. The section is tall and its stage is
-// sticky; motion.ts only writes data-step="0..4" from the scroll position and the CSS below does everything else.
-// Without JavaScript or with reduced motion there is no data-step: the stage shows the final state and the
-// captions stack as a normal list.
 import { useI18n } from '@/i18n';
 const { t, raw } = useI18n(Astro, 'home');
 const steps = raw<{ title: string; text: string }[]>('scene.steps');
-// `off` is the step at which the tile goes dark; `optin` tiles come back in gold at the last step; an `inside` tile
-// (the agent's own login, mounted by default) stays reachable in the cyan inside style at every step.
-const tiles = [
-  { label: '~/.ssh', off: 2 }, { label: '~/.aws', off: 2 }, { label: t('scene.tiles.projects'), off: 2 },
-  { label: '$GITHUB_TOKEN', off: 3 }, null, { label: t('scene.tiles.network'), off: 3, optin: true },
-  { label: 'docker.sock', off: 3 }, { label: t('scene.tiles.display'), off: 3 }, { label: '~/.claude', inside: true },
-];
+type Row = { label: string; state: 'inside' | 'blocked' | 'optin'; localized?: boolean; off?: number; optin?: boolean; inside?: boolean };
+const rows: Row[] = [
+  { label: '~/.ssh', state: 'blocked', off: 2 },
+  { label: '~/.aws', state: 'blocked', off: 2 },
+  { label: t('scene.tiles.projects'), state: 'blocked', localized: true, off: 2 },
+  { label: '$GITHUB_TOKEN', state: 'blocked', off: 3 },
+  { label: t('scene.tiles.network'), state: 'optin', localized: true, off: 3, optin: true },
+  { label: 'docker.sock', state: 'blocked', off: 3 },
+  { label: t('scene.tiles.display'), state: 'blocked', localized: true, off: 3 },
+  { label: '~/.claude', state: 'inside', inside: true },
+] as const;
 ---
+<script>
+  import '@/scripts/motion';
+</script>
 <section class="scene on-ink" data-scene={steps.length} aria-label={t('scene.label')}>
   <div class="stage">
-    <div class="wrap grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-16 items-center">
+    <div class="wrap stage-grid">
       <ol class="caps">
-        {steps.map((s, i) => (
+        {steps.map((step, i) => (
           <li class="cap" data-i={i}>
-            <h2 class="text-3xl">{s.title}</h2>
-            <p class="mt-4 text-lg max-w-[30em]" style="color:var(--on-ink-muted)" set:html={s.text} />
+            <div>
+              <h2 class="text-2xl">{step.title}</h2>
+              <p class="mt-3 max-w-[34em]" set:html={step.text} />
+            </div>
           </li>
         ))}
       </ol>
-      <div class="map" dir="ltr" aria-hidden="true">
-        {tiles.map((tile) => tile ? (
-          <div class="tile" data-off={tile.off} data-optin={tile.optin ? '' : undefined} data-inside={tile.inside ? '' : undefined}><span>{tile.label}</span></div>
-        ) : (
-          <div class="tile project">
-            <span class="chip"><span>{t('scene.agent')}</span></span>
-            <span>{t('scene.project')}</span>
-            <span class="cellbars"><i></i><i></i><i></i><i></i></span>
+      <div class="ledger" dir="ltr">
+        <div class="boundary">
+          <div class="agent"><bdi dir="auto">{t('scene.agent')}</bdi><strong><bdi dir="auto">{t('scene.project')}</bdi></strong></div>
+          <div class="rule"></div>
+          <div class="records">
+            {rows.map((row) => (
+              <div class="record" data-off={row.off} data-optin={row.optin ? '' : undefined} data-inside={row.inside ? '' : undefined}>
+                {row.localized ? <bdi dir="auto">{row.label}</bdi> : <span dir="ltr">{row.label}</span>}
+                <i></i>
+                <span class="sr-only"><bdi dir="auto">{t(`reach.${row.state}`)}</bdi></span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
     <div class="progress" aria-hidden="true"><span data-scene-progress></span></div>
@@ -43,46 +52,54 @@ const tiles = [
 
 <style>
   .scene { position: relative; }
-  .stage { padding-block: clamp(4rem, 9vw, 7rem); }
-  .caps { display: grid; gap: 2.5rem; }
+  .stage { padding-block: clamp(4rem, 8vw, 6rem); }
+  .stage-grid { display: grid; gap: clamp(3rem, 7vw, 6rem); align-items: start; }
+  .caps { display: grid; border-block: 1px solid var(--ink-line); }
+  .cap { display: grid; padding-block: 1.4rem; border-block-start: 1px solid var(--ink-line); }
+  .cap:first-child { border-block-start: 0; }
+  .cap p { color: var(--on-ink-muted); }
   .progress { display: none; }
+  .ledger { inline-size: 100%; max-inline-size: 36rem; margin-inline: auto; font-family: var(--font-mono); font-size: clamp(0.72rem, 1.5vw, 0.9rem); }
+  .boundary { border: 1.5px solid var(--v-red); }
+  .agent { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: center; padding: 1rem; background: color-mix(in oklch, var(--v-cyan) 8%, var(--ink)); border-block-end: 1.5px solid var(--v-cyan); }
+  .agent > bdi { display: grid; place-items: center; inline-size: 3rem; aspect-ratio: 1; border: 1.5px solid var(--v-cyan); color: var(--v-cyan); }
+  .agent strong { color: var(--on-ink); font-family: var(--font-display); font-size: var(--text-lg); }
+  .rule { block-size: 0.4rem; background: var(--spectrum); }
+  .records { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .record { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 1rem; gap: 0.75rem; align-items: center; min-block-size: 3.2rem; padding: 0.7rem 0.8rem; border-block-start: 1px solid var(--ink-line); border-inline-end: 1px solid var(--ink-line); color: var(--on-ink-muted); overflow-wrap: anywhere; }
+  .record:nth-child(even) { border-inline-end: 0; }
+  .record i { inline-size: 1rem; block-size: 1rem; background: repeating-linear-gradient(90deg, var(--v-red) 0 0.18rem, transparent 0.18rem 0.4rem); }
+  .record[data-optin] { color: var(--v-gold); }
+  .record[data-optin] i { border: 0.3rem solid var(--v-gold); border-radius: 50%; background: var(--ink); }
+  .record[data-inside], .scene[data-step] .record[data-inside] { color: var(--on-ink); background: color-mix(in oklch, var(--v-cyan) 8%, var(--ink)); }
+  .record[data-inside] i, .scene[data-step] .record[data-inside] i { border: 0.3rem solid var(--v-cyan); border-radius: 50%; background: var(--ink); }
 
-  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.5rem, 1.4vw, 1rem); max-inline-size: 36rem; inline-size: 100%; margin-inline: auto; }
-  .tile { position: relative; aspect-ratio: 1; display: grid; place-content: center; justify-items: center; gap: 0.5rem; padding: 0.4rem; text-align: center; border-radius: 1.1rem; border: 1.5px solid var(--v-red); background: color-mix(in oklch, var(--v-red) 9%, var(--ink)); color: var(--on-ink-muted); font-family: var(--font-mono); font-size: clamp(0.68rem, 1.5vw, 0.9rem); overflow-wrap: anywhere; transition: border-color 0.6s, background 0.6s, color 0.6s, box-shadow 0.6s, opacity 0.6s; }
-  /* Final state, which is also the no-script state: everything blocked, opt-ins gold, project inside. */
-  .tile:not(.project) { background: repeating-linear-gradient(90deg, color-mix(in oklch, var(--v-red) 22%, var(--ink)) 0 3px, var(--ink) 3px 11px); }
-  .tile[data-optin] { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-gold) 12%, var(--ink)); color: var(--v-gold); }
-  /* An inside tile is reachable throughout: same cyan as the project, at every step, never dark. */
-  .tile[data-inside], .scene[data-step] .tile[data-inside]:not(.project) { border-color: var(--v-cyan); background: color-mix(in oklch, var(--v-cyan) 10%, var(--ink)); color: var(--on-ink); box-shadow: none; }
-  .project { border: 2px solid var(--v-cyan); background: color-mix(in oklch, var(--v-cyan) 10%, var(--ink)); color: var(--on-ink); box-shadow: 0 0 60px -10px color-mix(in oklch, var(--v-cyan) 60%, transparent); font-family: var(--font-display); font-weight: 700; }
-  .chip { display: grid; place-items: center; inline-size: clamp(2.6rem, 7vw, 4rem); aspect-ratio: 1; border-radius: 0.7rem; background: linear-gradient(135deg, var(--v-cyan), var(--v-cyan-deep)); color: var(--on-action); font-size: 0.7em; font-weight: 800; box-shadow: 0 0 30px color-mix(in oklch, var(--v-cyan) 70%, transparent); }
-  .cellbars { position: absolute; inset: 0; display: flex; justify-content: space-evenly; pointer-events: none; }
-  .cellbars i { inline-size: 5px; block-size: 100%; background: linear-gradient(var(--v-gold), var(--v-red)); border-radius: 99px; opacity: 0.55; transform-origin: top; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  .cellbars i:nth-child(2) { transition-delay: 0.08s; } .cellbars i:nth-child(3) { transition-delay: 0.16s; } .cellbars i:nth-child(4) { transition-delay: 0.24s; }
+  @media (min-width: 64rem) {
+    .stage-grid { grid-template-columns: minmax(0, 1fr) minmax(28rem, 1fr); align-items: center; }
+  }
 
-  /* Scroll-driven version. */
-  .scene[data-step] { block-size: 520vh; }
-  .scene[data-step] .stage { position: sticky; inset-block-start: 0; block-size: 100dvh; display: grid; align-content: center; padding-block: 5rem 2rem; overflow: hidden; }
-  .scene[data-step] .caps { display: grid; gap: 0; }
-  .scene[data-step] .cap { grid-area: 1 / 1; opacity: 0; transform: translateY(1.5rem); transition: opacity 0.5s, transform 0.5s; pointer-events: none; }
-  .scene[data-step='0'] .cap[data-i='0'], .scene[data-step='1'] .cap[data-i='1'], .scene[data-step='2'] .cap[data-i='2'],
-  .scene[data-step='3'] .cap[data-i='3'], .scene[data-step='4'] .cap[data-i='4'] { opacity: 1; transform: none; pointer-events: auto; }
-  .scene[data-step] .progress { display: block; position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 3px; }
-  .progress span { display: block; block-size: 100%; background: var(--spectrum); transform: scaleX(0); transform-origin: left; }
+  @media (min-width: 64rem) and (min-height: 45rem) and (prefers-reduced-motion: no-preference) {
+    .scene[data-step] { block-size: 300vh; }
+    .scene[data-step] .stage { position: sticky; inset-block-start: 0; display: grid; align-content: center; min-block-size: 100dvh; padding-block: 5rem 2rem; }
+    .scene[data-step] .caps { min-block-size: 18rem; border-block: 0; }
+    .scene[data-step] .cap { grid-area: 1 / 1; align-self: center; border: 0; opacity: 0; transform: translateY(0.75rem); transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
+    .scene[data-step='0'] .cap[data-i='0'], .scene[data-step='1'] .cap[data-i='1'], .scene[data-step='2'] .cap[data-i='2'], .scene[data-step='3'] .cap[data-i='3'], .scene[data-step='4'] .cap[data-i='4'] { opacity: 1; transform: none; pointer-events: auto; }
+    .scene[data-step] .progress { display: block; position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 3px; }
+    .progress span { display: block; block-size: 100%; background: var(--spectrum); transform: scaleX(0); transform-origin: left; }
+    .scene[data-step='0'] .boundary { border-color: var(--v-gold); }
+    .scene[data-step='0'] .agent { background: color-mix(in oklch, var(--v-orange) 10%, var(--ink)); border-color: var(--v-gold); }
+    .scene[data-step='0'] .agent > bdi { border-color: var(--v-gold); color: var(--v-gold); }
+    .scene[data-step='0'] .record:not([data-inside]), .scene[data-step='1'] .record:not([data-inside]), .scene[data-step='2'] .record[data-off='3']:not([data-inside]) { color: var(--on-ink); background: color-mix(in oklch, var(--v-orange) 10%, var(--ink)); }
+    .scene[data-step='0'] .record:not([data-inside]) i, .scene[data-step='1'] .record:not([data-inside]) i, .scene[data-step='2'] .record[data-off='3']:not([data-inside]) i { border: 0.3rem solid var(--v-gold); border-radius: 50%; background: var(--ink); }
+    .scene[data-step='2'] .record[data-optin][data-off='2'], .scene[data-step='3'] .record[data-optin] { color: var(--on-ink-muted); background: var(--ink); }
+    .scene[data-step='2'] .record[data-optin][data-off='2'] i, .scene[data-step='3'] .record[data-optin] i { border: 0; border-radius: 0; background: repeating-linear-gradient(90deg, var(--v-red) 0 0.18rem, transparent 0.18rem 0.4rem); }
+  }
 
-  /* A tile is "lit" (reachable, in the logo's warm gold) until the scroll reaches its data-off step. */
-  .scene[data-step='0'] .tile:not(.project), .scene[data-step='1'] .tile:not(.project),
-  .scene[data-step='2'] .tile[data-off='3'] { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-orange) 16%, var(--ink)); color: var(--on-ink); box-shadow: 0 0 40px -14px var(--v-orange); }
-  /* Opt-ins are dark like the rest until the last step. */
-  .scene[data-step='2'] .tile[data-optin][data-off='2'], .scene[data-step='3'] .tile[data-optin] { border-color: var(--v-red); color: var(--on-ink-muted); background: repeating-linear-gradient(90deg, color-mix(in oklch, var(--v-red) 22%, var(--ink)) 0 3px, var(--ink) 3px 11px); }
-  .scene[data-step='0'] .project { border-color: var(--v-gold); background: color-mix(in oklch, var(--v-orange) 16%, var(--ink)); box-shadow: none; }
-  .scene[data-step='0'] .cellbars i { transform: scaleY(0); }
-
-  @media (max-width: 63.99rem) {
-    .scene[data-step] .stage { align-content: start; padding-block-start: 5.5rem; }
-    .scene[data-step] .cap h2 { font-size: var(--text-2xl); }
-    .scene[data-step] .cap p { font-size: 1rem; margin-block-start: 0.6rem; }
-    .scene[data-step] .caps { min-block-size: 15.5rem; }
-    .map { max-inline-size: min(22rem, 46dvh); }
+  @media (max-width: 39.99rem) {
+    .cap p { font-size: 0.95rem; line-height: 1.45; }
+    .ledger { max-inline-size: 31rem; }
+    .record { min-block-size: 2.6rem; padding: 0.45rem 0.55rem; }
+    .agent { padding: 0.6rem; }
+    .agent > bdi { inline-size: 2.4rem; }
   }
 </style>

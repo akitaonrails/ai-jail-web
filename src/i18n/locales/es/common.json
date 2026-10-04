@@ -56,7 +56,8 @@
   },
   "code": {
     "copy": "Copiar",
-    "copied": "Copiado"
+    "copied": "Copiado",
+    "terminal": "Terminal"
   },
   "reach": {
     "inside": "Dentro de la jaula",

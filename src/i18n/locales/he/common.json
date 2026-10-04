@@ -56,7 +56,8 @@
   },
   "code": {
     "copy": "העתקה",
-    "copied": "הועתק"
+    "copied": "הועתק",
+    "terminal": "טרמינל"
   },
   "reach": {
     "inside": "בתוך הכלא",

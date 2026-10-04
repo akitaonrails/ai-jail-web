@@ -12,6 +12,7 @@
     "check": "astro check",
     "preview": "astro preview",
     "check:colors": "node scripts/check-contrast.mjs",
+    "check:ui": "npm run build && node scripts/check-ui.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "i18n:stamp": "node scripts/check-i18n.mjs --stamp",
     "colors:sample": "node scripts/sample-logo.mjs",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "culori": "^4.0.2",
+    "playwright": "^1.63.0",
     "typescript": "^6.0.3"
   }
 }

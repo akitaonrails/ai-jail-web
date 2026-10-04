@@ -12,7 +12,7 @@ The site is published in en, pt-br, es, he, ja and ko. Whenever you add, reword 
 
 1. Edit the English string in `src/i18n/locales/en/<namespace>.json`. No visible text lives in `.astro` files.
 2. In the same change, update that key in all five other locale folders with a real translation that follows `docs/research/I18N-TRANSLATE-BRIEF.md` and `docs/i18n/glossary-<locale>.md`.
-3. If the text is a label inside a diagram (`images.json`), regenerate that diagram for each language with `scripts/localize-image.mjs` and look at the results.
+3. If the text is a label inside a diagram (`images.json`), check the semantic figure in every language, including Hebrew direction and mobile wrapping.
 4. Run `npm run i18n:stamp`, then `npm run check:i18n`. It must report no errors and nothing "falling back to English".
 
 Never silence a STALE error by stamping without translating.
@@ -25,6 +25,6 @@ Never silence a STALE error by stamping without translating.
 - Structure (hues, hrefs, ids, commands, flags) stays in code; words stay in catalogs. Use `withText()`, `href()`, `date()`, `number()`.
 - CSS uses logical properties so Hebrew mirrors. Terminals, diagrams and paths get `dir="ltr"`.
 - Shared patterns belong in `src/components` or `src/styles/global.css`. A page's `<style>` is for what only that page has.
-- Diagrams: `docs/images.md`. Prompts are committed in `scripts/prompts/`. Look at every generated image before committing it.
-- Before pushing: `npm run check:colors && npm run check:i18n && npm run build`. `main` deploys to production through Netlify.
+- Diagrams: `docs/images.md`. Named figures are deterministic HTML/CSS with labels from `images.json`; legacy generated assets remain only as source history.
+- Before pushing: `npm run check && npm run check:colors && npm run check:i18n && npm run check:ui && npm run build`. Install Chromium once with `npx playwright install chromium`. `main` deploys to production through Netlify.
 - When a new ai-jail version is out: update `src/data/facts.json` (version, test counts, dependencies), run `npm run snapshot:github`, re-verify the flags on Configure and the comparison on Compare, and move `reviewedAt`. The Download page reads releases from GitHub at build time and falls back to the snapshot.

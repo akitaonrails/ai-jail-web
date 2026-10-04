@@ -56,7 +56,8 @@
   },
   "code": {
     "copy": "コピー",
-    "copied": "コピーしました"
+    "copied": "コピーしました",
+    "terminal": "ターミナル"
   },
   "reach": {
     "inside": "ジェイルの中",

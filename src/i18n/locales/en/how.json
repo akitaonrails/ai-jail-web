@@ -85,8 +85,13 @@
   "egress": {
     "title": "Three ways to the network",
     "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except, on Linux with toolchains on (the default), a short list of package registries through the filtered proxy. The other two are flags you pass on purpose.",
-    "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
-    "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
+    "alt": "Four panels, left to right. Default: Linux shows the agent routed through a proxy to Registries (toolchains on), with the rest of the internet blocked. Default: macOS shows the agent with no route out. Filtered shows --allow-host routing through the proxy to the named host while another host stays blocked. Open shows --network connecting the agent directly to the internet.",
+    "caption": "On Linux, the default lets toolchain package registries through the filtered proxy; <code>--no-network</code> closes every route. On macOS, the default is fully offline. <code>--allow-host</code> opens only named hosts, while <code>--network</code> opens the network.",
+    "head": {
+      "behavior": "Behavior",
+      "linux": "Linux",
+      "macos": "macOS"
+    },
     "modes": [
       {
         "title": "Off",
@@ -101,10 +106,6 @@
         "text": "<code>--network</code>. The wall is gone on the network side, and the agent can send out whatever it can read."
       }
     ],
-    "head": {
-      "linux": "Linux",
-      "macos": "macOS"
-    },
     "rows": [
       {
         "what": "The fence in filtered mode",
@@ -125,6 +126,7 @@
     "alt": "Two panels. On the left, Linux: the agent chip and its project inside five concentric walls. On the right, macOS: the same chip and project inside a single wall, labeled one profile.",
     "caption": "macOS gets the same policy and flags behind fewer walls.",
     "head": {
+      "capability": "Capability",
       "linux": "Linux",
       "macos": "macOS"
     },

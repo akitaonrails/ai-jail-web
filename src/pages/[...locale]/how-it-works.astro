@@ -5,7 +5,6 @@ import factsData from '@/data/facts.json';
 import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
 import Figure from '@/components/Figure.astro';
-import FeatureGrid from '@/components/FeatureGrid.astro';
 import Callout from '@/components/Callout.astro';
 import NextPages from '@/components/NextPages.astro';
 import CtaBand from '@/components/CtaBand.astro';
@@ -18,17 +17,14 @@ type Text = { title: string; text: string };
 type Layer = { name: string; tag: string; is: string; stops: string };
 
 const launch = withText([{ hue: 'gold' }, { hue: 'orange' }, { hue: 'cyan' }] as const, raw<Text[]>('launch.steps'));
-// Outside in, the same order and colors as the how-layers diagram; the last two are filters, not walls.
 const layers = withText(
   [{ hue: 'gold' }, { hue: 'orange' }, { hue: 'orange' }, { hue: 'red' }, { hue: 'magenta' }, { hue: 'cyan' }, { hue: 'cyan' }] as const,
   raw<Layer[]>('layers.items'),
 );
-// Off is the blocked state, filtered is an opt-in, open is what the agent may reach: the same three colors as the Reach lists.
 const modes = withText([{ hue: 'red' }, { hue: 'gold' }, { hue: 'cyan' }] as const, raw<Text[]>('egress.modes'));
 const egress = raw<{ what: string; linux: string; macos: string }[]>('egress.rows');
 const macos = raw<{ what: string; linux: string; macos: string }[]>('macos.rows');
 const blocks = raw<{ option: string; verdict: string }[]>('blocks.rows');
-// Counted in the ai-jail repository at facts.version: #[test] in src/, #[test] in tests/sandbox_escape.rs, [dependencies] in Cargo.toml.
 const facts = withText([{ n: 1 }, { n: factsData.dependencies }, { n: factsData.unitTests }, { n: factsData.escapeTests }], raw<{ label: string }[]>('facts.items'));
 const next = withText(
   [{ href: '/configure/', hue: 'gold' }, { href: '/security/', hue: 'red' }, { href: '/compare/', hue: 'cyan' }] as const,
@@ -42,24 +38,34 @@ const next = withText(
   </PageHero>
 
   <Section title={t('launch.title')} lede={t('launch.lede')} hue="orange" id="launch">
-    <Figure name="how-launch" alt={t('launch.alt')} caption={t('launch.caption')} />
-    <FeatureGrid items={launch} />
+    <div class="technical-figure" data-figure="01">
+      <Figure name="how-launch" alt={t('launch.alt')} caption={t('launch.caption')} />
+    </div>
+    <ol class="evidence-ledger launch-ledger">
+      {launch.map((item) => (
+        <li data-hue={item.hue}>
+          <h3 class="text-xl" set:html={item.title} />
+          <p set:html={item.text} />
+        </li>
+      ))}
+    </ol>
     <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('launch.link')}</a>
   </Section>
 
-  <Section title={t('layers.title')} lede={t('layers.lede')} hue="orange" id="layers" tint fill>
-    <Figure name="how-layers" alt={t('layers.alt')} caption={t('layers.caption')} />
-    <ol class="layers" data-focus-list>
-      {layers.map((l, i) => (
-        <li data-hue={l.hue} id={`layer-${i + 1}`}>
+  <Section title={t('layers.title')} lede={t('layers.lede')} hue="orange" id="layers" tint>
+    <div class="technical-figure" data-figure="02">
+      <Figure name="how-layers" alt={t('layers.alt')} caption={t('layers.caption')} />
+    </div>
+    <ol class="layer-ledger">
+      {layers.map((layer, i) => (
+        <li data-hue={layer.hue} id={`layer-${i + 1}`}>
           <div class="layer-head">
-            <span class="bars" aria-hidden="true"><i></i></span>
-            <h3 class="text-2xl">{l.name}</h3>
-            <span class="badge" dir="ltr">{l.tag}</span>
+            <h3 class="text-xl">{layer.name}</h3>
+            <span class="badge" dir="ltr">{layer.tag}</span>
           </div>
           <dl class="layer-body">
-            <div><dt>{t('layers.is')}</dt><dd set:html={l.is} /></div>
-            <div><dt>{t('layers.stops')}</dt><dd set:html={l.stops} /></div>
+            <div><dt>{t('layers.is')}</dt><dd set:html={layer.is} /></div>
+            <div><dt>{t('layers.stops')}</dt><dd set:html={layer.stops} /></div>
           </dl>
         </li>
       ))}
@@ -67,26 +73,37 @@ const next = withText(
   </Section>
 
   <Section title={t('egress.title')} lede={t('egress.lede')} hue="orange" id="network">
-    <Figure name="how-egress" alt={t('egress.alt')} caption={t('egress.caption')} />
-    <FeatureGrid items={modes} />
-    <div class="table-wrap mt-10">
+    <div class="technical-figure" data-figure="03">
+      <Figure name="how-egress" alt={t('egress.alt')} caption={t('egress.caption')} />
+    </div>
+    <div class="table-wrap evidence-table" tabindex="0" role="region" aria-label={t('egress.title')}>
       <table class="table-site">
-        <thead><tr><td></td><th scope="col">{t('egress.head.linux')}</th><th scope="col">{t('egress.head.macos')}</th></tr></thead>
+        <thead><tr><th scope="col">{t('egress.head.behavior')}</th><th scope="col">{t('egress.head.linux')}</th><th scope="col">{t('egress.head.macos')}</th></tr></thead>
         <tbody>
-          {egress.map((r) => <tr><td set:html={r.what} /><td set:html={r.linux} /><td set:html={r.macos} /></tr>)}
+          {egress.map((row) => <tr><th scope="row" set:html={row.what} /><td set:html={row.linux} /><td set:html={row.macos} /></tr>)}
         </tbody>
       </table>
+    </div>
+    <div class="mode-ledger">
+      {modes.map((mode) => (
+        <article data-hue={mode.hue}>
+          <h3 class="text-xl" set:html={mode.title} />
+          <p set:html={mode.text} />
+        </article>
+      ))}
     </div>
     <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('egress.link')}</a>
   </Section>
 
   <Section title={t('macos.title')} lede={t('macos.lede')} hue="red" id="macos">
-    <Figure name="how-macos" alt={t('macos.alt')} caption={t('macos.caption')} />
-    <div class="table-wrap">
+    <div class="technical-figure" data-figure="04">
+      <Figure name="how-macos" alt={t('macos.alt')} caption={t('macos.caption')} />
+    </div>
+    <div class="table-wrap evidence-table" tabindex="0" role="region" aria-label={t('macos.title')}>
       <table class="table-site">
-        <thead><tr><td></td><th scope="col">{t('macos.head.linux')}</th><th scope="col">{t('macos.head.macos')}</th></tr></thead>
+        <thead><tr><th scope="col">{t('macos.head.capability')}</th><th scope="col">{t('macos.head.linux')}</th><th scope="col">{t('macos.head.macos')}</th></tr></thead>
         <tbody>
-          {macos.map((r) => <tr><td set:html={r.what} /><td set:html={r.linux} /><td set:html={r.macos} /></tr>)}
+          {macos.map((row) => <tr><th scope="row" set:html={row.what} /><td set:html={row.linux} /><td set:html={row.macos} /></tr>)}
         </tbody>
       </table>
     </div>
@@ -94,11 +111,11 @@ const next = withText(
   </Section>
 
   <Section title={t('blocks.title')} lede={t('blocks.lede')} hue="orange" id="why-bubblewrap" tint>
-    <div class="table-wrap">
+    <div class="table-wrap evidence-table" tabindex="0" role="region" aria-label={t('blocks.title')}>
       <table class="table-site">
         <thead><tr><th scope="col">{t('blocks.head.option')}</th><th scope="col">{t('blocks.head.verdict')}</th></tr></thead>
         <tbody>
-          {blocks.map((r) => <tr><td>{r.option}</td><td set:html={r.verdict} /></tr>)}
+          {blocks.map((row) => <tr><th scope="row">{row.option}</th><td set:html={row.verdict} /></tr>)}
         </tbody>
       </table>
     </div>
@@ -106,8 +123,10 @@ const next = withText(
   </Section>
 
   <Section title={t('facts.title')} lede={t('facts.lede')} hue="gold" id="facts">
-    <Facts items={facts} />
-    <p class="mt-8 text-sm text-muted">{t('facts.note', { version: factsData.version, tests: factsData.testsCountedAt })}</p>
+    <div class="fact-register">
+      <Facts items={facts} />
+      <p class="text-sm text-muted">{t('facts.note', { version: factsData.version, tests: factsData.testsCountedAt })}</p>
+    </div>
     <Callout title={t('limit.title')}>
       <p set:html={t('limit.text')} />
       <p><a class="link" href={href('/security/')}>{t('limit.link')}</a></p>
@@ -119,17 +138,34 @@ const next = withText(
 </Base>
 
 <style>
-  /* The layer sequence: one item is lit as it crosses the reading line. Without JavaScript all are lit. */
-  .layers { display: grid; row-gap: clamp(2.5rem, 6vw, 4.5rem); max-width: 60rem; }
-  .layers > li { padding-inline-start: 1.5rem; border-inline-start: 0.3rem solid var(--hue-vivid); transition: opacity .4s ease, border-color .4s ease, transform .4s ease; }
-  .layer-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; }
+  .technical-figure { position: relative; padding-block-start: 2.25rem; border-block-start: 1px solid var(--line); }
+  .technical-figure :global(.fig) { margin-block: 0 2rem; }
+  .technical-figure::before { content: attr(data-figure) / ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue); font-variant-numeric: tabular-nums; }
+  .evidence-ledger { counter-reset: record; display: grid; border-block: 1px solid var(--line); }
+  .evidence-ledger > li { counter-increment: record; position: relative; padding-block: 1.5rem; padding-inline: clamp(3.25rem, 8vw, 5rem) 1rem; border-block-start: 1px solid var(--line); border-inline-start: 0.3rem solid var(--hue-vivid); }
+  .evidence-ledger > li:first-child { border-block-start: 0; }
+  .evidence-ledger > li::before { content: counter(record, decimal-leading-zero); position: absolute; inset-block-start: 1.55rem; inset-inline-start: 1rem; font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue); font-variant-numeric: tabular-nums; }
+  .evidence-ledger p, .mode-ledger p { margin-block-start: 0.65rem; max-inline-size: 46em; color: var(--muted); }
+  .layer-ledger { counter-reset: layer; display: grid; border-inline-start: 0.4rem solid var(--v-orange); }
+  .layer-ledger > li { counter-increment: layer; position: relative; padding: clamp(1.5rem, 4vw, 2.5rem); padding-inline-start: clamp(3.75rem, 9vw, 6rem); border-block-start: 1px solid var(--line); background: var(--surface); }
+  .layer-ledger > li:last-child { border-block-end: 1px solid var(--line); }
+  .layer-ledger > li::before { content: counter(layer, decimal-leading-zero); position: absolute; inset-block-start: clamp(1.65rem, 4vw, 2.65rem); inset-inline-start: 1rem; inline-size: 1.75rem; padding-block-end: 0.45rem; border-block-end: 0.3rem solid var(--hue-vivid); font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue); font-variant-numeric: tabular-nums; }
+  .layer-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; }
   .layer-head h3 { color: var(--hue); }
   .layer-body { display: grid; gap: 1.25rem 2.5rem; margin-block-start: 1.25rem; }
-  .layer-body dt { font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm); color: var(--muted); }
-  .layer-body dd { margin-block-start: 0.35rem; max-width: 34em; }
-  @media (min-width: 48rem) { .layer-body { grid-template-columns: 1fr 1fr; } }
-  .layers[data-focus-ready] > li[data-state='ahead'] { opacity: 0.35; border-inline-start-color: var(--line); transform: translateY(0.75rem); }
-  .layers[data-focus-ready] > li[data-state='past'] { opacity: 0.55; border-inline-start-color: var(--line); }
-  .layers[data-focus-ready] > li[data-state='active'] { opacity: 1; }
+  .layer-body dt { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--muted); }
+  .layer-body dd { margin-block-start: 0.35rem; max-inline-size: 38em; }
+  .mode-ledger { display: grid; border-block-start: 1px solid var(--line); border-inline-start: 1px solid var(--line); }
+  .mode-ledger article { padding: 1.5rem; border-inline-end: 1px solid var(--line); border-block-end: 1px solid var(--line); border-block-start: 0.3rem solid var(--hue-vivid); background: var(--surface); }
+  .evidence-table { margin-block-start: clamp(2rem, 5vw, 3.5rem); border-inline-start: 0.35rem solid var(--hue-vivid); }
+  .table-site tbody th { min-inline-size: 9rem; padding: 0.75rem 1rem; border-block-start: 1px solid var(--line); border-inline-end: 1px solid var(--line); font-weight: 600; text-align: start; vertical-align: top; }
+  .fact-register { display: grid; gap: 1.25rem; padding-block-end: 1.5rem; border-block-end: 1px solid var(--line); }
+  .fact-register > p { max-inline-size: 58em; }
 
+  @media (min-width: 48rem) {
+    .launch-ledger { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .evidence-ledger > li { border-block-start: 0; border-inline-end: 1px solid var(--line); }
+    .layer-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mode-ledger { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
 </style>

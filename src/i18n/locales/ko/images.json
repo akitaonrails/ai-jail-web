@@ -117,5 +117,13 @@
     "Your home": "내 홈",
     "Project": "프로젝트"
   },
-  "how-egress": { "Off": "꺼짐", "Filtered": "필터링", "Open": "열림", "Proxy": "프록시" }
+  "how-egress": {
+    "Off": "꺼짐",
+    "Default: Linux": "기본값: Linux",
+    "Default: macOS": "기본값: macOS",
+    "Filtered": "필터링",
+    "Open": "열림",
+    "Proxy": "프록시",
+    "Registries (toolchains on)": "레지스트리(툴체인 켜짐)"
+  }
 }

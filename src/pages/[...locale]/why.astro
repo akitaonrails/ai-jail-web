@@ -3,8 +3,6 @@ import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
 import Figure from '@/components/Figure.astro';
-import FeatureGrid from '@/components/FeatureGrid.astro';
-import Callout from '@/components/Callout.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
 import Faq from '@/components/Faq.astro';
 import NextPages from '@/components/NextPages.astro';
@@ -13,7 +11,7 @@ import { faqPage, type Faq as FaqItem } from '@/lib/schema';
 import { localePaths, useI18n, withText } from '@/i18n';
 export const getStaticPaths = localePaths;
 
-const { t, raw, href } = useI18n(Astro, 'why');
+const { t, raw, href, number } = useI18n(Astro, 'why');
 type Point = { title: string; text: string };
 const faq = raw<FaqItem[]>('faq.items');
 const scenarios = withText([{ hue: 'magenta' }, { hue: 'red' }, { hue: 'orange' }] as const, raw<Point[]>('wrong.items'));
@@ -36,48 +34,73 @@ const cost = [
     <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
   </PageHero>
 
-  <Section title={t('reach.title')} lede={t('reach.lede')} hue="magenta" fill>
+  <Section title={t('who.title')} lede={t('who.lede')} hue="magenta">
+    <div class="decision-rails">
+      <section data-hue="magenta">
+        <header>
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h3 class="text-xl">{t('who.needs.title')}</h3>
+        </header>
+        <ul>{raw<string[]>('who.needs.items').map((it) => <li set:html={it} />)}</ul>
+      </section>
+      <section data-hue="cyan">
+        <header>
+          <span class="bars" aria-hidden="true"><i></i></span>
+          <h3 class="text-xl">{t('who.maynot.title')}</h3>
+        </header>
+        <ul>{raw<string[]>('who.maynot.items').map((it) => <li set:html={it} />)}</ul>
+      </section>
+    </div>
+    <aside class="decision-note" data-hue="red">
+      <span class="bars" aria-hidden="true"><i></i></span>
+      <p set:html={t('who.note')} />
+    </aside>
+  </Section>
+
+  <Section title={t('reach.title')} lede={t('reach.lede')} hue="magenta">
     <Figure name="why-reach" alt={t('reach.alt')} caption={t('reach.caption')} />
-    <h3 class="text-xl mb-5">{t('reach.listTitle')}</h3>
-    <ul class="ticks md:grid-cols-2 md:gap-x-10 max-w-[64rem]" data-reveal="children">
-      {raw<string[]>('reach.items').map((it) => <li set:html={it} />)}
-    </ul>
+    <div class="access-register">
+      <h3 class="text-xl">{t('reach.listTitle')}</h3>
+      <ul>
+        {raw<string[]>('reach.items').map((it) => <li set:html={it} />)}
+      </ul>
+    </div>
   </Section>
 
   <Section title={t('wrong.title')} lede={t('wrong.lede')} hue="red" tint>
-    <FeatureGrid items={scenarios} />
+    <div class="scenario-ledger">
+      {scenarios.map((scenario, i) => (
+        <article data-hue={scenario.hue}>
+          <span class="record-index" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
+          <h3 class="text-xl" set:html={scenario.title} />
+          <p class="text-muted" set:html={scenario.text} />
+        </article>
+      ))}
+    </div>
     <Figure name="why-injection" alt={t('wrong.alt')} caption={t('wrong.caption')} />
-    <p class="mt-10 max-w-[40em] text-muted" set:html={t('wrong.note')} />
+    <aside class="decision-note" data-hue="red">
+      <span class="bars" aria-hidden="true"><i></i></span>
+      <p set:html={t('wrong.note')} />
+    </aside>
   </Section>
 
   <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="cyan" narrow>
-    <h3 class="text-xl mb-5">{t('prompts.listTitle')}</h3>
-    <ul class="ticks" dir="auto">
-      {raw<string[]>('prompts.items').map((it) => <li set:html={it} />)}
-    </ul>
-    <p class="mt-8 max-w-[40em]" set:html={t('prompts.text')} />
-  </Section>
-
-  <Section title={t('who.title')} lede={t('who.lede')} hue="magenta" tint>
-    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2" data-reveal="children">
-      <div data-hue="magenta">
-        <span class="bars mb-4" aria-hidden="true"><i></i></span>
-        <h3 class="text-xl mb-5">{t('who.needs.title')}</h3>
-        <ul class="ticks">{raw<string[]>('who.needs.items').map((it) => <li set:html={it} />)}</ul>
-      </div>
-      <div data-hue="cyan">
-        <span class="bars mb-4" aria-hidden="true"><i></i></span>
-        <h3 class="text-xl mb-5">{t('who.maynot.title')}</h3>
-        <ul class="ticks">{raw<string[]>('who.maynot.items').map((it) => <li set:html={it} />)}</ul>
-      </div>
+    <div class="prompt-register">
+      <h3 class="text-xl">{t('prompts.listTitle')}</h3>
+      <ul dir="auto">
+        {raw<string[]>('prompts.items').map((it) => <li set:html={it} />)}
+      </ul>
+      <p set:html={t('prompts.text')} />
     </div>
-    <p class="mt-10 max-w-[40em] text-muted" set:html={t('who.note')} />
   </Section>
 
   <Section title={t('cost.title')} lede={t('cost.lede')} hue="gold">
-    <div class="grid gap-10 lg:grid-cols-2 items-start">
-      <CodeBlock code={cost} title={t('cost.codeTitle')} />
-      <Callout title={t('cost.honestTitle')} hue="gold"><p set:html={t('cost.honest')} /></Callout>
+    <div class="cost-ledger">
+      <div class="cost-command"><CodeBlock code={cost} title={t('cost.codeTitle')} /></div>
+      <aside data-hue="gold">
+        <h3 class="text-xl">{t('cost.honestTitle')}</h3>
+        <p set:html={t('cost.honest')} />
+      </aside>
     </div>
   </Section>
 
@@ -85,3 +108,47 @@ const cost = [
   <NextPages title={t('next.title')} items={next} />
   <CtaBand />
 </Base>
+
+<style>
+  .access-register { margin-block-start: 3rem; border-block-start: 1px solid var(--line); }
+  .access-register h3 { padding-block: 1.25rem; border-block-end: 1px solid var(--line); }
+  .access-register ul { display: grid; }
+  .access-register li { position: relative; padding-block: 1rem; padding-inline-start: 1.5rem; border-block-end: 1px solid var(--line); }
+  .access-register li::before { content: ''; position: absolute; inset-inline-start: 0; inset-block: 1rem; inline-size: 0.3rem; background: var(--hue); }
+  .record-index { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue); font-variant-numeric: tabular-nums; }
+  .scenario-ledger { border-block-start: 1px solid var(--line); }
+  .scenario-ledger article { display: grid; gap: 0.75rem; padding-block: 1.5rem; border-block-end: 1px solid var(--line); border-inline-start: 0.25rem solid var(--hue); padding-inline-start: 1rem; }
+  .decision-note { display: grid; grid-template-columns: auto minmax(0, 46em); gap: 1rem; align-items: start; margin-block-start: 2rem; padding-block: 1.5rem; border-block: 1px solid var(--line); }
+  .decision-note .bars { block-size: 1.1rem; gap: 0.25rem; margin-block-start: 0.25em; }
+  .decision-note p { color: var(--muted); }
+  .prompt-register { border-block-start: 1px solid var(--line); }
+  .prompt-register h3 { padding-block: 1.25rem; border-block-end: 1px solid var(--line); }
+  .prompt-register ul { display: grid; }
+  .prompt-register li { position: relative; padding-block: 1rem; padding-inline-start: 1.5rem; border-block-end: 1px solid var(--line); }
+  .prompt-register li::before { content: ''; position: absolute; inset-inline-start: 0; inset-block: 1rem; inline-size: 0.3rem; background: var(--hue); }
+  .prompt-register > p { margin-block-start: 2rem; }
+  .decision-rails { border-block-start: 1px solid var(--line); }
+  .decision-rails > section { display: grid; gap: 1.25rem; border-block-end: 1px solid var(--line); padding-block: 1.5rem; }
+  .decision-rails header { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: center; }
+  .decision-rails .bars { block-size: 1.1rem; gap: 0.25rem; }
+  .decision-rails ul { align-self: start; }
+  .decision-rails li { position: relative; padding-block: 0.7rem; padding-inline-start: 1.5rem; border-block-start: 1px solid var(--line); }
+  .decision-rails li::before { content: ''; position: absolute; inset-inline-start: 0; inset-block-start: 1.15rem; inline-size: 0.65rem; block-size: 0.65rem; border: 2px solid var(--hue); }
+  .cost-ledger { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .cost-ledger > * { background: var(--bg); }
+  .cost-command :global(.term) { block-size: 100%; border: 0; }
+  .cost-ledger aside { padding: 1.5rem; border-inline-start: 0.35rem solid var(--hue); }
+  .cost-ledger aside h3 { color: var(--hue); }
+  .cost-ledger aside p { margin-block-start: 1rem; }
+  @media (min-width: 48rem) {
+    .access-register ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .access-register li:nth-child(odd) { border-inline-end: 1px solid var(--line); padding-inline-end: 1.5rem; }
+    .access-register li:nth-child(even) { padding-inline-start: 1.5rem; }
+    .scenario-ledger article { grid-template-columns: 3rem minmax(13rem, 0.8fr) minmax(0, 1.2fr); gap: 1.5rem; padding-inline-start: 1.5rem; }
+    .decision-rails > section { grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr); gap: 2rem; align-items: start; }
+    .decision-rails ul { border-inline-start: 1px solid var(--line); padding-inline-start: 2rem; }
+    .decision-rails li:first-child { border-block-start: 0; padding-block-start: 0; }
+    .decision-rails li:first-child::before { inset-block-start: 0.45rem; }
+    .cost-ledger { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); align-items: stretch; }
+  }
+</style>

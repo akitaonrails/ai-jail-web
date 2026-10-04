@@ -3,8 +3,6 @@ import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
 import Figure from '@/components/Figure.astro';
-import FeatureGrid from '@/components/FeatureGrid.astro';
-import Callout from '@/components/Callout.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
 import Faq from '@/components/Faq.astro';
 import NextPages from '@/components/NextPages.astro';
@@ -14,7 +12,7 @@ import { faqPage, type Faq as FaqItem } from '@/lib/schema';
 import { localePaths, useI18n, withText } from '@/i18n';
 export const getStaticPaths = localePaths;
 
-const { t, raw, href, date } = useI18n(Astro, 'compare');
+const { t, raw, href, date, number } = useI18n(Astro, 'compare');
 const faq = raw<FaqItem[]>('faq.items');
 
 type Mode = { agent: string; mode: string; effect: string };
@@ -23,7 +21,6 @@ type Heavy = { tool: string; gives: string; costs: string };
 type Platform = { label: string; openshell: string; jail: string };
 const modes = raw<Mode[]>('prompts.modes');
 const rows = raw<Row[]>('table.rows');
-// The first rows are where a whole-process wrapper adds something (the network fence covers the whole tree too); the rest are where the built-ins are ahead.
 const JAIL_ROWS = 7;
 const groups = [
   { title: t('table.groupJail'), hue: 'orange', rows: rows.slice(0, JAIL_ROWS) },
@@ -47,45 +44,35 @@ const next = withText(
     <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
     <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
   </PageHero>
-  <div class="wrap pb-6" data-hue="cyan">
-    <p class="badge reviewed"><span class="bars" aria-hidden="true"><i></i></span><span>{t('hero.reviewed', { date: date(facts.reviewedAt) })}</span></p>
-  </div>
 
-  <Section id="tldr" title={t('tldr.title')} lede={t('tldr.lede')} hue="cyan" tint>
-    <FeatureGrid items={tldr} />
-  </Section>
-
-  <Section title={t('wall.title')} lede={t('wall.lede')} hue="cyan">
-    <Figure name="home-wrap" alt={t('wall.alt')} caption={t('wall.caption')} />
-    <p class="text-muted max-w-[40em]" set:html={t('wall.codex')} />
-  </Section>
-
-  <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="gold" tint>
-    <Figure name="compare-prompts-vs-walls" alt={t('prompts.alt')} caption={t('prompts.caption')} />
-    <h3 class="text-xl">{t('prompts.modesTitle')}</h3>
-    <p class="mt-3 text-muted max-w-[40em]">{t('prompts.modesNote')}</p>
-    <div class="table-wrap mt-6">
-      <table class="table-site">
-        <thead><tr><th scope="col">{t('prompts.cols.agent')}</th><th scope="col">{t('prompts.cols.mode')}</th><th scope="col">{t('prompts.cols.effect')}</th></tr></thead>
-        <tbody>
-          {modes.map((m) => (<tr><td>{m.agent}</td><td set:html={m.mode} /><td class="wide" set:html={m.effect} /></tr>))}
-        </tbody>
-      </table>
+  <Section id="tldr" title={t('tldr.title')} lede={t('tldr.lede')} hue="cyan">
+    <div class="fit-ledger">
+      {tldr.map((item, i) => (
+        <article class="fit-row" data-hue={item.hue}>
+          <span class="record-index" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
+          <h3 class="text-xl" set:html={item.title} />
+          <p class="text-muted" set:html={item.text} />
+        </article>
+      ))}
     </div>
   </Section>
 
   <Section id="table" title={t('table.title')} lede={t('table.lede')} hue="cyan">
-    <div class="table-wrap">
+    <div class="review-ledger">
+      <p>{t('hero.reviewed', { date: date(facts.reviewedAt) })}</p>
+      <p class="source-register" set:html={t('table.sources')} />
+    </div>
+    <div class="table-wrap compare-wrap" role="region" tabindex="0" aria-label={t('table.title')}>
       <table class="table-site compare">
         <thead>
           <tr>
-            <td></td>
+            <th scope="col">{t('table.cols.row')}</th>
             {columns.map((c) => <th scope="col" class:list={[c === 'jail' && 'jail']}>{t(`table.cols.${c}`)}</th>)}
           </tr>
         </thead>
         {groups.map((g) => (
           <tbody data-hue={g.hue}>
-            <tr class="group"><th scope="colgroup" colspan={columns.length + 1}><span class="bars" aria-hidden="true"><i></i></span>{g.title}</th></tr>
+            <tr class="group"><th scope="rowgroup" colspan={columns.length + 1}><span class="bars" aria-hidden="true"><i></i></span>{g.title}</th></tr>
             {g.rows.map((r) => (
               <tr>
                 <th scope="row" set:html={r.label} />
@@ -98,55 +85,92 @@ const next = withText(
         ))}
       </table>
     </div>
-    <p class="mt-5 text-sm text-muted max-w-[60em]" set:html={t('table.sources')} />
-    <h3 class="text-xl mt-12">{t('table.cardsTitle')}</h3>
-    <div class="grid gap-x-8 md:grid-cols-2">
-      <Callout title={t('table.runtimeTitle')} hue="cyan"><p set:html={t('table.runtimeText')} /></Callout>
-      <Callout title={t('table.codexTitle')} hue="cyan"><p set:html={t('table.codexText')} /></Callout>
-      <Callout title={t('table.antigravityTitle')} hue="gold"><p set:html={t('table.antigravityText')} /></Callout>
-      <Callout title={t('table.opencodeTitle')} hue="gold"><p set:html={t('table.opencodeText')} /></Callout>
+
+    <div class="evidence-group">
+      <h3 class="text-xl">{t('table.cardsTitle')}</h3>
+      <div class="evidence-ledger">
+        <article data-hue="cyan"><h4 set:html={t('table.runtimeTitle')} /><p set:html={t('table.runtimeText')} /></article>
+        <article data-hue="cyan"><h4 set:html={t('table.codexTitle')} /><p set:html={t('table.codexText')} /></article>
+        <article data-hue="gold"><h4 set:html={t('table.antigravityTitle')} /><p set:html={t('table.antigravityText')} /></article>
+        <article data-hue="gold"><h4 set:html={t('table.opencodeTitle')} /><p set:html={t('table.opencodeText')} /></article>
+      </div>
     </div>
-    <h3 id="wrappers" class="text-xl mt-12 scroll-mt-24">{t('table.wrappersTitle')}</h3>
-    <p class="mt-3 text-muted max-w-[46em]" set:html={t('table.wrappersLead')} />
-    <div class="grid gap-x-8 md:grid-cols-2">
-      <Callout title={t('table.nonoTitle')} hue="orange"><p set:html={t('table.nonoText')} /></Callout>
-      <Callout title={t('table.zeroboxTitle')} hue="orange"><p set:html={t('table.zeroboxText')} /></Callout>
+
+    <div class="evidence-group">
+      <h3 id="wrappers" class="text-xl scroll-mt-24">{t('table.wrappersTitle')}</h3>
+      <p class="group-lede" set:html={t('table.wrappersLead')} />
+      <div class="evidence-ledger wrappers-ledger">
+        <article data-hue="orange"><h4 set:html={t('table.nonoTitle')} /><p set:html={t('table.nonoText')} /></article>
+        <article data-hue="orange"><h4 set:html={t('table.zeroboxTitle')} /><p set:html={t('table.zeroboxText')} /></article>
+      </div>
     </div>
   </Section>
 
-  <Section id="both" title={t('both.title')} lede={t('both.lede')} hue="orange" tint fill>
-    <div class="grid gap-4 md:grid-cols-2">
-      <CodeBlock code={RECIPE_FILTERED} title={t('both.codeFiltered')} />
-      <CodeBlock code={RECIPE_OPEN} title={t('both.codeOpen')} />
+  <Section title={t('wall.title')} lede={t('wall.lede')} hue="cyan">
+    <Figure name="home-wrap" alt={t('wall.alt')} caption={t('wall.caption')} />
+    <p class="evidence-note" set:html={t('wall.codex')} />
+  </Section>
+
+  <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="gold" tint>
+    <Figure name="compare-prompts-vs-walls" alt={t('prompts.alt')} caption={t('prompts.caption')} />
+    <div class="table-intro">
+      <h3 class="text-xl">{t('prompts.modesTitle')}</h3>
+      <p class="text-muted">{t('prompts.modesNote')}</p>
     </div>
-    <p class="mt-4 text-muted max-w-[40em]" set:html={t('both.codeNote')} />
+    <div class="table-wrap" role="region" tabindex="0" aria-label={t('prompts.modesTitle')}>
+      <table class="table-site">
+        <thead><tr><th scope="col">{t('prompts.cols.agent')}</th><th scope="col">{t('prompts.cols.mode')}</th><th scope="col">{t('prompts.cols.effect')}</th></tr></thead>
+        <tbody>
+          {modes.map((m) => (<tr><td>{m.agent}</td><td set:html={m.mode} /><td class="wide" set:html={m.effect} /></tr>))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section id="both" title={t('both.title')} lede={t('both.lede')} hue="orange" tint>
+    <div class="recipe-ledger">
+      <div><CodeBlock code={RECIPE_FILTERED} title={t('both.codeFiltered')} /></div>
+      <div><CodeBlock code={RECIPE_OPEN} title={t('both.codeOpen')} /></div>
+    </div>
+    <p class="evidence-note" set:html={t('both.codeNote')} />
     <Figure name="compare-layers-together" alt={t('both.alt')} caption={t('both.caption')} />
-    <FeatureGrid items={together} cols={2} />
-    <Callout title={t('both.nestedTitle')}><p set:html={t('both.nestedText')} /></Callout>
+    <div class="layer-ledger">
+      {together.map((item, i) => (
+        <article data-hue={item.hue}>
+          <span class="record-index" aria-hidden="true">{number(i + 1, { minimumIntegerDigits: 2, useGrouping: false })}</span>
+          <h3 class="text-xl" set:html={item.title} />
+          <p class="text-muted" set:html={item.text} />
+        </article>
+      ))}
+    </div>
+    <aside class="boundary-note" data-hue="red">
+      <h3 class="text-xl">{t('both.nestedTitle')}</h3>
+      <p set:html={t('both.nestedText')} />
+    </aside>
   </Section>
 
   <Section id="containers" title={t('heavy.title')} lede={t('heavy.lede')} hue="red">
-    <div class="table-wrap">
+    <div class="table-wrap" role="region" tabindex="0" aria-label={t('heavy.title')}>
       <table class="table-site">
-        <thead><tr><td></td><th scope="col">{t('heavy.cols.gives')}</th><th scope="col">{t('heavy.cols.costs')}</th></tr></thead>
+        <thead><tr><th scope="col">{t('heavy.cols.tool')}</th><th scope="col">{t('heavy.cols.gives')}</th><th scope="col">{t('heavy.cols.costs')}</th></tr></thead>
         <tbody>
           {heavy.map((h) => (<tr><th scope="row">{h.tool}</th><td class="wide" set:html={h.gives} /><td class="wide" set:html={h.costs} /></tr>))}
         </tbody>
       </table>
     </div>
-    <p class="mt-6 text-muted max-w-[40em]" set:html={t('heavy.note')} />
+    <p class="evidence-note" set:html={t('heavy.note')} />
   </Section>
 
   <Section id="platforms" title={t('platforms.title')} lede={t('platforms.lede')} hue="gold" tint>
-    <div class="table-wrap">
+    <div class="table-wrap" role="region" tabindex="0" aria-label={t('platforms.title')}>
       <table class="table-site">
-        <thead><tr><td></td><th scope="col">{t('platforms.cols.openshell')}</th><th scope="col" data-hue="cyan" class="jail">{t('platforms.cols.jail')}</th></tr></thead>
+        <thead><tr><th scope="col">{t('platforms.cols.row')}</th><th scope="col">{t('platforms.cols.openshell')}</th><th scope="col" data-hue="cyan" class="jail">{t('platforms.cols.jail')}</th></tr></thead>
         <tbody>
           {platforms.map((p) => (<tr><th scope="row">{p.label}</th><td class="wide" set:html={p.openshell} /><td class="wide jail" data-hue="cyan" set:html={p.jail} /></tr>))}
         </tbody>
       </table>
     </div>
-    <p class="mt-6 text-muted max-w-[40em]" set:html={t('platforms.note')} />
+    <p class="evidence-note" set:html={t('platforms.note')} />
   </Section>
 
   <Faq items={faq} title={t('faq.title')} hue="cyan" />
@@ -155,15 +179,53 @@ const next = withText(
 </Base>
 
 <style>
-  .reviewed { border-radius: 0.9rem; align-items: flex-start; padding: 0.5rem 0.9rem; font-weight: 500; max-width: 46em; }
-  .reviewed .bars { block-size: 1rem; gap: 0.25rem; flex-shrink: 0; margin-block-start: 0.2em; }
-  .table-site tbody th[scope='row'] { background: none; white-space: normal; min-width: 11rem; vertical-align: top; border-block-start: 1px solid var(--line); }
+  .review-ledger { display: grid; gap: 1rem; align-items: start; margin-block-end: 1.5rem; padding-block: 1rem; border-block: 1px solid var(--line); }
+  .review-ledger p { color: var(--muted); font-size: var(--text-sm); }
+  .review-ledger .source-register { margin-block-start: 0; }
+  .fit-ledger { border-block-start: 1px solid var(--line); }
+  .fit-row { display: grid; gap: 0.75rem; padding-block: 1.5rem; border-block-end: 1px solid var(--line); border-inline-start: 0.25rem solid var(--hue); padding-inline-start: 1rem; }
+  .record-index { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--hue); font-variant-numeric: tabular-nums; }
+  .evidence-note, .source-register { max-inline-size: 60em; margin-block-start: 1.5rem; padding-inline-start: 1rem; border-inline-start: 0.25rem solid var(--hue); color: var(--muted); }
+  .table-intro { display: grid; gap: 0.75rem; max-inline-size: 46em; margin-block: 3rem 1.5rem; }
+  .table-wrap { max-inline-size: 100%; border-radius: 0; }
+  .table-wrap:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+  .table-site { inline-size: 100%; }
+  .table-site th { font-family: var(--font-display); }
+  .table-site tbody th[scope='row'] { background: none; white-space: normal; min-inline-size: 11rem; vertical-align: top; border-block-start: 1px solid var(--line); }
   .table-site thead td { background: var(--tint); }
-  .table-site td.wide { min-width: 16rem; }
-  .compare td { min-width: 14rem; }
+  .table-site td.wide { min-inline-size: 16rem; }
+  .compare td { min-inline-size: 14rem; }
   .table-site .jail { background: var(--hue-soft); }
   .table-site thead .jail { color: var(--hue); }
-  .compare .group th { background: none; color: var(--hue); padding-block: 1.4rem 0.7rem; border-block-start: 1px solid var(--line); white-space: normal; }
+  .compare .group th { background: var(--surface); color: var(--hue); padding-block: 1.4rem 0.7rem; border-block-start: 1px solid var(--line); white-space: normal; }
   .compare .group .bars { display: inline-flex; block-size: 0.9rem; gap: 0.22rem; margin-inline-end: 0.6rem; vertical-align: -0.05em; }
   .compare td.none { color: var(--muted); font-style: italic; }
+  @media (max-width: 63.999rem) {
+    .compare-wrap { --row-label-width: 7rem; --data-column-width: min(14rem, calc(100vw - 2.5rem - var(--row-label-width) - 4px)); max-block-size: min(70vh, 36rem); overflow: auto; }
+    .compare { table-layout: fixed; inline-size: calc(var(--row-label-width) + 4 * var(--data-column-width)); }
+    .compare td, .compare thead th { inline-size: var(--data-column-width); min-inline-size: 0; overflow-wrap: anywhere; white-space: normal; }
+    .compare thead th { position: sticky; inset-block-start: 0; z-index: 3; background: var(--tint); }
+    .compare thead .jail { background: var(--hue-soft); }
+    .compare tbody th[scope='row'] { position: sticky; inset-inline-start: 0; z-index: 2; inline-size: var(--row-label-width); min-inline-size: 0; overflow-wrap: anywhere; background: var(--surface); }
+    .compare thead th:first-child { inset-inline-start: 0; z-index: 4; inline-size: var(--row-label-width); }
+  }
+  .evidence-group { margin-block-start: 3rem; }
+  .group-lede { max-inline-size: 46em; margin-block-start: 0.75rem; color: var(--muted); }
+  .evidence-ledger { margin-block-start: 1.5rem; border-block-start: 1px solid var(--line); }
+  .evidence-ledger article { display: grid; gap: 0.75rem; padding-block: 1.5rem; border-block-end: 1px solid var(--line); }
+  .evidence-ledger h4 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; line-height: 1.2; color: var(--hue); }
+  .evidence-ledger p { max-inline-size: 52em; color: var(--muted); }
+  .recipe-ledger { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .recipe-ledger > * { background: var(--bg); }
+  .layer-ledger { margin-block-start: 3rem; border-block-start: 1px solid var(--line); }
+  .layer-ledger article { display: grid; gap: 0.75rem; padding-block: 1.5rem; border-block-end: 1px solid var(--line); border-inline-start: 0.25rem solid var(--hue); padding-inline-start: 1rem; }
+  .boundary-note { display: grid; gap: 0.75rem; max-inline-size: 52em; margin-block-start: 2rem; padding-block: 1.5rem; padding-inline-start: 1.25rem; border-block: 1px solid var(--line); border-inline-start: 0.35rem solid var(--hue); }
+  .boundary-note h3 { color: var(--hue); }
+  @media (min-width: 48rem) {
+    .review-ledger { grid-template-columns: minmax(14rem, 0.6fr) minmax(0, 1.4fr); gap: 2rem; }
+    .fit-row { grid-template-columns: 3rem minmax(12rem, 0.75fr) minmax(0, 1.25fr); gap: 1.5rem; padding-inline-start: 1.5rem; }
+    .evidence-ledger article { grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr); gap: 2rem; }
+    .recipe-ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .layer-ledger article { grid-template-columns: 3rem minmax(14rem, 0.8fr) minmax(0, 1.2fr); gap: 1.5rem; padding-inline-start: 1.5rem; }
+  }
 </style>

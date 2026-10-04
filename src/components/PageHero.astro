@@ -1,14 +1,20 @@
 ---
-// Top of every detail page. Slot: one or two buttons.
 import type { Hue } from '@/data/site';
 interface Props { hue: Hue; kicker: string; title: string; lede: string }
 const { hue, kicker, title, lede } = Astro.props;
 ---
-<section data-hue={hue} class="pt-36 pb-10 md:pt-44">
+<section data-hue={hue} class="page-hero pt-32 pb-12 md:pt-40 md:pb-16">
   <div class="wrap">
-    <div class="flex items-center gap-3 mb-6"><span class="bars" aria-hidden="true"><i></i></span><span class="kicker">{kicker}</span></div>
-    <h1 class="text-4xl max-w-[15em]" data-reveal>{title}</h1>
-    <p class="lede mt-7 !text-[1.35rem]">{lede}</p>
-    {Astro.slots.has('default') && <div class="mt-9 flex flex-wrap gap-3"><slot /></div>}
+    <div class="page-hero-label"><span class="bars" aria-hidden="true"><i></i></span><span class="kicker">{kicker}</span></div>
+    <div class="page-hero-body">
+      <h1 class="text-4xl max-w-[15em]">{title}</h1>
+      <p class="lede !text-[1.35rem]">{lede}</p>
+      {Astro.slots.has('default') && <div class="flex flex-wrap gap-3"><slot /></div>}
+    </div>
   </div>
 </section>
+<style>
+  .page-hero { border-block-end: 1px solid var(--line); }
+  .page-hero-label { display: flex; align-items: center; gap: 0.8rem; padding-block-end: 1rem; border-block-end: 1px solid var(--line); }
+  .page-hero-body { display: grid; gap: 1.75rem; padding-block-start: clamp(2rem, 5vw, 4rem); border-inline-start: 0.25rem solid var(--hue-vivid); padding-inline-start: clamp(1rem, 3vw, 2rem); }
+</style>

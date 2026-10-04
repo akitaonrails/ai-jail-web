@@ -1,16 +1,12 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import Section from '@/components/Section.astro';
 import Figure from '@/components/Figure.astro';
-import FeatureGrid from '@/components/FeatureGrid.astro';
 import Reach from '@/components/Reach.astro';
-import Callout from '@/components/Callout.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
 import Faq from '@/components/Faq.astro';
 import CtaBand from '@/components/CtaBand.astro';
 import Lockdown from '@/components/Lockdown.astro';
-import logo from '@/assets/img/logo.png';
 import { site } from '@/data/site';
 import { faqPage, type Faq as FaqItem } from '@/lib/schema';
 import { localePaths, useI18n, withText } from '@/i18n';
@@ -22,10 +18,10 @@ const points = withText([{ hue: 'orange' }, { hue: 'gold' }, { hue: 'red' }] as 
 type Item = { text: string };
 ---
 <Base schema={[faqPage(faq)]}>
-  <section class="hero" data-exit>
-    <div class="wrap grid items-center gap-10 lg:grid-cols-[1.25fr_1fr] pt-32 pb-16 md:pt-40 md:pb-24">
+  <section class="hero">
+    <div class="wrap hero-layout">
       <div>
-        <h1 class="text-4xl" data-reveal>{t('hero.title')}</h1>
+        <h1 class="text-4xl">{t('hero.title')}</h1>
         <p class="lede mt-7 !text-[1.3rem]">{t('hero.lede')}</p>
         <div class="mt-8 max-w-md"><CodeBlock code={'cd ~/Projects/my-app\nai-jail claude'} /></div>
         <div class="mt-8 flex flex-wrap gap-3">
@@ -33,22 +29,49 @@ type Item = { text: string };
           <a href={href('/why/')} class="btn btn-ghost">{t('hero.why')}</a>
         </div>
       </div>
-      <div class="relative justify-self-center" data-parallax="0.08">
-        <div class="hero-glow" aria-hidden="true"></div>
-        <Image src={logo} alt={t('hero.logoAlt')} widths={[320, 480, 720, 960]} sizes="(min-width: 1024px) 30rem, 70vw" loading="eager" fetchpriority="high" class="relative w-[min(30rem,70vw)] h-auto" />
-      </div>
+      <aside class="proof-map" aria-labelledby="hero-proof-title">
+        <h2 id="hero-proof-title">{t('scene.label')}</h2>
+        <div class="proof-row" data-state="inside">
+          <span><span>{t('scene.project')}</span><code dir="ltr">~/Projects/my-app</code></span>
+          <strong>{t('reach.inside')}</strong>
+        </div>
+        <div class="proof-row" data-state="inside">
+          <code dir="ltr">~/.claude</code>
+          <strong>{t('reach.inside')}</strong>
+        </div>
+        <div class="proof-row" data-state="blocked">
+          <span class="tokens"><code dir="ltr">~/.ssh</code><code dir="ltr">~/.aws</code></span>
+          <strong>{t('reach.blocked')}</strong>
+        </div>
+        <div class="proof-row" data-state="blocked">
+          <span>{t('scene.tiles.projects')}</span>
+          <strong>{t('reach.blocked')}</strong>
+        </div>
+        <div class="proof-row" data-state="optin">
+          <span>{t('scene.tiles.network')}</span>
+          <strong>{t('reach.optin')}</strong>
+        </div>
+      </aside>
     </div>
   </section>
 
   <Lockdown />
 
-  <Section title={t('wrap.title')} lede={t('wrap.lede')} hue="cyan" fill>
+  <section class="wrap limit-ledger" data-hue="red">
+    <h2 class="text-2xl">{t('limits.title')}</h2>
+    <div class="prose-site mt-4">
+      <p set:html={t('limits.text')} />
+      <p><a class="link" href={href('/security/')}>{t('limits.link')}</a></p>
+    </div>
+  </section>
+
+  <Section title={t('wrap.title')} lede={t('wrap.lede')} hue="cyan">
     <Figure name="home-wrap" alt={t('wrap.alt')} caption={t('wrap.caption')} />
     <a href={href('/compare/')} class="btn btn-ghost">{t('wrap.link')}</a>
   </Section>
 
   <Section title={t('defaults.title')} lede={t('defaults.lede')} hue="gold" tint>
-    <div class="grid gap-10 md:grid-cols-3" data-reveal="children">
+    <div class="grid gap-10 md:grid-cols-3">
       <Reach title={t('reach.inside')} items={raw<Item[]>('defaults.inside')} state="inside" />
       <Reach title={t('reach.blocked')} items={raw<Item[]>('defaults.blocked')} state="blocked" />
       <Reach title={t('reach.optin')} items={raw<Item[]>('defaults.optin')} state="optin" />
@@ -57,19 +80,23 @@ type Item = { text: string };
   </Section>
 
   <Section title={t('how.title')} lede={t('how.lede')} hue="orange">
-    <FeatureGrid items={points} />
+    <div class="mechanism-ledger">
+      {points.map((point) => (
+        <div data-hue={point.hue}>
+          <h3 class="text-xl" set:html={point.title} />
+          <p class="mt-2 text-muted" set:html={point.text} />
+        </div>
+      ))}
+    </div>
     <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('how.link')}</a>
   </Section>
 
-  <section class="wrap">
-    <Callout title={t('limits.title')}>
-      <p set:html={t('limits.text')} />
-      <p><a class="link" href={href('/security/')}>{t('limits.link')}</a></p>
-    </Callout>
-    <Callout title={t('pair.title')} hue="cyan">
+  <section class="wrap pair-ledger" data-hue="cyan">
+    <h2 class="text-2xl">{t('pair.title')}</h2>
+    <div class="prose-site mt-4">
       <p set:html={t('pair.text')} />
       <p><a class="link" href={site.sibling}>{t('pair.link')}</a></p>
-    </Callout>
+    </div>
   </section>
 
   <Faq items={faq} title={t('faq.title')} />
@@ -77,6 +104,29 @@ type Item = { text: string };
 </Base>
 
 <style>
-  .hero { background: var(--bg); transform-origin: 50% 100%; }
-  .hero-glow { position: absolute; inset: 8%; background: var(--spectrum); filter: blur(90px); opacity: 0.35; border-radius: 50%; }
+  .hero { background: var(--bg); border-block-end: 1px solid var(--line); }
+  .hero-layout { display: grid; gap: clamp(3rem, 8vw, 7rem); align-items: end; padding-block: clamp(8rem, 14vw, 11rem) clamp(4rem, 8vw, 7rem); }
+  .proof-map { border-block: 1.5px solid var(--line); }
+  .proof-map h2 { padding-block: 0.85rem; color: var(--muted); font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 600; letter-spacing: 0; line-height: 1.4; text-wrap: pretty; }
+  .proof-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; min-block-size: 3.5rem; padding-block: 0.7rem; border-block-start: 1px solid var(--line); }
+  .proof-row > span:first-child { display: grid; gap: 0.1rem; }
+  .proof-row code { inline-size: fit-content; direction: ltr; unicode-bidi: isolate; }
+  .proof-row strong { display: flex; gap: 0.65rem; align-items: center; max-inline-size: 9rem; color: var(--muted); font-size: var(--text-sm); line-height: 1.25; text-align: end; }
+  .proof-row strong::before { content: ''; flex: 0 0 auto; inline-size: 1rem; block-size: 1rem; }
+  .proof-row[data-state='inside'] strong::before { border: 0.3rem solid var(--v-cyan); border-radius: 50%; background: var(--bg); }
+  .proof-row[data-state='blocked'] strong::before { background: repeating-linear-gradient(90deg, var(--v-red) 0 0.18rem, transparent 0.18rem 0.4rem); }
+  .proof-row[data-state='optin'] strong::before { border: 0.3rem solid var(--v-gold); border-radius: 50%; background: var(--bg); }
+  .tokens { display: flex !important; flex-flow: row wrap; gap: 0.45rem 0.7rem !important; }
+  .limit-ledger, .pair-ledger { padding-block: clamp(3rem, 7vw, 5rem); border-block-end: 1px solid var(--line); }
+  .limit-ledger { border-inline-start: 0.35rem solid var(--v-red); padding-inline-start: clamp(1.25rem, 3vw, 2.5rem); }
+  .pair-ledger { border-inline-start: 0.35rem solid var(--v-cyan); padding-inline-start: clamp(1.25rem, 3vw, 2.5rem); }
+  .mechanism-ledger { display: grid; border-block: 1.5px solid var(--line); }
+  .mechanism-ledger > div { padding-block: 1.5rem; padding-inline-start: clamp(1rem, 3vw, 2rem); border-block-start: 1px solid var(--line); border-inline-start: 0.3rem solid var(--hue-vivid); }
+  .mechanism-ledger > div:first-child { border-block-start: 0; }
+
+  @media (min-width: 64rem) {
+    .hero-layout { grid-template-columns: minmax(0, 1.15fr) minmax(22rem, 0.85fr); }
+    .mechanism-ledger { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mechanism-ledger > div { border-block-start: 0; border-inline-start-width: 0.3rem; padding-inline: 1.5rem; }
+  }
 </style>

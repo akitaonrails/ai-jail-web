@@ -48,7 +48,7 @@
     "title": "並べて比べる",
     "lede": "ここに書いた内容はすべて、執筆時点の各製品のドキュメントに基づいています。私たちが読んだドキュメントに答えがなかった項目は、セルにそう記しています。",
     "undocumented": "記載なし",
-    "cols": { "row": "", "claude": "Claude Codeのサンドボックス", "codex": "Codex CLIのサンドボックス", "gemini": "Gemini CLIのサンドボックス", "jail": "ai-jail" },
+    "cols": { "row": "機能", "claude": "Claude Codeのサンドボックス", "codex": "Codex CLIのサンドボックス", "gemini": "Gemini CLIのサンドボックス", "jail": "ai-jail" },
     "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>。",
     "wrappersTitle": "ai-jailに似たラッパー",
     "wrappersLead": "ほかにも2つのオープンソースツールが、エージェントの周りにカーネルのサンドボックスを置きます。ai-jail 2.2は両方からアイデアを取り入れました。ファントム認証情報はzeroboxとnonoから、ハッシュチェーン付きの監査ログはnonoからです。どちらもRust製でApache-2.0、デーモンなしで動き、ai-jailと同じくカーネルはホストと共有します。",
@@ -196,7 +196,7 @@
   "heavy": {
     "title": "Docker、devコンテナ、仮想マシン",
     "lede": "これらも良い選択肢で、仮想マシンのほうが境界として強くなります。違いは、何をビルドし、何を更新し続ける必要があるかです。",
-    "cols": { "tool": "", "gives": "得られるもの", "costs": "かかるコスト" },
+    "cols": { "tool": "ツール", "gives": "得られるもの", "costs": "かかるコスト" },
     "rows": [
       { "tool": "Dockerコンテナ", "gives": "専用のファイルシステム、プロセス一覧、ネットワーク。エージェントに見えるのは、あなたがマウントしたものだけです。", "costs": "イメージのビルドと保守が必要で、ツールチェーンをもう一度インストールすることになります。Dockerソケットをマウントすると、そのコンテナはホストのroot相当になります。" },
       { "tool": "devコンテナ", "gives": "コンテナと同じ隔離。エディタが理解でき、チームで共有できるファイルに定義を書きます。", "costs": "同じくイメージの保守が必要です。加えて、この形式に対応したエディタかツールが要ります。" },
@@ -208,7 +208,7 @@
   "platforms": {
     "title": "エージェントのランタイムプラットフォーム",
     "lede": "<a class=\"link\" href=\"https://github.com/NVIDIA/OpenShell\">NVIDIA OpenShell</a>は別のカテゴリです。常駐するゲートウェイが各エージェントに専用のコンテナかMicroVMを与え、ネットワークの手前にポリシーエンジンを置きます。ai-jailは1つのコマンドを包み、それと一緒に終了する1つのプロセスです。以下は執筆時点、まだ1.0リリース前だったOpenShellのドキュメントに基づいています。",
-    "cols": { "row": "", "openshell": "OpenShell", "jail": "ai-jail" },
+    "cols": { "row": "機能", "openshell": "OpenShell", "jail": "ai-jail" },
     "rows": [
       { "label": "サンドボックスを動かすもの", "openshell": "Docker、Podman、Kubernetes、KVMのいずれかで動くゲートウェイデーモン。エージェントは同梱のコンテナイメージの中で動きます。", "jail": "バイナリだけです。エージェントは、マシンにすでにあるコンパイラやランタイムを使って、あなたのプロジェクトに対して動きます。" },
       { "label": "ネットワーク", "openshell": "デフォルトで拒否。ルールはプログラム、ホスト、ポートで照合し、オプションでメソッド、パス、MCPツールも検査できます。拒否されたエンドポイントは運用者側から承認できます。", "jail": "無効、ホスト単位のフィルタ付き、全開の3つ。フィルターは名前空間の柵とCONNECTプロキシで、ホストとポートは見えますが中身は見えません。許可したホストは丸ごと信頼されます。" },

@@ -7,9 +7,8 @@ interface Props { title?: string; text?: string }
 const { t, href } = useI18n(Astro);
 const { title = t('cta.title'), text = t('cta.text') } = Astro.props;
 ---
-<section class="on-ink band text-center relative overflow-hidden">
-  <div class="cta-glow" aria-hidden="true"></div>
-  <div class="wrap-narrow relative">
+<section class="cta-band on-ink band text-center">
+  <div class="wrap-narrow">
     <h2 class="text-3xl mx-auto max-w-[16em]">{title}</h2>
     <p class="lede mx-auto mt-5">{text}</p>
     <div class="mt-8 max-w-xl mx-auto"><CodeBlock code={'brew tap akitaonrails/tap && brew install ai-jail\nai-jail claude'} /></div>
@@ -20,5 +19,5 @@ const { title = t('cta.title'), text = t('cta.text') } = Astro.props;
   </div>
 </section>
 <style>
-  .cta-glow { position: absolute; inset-inline: 10%; bottom: -60%; height: 100%; background: var(--spectrum); filter: blur(120px); opacity: 0.28; border-radius: 50%; }
+  .cta-band { border-block-start: 0.25rem solid transparent; border-image: var(--spectrum) 1; }
 </style>

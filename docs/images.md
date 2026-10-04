@@ -1,38 +1,32 @@
-# Diagrams and illustrations
+# Diagrams and images
 
-The diagrams are generated with Google's Gemini image model (`gemini-3-pro-image`), then checked by eye. A generated diagram can misspell a label or draw something the product does not do, so nothing ships unseen.
+The site explains system behavior with deterministic HTML/CSS diagrams rendered by `src/components/Figure.astro`. Named figures use localized labels from `src/i18n/locales/<locale>/images.json`; they do not load the old generated WebP artwork.
 
-## Make or redo one
+## Add or change a technical diagram
 
-```bash
-export GEMINI_API_KEY=...          # https://aistudio.google.com/apikey
-$EDITOR scripts/prompts/how-layers.txt
-node scripts/gen-image.mjs how-layers               # 16:9
-node scripts/gen-image.mjs how-layers --aspect 4:3  # also 1:1, 21:9, 3:2
-```
+1. Add or update its topology in `Figure.astro`.
+2. Keep commands, paths, flags, product names and mechanism names in code when they do not need translation.
+3. Put every human-language label in the English `images.json`, then translate it in the other five locale catalogs.
+4. Give the figure concise alt text and, when useful, a visible caption in the page namespace.
+5. Run `npm run i18n:stamp`, `npm run check:i18n`, `npm run check:colors`, `npm run check` and `npm run build`.
+6. Inspect every locale at phone and desktop widths, including Hebrew direction and keyboard access.
 
-The result is `src/assets/img/gen/how-layers.webp`, 1920 px wide. Import it in a page and show it with `Figure`. Astro produces the responsive sizes at build time.
+## Drawing rules
 
-Every request gets two things added:
+- Show the actual process, path, layer, route or boundary. Do not substitute a decorative metaphor.
+- Use flat shapes, hard boundaries and consistent line weights. No glow, isometric perspective, particles or decorative grids.
+- Warm colors are enforcement. Cyan is the agent and what it can reach. Red bars are blocked. Gold is opt-in.
+- A route must visibly connect its source and destination. A stopped route must end at the boundary.
+- Keep shared-kernel diagrams honest: containers and ai-jail do not receive a separate kernel.
+- Keep Linux and macOS differences explicit where their guarantees differ.
+- Use real text. Technical geometry stays left to right; localized labels keep their own direction with `bdi`.
+- At 320 CSS pixels, the page must not scroll sideways. A complex diagram may simplify or stack, but it must not drop facts.
+- `role="img"` and a localized `aria-label` provide the concise alternative. Captions provide visible scope and caveats.
 
-- `scripts/prompts/_style.txt`, the art direction: dark maroon ground, the warm gold to magenta spectrum for the jail, cyan for the agent and what it may reach, short off-white labels. Change the look of the whole set there.
-- The logo, as a style reference. Pass `--no-ref` to leave it out.
+## Real screenshots
 
-## Writing a prompt that works
+`Figure` still accepts an imported image through its `src` prop for a real screenshot or other evidence that cannot be represented as HTML. The image needs localized alt text and must be inspected at phone width in both themes.
 
-- Describe the layout and the objects. Leave style to `_style.txt`.
-- Put every label in double quotes and keep them to one to three words. Eight labels is about the limit before spelling slips.
-- Say which way it reads: "left to right", "bottom to top".
-- State the facts the picture must get right ("the dashed arrows are optional paths").
+## Legacy generated artwork
 
-## Check before you commit
-
-1. Every label is spelled correctly and no invented text appears.
-2. The picture says nothing untrue about the product.
-3. The ground is the dark maroon. It has to sit inside the `Figure` frame in both themes.
-4. It is still readable at phone width.
-5. The `alt` text says what the diagram says, in a sentence.
-
-If it fails, change the prompt and run it again. If it fails three times, remove labels. The prompts are committed so any image can be reproduced or restyled later.
-
-Generation costs a few cents per image and is not part of the build. Netlify and GitHub Actions never need the key.
+The old files in `src/assets/img/gen/`, their prompts in `scripts/prompts/`, and the generation/localization scripts remain as source history. They are not part of the rendered site. Do not create new generated illustrations for technical explanations.

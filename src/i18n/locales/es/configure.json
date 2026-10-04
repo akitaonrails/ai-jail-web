@@ -330,8 +330,8 @@
   "lockdown": {
     "title": "Lockdown: que un agente lea código que no debe cambiar",
     "lede": "<code>--lockdown</code> es para revisiones y auditorías. El agente puede leer el proyecto y responder preguntas sobre él, pero no puede cambiar ni un archivo.",
-    "alt": "Dos paneles. En modo normal el agente está dentro del muro junto a una carpeta de proyecto que puede leer y escribir, y una carpeta /tmp. En lockdown el muro es más grueso, la carpeta del proyecto es de solo lectura y /tmp es el único lugar escribible.",
-    "caption": "El agente y el proyecto son los mismos, y solo un directorio temporal es escribible.",
+    "alt": "Dos paneles muestran al agente y al proyecto dentro del sandbox. El modo normal permite leer y escribir en el proyecto. Lockdown deja el proyecto en solo lectura.",
+    "caption": "El proyecto es de solo lectura en lockdown. En Linux solo se puede escribir en /tmp; en macOS no se puede escribir en ningún lugar.",
     "changes": "Qué cambia",
     "items": [
       {

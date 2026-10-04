@@ -76,14 +76,14 @@
   "egress": {
     "title": "Três caminhos até a rede",
     "lede": "Cada inicialização escolhe um de três modos de rede. O padrão é o mais restrito: nenhuma rota para fora, exceto, no Linux com as toolchains ligadas (o padrão), uma lista curta de registries de pacotes pelo proxy filtrado. Os outros dois são flags que você passa de propósito.",
-    "alt": "Três painéis, da esquerda para a direita. Desligada: o chip do agente dentro de um muro fechado, com uma nuvem apagada e gradeada do lado de fora. Filtrada: um portão pequeno no muro leva a uma caixa de proxy, que se conecta a uma nuvem ciano com o rótulo api.anthropic.com enquanto uma segunda nuvem continua apagada e gradeada. Aberta: o lado da rede do muro não existe, e o chip se conecta direto à nuvem.",
-    "caption": "Desligada é o padrão. Filtrada abre um portão só para hosts nomeados. Aberta remove o muro do lado da rede.",
+    "alt": "Quatro painéis, da esquerda para a direita. Padrão: Linux mostra o agente passando por um proxy até Registries (toolchains ligadas), com o restante da internet bloqueado. Padrão: macOS mostra o agente sem rota para fora. Filtrada mostra --allow-host passando pelo proxy até o host nomeado, enquanto outro host continua bloqueado. Aberta mostra --network conectando o agente direto à internet.",
+    "caption": "No Linux, o padrão libera os registries de pacotes das toolchains pelo proxy filtrado; <code>--no-network</code> fecha todas as rotas. No macOS, o padrão fica totalmente offline. <code>--allow-host</code> abre só os hosts nomeados, enquanto <code>--network</code> abre a rede.",
+    "head": { "behavior": "Comportamento", "linux": "Linux", "macos": "macOS" },
     "modes": [
       { "title": "Desligada", "text": "O padrão. O sandbox ganha um network namespace privado sem rota para fora. No Linux, com as toolchains ligadas (o padrão), o proxy filtrado ainda deixa passar <a class=\"link\" href=\"/configure/#toolchains\">uma lista fixa de registries de pacotes</a>, então <code>npm install</code> e <code>cargo build</code> funcionam; <code>--no-network</code> deixa tudo offline. No macOS os registries também ficam fechados. A API do próprio agente continua fechada até você abri-la." },
       { "title": "Filtrada", "text": "<code>--allow-host HOST</code>, pode ser repetida. O namespace continua fechado; uma ponte pequena lá dentro encaminha o tráfego para um proxy CONNECT do lado de fora, que disca só para os hosts listados e seus subdomínios. O proxy resolve cada nome uma vez, do lado de fora, e disca o endereço que conferiu. O ai-jail define <code>http_proxy</code> lá dentro, e um programa que ignora isso não alcança nada." },
       { "title": "Aberta", "text": "<code>--network</code>. O muro some do lado da rede, e o agente pode enviar para fora o que conseguir ler." }
     ],
-    "head": { "linux": "Linux", "macos": "macOS" },
     "rows": [
       { "what": "A cerca no modo filtrado", "linux": "O próprio network namespace, mais a ponte dentro dele", "macos": "Uma regra do <code>sandbox-exec</code> que permite conexões de saída só para a porta do proxy" },
       { "what": "DNS dentro do sandbox", "linux": "Falha. O proxy resolve os nomes do lado de fora.", "macos": "O resolver do sistema não fica cercado, então sobra um canal de DNS de baixa largura de banda" }
@@ -95,7 +95,7 @@
     "lede": "O macOS não tem namespaces, Landlock nem seccomp. O ai-jail transforma a mesma política num perfil para o <code>sandbox-exec</code>, o sandbox embutido da Apple. A documentação do ai-jail diz com todas as letras que isso não equivale ao isolamento do Linux.",
     "alt": "Dois painéis. À esquerda, Linux: o chip do agente e o projeto dele dentro de cinco muros concêntricos. À direita, macOS: o mesmo chip e o mesmo projeto dentro de um único muro, com o rótulo um perfil.",
     "caption": "O macOS recebe a mesma política e as mesmas flags, atrás de menos muros.",
-    "head": { "linux": "Linux", "macos": "macOS" },
+    "head": { "capability": "Capacidade", "linux": "Linux", "macos": "macOS" },
     "rows": [
       { "what": "Backend", "linux": "bubblewrap, depois Landlock, seccomp e limites de recursos", "macos": "<code>sandbox-exec</code> com um perfil gerado a cada inicialização. A Apple marcou a ferramenta como obsoleta, e não existe nada melhor sem extensões de kernel." },
       { "what": "Diretório home", "linux": "Um home novo, na memória. O seu home real não é montado.", "macos": "O perfil começa sem nenhuma leitura global e depois libera só os caminhos de que o agente precisa, então o seu home real continua fechado." },

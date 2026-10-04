@@ -85,8 +85,13 @@
   "egress": {
     "title": "Tres caminos hacia la red",
     "lede": "Cada arranque elige uno de tres modos de red. El predeterminado es el más estricto: sin salida, salvo, en Linux con las toolchains activadas (el valor por defecto), una lista corta de registries de paquetes a través del proxy filtrado. Los otros dos son flags que pasas a propósito.",
-    "alt": "Tres paneles, de izquierda a derecha. Apagada: el chip del agente dentro de un muro cerrado, con una nube atenuada y tras barrotes fuera. Filtrada: una puerta pequeña en el muro lleva a una caja de proxy, que conecta con una nube cian con la etiqueta api.anthropic.com mientras una segunda nube sigue atenuada y tras barrotes. Abierta: falta el lado de red del muro y el chip conecta directo con la nube.",
-    "caption": "Apagada es el valor por defecto. Filtrada abre una puerta solo hacia hosts con nombre. Abierta quita el muro del lado de la red.",
+    "alt": "Cuatro paneles, de izquierda a derecha. Predeterminado: Linux muestra al agente conectado mediante un proxy a Registries (toolchains activadas), con el resto de internet bloqueado. Predeterminado: macOS muestra al agente sin salida. Filtrada muestra --allow-host pasando por el proxy hasta el host indicado, mientras otro host sigue bloqueado. Abierta muestra --network conectando al agente directamente a internet.",
+    "caption": "En Linux, el valor predeterminado permite los registries de paquetes de las toolchains a través del proxy filtrado; <code>--no-network</code> cierra todas las salidas. En macOS, el valor predeterminado queda totalmente sin conexión. <code>--allow-host</code> abre solo los hosts indicados, mientras <code>--network</code> abre la red.",
+    "head": {
+      "behavior": "Comportamiento",
+      "linux": "Linux",
+      "macos": "macOS"
+    },
     "modes": [
       {
         "title": "Apagada",
@@ -101,10 +106,6 @@
         "text": "<code>--network</code>. El muro desaparece del lado de la red, y el agente puede enviar fuera todo lo que puede leer."
       }
     ],
-    "head": {
-      "linux": "Linux",
-      "macos": "macOS"
-    },
     "rows": [
       {
         "what": "La valla en modo filtrado",
@@ -125,6 +126,7 @@
     "alt": "Dos paneles. A la izquierda, Linux: el chip del agente y su proyecto dentro de cinco muros concéntricos. A la derecha, macOS: el mismo chip y el mismo proyecto dentro de un solo muro, con la etiqueta un perfil.",
     "caption": "macOS recibe la misma política y los mismos flags detrás de menos muros.",
     "head": {
+      "capability": "Capacidad",
       "linux": "Linux",
       "macos": "macOS"
     },
