@@ -6,10 +6,10 @@ The website for [ai-jail](https://github.com/akitaonrails/ai-jail), an OS sandbo
 npm install
 npm run dev        # http://localhost:4321
 npm run build      # static site in dist/
-npm run check:colors && npm run check:i18n
+npm run check && npm run check:colors && npm run check:i18n
 ```
 
-Astro 7, Tailwind 4, GSAP for scroll motion, six languages (en, pt-br, es, he, ja, ko). Deployed on Netlify from `main`; the build writes `_redirects` so a first visit lands on the visitor's language at the edge.
+Astro 7, Tailwind 4, GSAP for scroll motion, six languages (en, pt-br, es, he, ja, ko). Deployed on Netlify from `main`; a small browser script sends first-time visitors to their browser language, and the build writes localized 404 fallbacks to `_redirects`.
 
 | Read | For |
 |---|---|

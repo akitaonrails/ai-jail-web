@@ -3,7 +3,7 @@
 // hues carry the same visual weight. Paste the output into src/styles/global.css between the PALETTE markers,
 // or run with --write to do that.   See docs/color-study.md.
 import { readFileSync, writeFileSync } from 'node:fs';
-import { clampChroma, formatHex } from 'culori';
+import { clampChroma } from 'culori';
 
 // Four warm hues from the padlock body, left to right, and the one cool hue of the chip.
 export const hues = { gold: 88, orange: 55, red: 27, magenta: 352, cyan: 215 };

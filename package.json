@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "check": "astro check",
     "preview": "astro preview",
     "check:colors": "node scripts/check-contrast.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
@@ -33,6 +34,8 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "culori": "^4.0.2"
+    "@astrojs/check": "^0.9.10",
+    "culori": "^4.0.2",
+    "typescript": "^6.0.3"
   }
 }

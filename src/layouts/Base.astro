@@ -34,8 +34,6 @@ const alternates = localeCodes.map((l) => ({ hreflang: locales[l].htmlLang, url:
 const localeFonts = { he: fontsHe, ja: fontsJa, ko: fontsKo }[locale as string];
 const structuredData = siteGraph({ home, canonical: canonical.href, htmlLang, tagline, description, fullTitle, version: facts.version, extra: schema });
 
-// First-visit language detection for hosts without Netlify's edge redirect (and for `npm run preview`).
-// Only English pages run it. An `nf_lang` cookie, set by the language switcher, means the visitor already chose.
 const detect = locale === defaultLocale && !noindex
   ? Object.fromEntries(localeCodes.flatMap((l) => locales[l].match.map((m) => [m, l])))
   : null;

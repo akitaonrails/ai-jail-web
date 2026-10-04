@@ -2,7 +2,7 @@
 // Usage: GEMINI_API_KEY=... node scripts/gen-image.mjs <name> [--aspect 16:9] [--model gemini-3-pro-image] [--no-ref]
 // The prompt is read from scripts/prompts/<name>.txt; scripts/prompts/_style.txt is appended to every prompt,
 // and the project logo is sent as a style reference so the whole set stays in one visual family.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const [name, ...rest] = process.argv.slice(2);
