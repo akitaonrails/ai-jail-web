@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Install ai-jail and run your first jailed agent",
-    "description": "Install ai-jail with Homebrew, the AUR, cargo or Nix, preview the sandbox with a dry run, then start Claude Code or Codex already signed in and able to reach its own API, nothing else."
+    "description": "Install ai-jail with Homebrew, the AUR, cargo or Nix, preview the sandbox with a dry run, then start Claude Code or Codex signed in, with only its own API reachable."
   },
   "hero": {
     "title": "Install it, look inside, run your agent",
@@ -48,9 +48,9 @@
   },
   "first": {
     "title": "Your first run",
-    "lede": "Three commands take you from a plan, to a look inside, to a working agent. The agent's login is already inside, and ai-jail opens the route to its API host for you.",
+    "lede": "Three commands: a plan, a look inside, a working agent. The login is already inside, and ai-jail opens the route to the agent's API host for you.",
     "alt": "Three panels from left to right. Dry run: the cell is only a dashed outline and the agent waits outside. Look around: the cell is solid and holds a terminal and the project folder. Run the agent: the agent, the project and the agent's login card are inside, with one opening in the wall, a gate to the agent's API host that ai-jail opened itself. Your home folder stays barred outside in all three.",
-    "caption": "Your home directory stays outside at every step, and the agent's login is inside from the start. In the last step the one gate a cloud agent needs, its API host, is opened by ai-jail itself when it knows the agent. The rest of the network stays shut.",
+    "caption": "Your home directory stays outside at every step, and the agent's login is inside from the start. In the last step ai-jail opens the one gate a cloud agent needs, its API host, when it knows the agent. The rest of the network stays shut.",
     "steps": [
       {
         "title": "See the plan without running anything",
@@ -66,7 +66,7 @@
       },
       {
         "title": "When you need more",
-        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. An explicit list replaces the default, so include the API host yourself. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
+        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. An explicit list replaces the default, so include the API host. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
       }
     ],
     "codeTitles": [
@@ -145,7 +145,7 @@
       "prime": "Only the agent's own folder, never the whole <code>~/.prime</code>."
     },
     "aimemoryState": "The launched agent's folders",
-    "more": "The same works for <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> and <code>omp</code>. Any other command runs too, with the same jail and no login folder. The API host is opened by default for <code>claude</code>, <code>codex</code>, <code>gemini</code> and <code>grok</code>; other agents need <code>--allow-host</code> or <code>--network</code>."
+    "more": "The same works for <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> and <code>omp</code>. Any other command runs too, with the same jail and no login folder. ai-jail opens the API host by default for <code>claude</code>, <code>codex</code>, <code>gemini</code> and <code>grok</code>; other agents need <code>--allow-host</code> or <code>--network</code>."
   },
   "next": {
     "items": [

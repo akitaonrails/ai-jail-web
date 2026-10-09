@@ -76,7 +76,7 @@
       "optin": "# another agent, or one more host, needs a flag"
     },
     "honestTitle": "The honest cost",
-    "honest": "The plain command works for Claude, Codex, Gemini and Grok: each reaches its own API and nothing else. Anything more needs a flag: <code>--allow-host</code> for another agent's API or an extra host (the list you pass replaces the default, so name the API host too), <code>--network</code> for the whole internet. Save the setting in a config file and you type it once. <a class=\"link\" href=\"/configure/\">See every switch</a>."
+    "honest": "The plain command works for Claude, Codex, Gemini and Grok: each reaches its own API and no other host. Anything more needs a flag: <code>--allow-host</code> for another agent's API or an extra host (the list you pass replaces the default, so name the API host too), <code>--network</code> for the whole internet. Save it in a config file and you type it once. <a class=\"link\" href=\"/configure/\">See every switch</a>."
   },
   "faq": {
     "title": "Questions newcomers ask",

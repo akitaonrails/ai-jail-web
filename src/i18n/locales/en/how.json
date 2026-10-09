@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "What happens when you type ai-jail claude",
-    "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off. The network is closed except the agent's own API host, opened to a few named hosts, or fully open: you choose per launch.",
+    "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off. Per launch, the network is closed apart from the agent's own API host, open to a few named hosts, or fully open.",
     "install": "Install",
     "security": "Read the threat model"
   },
@@ -84,7 +84,7 @@
   },
   "egress": {
     "title": "Three ways to the network",
-    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except what the filtered proxy lets through: a known agent's own API host on both platforms, and on Linux with toolchains on (the default), a short list of package registries. The other two are flags you pass on purpose.",
+    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out except what the filtered proxy lets through, which is a known agent's own API host on both platforms and, on Linux with toolchains on (the default), a short list of package registries. The other two are flags you pass on purpose.",
     "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
     "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
     "modes": [
