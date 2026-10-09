@@ -39,7 +39,7 @@
         "title": "Rede e serviços",
         "rows": [
           { "text": "A rede inteira. Tudo o que o agente consegue ler, ele consegue enviar para fora. Se o agente só precisa de alguns hosts, <code>--allow-host</code> é a escolha mais apertada. Sem nenhuma das duas flags, o sandbox alcança só os <a class=\"link\" href=\"#toolchains\">registries de pacotes</a> que as toolchains abrem pelo proxy, mais o único host da API de um agente conhecido (Claude, Codex, Gemini, Grok), e <code>--no-network</code> fecha todos esses." },
-          { "text": "O sandbox alcança só o host listado e seus subdomínios, por TCP, pelo proxy embutido do ai-jail. A flag pode ser repetida. Uma lista explícita substitui o padrão, então inclua o host da API do agente. Não combina com <code>--network</code> nem com <code>--browser</code>, e um arquivo de projeto só pode encurtar a lista." },
+          { "text": "O sandbox alcança só o host listado e seus subdomínios, por TCP, pelo proxy embutido do ai-jail. A flag pode ser repetida. Desde a 2.8.1 a lista soma ao padrão, então um agente conhecido continua com o próprio host da API. Não combina com <code>--network</code> nem com <code>--browser</code>, e um arquivo de projeto só pode encurtar a lista." },
           { "text": "O seu <code>~/.ssh</code>, somente leitura, e o socket do seu agente SSH, para o <code>git push</code> funcionar." },
           { "text": "O socket do Docker. Na prática é root na sua máquina, porque o daemon pode subir containers que montam o host." },
           { "text": "O socket do Tailscale." },
@@ -180,7 +180,7 @@
     "lede": "O padrão é ajustado para o trabalho render. Cada passo abaixo fecha mais uma coisa, e <code>--lockdown</code> fecha quase todas de uma vez. <a class=\"link\" href=\"/security/\">Segurança explica do que cada uma protege</a>.",
     "items": [
       { "text": "O padrão: o login do agente e o próprio host da API, as suas toolchains no Linux, os registries de pacotes e o projeto com leitura e escrita." },
-      { "text": "<code>--no-network</code>: totalmente offline. Ou uma lista explícita de <code>--allow-host</code>, que substitui o padrão só pelos hosts que você nomear." },
+      { "text": "<code>--no-network</code>: totalmente offline. Junto com uma lista de <code>--allow-host</code>, o sandbox alcança só os hosts que você nomear, sem os padrões automáticos." },
       { "text": "<code>--no-agent-state</code>: sem login. O estado do harness fica de fora e a chave de API dele não é copiada." },
       { "text": "<code>--no-toolchains</code>: sem caches de dependências e sem registries de pacotes." },
       { "text": "<code>--mask</code>, <code>--deny-path</code> e <code>--hide-dotdir</code> tiram caminhos específicos, e um <code>--map</code> ou <code>--rw-map</code> estreito substitui uma permissão ampla." },
@@ -221,7 +221,7 @@
       { "title": "Um agente em nuvem, no dia a dia", "text": "Um agente conhecido começa logado e alcança só o próprio host da API, pelo proxy filtrado. Quando uma tarefa precisa de mais, coloque <code>allow_hosts</code> no arquivo global com o host da API mais os extras, ou abra a rede inteira com <code>network = true</code>." },
       { "title": "Um agente que o ai-jail não conhece", "text": "O ai-jail libera o host da API por conta própria para quatro agentes: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code>, Gemini <code>generativelanguage.googleapis.com</code> e Grok <code>api.x.ai</code>. Qualquer outro agente recebe o host de você, com <code>--allow-host</code>. Se o host estiver faltando na lista, o aviso de inicialização diz qual é." },
       { "title": "Uma execução sem login", "text": "Quando o agente não deve ter credencial nenhuma, <code>--no-agent-state</code> deixa de fora o diretório de estado e a chave de API dele. Ele começa deslogado, e qualquer login que fizer dentro do home novo some quando a execução termina." },
-      { "title": "Hosts permitidos no arquivo global", "text": "A lista vale para toda execução daquele comando, e substitui o padrão, então mantenha o host da API nela. Um host permitido é confiável por inteiro: <code>github.com</code> deixa o agente fazer push em qualquer repositório que as suas credenciais alcançam, então só adicione se for isso mesmo que você quer." },
+      { "title": "Hosts permitidos no arquivo global", "text": "A lista vale para toda execução daquele comando, além do host da API do próprio agente. Um host permitido é confiável por inteiro: <code>github.com</code> deixa o agente fazer push em qualquer repositório que as suas credenciais alcançam, então só adicione se for isso mesmo que você quer." },
       { "title": "Uma chave que o agente nunca vê", "text": "O sandbox recebe um placeholder em <code>ANTHROPIC_API_KEY</code>, e o proxy do ai-jail coloca a chave real só nas requisições para <code>api.anthropic.com</code>. O cliente precisa enviar HTTP puro ao proxy para esse host, e é o que a URL base <code>http://</code> faz; o ai-jail então leva a requisição até o host real por TLS. Um cliente que só abre túneis HTTPS continua funcionando, sem substituição." },
       { "title": "Git push via SSH", "text": "<code>--ssh</code> monta <code>~/.ssh</code> como somente leitura e encaminha o socket do seu agente SSH. O push também precisa da rede." },
       { "title": "Compilar e testar dentro da jaula", "text": "No Linux, nada a acrescentar. <code>cargo build</code>, <code>npm install</code> ou <code>go get</code> baixam dos registries pelo proxy e guardam o cache no store da própria jaula, e as instalações do mise vão junto em somente leitura. Para uma execução que não toca em nada e não alcança nada, desligue os dois." },
@@ -232,7 +232,7 @@
     ],
     "comments": {
       "nothing": "# nada a acrescentar: login e api.anthropic.com já vêm por padrão",
-      "more": "# quando uma tarefa precisa de mais, uma vez em ~/.ai-jail (a lista substitui o padrão)",
+      "more": "# quando uma tarefa precisa de mais, uma vez em ~/.ai-jail (somado ao host da API do próprio agente)",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# ou abra a rede inteira: network = true",

@@ -39,7 +39,7 @@
         "title": "רשת ושירותים",
         "rows": [
           { "text": "כל הרשת. כל מה שהסוכן יכול לקרוא, הוא יכול לשלוח החוצה. אם הסוכן צריך רק כמה hosts, <code>--allow-host</code> הוא הבחירה ההדוקה יותר. בלי אף אחד משני הדגלים, ה-sandbox מגיע רק אל <a class=\"link\" href=\"#toolchains\">registries של החבילות</a> שה-toolchains פותחים דרך הפרוקסי, ועוד ה-host האחד של ה-API של סוכן מוכר (Claude, Codex, Gemini, Grok). הדגל <code>--no-network</code> סוגר את כולם." },
-          { "text": "ה-sandbox מגיע רק ל-host שצוין ולתת-הדומיינים שלו, ב-TCP דרך הפרוקסי המובנה של ai-jail. אפשר לחזור על הדגל. רשימה מפורשת מחליפה את ברירת המחדל, ולכן צריך לכלול בה את ה-host של ה-API של הסוכן. אי אפשר לשלב אותו עם <code>--network</code> או עם <code>--browser</code>, וקובץ פרויקט יכול רק לקצר את הרשימה." },
+          { "text": "ה-sandbox מגיע רק ל-host שצוין ולתת-הדומיינים שלו, ב-TCP דרך הפרוקסי המובנה של ai-jail. אפשר לחזור על הדגל. מאז 2.8.1 הרשימה מתווספת לברירת המחדל, ולכן סוכן מוכר שומר על ה-host של ה-API שלו. אי אפשר לשלב אותו עם <code>--network</code> או עם <code>--browser</code>, וקובץ פרויקט יכול רק לקצר את הרשימה." },
           { "text": "התיקייה <code>~/.ssh</code> שלכם, לקריאה בלבד, וה-socket של ה-SSH agent, כדי ש-<code>git push</code> יעבוד." },
           { "text": "ה-socket של Docker. בפועל זה root על המחשב שלכם, כי ה-daemon יכול להעלות קונטיינרים שמעגנים את המארח." },
           { "text": "ה-socket של Tailscale." },
@@ -180,7 +180,7 @@
     "lede": "ברירת המחדל מכוונת לעבודה שוטפת. כל שלב למטה סוגר עוד דבר אחד, ו-<code>--lockdown</code> סוגר את רובם בבת אחת. <a class=\"link\" href=\"/security/\">עמוד האבטחה מסביר מפני מה כל אחד מגן</a>.",
     "items": [
       { "text": "ברירת המחדל: ההתחברות של הסוכן וה-host של ה-API שלו, ה-toolchains שלכם ב-Linux, ה-registries של החבילות, והפרויקט לקריאה וכתיבה." },
-      { "text": "<code>--no-network</code>: offline לגמרי. או רשימת <code>--allow-host</code> מפורשת, שמחליפה את ברירת המחדל ומשאירה רק את ה-hosts שציינתם." },
+      { "text": "<code>--no-network</code>: offline לגמרי. יחד עם רשימת <code>--allow-host</code>, ה-sandbox מגיע רק ל-hosts שציינתם, בלי ברירות המחדל האוטומטיות." },
       { "text": "<code>--no-agent-state</code>: בלי התחברות. המצב של ה-harness נשאר בחוץ ומפתח ה-API שלו לא מועתק." },
       { "text": "<code>--no-toolchains</code>: בלי caches של תלויות ובלי registries של חבילות." },
       { "text": "<code>--mask</code>, <code>--deny-path</code> ו-<code>--hide-dotdir</code> מורידים נתיבים בודדים, ו-<code>--map</code> או <code>--rw-map</code> צרים מחליפים הרשאה רחבה." },
@@ -221,7 +221,7 @@
       { "title": "סוכן ענן, ביומיום", "text": "סוכן מוכר עולה מחובר ומגיע רק ל-host של ה-API שלו דרך הפרוקסי המסנן. כשמשימה צריכה יותר, שימו <code>allow_hosts</code> בקובץ הגלובלי עם ה-host של ה-API ועוד התוספות, או פתחו את כל הרשת עם <code>network = true</code>." },
       { "title": "סוכן ש-ai-jail לא מכיר", "text": "הכלי ai-jail מתיר את ה-host של ה-API מעצמו לארבעה סוכנים: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code>, Gemini <code>generativelanguage.googleapis.com</code> ו-Grok <code>api.x.ai</code>. כל סוכן אחר מקבל ממכם את ה-host שלו עם <code>--allow-host</code>. אם ה-host חסר ברשימה, האזהרה בזמן ההפעלה נוקבת בשמו." },
       { "title": "הרצה ללא התחברות", "text": "כשלסוכן לא אמורים להיות פרטי גישה בכלל, <code>--no-agent-state</code> משאיר בחוץ את תיקיית המצב שלו ואת מפתח ה-API שלו. הוא עולה ללא התחברות, ומה שהוא מתחבר אליו בתוך תיקיית הבית החדשה נעלם בסוף ההרצה." },
-      { "title": "hosts מורשים בקובץ הגלובלי", "text": "הרשימה חלה על כל הרצה של אותה פקודה, והיא מחליפה את ברירת המחדל, אז השאירו בה את ה-host של ה-API. host מורשה זוכה לאמון מלא: <code>github.com</code> מאפשר לסוכן לעשות push לכל ריפוזיטורי שפרטי הגישה שלכם מגיעים אליו, אז הוסיפו אותו רק אם לזה אתם מתכוונים." },
+      { "title": "hosts מורשים בקובץ הגלובלי", "text": "הרשימה חלה על כל הרצה של אותה פקודה, בנוסף ל-host של ה-API של הסוכן. host מורשה זוכה לאמון מלא: <code>github.com</code> מאפשר לסוכן לעשות push לכל ריפוזיטורי שפרטי הגישה שלכם מגיעים אליו, אז הוסיפו אותו רק אם לזה אתם מתכוונים." },
       { "title": "מפתח שהסוכן אף פעם לא רואה", "text": "ה-sandbox מקבל placeholder ב-<code>ANTHROPIC_API_KEY</code>, והפרוקסי של ai-jail מכניס את המפתח האמיתי רק לבקשות אל <code>api.anthropic.com</code>. הלקוח חייב לשלוח HTTP רגיל לפרוקסי בשביל אותו host, וזה מה שכתובת הבסיס <code>http://</code> עושה. משם ai-jail מעביר את הבקשה ל-host האמיתי דרך TLS. לקוח שפותח רק מנהרות HTTPS ממשיך לעבוד, בלי החלפה." },
       { "title": "פקודת git push דרך SSH", "text": "הדגל <code>--ssh</code> מעגן את <code>~/.ssh</code> לקריאה בלבד ומעביר פנימה את ה-socket של ה-SSH agent שלכם. כדי לעשות push צריך גם רשת." },
       { "title": "build ובדיקות בתוך הכלא", "text": "ב-Linux אין מה להוסיף. <code>cargo build</code>, <code>npm install</code> או <code>go get</code> מושכים מה-registries דרך הפרוקסי ושומרים ב-cache של הכלא עצמו, וההתקנות של mise מגיעות יחד איתם לקריאה בלבד. להרצה שלא נוגעת בכלום ולא מגיעה לשום מקום, כבו את שניהם." },
@@ -232,7 +232,7 @@
     ],
     "comments": {
       "nothing": "# אין מה להוסיף: ההתחברות ו-api.anthropic.com מגיעים כברירת מחדל",
-      "more": "# כשמשימה צריכה יותר, פעם אחת ב-~/.ai-jail (הרשימה מחליפה את ברירת המחדל)",
+      "more": "# כשמשימה צריכה יותר, פעם אחת ב-~/.ai-jail (מתווסף ל-host של ה-API של הסוכן)",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# או פותחים את כל הרשת: network = true",

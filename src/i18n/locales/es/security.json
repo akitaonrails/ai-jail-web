@@ -73,7 +73,7 @@
     },
     "rows": [
       "Enviar todo lo que pueda leer a cualquier sitio, sin restricción de tráfico. El valor por defecto permite solo el host de la API del propio agente conocido; <code>--allow-host</code> es la alternativa más estricta.",
-      "Alcanzar exactamente los hosts que listas, y sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo. Tu lista sustituye el valor por defecto, así que incluye el host de la API del agente.",
+      "Alcanzar exactamente los hosts que listas, y sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo. Tu lista se suma al host de la propia API del agente; <code>--no-network</code> con una lista te deja solo esa lista.",
       "Activado por defecto en Linux. Ejecutar tus toolchains: <code>~/.cargo/bin</code> y <code>~/.rustup</code> en solo lectura, una caché de dependencias propia de la jaula en <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre ejecuciones, y salida filtrada hacia los registries de paquetes. Las cachés reales del host nunca se montan. Apagado bajo <code>--lockdown</code> y con <code>--no-toolchains</code>.",
       "Nada nuevo. El valor real de esa clave nunca entra al sandbox: el agente ve un marcador de posición, y el proxy pone el valor real solo en las peticiones HTTP plano al único host al que la vinculaste. El propio proceso de ai-jail ve esa petición en claro.",
       "Nada nuevo. Este interruptor no debilita nada: escribe una línea por arranque en un archivo con modo 0600 fuera del sandbox, así que el agente nunca lo ve.",

@@ -73,7 +73,7 @@
     "codeTitle": "ターミナル",
     "code": { "plain": "# 同じコマンドをジェイルの中で", "optin": "# 別のエージェント、またはホストを1つ足すには、フラグが要る" },
     "honestTitle": "正直なコスト",
-    "honest": "素のコマンドはClaude、Codex、Gemini、Grokで動きます。それぞれ自身のAPIに届き、他のホストには届きません。それ以上はフラグが要ります。別のエージェントのAPIや追加のホストには<code>--allow-host</code>（渡したリストはデフォルトを置き換えるので、APIホストも書きます）、インターネット全体には<code>--network</code>。設定ファイルに保存すれば、入力は一度で済みます。<a class=\"link\" href=\"/configure/\">すべてのスイッチを見る</a>。"
+    "honest": "素のコマンドはClaude、Codex、Gemini、Grokで動きます。それぞれ自身のAPIに届き、他のホストには届きません。それ以上はフラグが要ります。別のエージェントのAPIや追加のホストには<code>--allow-host</code>（エージェント自身のAPIホストは許可されたままです）、インターネット全体には<code>--network</code>。設定ファイルに保存すれば、入力は一度で済みます。<a class=\"link\" href=\"/configure/\">すべてのスイッチを見る</a>。"
   },
   "faq": {
     "title": "初めての人がよく聞く質問",

@@ -61,7 +61,7 @@
     },
     "rows": [
       "Enviar para qualquer lugar tudo o que consegue ler, sem nenhuma restrição de tráfego. O padrão libera só o host da API do agente conhecido; <code>--allow-host</code> é a alternativa mais apertada.",
-      "Alcançar exatamente os hosts que você lista, e seus subdomínios, por TCP, através de um proxy embutido. Cada host listado é confiável por inteiro. Sua lista substitui o padrão, então inclua o host da API do agente.",
+      "Alcançar exatamente os hosts que você lista, e seus subdomínios, por TCP, através de um proxy embutido. Cada host listado é confiável por inteiro. Sua lista soma ao host da API do próprio agente; <code>--no-network</code> com uma lista deixa só essa lista.",
       "Ligado por padrão no Linux. Rodar as suas toolchains: <code>~/.cargo/bin</code> e <code>~/.rustup</code> somente leitura, um cache de dependências próprio da jaula em <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre execuções, e saída filtrada para os registries de pacotes. Os caches reais do host nunca são montados. Desligado sob <code>--lockdown</code> e com <code>--no-toolchains</code>.",
       "Nada de novo. O valor real dessa chave nunca entra no sandbox: o agente vê um placeholder, e o proxy troca pelo valor real só nas requisições em HTTP puro para o único host ao qual você a vinculou. O próprio processo do ai-jail vê essa requisição em claro.",
       "Nada de novo. Esta opção não enfraquece nada: ela grava uma linha por inicialização num arquivo com modo 0600 fora do sandbox, então o agente nunca o vê.",

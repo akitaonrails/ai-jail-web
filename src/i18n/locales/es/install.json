@@ -66,7 +66,7 @@
       },
       {
         "title": "Cuando necesites más",
-        "text": "Pon una lista de hosts en <code>~/.ai-jail</code>, tu propio archivo de configuración, bajo el nombre del agente. Una lista explícita sustituye el valor por defecto, así que incluye el host de la API. O usa <code>--network</code> para toda la red. Para una ejecución sin sesión, pasa <code>--no-agent-state</code>. Un archivo <code>.ai-jail</code> dentro del proyecto solo puede endurecer la jaula: puede recortar la lista de hosts y apagar el login, nunca lo contrario, así que un repositorio que clones no puede abrir la jaula por su cuenta."
+        "text": "Pon una lista de hosts en <code>~/.ai-jail</code>, tu propio archivo de configuración, bajo el nombre del agente. La lista se suma al host de la propia API del agente, que sigue permitido. O usa <code>--network</code> para toda la red. Para una ejecución sin sesión, pasa <code>--no-agent-state</code>. Un archivo <code>.ai-jail</code> dentro del proyecto solo puede endurecer la jaula: puede recortar la lista de hosts y apagar el login, nunca lo contrario, así que un repositorio que clones no puede abrir la jaula por su cuenta."
       }
     ],
     "codeTitles": [
@@ -85,7 +85,7 @@
     },
     "comments": [
       "# o, con toda la red abierta:",
-      "# la lista sustituye el valor por defecto, así que mantén el host de la API en ella",
+      "# se suma al host de la API que ai-jail ya permite",
       "# o, para una sola ejecución:"
     ]
   },

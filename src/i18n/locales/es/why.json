@@ -85,7 +85,7 @@
       "optin": "# otro agente, o un host más, necesita un flag"
     },
     "honestTitle": "El costo real",
-    "honest": "El comando a secas funciona para Claude, Codex, Gemini y Grok: cada uno alcanza su propia API y ningún otro host. Cualquier cosa más necesita un flag: <code>--allow-host</code> para la API de otro agente o un host extra (la lista que pasas sustituye el valor por defecto, así que nombra también el host de la API), <code>--network</code> para todo internet. Guárdalo en un archivo de configuración y lo escribes una sola vez. <a class=\"link\" href=\"/configure/\">Mira todos los interruptores</a>."
+    "honest": "El comando a secas funciona para Claude, Codex, Gemini y Grok: cada uno alcanza su propia API y ningún otro host. Cualquier cosa más necesita un flag: <code>--allow-host</code> para la API de otro agente o un host extra (el host de la propia API del agente sigue permitido), <code>--network</code> para todo internet. Guárdalo en un archivo de configuración y lo escribes una sola vez. <a class=\"link\" href=\"/configure/\">Mira todos los interruptores</a>."
   },
   "faq": {
     "title": "Preguntas de quien recién llega",

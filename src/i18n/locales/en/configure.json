@@ -180,7 +180,7 @@
     "lede": "The default is tuned for getting work done. Each step below closes one more thing, and <code>--lockdown</code> closes most of them at once. <a class=\"link\" href=\"/security/\">Security explains what each one protects against</a>.",
     "items": [
       { "text": "The default: the agent's login and its own API host, your toolchains on Linux, the package registries, and the project read and write." },
-      { "text": "<code>--no-network</code>: fully offline. Or an explicit <code>--allow-host</code> list, which replaces the default with only the hosts you name." },
+      { "text": "<code>--no-network</code>: fully offline. With an <code>--allow-host</code> list as well, the sandbox reaches only the hosts you name, without the automatic defaults." },
       { "text": "<code>--no-agent-state</code>: no login. The harness's state stays out and its API key is not copied." },
       { "text": "<code>--no-toolchains</code>: no dependency caches and no package registries." },
       { "text": "<code>--mask</code>, <code>--deny-path</code> and <code>--hide-dotdir</code> take single paths away, and a narrow <code>--map</code> or <code>--rw-map</code> replaces a broad grant." },

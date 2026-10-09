@@ -85,7 +85,7 @@
       "optin": "# 다른 에이전트나 호스트 하나를 더하려면 플래그가 필요"
     },
     "honestTitle": "솔직한 비용",
-    "honest": "플래그 없는 명령이 Claude, Codex, Gemini, Grok에서 그대로 동작합니다. 각각 자기 API에만 닿고 다른 호스트에는 닿지 않습니다. 그 이상은 플래그가 필요합니다. 다른 에이전트의 API나 호스트 하나를 더하려면 <code>--allow-host</code>(넘긴 목록이 기본값을 대체하니 API 호스트도 함께 적으세요), 인터넷 전체를 열려면 <code>--network</code>입니다. 설정 파일에 저장해 두면 한 번만 입력하면 됩니다. <a class=\"link\" href=\"/configure/\">모든 스위치 보기</a>."
+    "honest": "플래그 없는 명령이 Claude, Codex, Gemini, Grok에서 그대로 동작합니다. 각각 자기 API에만 닿고 다른 호스트에는 닿지 않습니다. 그 이상은 플래그가 필요합니다. 다른 에이전트의 API나 호스트 하나를 더하려면 <code>--allow-host</code>(에이전트 자신의 API 호스트는 계속 허용됩니다), 인터넷 전체를 열려면 <code>--network</code>입니다. 설정 파일에 저장해 두면 한 번만 입력하면 됩니다. <a class=\"link\" href=\"/configure/\">모든 스위치 보기</a>."
   },
   "faq": {
     "title": "처음 온 사람들이 묻는 질문",

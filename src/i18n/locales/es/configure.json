@@ -60,7 +60,7 @@
             "text": "Toda la red. Todo lo que el agente pueda leer, puede enviarlo fuera. Si el agente solo necesita unos pocos hosts, <code>--allow-host</code> es más estricto. Sin ninguno de los dos flags, el sandbox alcanza solo los <a class=\"link\" href=\"#toolchains\">registries de paquetes</a> que las toolchains abren a través del proxy, más el único host de la API de un agente conocido (Claude, Codex, Gemini, Grok), y <code>--no-network</code> cierra todo eso."
           },
           {
-            "text": "El sandbox alcanza solo el host de la lista y sus subdominios, por TCP a través del proxy integrado de ai-jail. Puedes repetir el flag. Una lista explícita sustituye el valor por defecto, así que incluye el host de la API del agente. No se puede combinar con <code>--network</code> ni con <code>--browser</code>, y un archivo de proyecto solo puede recortar la lista."
+            "text": "El sandbox alcanza solo el host de la lista y sus subdominios, por TCP a través del proxy integrado de ai-jail. Puedes repetir el flag. Desde 2.8.1 la lista se suma al valor por defecto, así que un agente conocido conserva el host de su propia API. No se puede combinar con <code>--network</code> ni con <code>--browser</code>, y un archivo de proyecto solo puede recortar la lista."
           },
           {
             "text": "Tu <code>~/.ssh</code>, en solo lectura, y el socket de tu agente SSH, para que <code>git push</code> funcione."
@@ -307,7 +307,7 @@
         "text": "Por defecto: el login del agente y el host de su propia API, tus toolchains en Linux, los registries de paquetes, y el proyecto en lectura y escritura."
       },
       {
-        "text": "<code>--no-network</code>: completamente sin conexión. O una lista explícita con <code>--allow-host</code>, que sustituye el valor por defecto por solo los hosts que nombres."
+        "text": "<code>--no-network</code>: completamente sin conexión. Junto con una lista de <code>--allow-host</code>, el sandbox alcanza solo los hosts que nombres, sin los valores por defecto automáticos."
       },
       {
         "text": "<code>--no-agent-state</code>: sin login. El estado del harness se queda fuera y su clave de API no se copia."
@@ -386,7 +386,7 @@
       },
       {
         "title": "Hosts permitidos en el archivo global",
-        "text": "La lista se aplica a cada ejecución de ese comando, y sustituye el valor por defecto, así que mantén el host de la API en ella. Un host permitido es de confianza por completo: <code>github.com</code> deja que el agente haga push a cualquier repositorio al que lleguen tus credenciales, así que añádelo solo cuando quieras eso."
+        "text": "La lista se aplica a cada ejecución de ese comando, además del host de la propia API del agente. Un host permitido es de confianza por completo: <code>github.com</code> deja que el agente haga push a cualquier repositorio al que lleguen tus credenciales, así que añádelo solo cuando quieras eso."
       },
       {
         "title": "Una clave que el agente nunca ve",
@@ -426,7 +426,7 @@
       "build": "# por defecto en Linux: cachés activadas, registries accesibles a través del proxy",
       "offline": "# nada mapeado, nada accesible",
       "nothing": "# nada que añadir: el login y api.anthropic.com vienen por defecto",
-      "more": "# cuando una tarea necesite más, una vez en ~/.ai-jail (la lista sustituye el valor por defecto)"
+      "more": "# cuando una tarea necesite más, una vez en ~/.ai-jail (se suma al host de la propia API del agente)"
     }
   },
   "compat": {
