@@ -66,7 +66,7 @@
       },
       {
         "title": "When you need more",
-        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. An explicit list replaces the default, so include the API host. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
+        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. The list adds to the agent's own API host, which stays allowed. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
       }
     ],
     "codeTitles": [
@@ -85,7 +85,7 @@
     },
     "comments": [
       "# or, with the whole network open:",
-      "# the list replaces the default, so keep the API host in it",
+      "# added to the API host ai-jail already allows",
       "# or, for one run:"
     ]
   },

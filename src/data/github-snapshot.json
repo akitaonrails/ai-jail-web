@@ -1,8 +1,42 @@
 {
-  "fetchedAt": "2026-10-09T04:39:47.284Z",
+  "fetchedAt": "2026-10-09T13:29:30.726Z",
   "stars": 1329,
   "forks": 128,
   "releases": [
+    {
+      "tag": "v2.8.1",
+      "name": "v2.8.1",
+      "date": "2026-10-09T13:20:29Z",
+      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.8.1",
+      "prerelease": false,
+      "body": "# v2.8.1\n\nA follow-up to the v2.8.0 agent-API-egress default: an explicit `--allow-host`\nlist no longer cuts off the agent's own API.\n\nBackward compatible: every pre-2.8.1 `.ai-jail` keeps working.\n\n## Fixed\n\n- **The default agent API host is unioned with `--allow-host`, not suppressed\n  by it (#156).** In v2.8.0 the automatic API-host default only applied when\n  `--allow-host` was empty, so `ai-jail --allow-host github.com claude` reached\n  `github.com` but silently dropped `api.anthropic.com` and left Claude unable\n  to talk to its API — surprising, and inconsistent with the toolchain-registry\n  default, which already unions onto an explicit `--allow-host` list. The agent\n  default now behaves the same: adding a host extends what the agent can reach\n  instead of cutting off its own API, so `ai-jail --allow-host github.com\nclaude` reaches `github.com` **and** `api.anthropic.com`. Neither automatic\n  default (agent API host or registry hosts) is gated on `--allow-host` being\n  empty any more — only on the asserted network posture.\n\n  The verbatim \"only this list, nothing automatic\" mode is unchanged and\n  explicit: `ai-jail --no-network --allow-host github.com claude` composes to\n  filtered egress with `github.com` only. `--no-network` sets the posture,\n  which disables both automatic defaults, while a non-empty allow-list keeps\n  egress filtered rather than fully offline. `--network` and `--lockdown` keep\n  their existing behavior; the sandbox stays deny-by-default throughout.\n\n## Checksums (SHA256)\n```\n9c5e41b59be8fd65f239252f8d2e03f16a806d76c090bd256948b452b350710b  ai-jail-linux-x86_64.tar.gz\nff1f076b2ed8cedffaa78d02c3c5014ed9e3424f70a5f06145475424ce79cedb  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
+      "assets": [
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-linux-x86_64.tar.gz",
+          "size": 1608583,
+          "downloads": 0
+        },
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-linux-x86_64.tar.gz.sha256",
+          "size": 94,
+          "downloads": 0
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-macos-aarch64.tar.gz",
+          "size": 1355011,
+          "downloads": 0
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-macos-aarch64.tar.gz.sha256",
+          "size": 95,
+          "downloads": 0
+        }
+      ]
+    },
     {
       "tag": "v2.8.0",
       "name": "v2.8.0",
@@ -15,19 +49,19 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.0/ai-jail-linux-x86_64.tar.gz",
           "size": 1608652,
-          "downloads": 3
+          "downloads": 32
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.0/ai-jail-linux-x86_64.tar.gz.sha256",
           "size": 94,
-          "downloads": 1
+          "downloads": 2
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.0/ai-jail-macos-aarch64.tar.gz",
           "size": 1355338,
-          "downloads": 1
+          "downloads": 9
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
@@ -49,7 +83,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.7.0/ai-jail-linux-x86_64.tar.gz",
           "size": 1606029,
-          "downloads": 146
+          "downloads": 148
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -61,7 +95,7 @@
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.7.0/ai-jail-macos-aarch64.tar.gz",
           "size": 1351889,
-          "downloads": 53
+          "downloads": 54
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
@@ -151,7 +185,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.2/ai-jail-linux-x86_64.tar.gz",
           "size": 1598167,
-          "downloads": 219
+          "downloads": 220
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -372,40 +406,6 @@
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-macos-aarch64.tar.gz.sha256",
-          "size": 95,
-          "downloads": 1
-        }
-      ]
-    },
-    {
-      "tag": "v2.2.1",
-      "name": "v2.2.1",
-      "date": "2026-09-28T21:52:45Z",
-      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.2.1",
-      "prerelease": false,
-      "body": "# v2.2.1\n\nA compatibility patch: a bwrap mount-ordering fix, an AUR build fix for\nLTO-enabled Arch systems, and a launch warning for opencode 2.x.\n\n## Fixed\n\n- **Private home no longer fails when a command's binary lives under a\n  directory that is also being bound** (#138, thanks @IgorEmerick, #139).\n  With `ai-memory` and the Claude Code installer symlink both in\n  `~/.local/bin`, binding the whole directory and then the symlink made\n  bwrap follow a dangling symlink while creating the mount point and abort.\n  Command paths that sit under another collected path are now skipped —\n  they are visible through the parent bind anyway, and the result is\n  independent of path order.\n\n- **AUR source package builds again with `lto` in `makepkg.conf`** (#140,\n  thanks @nnorakk for the pinpoint report). Arch's default enables LTO\n  globally, and ring's C/assembly cannot be consumed as GCC-LTO objects at\n  link time. The PKGBUILD now opts out with `options=('!debug' '!lto')`;\n  already published to the AUR as 2.2.0-2 and carried forward.\n\n## Added\n\n- **Launch warning when opencode runs without `--standalone`** (#137,\n  thanks @naranma). opencode 2.x is a client of a shared background server that cannot\n  persist across a one-shot jail with a tmpfs home; if startup hangs at\n  \"Starting background server...\", add `--standalone` to the command. Also\n  documented in the README's Troubleshooting section.\n\n## Checksums (SHA256)\n```\nef8f765bc00ebda47748464a8034eb288d402120aa33364f2dd8dda6878ebbdc  ai-jail-linux-x86_64.tar.gz\n3fc1645ee03effecba8e76c407272c443442abdac78830f5f16f3adf71912819  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
-      "assets": [
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-linux-x86_64.tar.gz",
-          "size": 1578971,
-          "downloads": 147
-        },
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-linux-x86_64.tar.gz.sha256",
-          "size": 94,
-          "downloads": 10
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-macos-aarch64.tar.gz",
-          "size": 1328023,
-          "downloads": 64
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.2.1/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
           "downloads": 1
         }

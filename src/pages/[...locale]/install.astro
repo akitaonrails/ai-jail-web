@@ -37,7 +37,7 @@ const steps = withText(
     { code: 'cd ~/Projects/my-app\nai-jail --dry-run claude' },
     { code: 'ai-jail bash' },
     { code: `ai-jail claude\n${k[0]}\nai-jail --network claude` },
-    { code: `[commands.claude]\nallow_hosts = ["api.anthropic.com", "github.com"]\n${k[1]}\n\n${k[2]}\n# ai-jail --network claude` },
+    { code: `[commands.claude]\nallow_hosts = ["github.com"]\n${k[1]}\n\n${k[2]}\n# ai-jail --network claude` },
   ].map((s, i) => ({ ...s, codeTitle: codeTitles[i] })),
   raw<Words[]>('first.steps'),
 );

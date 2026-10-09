@@ -73,7 +73,7 @@
     },
     "rows": [
       "Send everything it can read anywhere, with no restriction on traffic. The default allows only the known agent's own API host; <code>--allow-host</code> is the tighter alternative.",
-      "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale. Your list replaces the default, so include the agent's API host.",
+      "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale. Your list adds to the agent's own API host; <code>--no-network</code> with a list gives you that list alone.",
       "On by default on Linux. Run your toolchains: <code>~/.cargo/bin</code> and <code>~/.rustup</code> read-only, a jail-owned dependency cache under <code>~/.local/share/ai-jail/cache/</code> that survives between runs, and filtered egress to the package registries. ai-jail never binds the host's own caches. Off under <code>--lockdown</code> and with <code>--no-toolchains</code>.",
       "Nothing new. The real value of that key never enters the sandbox: the agent sees a placeholder, and the proxy swaps in the real value only for plain-HTTP requests to the one host you bound it to. ai-jail's own process sees that request in clear.",
       "Nothing new. This switch weakens nothing: it writes one line per launch to a file with mode 0600 outside the sandbox, so the agent never sees it.",

@@ -39,7 +39,7 @@
         "title": "Network and services",
         "rows": [
           { "text": "The whole network. Anything the agent can read, it can send out. If the agent needs only a few hosts, <code>--allow-host</code> is tighter. Without either flag, the sandbox reaches only the <a class=\"link\" href=\"#toolchains\">package registries</a> that toolchains open through the proxy, plus the one API host of a known agent (Claude, Codex, Gemini, Grok), and <code>--no-network</code> closes all of those." },
-          { "text": "The sandbox reaches only the listed host and its subdomains, over TCP through ai-jail's built-in proxy. You can repeat the flag. An explicit list replaces the default, so include the agent's API host. It cannot be combined with <code>--network</code> or <code>--browser</code>, and a project file may only shrink the list." },
+          { "text": "The sandbox reaches only the listed host and its subdomains, over TCP through ai-jail's built-in proxy. You can repeat the flag. Since 2.8.1 the list adds to the default, so a known agent keeps its own API host. It cannot be combined with <code>--network</code> or <code>--browser</code>, and a project file may only shrink the list." },
           { "text": "Your <code>~/.ssh</code>, read only, and your SSH agent socket, so <code>git push</code> works." },
           { "text": "The Docker socket. This is effectively root on your machine, because the daemon can start containers that mount the host." },
           { "text": "The Tailscale socket." },
@@ -221,7 +221,7 @@
       { "title": "A cloud agent, day to day", "text": "A known agent starts logged in and reaches only its own API host through the filtered proxy. When a task needs more, put <code>allow_hosts</code> in the global file with the API host plus the extra ones, or open the whole network with <code>network = true</code>." },
       { "title": "An agent ai-jail does not know", "text": "ai-jail allows the API host on its own for four agents: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code>, Gemini <code>generativelanguage.googleapis.com</code> and Grok <code>api.x.ai</code>. Any other agent gets its host from you with <code>--allow-host</code>. If the host is missing from the list, the launch warning names it." },
       { "title": "A logged-out run", "text": "When the agent should have no credentials at all, <code>--no-agent-state</code> keeps its state directory and its API key out. It starts logged out, and whatever it logs into inside the fresh home is gone when the run ends." },
-      { "title": "Allowed hosts in the global file", "text": "The list applies to every run of that command, and it replaces the default, so keep the API host in it. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that." },
+      { "title": "Allowed hosts in the global file", "text": "The list applies to every run of that command, on top of the agent's own API host. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that." },
       { "title": "A key the agent never sees", "text": "The sandbox gets a placeholder in <code>ANTHROPIC_API_KEY</code>, and ai-jail's proxy puts the real key only into requests to <code>api.anthropic.com</code>. The client must send plain HTTP to the proxy for that host, which the <code>http://</code> base URL does; ai-jail then carries the request to the real host over TLS. A client that only opens HTTPS tunnels keeps working, without substitution." },
       { "title": "Git push over SSH", "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. Pushing also needs the network." },
       { "title": "Build and test inside the jail", "text": "Nothing to add on Linux. <code>cargo build</code>, <code>npm install</code> or <code>go get</code> fetch from the registries through the proxy and cache into the jail's own store, and mise installs come along read only. For a run that touches nothing and reaches nothing, turn both off." },
@@ -232,7 +232,7 @@
     ],
     "comments": {
       "nothing": "# nothing to add: login and api.anthropic.com come by default",
-      "more": "# when a task needs more, once in ~/.ai-jail (the list replaces the default)",
+      "more": "# when a task needs more, once in ~/.ai-jail (added to the agent's own API host)",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# or open the whole network: network = true",
