@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "デフォルトは閉。スイッチはあなたの手に。",
-    "lede": "オプションなしでは、エージェントに渡るのはプロジェクトと、Linuxならビルドツール、そして自身のログイン情報だけで、ネットワークは少数のパッケージレジストリ以外に届きません。スイッチ1つずつ絞っていくことができ、ロックダウンならその大半を一度に閉じられます。",
+    "lede": "オプションなしなら、エージェントが得るのはプロジェクト、Linuxならビルドツール、自身のログイン情報と自身のAPIホストで、ネットワークはそれと短いパッケージレジストリ一覧の先には届きません。スイッチを1つずつ下げていくことも、ロックダウンで大半を一度に閉じることもできます。",
     "switches": "スイッチを見る",
     "install": "インストール"
   },
@@ -38,8 +38,8 @@
       {
         "title": "ネットワークとサービス",
         "rows": [
-          { "text": "ネットワーク全体。エージェントは読めるものを何でも外へ送れます。必要なホストが数個だけなら、<code>--allow-host</code>のほうが厳しく絞れます。どちらのフラグもなければ、サンドボックスが届くのはツールチェーンがプロキシ経由で開ける<a class=\"link\" href=\"#toolchains\">パッケージレジストリ</a>だけで、<code>--no-network</code>はそれも閉じます。" },
-          { "text": "サンドボックスは、指定したホストとそのサブドメインだけに、ai-jail組み込みのプロキシ経由のTCPで届きます。繰り返し指定できます。<code>--network</code>や<code>--browser</code>とは併用できず、プロジェクトファイルはリストを減らすことしかできません。" },
+          { "text": "ネットワーク全体。エージェントが読めるものは何でも外に送れます。必要なホストが少数なら、<code>--allow-host</code>のほうが厳密です。どちらのフラグもなければ、サンドボックスが届くのはツールチェーンがプロキシ経由で開ける<a class=\"link\" href=\"#toolchains\">パッケージレジストリ</a>と、既知のエージェント（Claude、Codex、Gemini、Grok）のAPIホスト1つだけで、<code>--no-network</code>はそれらもすべて閉じます。" },
+          { "text": "サンドボックスは、指定したホストとそのサブドメインにだけ、ai-jail組み込みのプロキシ経由のTCPで届きます。フラグは繰り返せます。明示的なリストはデフォルトを置き換えるので、エージェントのAPIホストも含めてください。<code>--network</code>や<code>--browser</code>とは併用できず、プロジェクトファイルはリストを縮めることしかできません。" },
           { "text": "読み取り専用の<code>~/.ssh</code>とSSHエージェントのソケット。<code>git push</code>が動くようになります。" },
           { "text": "Dockerソケット。デーモンはホストをマウントしたコンテナを起動できるので、事実上そのマシンのroot権限です。" },
           { "text": "Tailscaleのソケット。" },
@@ -51,7 +51,7 @@
         "rows": [
           { "text": "エージェント自身のログイン情報。<code>~/.claude</code>や<code>~/.codex</code>など、起動したハーネスの状態を読み書き可能でマウントし、シェルに設定されていればそのAPIキーもコピーします：<code>ANTHROPIC_API_KEY</code>、<code>OPENAI_API_KEY</code>、<code>GEMINI_API_KEY</code>または<code>GOOGLE_API_KEY</code>、<code>XAI_API_KEY</code>、<code>MOONSHOT_API_KEY</code>。エージェントはログイン済みで起動し、ジェイルの中のものは何でもそのログインを使えます。<code>--no-agent-state</code>を付けるとログアウト状態での実行になります。ロックダウンでは無効で、プロジェクトファイルは無効にすることしかできません。" },
           { "text": "指定したディレクトリをClaudeの状態保存先として使い、<code>CLAUDE_CONFIG_DIR</code>を設定します。" },
-          { "text": "シェルの変数を1つ渡すか、<code>NAME=VALUE</code>の形で1つ設定します。繰り返し指定でき、ディスクには保存されず、値がランチャーのコマンドラインに現れることもありません。" },
+          { "text": "シェルの変数を1つ渡すか、<code>NAME=VALUE</code>で1つ設定します。繰り返し指定でき、ディスクには保存されません。Linuxでは値はメモリ上のファイルを通してサンドボックスに渡り、ランチャーのコマンドラインには現れませんが、<code>NAME=VALUE</code>をそのまま書けばai-jail自身のコマンドラインには見えるので、シークレットには<code>--env NAME</code>か<code>--env-from-file</code>を使ってください。" },
           { "text": "ファイルから厳密な<code>KEY=VALUE</code>形式の行を読み、<code>--env</code>と同じように渡します。重なった場合はそちらが優先です。ファイルはあなたが所有する通常ファイルで、モードは0600かそれより厳しく、プロジェクトの外にある必要があります。満たさなければ起動は失敗します。ai-jailが値をディスクに保存することはなく、設定キーはグローバルファイルでのみ有効です。" },
           { "text": "<code>KEY</code>の本物の値をサンドボックスの外に置きます。エージェントにはプレースホルダーが見え、プロキシは本物の値をそのホスト宛てのリクエストだけに入れます。<code>--allow-host</code>が必要で、キーは<code>--env</code>か<code>--env-from-file</code>で先に渡しておく必要があります。グローバルファイルのみで、保存はされません。対象は、そのホストに向けてプロキシへ平文のHTTPを送れるクライアントで、HTTPSトンネルには触れません。" },
           { "text": "シェルの環境全体を、中にある秘密情報ごと渡します。使わないでください。" },
@@ -61,8 +61,8 @@
       {
         "title": "ツールチェーンとツールの認証情報",
         "rows": [
-          { "text": "コンパイラとパッケージマネージャーを読み取り専用で、依存キャッシュはジェイル専用のストアに置き、パッケージレジストリにはフィルタ付きプロキシ経由で届きます。Linux限定で、Linuxではデフォルトで有効。macOSでは何もマップされず、サンドボックスはオフラインのままです。ロックダウンでは無効になり、プロジェクトファイルは無効にすることしかできません。<a class=\"link\" href=\"#toolchains\">詳細は下にあります</a>。" },
-          { "text": "読み取り専用の<code>~/.config/gh</code>。<code>gh</code>がログイン済みになります。読み取り専用で守れるのはファイルの改変だけで、ジェイルの中のものは何でも、あなたとしてGitHubを操作できます。" },
+          { "text": "コンパイラとパッケージマネージャーは読み取り専用、その依存キャッシュはジェイル専用のストアに、パッケージレジストリにはフィルタ付きプロキシ経由で届きます。Linux限定で、そこではデフォルトで有効です。macOSでは何もマップされず、レジストリにも届きません。ロックダウンはこれを無効にし、プロジェクトファイルも無効にすることしかできません。<a class=\"link\" href=\"#toolchains\">詳細は下に</a>。" },
+          { "text": "ghの設定ディレクトリを読み取り専用で、さらに有効なgithub.comのトークンをその起動の間だけ<code>GH_TOKEN</code>として転送するので、トークンがシステムのキーリングにあっても<code>gh</code>はログイン済みです。ai-jailはホスト側で<code>gh auth token</code>を実行し、結果をメモリ上のファイルで渡します。コマンドラインにもディスクにも載りません。<code>--dry-run</code>は取得せず、<code>--env</code>で<code>GH_TOKEN</code>を渡せば取得を省きます。github.comのみ、有効なアカウントのみです。それでも、ジェイル内のものはGitHubであなたとして振る舞えます。" },
           { "text": "読み取り専用の<code>~/.aws</code>。認証情報が有効な間、ジェイルの中のものは何でも、あなたとしてAWSを操作できます。" },
           { "text": "読み取り専用の<code>~/.kube</code>。ジェイルの中のものは何でも、あなたとしてクラスタと通信できます。" },
           { "text": "読み取り専用の<code>~/.config/gcloud</code>。ジェイルの中のものは何でも、あなたとしてGoogle Cloudを操作できます。" },
@@ -158,14 +158,10 @@
     "points": [
       { "title": "ツールは読み取り専用", "text": "2.4.1から、ai-jailはmiseでインストールしたものと設定を読み取り専用でマップします。Rustでは<code>~/.cargo/bin</code>と<code>~/.rustup</code>も同じ方法でマップするので、<code>cargo</code>と<code>rustc</code>が解決できます。Cargoの認証情報と<code>config.toml</code>は入れません。miseは読み取り専用のマップには何もインストールできないので、ai-jailは中で<code>MISE_NOT_FOUND_AUTO_INSTALL=false</code>を設定し、足りないツールは一度だけ失敗し、呼び出しのたびに失敗することはありません。" },
       { "title": "ジェイル専用のキャッシュ", "text": "依存キャッシュは<code>~/.local/share/ai-jail/cache/</code>の下に置かれ、セッションをまたいで残ります。Cargoのレジストリとgitのキャッシュもここです。pip、uv、Go、npm、yarn、pnpm、bun、deno、Maven、Gradle、Coursier、Composer、Crystal、Zigのデフォルトのキャッシュも、そのツールのディレクトリがマシンにあれば同じです。" },
-      { "title": "レジストリにはプロキシ経由", "text": "ツールチェーンが有効でネットワークのフラグを何も渡していなければ、サンドボックスはcrates.io、npm、PyPI、Goのプロキシ、Maven Central、Clojars、Packagist、github.comに、それぞれサブドメインも含めて、<code>--allow-host</code>と同じプロキシ経由で届きます。それ以外には届きません。エージェント自身のAPIには引き続き<code>--allow-host</code>か<code>--network</code>が必要です。" }
+      { "title": "レジストリにはプロキシ経由", "text": "ツールチェーンが有効でネットワークのフラグがなければ、サンドボックスはcrates.io、npm、PyPI、Goプロキシ、Maven Central、Clojars、Packagist、github.comとそれぞれのサブドメインに、<code>--allow-host</code>と同じプロキシ経由で届きます。既知のエージェント自身のAPIホストも同じ経路で通り、macOSでも同様です。レジストリはLinux限定です。" }
     ],
     "codeTitle": "ターミナル",
-    "code": {
-      "default": "# Linuxのデフォルト",
-      "offline": "# キャッシュは有効、ネットワークは一切なし",
-      "none": "# 何もマップせず、どこにも届かない"
-    },
+    "code": { "default": "# Linuxのデフォルト", "offline": "# キャッシュは有効、ネットワークは一切なし", "none": "# 何もマップせず、どこにも届かない" },
     "optout": {
       "title": "無効にするには",
       "text": "<code>--no-toolchains</code>か<code>no_toolchains = true</code>で、キャッシュとレジストリのデフォルトを一緒に無効にします。<code>--no-network</code>はキャッシュを残してレジストリを閉じます。ロックダウンではツールチェーンは無効になり、プロジェクトファイルは無効にすることしかできません。"
@@ -179,10 +175,10 @@
     "title": "さらに絞る",
     "lede": "デフォルトは作業がはかどるように調整されています。以下のステップは1つずつ何かを閉じていき、<code>--lockdown</code>はその大半を一度に閉じます。<a class=\"link\" href=\"/security/\">それぞれが何を防ぐかはセキュリティのページにあります</a>。",
     "items": [
-      { "text": "デフォルト：エージェントのログイン情報、Linuxならツールチェーン、パッケージレジストリ、そして読み書き可能なプロジェクト。" },
+      { "text": "デフォルト：エージェントのログイン情報と自身のAPIホスト、Linuxならツールチェーン、パッケージレジストリ、そして読み書き可能なプロジェクト。" },
+      { "text": "<code>--no-network</code>：完全にオフライン。または明示的な<code>--allow-host</code>のリストで、デフォルトを指定したホストだけに置き換えます。" },
       { "text": "<code>--no-agent-state</code>：ログインなし。ハーネスの状態は外に残り、APIキーもコピーされません。" },
       { "text": "<code>--no-toolchains</code>：依存キャッシュもパッケージレジストリもなし。" },
-      { "text": "<code>--no-network</code>：完全にオフライン。そこに<code>--allow-host</code>を重ねると、少数のホストにだけプロキシ経由で届きます。" },
       { "text": "<code>--mask</code>、<code>--deny-path</code>、<code>--hide-dotdir</code>は個別のパスを取り除き、狭い<code>--map</code>や<code>--rw-map</code>は広い許可の代わりになります。" },
       { "text": "<code>--lockdown</code>：プロジェクトは読み取り専用、ログインもツールチェーンもレジストリもなし、Landlockとseccompは厳格。それでもVMではありません。" }
     ],
@@ -218,28 +214,28 @@
     "title": "レシピ",
     "lede": "コピーして使ってください。何が組み立てられるかを確かめるには、先に<code>--dry-run</code>を付けて実行します。",
     "items": [
-      { "title": "クラウド型エージェントを日常的に使う", "text": "ホスト型のモデルは、APIに届く必要があります。ログイン情報はデフォルトですでにあるので、足すのはホストだけです。グローバルファイルに書いておけば、コマンドは短いままです。APIホストだけを許可するか、<code>network = true</code>でネットワーク全体を開けるかを選びます。" },
-      { "title": "エージェントのAPIホストだけ", "text": "エージェントは自分のAPIにしか届きません。Claudeは<code>api.anthropic.com</code>、Codexは<code>api.openai.com</code>、Geminiは<code>generativelanguage.googleapis.com</code>を使います。リストにそのホストがなければ、起動時の警告がホスト名を示します。" },
+      { "title": "クラウド型エージェントを日常的に使う", "text": "既知のエージェントはログイン済みで始まり、フィルタ付きプロキシ経由で自身のAPIホストにだけ届きます。タスクにもっと必要なら、グローバルファイルの<code>allow_hosts</code>にAPIホストと追加分を書くか、<code>network = true</code>でネットワーク全体を開けます。" },
+      { "title": "ai-jailが知らないエージェント", "text": "ai-jailが自らAPIホストを許可するのは4つのエージェントです。Claude <code>api.anthropic.com</code>、Codex <code>api.openai.com</code>、Gemini <code>generativelanguage.googleapis.com</code>、Grok <code>api.x.ai</code>。それ以外のエージェントのホストは<code>--allow-host</code>であなたが指定します。リストにホストがなければ、起動時の警告がその名前を示します。" },
       { "title": "ログアウト状態での実行", "text": "エージェントに認証情報を一切持たせたくないときは、<code>--no-agent-state</code>で状態ディレクトリもAPIキーも外に置きます。エージェントはログアウト状態で起動し、新しいホームの中でログインしたものも、実行が終わると消えます。" },
-      { "title": "グローバルファイルに許可ホストを書く", "text": "リストはそのコマンドのすべての実行に適用されます。許可したホストは丸ごと信頼されます。<code>github.com</code>を許可すると、あなたの認証情報で届くどのリポジトリにもエージェントがpushできるので、それを望むときだけ追加してください。" },
+      { "title": "グローバルファイルに許可ホストを書く", "text": "このリストはそのコマンドの毎回の実行に適用され、デフォルトを置き換えるので、APIホストを残しておいてください。許可したホストは丸ごと信頼されます。<code>github.com</code>を許可すると、あなたの認証情報が届くどのリポジトリにもエージェントがpushできるので、それを望むときだけ足してください。" },
       { "title": "エージェントが決して見ないキー", "text": "サンドボックスの<code>ANTHROPIC_API_KEY</code>にはプレースホルダーが入り、ai-jailのプロキシが本物のキーを<code>api.anthropic.com</code>宛てのリクエストだけに入れます。クライアントはそのホストに向けてプロキシへ平文のHTTPを送る必要があり、<code>http://</code>のベースURLならそうなります。その後、ai-jailがリクエストをTLSで本物のホストへ運びます。HTTPSトンネルしか開かないクライアントは、置き換えなしでそのまま動きます。" },
       { "title": "SSH経由でgit pushする", "text": "<code>--ssh</code>は<code>~/.ssh</code>を読み取り専用でマウントし、SSHエージェントのソケットを転送します。pushにはネットワークも必要です。" },
       { "title": "ジェイルの中でビルドとテスト", "text": "Linuxでは何も足す必要がありません。<code>cargo build</code>、<code>npm install</code>、<code>go get</code>はプロキシ経由でレジストリから取得してジェイル専用のストアにキャッシュし、miseでインストールしたものも読み取り専用で付いてきます。何にも触れず、どこにも届かない実行にしたいなら、両方を無効にします。" },
-      { "title": "ジェイルの中でGitHub CLI", "text": "<code>--github</code>は<code>~/.config/gh</code>を読み取り専用でマウントするので、<code>gh</code>はログイン済みになります。<code>api.github.com</code>へは、<code>github.com</code>とそのサブドメインを含むデフォルトのレジストリリスト経由で届くので、ホストの追加は要りません。以後、ジェイルの中のものは何でも、あなたとしてGitHubを操作できます。" },
+      { "title": "ジェイルの中でGitHub CLI", "text": "<code>--github</code>はghの設定ディレクトリを読み取り専用でマウントし、有効なgithub.comのトークンを<code>GH_TOKEN</code>として転送するので、キーリングの有無にかかわらず<code>gh</code>はログイン済みです。<code>api.github.com</code>はデフォルトのレジストリ一覧（<code>github.com</code>とそのサブドメイン）に含まれるので、ホストを足す必要はありません。その後は、ジェイル内のものはGitHubであなたとして振る舞えます。" },
       { "title": "エージェント用のブラウザ", "text": "<code>--browser</code>だけでは、ページの読み込みもウィンドウの表示もできないブラウザになります。Linuxでは<code>--network</code>と<code>--display</code>も必要です。X11のブラウザなら、<code>--display</code>の代わりに<code>--x11</code>を使います。" },
       { "title": "Claudeのプロファイルを分ける", "text": "実行ごとに別のClaudeディレクトリを指定すれば、仕事用と個人用のログインを分けておけます。" },
       { "title": "リスクのあるリファクタリングをコピーで試す", "text": "オーバーレイを使うと、エージェントの書き込みはプロジェクト内の<code>.ai-jail-overlays</code>の下にある別レイヤーに入ります。後で元のファイルと比べて、気に入った変更だけを取り込めます。Linuxのみ。" }
     ],
     "comments": {
-      "once": "# 最初に一度だけ、~/.ai-jailに",
-      "then": "# 以降は、どのプロジェクトでも",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# または、ネットワーク全体を開ける：network = true",
-      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
+      "hosts": "# claude、codex、gemini、grokにフラグは不要：ai-jailが自らAPIホストを許可する",
       "phantom": "# キーは0600のファイルにある。サンドボックスに見えるのはAIJAIL-PHANTOM-...だけ",
       "build": "# Linuxのデフォルト：キャッシュ有効、レジストリにはプロキシ経由で届く",
-      "offline": "# 何もマップせず、どこにも届かない"
+      "offline": "# 何もマップせず、どこにも届かない",
+      "nothing": "# 足すものなし：ログイン情報とapi.anthropic.comはデフォルトで付く",
+      "more": "# タスクにもっと必要なときは、~/.ai-jailに一度だけ（リストはデフォルトを置き換える）"
     }
   },
   "compat": {

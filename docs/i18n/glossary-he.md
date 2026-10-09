@@ -134,3 +134,10 @@ Terms decided while translating. One English term maps to one target term across
 | launcher (bwrap's command line) | launcher (Latin, kept: שורת הפקודה של ה-launcher) |
 | Turning it down (Configure section) | מהדקים את הכלא |
 | turn down (a capability) | לכבות / לסגור (מתג אחרי מתג) |
+| API host (the agent's own, allowed by default) | ה-host של ה-API (Latin host, as the network host above) |
+| known agent (one ai-jail recognizes) | סוכן מוכר |
+| filtered proxy | פרוקסי מסנן (the proxy filters; the mode is still רשת מסוננת) |
+| keyring (the system keyring gh stores its token in) | keyring של המערכת |
+| token (the active github.com token) | token (Latin, kept; forwarded as GH_TOKEN) |
+| state folder (the agent's own, mounted by default) | תיקיית המצב של הסוכן |
+| the plain / bare command | הפקודה הרגילה / החשופה |

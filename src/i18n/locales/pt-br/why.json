@@ -73,10 +73,10 @@
     "codeTitle": "Terminal",
     "code": {
       "plain": "# o mesmo comando, dentro da jaula",
-      "optin": "# um agente em nuvem precisa de um caminho até a API"
+      "optin": "# outro agente, ou mais um host, precisa de uma flag"
     },
     "honestTitle": "O custo real",
-    "honest": "Tudo fica desligado até você pedir, inclusive a única coisa de que um agente em nuvem precisa: um caminho até a API dele. O agente não funciona enquanto você não passar <code>--allow-host</code> com o host da API dele ou <code>--network</code>. Salve a configuração num arquivo e você digita uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
+    "honest": "O comando puro funciona para Claude, Codex, Gemini e Grok: cada um alcança a própria API e nenhum outro host. Qualquer coisa a mais precisa de uma flag: <code>--allow-host</code> para a API de outro agente ou um host extra (a lista que você passa substitui o padrão, então nomeie o host da API também), <code>--network</code> para a internet inteira. Salve num arquivo de configuração e você digita uma vez só. <a class=\"link\" href=\"/configure/\">Veja todas as opções</a>."
   },
   "faq": {
     "title": "Perguntas de quem está chegando",

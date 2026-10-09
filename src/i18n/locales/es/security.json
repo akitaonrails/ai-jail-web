@@ -22,7 +22,7 @@
         "text": "Los secretos de tu shell. ai-jail reduce las variables de entorno a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera. La única excepción es la clave de API del propio harness que arrancas, por ejemplo <code>ANTHROPIC_API_KEY</code> para Claude, copiada por defecto junto con su login; <code>--no-agent-state</code> lo impide."
       },
       {
-        "text": "La red. Está apagada, salvo por una lista corta de registries de paquetes que el proxy filtrado deja pasar cuando las toolchains están activadas, el valor por defecto en Linux. <code>--no-network</code> cierra eso también. La API del propio agente sigue cerrada hasta que la abras con <code>--allow-host</code> o <code>--network</code>."
+        "text": "La red. Está apagada, con dos excepciones que pasan por el proxy filtrado: una lista corta de registries de paquetes cuando las toolchains están activadas, lo normal en Linux, y, para un agente conocido como <code>claude</code> o <code>codex</code>, su único host de la API documentado, en ambas plataformas. Los hosts de telemetría siguen cerrados. <code>--no-network</code> cierra ambas cosas."
       },
       {
         "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta."
@@ -72,8 +72,8 @@
       "gives": "Lo que puede hacer entonces cualquier cosa dentro del sandbox"
     },
     "rows": [
-      "Enviar a cualquier parte todo lo que puede leer. El tráfico no tiene restricciones. <code>--allow-host</code> es la alternativa más estricta.",
-      "Llegar exactamente a los hosts que listas, y a sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo.",
+      "Enviar todo lo que pueda leer a cualquier sitio, sin restricción de tráfico. El valor por defecto permite solo el host de la API del propio agente conocido; <code>--allow-host</code> es la alternativa más estricta.",
+      "Alcanzar exactamente los hosts que listas, y sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo. Tu lista sustituye el valor por defecto, así que incluye el host de la API del agente.",
       "Activado por defecto en Linux. Ejecutar tus toolchains: <code>~/.cargo/bin</code> y <code>~/.rustup</code> en solo lectura, una caché de dependencias propia de la jaula en <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre ejecuciones, y salida filtrada hacia los registries de paquetes. Las cachés reales del host nunca se montan. Apagado bajo <code>--lockdown</code> y con <code>--no-toolchains</code>.",
       "Nada nuevo. El valor real de esa clave nunca entra al sandbox: el agente ve un marcador de posición, y el proxy pone el valor real solo en las peticiones HTTP plano al único host al que la vinculaste. El propio proceso de ai-jail ve esa petición en claro.",
       "Nada nuevo. Este interruptor no debilita nada: escribe una línea por arranque en un archivo con modo 0600 fuera del sandbox, así que el agente nunca lo ve.",
@@ -83,7 +83,7 @@
       "Pedirle a tu gestor de usuario de systemd que ejecute servicios en el host.",
       "Leer todo el entorno de tu shell, secretos incluidos. Para las claves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> pasa un solo archivo en su lugar.",
       "Activado por defecto. Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude, montado en lectura y escritura, más su clave de API copiada de tu shell si está definida, para que arranque con la sesión iniciada. Cualquier cosa dentro del sandbox puede usar esas credenciales mientras dure el arranque. <code>--no-agent-state</code> da una ejecución aislada y sin sesión; apagado bajo <code>--lockdown</code>.",
-      "Actuar como tú en GitHub con el login de <code>~/.config/gh</code>, montado en solo lectura. Solo lectura protege el archivo, no la credencial: funciona mientras siga siendo válida.",
+      "Actuar como tú en GitHub. El directorio de configuración de <code>gh</code> se monta en solo lectura, y el token activo de github.com se lee de tu llavero en el host y se reenvía como <code>GH_TOKEN</code> para ese arranque, nunca por la línea de comandos ni por disco. La solo lectura protege el archivo; el token sigue funcionando mientras sea válido.",
       "Actuar como tú en AWS con <code>~/.aws</code>, montado en solo lectura.",
       "Actuar como tú en todos los clústeres de <code>~/.kube</code>, montado en solo lectura.",
       "Actuar como tú en Google Cloud con <code>~/.config/gcloud</code>, montado en solo lectura.",
@@ -131,6 +131,8 @@
     "fixes": {
       "title": "Correcciones de seguridad recientes",
       "items": [
+        "2.8.0: macOS: el perfil de seatbelt conserva el login de Claude Code en el Keychain y permite el socket de control de Codex, así que ambos arrancan con la sesión iniciada.",
+        "2.8.0: las peticiones de posición del cursor de un lanzador las responde la terminal virtual, así que los lanzadores ya no se quedan colgados.",
         "2.6.2: <code>--lockdown</code> siempre aísla el namespace de red, incluso con <code>--network</code>. Antes, ese par contradictorio dejaba el namespace compartido.",
         "2.6.2: los valores de <code>--env</code> y <code>--env-from-file</code> ya no van en la línea de comandos del lanzador, donde cualquier proceso que corra como tú podía leerlos. Pasan por un archivo en memoria.",
         "2.4.0: los metadatos de worktree de un repositorio ya no pueden montar un directorio cualquiera del host en lectura y escritura.",

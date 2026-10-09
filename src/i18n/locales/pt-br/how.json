@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "O que acontece quando você digita ai-jail claude",
-    "lede": "O ai-jail monta uma cópia pequena e fechada do seu sistema, coloca o seu projeto nela e inicia o agente lá dentro. Os muros são recursos do próprio sistema operacional, então o agente roda em velocidade total e não consegue desligá-los. A rede fica desligada, aberta para alguns hosts nomeados ou totalmente aberta: você escolhe a cada inicialização.",
+    "lede": "O ai-jail monta uma cópia pequena e fechada do seu sistema, coloca o seu projeto nela e inicia o agente lá dentro. Os muros são recursos do próprio sistema operacional, então o agente roda em velocidade total e não consegue desligá-los. A cada inicialização, a rede fica fechada exceto para o host da API do próprio agente, aberta para alguns hosts nomeados ou totalmente aberta.",
     "install": "Instalar",
     "security": "Ler o modelo de ameaças"
   },
@@ -75,11 +75,11 @@
   },
   "egress": {
     "title": "Três caminhos até a rede",
-    "lede": "Cada inicialização escolhe um de três modos de rede. O padrão é o mais restrito: nenhuma rota para fora, exceto, no Linux com as toolchains ligadas (o padrão), uma lista curta de registries de pacotes pelo proxy filtrado. Os outros dois são flags que você passa de propósito.",
+    "lede": "Cada inicialização escolhe um de três modos de rede. O padrão é o mais restrito: nenhuma rota para fora, exceto o que o proxy filtrado deixa passar, que é o host da API do próprio agente conhecido nas duas plataformas e, no Linux com as toolchains ligadas (o padrão), uma lista curta de registries de pacotes. Os outros dois são flags que você passa de propósito.",
     "alt": "Três painéis, da esquerda para a direita. Desligada: o chip do agente dentro de um muro fechado, com uma nuvem apagada e gradeada do lado de fora. Filtrada: um portão pequeno no muro leva a uma caixa de proxy, que se conecta a uma nuvem ciano com o rótulo api.anthropic.com enquanto uma segunda nuvem continua apagada e gradeada. Aberta: o lado da rede do muro não existe, e o chip se conecta direto à nuvem.",
     "caption": "Desligada é o padrão. Filtrada abre um portão só para hosts nomeados. Aberta remove o muro do lado da rede.",
     "modes": [
-      { "title": "Desligada", "text": "O padrão. O sandbox ganha um network namespace privado sem rota para fora. No Linux, com as toolchains ligadas (o padrão), o proxy filtrado ainda deixa passar <a class=\"link\" href=\"/configure/#toolchains\">uma lista fixa de registries de pacotes</a>, então <code>npm install</code> e <code>cargo build</code> funcionam; <code>--no-network</code> deixa tudo offline. No macOS os registries também ficam fechados. A API do próprio agente continua fechada até você abri-la." },
+      { "title": "Desligada", "text": "O padrão. O sandbox ganha um network namespace privado sem rota para fora, exceto pelo proxy filtrado. Para um agente conhecido (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>) o proxy deixa passar o único host de API documentado dele, no Linux e no macOS, então um <code>ai-jail claude</code> puro funciona. No Linux, com as toolchains ligadas (o padrão), ele também deixa passar <a class=\"link\" href=\"/configure/#toolchains\">uma lista fixa de registries de pacotes</a>, então <code>npm install</code> e <code>cargo build</code> funcionam; no macOS os registries ficam fechados. <code>--no-network</code> deixa tudo offline." },
       { "title": "Filtrada", "text": "<code>--allow-host HOST</code>, pode ser repetida. O namespace continua fechado; uma ponte pequena lá dentro encaminha o tráfego para um proxy CONNECT do lado de fora, que disca só para os hosts listados e seus subdomínios. O proxy resolve cada nome uma vez, do lado de fora, e disca o endereço que conferiu. O ai-jail define <code>http_proxy</code> lá dentro, e um programa que ignora isso não alcança nada." },
       { "title": "Aberta", "text": "<code>--network</code>. O muro some do lado da rede, e o agente pode enviar para fora o que conseguir ler." }
     ],
@@ -101,7 +101,7 @@
       { "what": "Diretório home", "linux": "Um home novo, na memória. O seu home real não é montado.", "macos": "O perfil começa sem nenhuma leitura global e depois libera só os caminhos de que o agente precisa, então o seu home real continua fechado." },
       { "what": "<code>/tmp</code>", "linux": "Privado, descartado na saída", "macos": "O <code>/tmp</code> do host, porque não existe mount namespace. <code>TMPDIR</code> aponta para uma pasta privada criada para aquela inicialização, e esse é o único caminho temporário liberado." },
       { "what": "Mapeamentos copy-on-write", "linux": "<code>--overlay-map</code> deixa o agente escrever numa cópia", "macos": "Tratado como um mapeamento somente leitura" },
-      { "what": "Rede", "linux": "Desligada por padrão: sem rota para fora, exceto os registries de pacotes liberados quando as toolchains estão ligadas. <code>--allow-host</code> ou <code>--network</code> abre mais, <code>--no-network</code> fecha tudo. No <code>--lockdown</code> a rede aberta fica sempre bloqueada, mesmo com <code>--network</code>.", "macos": "O mesmo padrão e as mesmas flags, sem os registries nem os mapeamentos de cache das toolchains, que só existem no Linux. O lockdown bloqueia a rede aberta aqui também." },
+      { "what": "Rede", "linux": "Desligada por padrão: sem rota para fora, exceto o host da API do próprio agente conhecido e os registries de pacotes liberados quando as toolchains estão ligadas. <code>--allow-host</code> ou <code>--network</code> abre mais, <code>--no-network</code> fecha tudo. No <code>--lockdown</code> a rede aberta fica sempre bloqueada, mesmo com <code>--network</code>.", "macos": "O mesmo padrão e as mesmas flags, incluindo o host da API do agente conhecido, mas sem os registries nem os mapeamentos de cache das toolchains, que só existem no Linux. O lockdown bloqueia a rede aberta aqui também." },
       { "what": "Outros programas", "linux": "Invisíveis: lista de processos própria, sem IPC do host", "macos": "Mach, IOKit e IPC do host são negados, a menos que você passe <code>--macos-host-ipc</code>" }
     ],
     "windows": {

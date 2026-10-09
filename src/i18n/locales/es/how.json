@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "Qué pasa cuando escribes ai-jail claude",
-    "lede": "ai-jail construye una copia pequeña y cerrada de tu sistema, pone tu proyecto dentro y arranca ahí al agente. Los muros son funciones del propio sistema operativo, así que el agente corre a toda velocidad y no puede desactivarlos. La red está apagada, abierta a unos pocos hosts con nombre, o abierta del todo: lo eliges en cada arranque.",
+    "lede": "ai-jail construye una copia pequeña y cerrada de tu sistema, mete tu proyecto dentro y arranca el agente ahí. Las paredes son funciones del propio sistema operativo, así que el agente corre a toda velocidad y no puede apagarlas. En cada arranque, la red está cerrada salvo el host de la API del propio agente, abierta a unos pocos hosts con nombre, o abierta del todo.",
     "install": "Instalar",
     "security": "Leer el modelo de amenazas"
   },
@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "Tres caminos hacia la red",
-    "lede": "Cada arranque elige uno de tres modos de red. El predeterminado es el más estricto: sin salida, salvo, en Linux con las toolchains activadas (el valor por defecto), una lista corta de registries de paquetes a través del proxy filtrado. Los otros dos son flags que pasas a propósito.",
+    "lede": "Cada arranque elige uno de tres modos de red. El modo por defecto es el más estricto: ninguna ruta de salida salvo lo que deja pasar el proxy filtrado, que es el host de la API del propio agente conocido en ambas plataformas y, en Linux con las toolchains activadas (lo normal), una lista corta de registries de paquetes. Los otros dos son flags que pasas a propósito.",
     "alt": "Tres paneles, de izquierda a derecha. Apagada: el chip del agente dentro de un muro cerrado, con una nube atenuada y tras barrotes fuera. Filtrada: una puerta pequeña en el muro lleva a una caja de proxy, que conecta con una nube cian con la etiqueta api.anthropic.com mientras una segunda nube sigue atenuada y tras barrotes. Abierta: falta el lado de red del muro y el chip conecta directo con la nube.",
     "caption": "Apagada es el valor por defecto. Filtrada abre una puerta solo hacia hosts con nombre. Abierta quita el muro del lado de la red.",
     "modes": [
       {
         "title": "Apagada",
-        "text": "El valor por defecto. El sandbox recibe un namespace de red privado sin salida. En Linux, con las toolchains activadas (el valor por defecto), el proxy filtrado deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; <code>--no-network</code> lo deja del todo sin conexión. En macOS los registries también quedan cerrados. La API del propio agente sigue cerrada hasta que la abres."
+        "text": "El modo por defecto. El sandbox recibe un namespace de red privado sin ruta de salida, salvo a través del proxy filtrado. Para un agente conocido (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>) el proxy deja pasar su único host de la API documentado, en Linux y macOS, así que un simple <code>ai-jail claude</code> funciona. En Linux, con las toolchains activadas (lo normal), también deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; en macOS los registries siguen cerrados. <code>--no-network</code> lo deja completamente sin conexión."
       },
       {
         "title": "Filtrada",
@@ -151,8 +151,8 @@
       },
       {
         "what": "Red",
-        "linux": "Apagada por defecto: sin salida, salvo los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--no-network</code> lo cierra todo. Bajo <code>--lockdown</code> la red abierta siempre está bloqueada, incluso con <code>--network</code>.",
-        "macos": "El mismo valor por defecto y los mismos flags, sin los registries ni los mapeos de caché de las toolchains, que solo existen en Linux. Lockdown también bloquea aquí la red abierta."
+        "linux": "Apagada por defecto: ninguna ruta de salida salvo el host de la API del propio agente conocido y los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--no-network</code> cierra todo. Bajo <code>--lockdown</code> la red abierta siempre se bloquea, incluso con <code>--network</code>.",
+        "macos": "El mismo valor por defecto y los mismos flags, incluido el host de la API del agente conocido, pero sin los registries ni los mapeos de caché de toolchains, que son solo para Linux. Lockdown también bloquea aquí la red abierta."
       },
       {
         "what": "Otros programas",

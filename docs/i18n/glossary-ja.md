@@ -69,6 +69,13 @@ Terms decided while translating. One English term maps to one target term across
 | gateway | ゲートウェイ |
 | Visibility (switch group) | 可視性 |
 | API host | APIホスト |
+| the agent's own API host (2.8 default) | エージェント自身のAPIホスト |
+| known agent (claude, codex, gemini, grok) | 既知のエージェント |
+| filtered proxy | フィルタ付きプロキシ |
+| system keyring | システムのキーリング |
+| to forward (a token) | 転送する |
+| the list replaces the default | リストはデフォルトを置き換える |
+| GH_TOKEN, gh, Kiro, Prime | 英語のまま |
 | resolver | リゾルバ |
 | headless (mode) | ヘッドレス / ヘッドレスモード |
 | container | コンテナ |

@@ -20,7 +20,7 @@
       },
       {
         "title": "Solo usas Claude Code",
-        "text": "El <code>sandbox-runtime</code> de Anthropic también envuelve el proceso entero, en beta. ai-jail añade por defecto un home vacío, la red apagada y una lista de permitidos para el entorno. <a class=\"link\" href=\"#table\">Mira las tarjetas</a>."
+        "text": "El <code>sandbox-runtime</code> de la propia Anthropic también envuelve el proceso entero, en beta. ai-jail añade por defecto un home vacío, una red cerrada a todo salvo el host del modelo y una lista de variables de entorno permitidas. <a class=\"link\" href=\"#table\">Mira las tarjetas</a>."
       },
       {
         "title": "Quieres el sandbox y las solicitudes del propio agente",
@@ -163,7 +163,7 @@
           "Un proxy con una lista de permitidos por dominio. Un dominio nuevo te pide confirmación, y cada comando sigue teniendo su propia aprobación. La documentación señala que el proxy confía en el hostname que envía el cliente, así que el domain fronting puede saltárselo.",
           "Apagada por defecto en <code>workspace-write</code>. Un ajuste la activa, y un proxy opcional añade reglas de permitir y denegar por dominio. La documentación dice que el proxy no filtra las conexiones de los servidores MCP, la búsqueda web ni el navegador.",
           "El perfil por defecto permite la red. Los perfiles más estrictos y los que usan proxy son opt-in.",
-          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts que listas y sus subdominios, impuesto por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y se conecta a la dirección que comprobó. <code>--network</code> lo abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. Con las toolchains activadas, el valor por defecto en Linux, el proxy también permite una lista fija de registries de paquetes para que los builds funcionen; <code>--no-network</code> lo apaga. La API del propio agente sigue necesitando <code>--allow-host</code>."
+          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts de la lista y sus subdominios, aplicado por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y marca la dirección que comprobó. <code>--network</code> abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. Por defecto el proxy deja pasar el host de la API de un agente conocido en ambas plataformas y, con las toolchains activadas (lo normal en Linux), una lista fija de registries de paquetes para que las compilaciones funcionen. <code>--no-network</code> cierra ambas cosas. Una lista explícita con <code>--allow-host</code> sustituye ese valor por defecto."
         ]
       },
       {
@@ -224,10 +224,10 @@
   },
   "both": {
     "title": "Usa los dos",
-    "lede": "Con la red apagada, un agente en la nube no puede llegar a la API de su propio modelo. Su login ya está dentro, montado por defecto, así que abres una sola cosa: la ruta hacia la API. Permite un solo host, o abre toda la red.",
-    "codeFiltered": "más estricto: solo la API del modelo",
+    "lede": "Un agente conocido no necesita que abras nada. Su login se monta por defecto y el proxy filtrado deja pasar solo el host de la API de su modelo. Añade hosts con <code>--allow-host</code>, o abre toda la red, cuando una herramienta necesite más.",
+    "codeFiltered": "por defecto: solo el host del modelo",
     "codeOpen": "más simple: toda la red",
-    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex y Gemini CLI, y avisa al arrancar cuando la lista no lo incluye. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
+    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex, Gemini CLI y Grok y lo permite por defecto. Una lista explícita con <code>--allow-host</code> sustituye ese valor por defecto, así que incluye el host de la API cuando pases una. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
     "alt": "Un muro grande con la etiqueta ai-jail encierra al agente, sus servidores MCP, sus hooks, el proyecto y sus comandos de shell. Entre el agente y los comandos de shell está la solicitud de aprobación del propio agente. Una línea sale del muro por una puerta hacia la API del modelo. Tu directorio home queda fuera del muro, atenuado y tras barrotes.",
     "caption": "El muro exterior es ai-jail. Dentro, las solicitudes y las reglas del agente siguen haciendo su trabajo.",
     "points": [
@@ -237,7 +237,7 @@
       },
       {
         "title": "Lo que ai-jail garantiza por debajo",
-        "text": "El agente, sus servidores MCP y sus hooks nunca ven tu directorio home, tus claves ni los tokens de tu shell, apruebes lo que apruebes. La única excepción es el login y la clave de API del propio agente, montados por defecto para que arranque con la sesión iniciada. Lo que el agente puede leer, todavía lo puede enviar a cualquier host que hayas permitido, así que <a class=\"link\" href=\"/configure/#secrets\">enmascara los secretos dentro del proyecto</a>."
+        "text": "El agente, sus servidores MCP y sus hooks nunca ven tu directorio home, tus claves ni los tokens de tu shell, apruebes lo que apruebes. La única excepción es el login y la clave de API del propio agente, montados por defecto para que arranque con la sesión iniciada. Lo que el agente puede leer, todavía puede enviarlo al host de su propia API y a cualquier host que hayas permitido, así que <a class=\"link\" href=\"/configure/#secrets\">enmascara los secretos dentro del proyecto</a>."
       }
     ],
     "nestedTitle": "Conserva las solicitudes, pero no cuentes con un sandbox dentro de otro",

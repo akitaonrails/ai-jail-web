@@ -38,6 +38,10 @@ Terms decided while translating. One English term maps to one target term across
 | guest system | sistema guest |
 | root-equivalent | equivale a root |
 | prebuilt binary | binário pré-compilado |
+| API host (the agent's own) | host da API |
+| system keyring | keyring do sistema |
+| to forward (a token) | repassar |
+| GH_TOKEN, gh, Kiro, Prime | kept as in English |
 | archive (release) | arquivo compactado |
 | checksum, fingerprint, ruleset, trusted publishing, advisory | kept in English |
 | pinned | fixado |

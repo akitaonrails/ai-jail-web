@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "ai-jailのインストールと最初の実行",
-    "description": "ai-jailをHomebrew、AUR、cargo、Nixでインストールし、ドライランでサンドボックスの内容を確認します。その後、APIへの経路を1つ開けて、ログイン済みのClaude CodeやCodexを起動します。"
+    "description": "Homebrew、AUR、cargo、Nixでai-jailをインストールし、ドライランでサンドボックスを下見してから、Claude CodeやCodexをサインイン済みで、自身のAPIにだけ届く状態で起動します。"
   },
   "hero": {
     "title": "インストールして、中を見て、エージェントを動かす",
@@ -12,7 +12,14 @@
   "install": {
     "title": "インストール",
     "lede": "コマンドラインツールを普段入れている方法を選んでください。どの方法でも、同じ単一の<code>ai-jail</code>プログラムが入ります。",
-    "tabs": [ "Homebrew", "Arch Linux", "crates.io", "Nix", "GitHubのリリース", "ソースから" ],
+    "tabs": [
+      "Homebrew",
+      "Arch Linux",
+      "crates.io",
+      "Nix",
+      "GitHubのリリース",
+      "ソースから"
+    ],
     "notes": [
       "macOSとLinuxで使えます。",
       "1つ目のパッケージはLinux x86_64向けのビルド済みバイナリです。2つ目はソースからビルドします。",
@@ -32,72 +39,79 @@
   },
   "first": {
     "title": "最初の実行",
-    "lede": "3つのコマンドで、計画の確認、中の見学、実際に動くエージェントまで進みます。エージェントのログイン情報はすでに中にあるので、開ける門はAPIホストの1つだけです。",
-    "alt": "左から右へ3枚のパネル。「ドライラン」では、独房は破線の輪郭だけで、エージェントは外で待っています。「中を見て回る」では、独房が実体になり、中にターミナルとプロジェクトフォルダがあります。「エージェントを実行」では、エージェントとプロジェクトとエージェントのログインカードが中にあり、壁には開口部が1つ、エージェントのAPIホストへの門があります。ホームフォルダは3枚とも外にあり、格子がかかっています。",
-    "caption": "ホームディレクトリはどのステップでも外にあり、エージェントのログイン情報は最初から中にあります。最後のステップで開けるのは、クラウド型のエージェントにまだ必要な1つ、APIホストだけです。",
+    "lede": "コマンドは3つ。計画、中の下見、動くエージェント。ログイン情報は最初から中にあり、エージェントのAPIホストへの経路はai-jailが開けてくれます。",
+    "alt": "左から右へ3つのパネル。ドライラン：独房は破線の輪郭だけで、エージェントは外で待っている。中を見る：独房は実線になり、ターミナルとプロジェクトフォルダがある。エージェントを実行：エージェント、プロジェクト、エージェントのログインカードが中にあり、壁に開口部が1つ、ai-jailが自ら開けたエージェントのAPIホストへの門がある。あなたのホームフォルダは3つとも外で遮られたまま。",
+    "caption": "あなたのホームディレクトリはどの段階でも外に残り、エージェントのログイン情報は最初から中にあります。最後の段階で、ai-jailはエージェントを知っていれば、クラウドのエージェントに必要なただ1つの門、そのAPIホストを開けます。残りのネットワークは閉じたままです。",
     "steps": [
       { "title": "何も実行せずに計画を見る", "text": "プロジェクトに移動して、ドライランを実行します。ai-jailは、使うはずのサンドボックスコマンドを表示して終了します。ドライランがファイルを書き込むことはありません。" },
       { "title": "中を見て回る", "text": "ジェイルの中で普通のシェルを起動します。プロジェクトは実際のパスにあり、編集もできます。ホームディレクトリは新しい空のもので、シェルのトークンは消えています。出るには<code>exit</code>と打ちます。" },
-      { "title": "必要な1つを付けてエージェントを動かす", "text": "ai-jailはエージェント自身の状態フォルダをデフォルトでマウントするので、ログインは済んでいます。それでもAPIへの経路は必要です。<code>--allow-host api.anthropic.com</code>はそのホストだけを開けます（Codexは<code>api.openai.com</code>、Geminiは<code>generativelanguage.googleapis.com</code>）。<code>--network</code>はネットワーク全体を開けます。Linuxでは、ツールチェーンがcrates.io、npm、PyPIなどのパッケージレジストリをデフォルトで開けるので、ビルドは動きます。エージェント自身のAPIには引き続き<code>--allow-host</code>か<code>--network</code>が必要です。既知のエージェントをAPIへの経路なしで起動すると、ai-jailはホスト名を挙げて警告します。" },
-      { "title": "そのエージェントのデフォルトにする", "text": "ホストのリストを、あなた自身の設定ファイル<code>~/.ai-jail</code>に、エージェントの名前の下に書きます。以降は短いコマンドだけで足ります。ログアウト状態で実行したいときは<code>--no-agent-state</code>を渡します。プロジェクト内にできることがある<code>.ai-jail</code>ファイルは、ジェイルを厳しくすることしかできません。ホストのリストを減らしたりログインを無効にしたりはできても、その逆はできないので、cloneしたリポジトリが自分でジェイルを開けることはありません。" }
+      { "title": "エージェントを実行する", "text": "ai-jailはエージェント自身の状態フォルダをデフォルトでマウントするので、すでにサインイン済みです。エージェントを知っていれば、フィルタ付きプロキシでホストを1つ、エージェントのAPIも通します。Claude Codeなら<code>api.anthropic.com</code>、Codexなら<code>api.openai.com</code>、Geminiなら<code>generativelanguage.googleapis.com</code>、Grokなら<code>api.x.ai</code>で、LinuxでもmacOSでも同じです。テレメトリのホストは閉じたままです。Linuxでは、ツールチェーンがcrates.io、npm、PyPIなどのパッケージレジストリにデフォルトで届くので、ビルドが動きます。代わりに<code>--network</code>はネットワーク全体を開けます。" },
+      { "title": "もっと必要なとき", "text": "あなた自身の設定ファイル<code>~/.ai-jail</code>に、エージェント名の下にホストのリストを書きます。明示的なリストはデフォルトを置き換えるので、APIホストも含めてください。あるいは<code>--network</code>でネットワーク全体を開けます。ログアウト状態で実行するなら<code>--no-agent-state</code>を渡します。プロジェクト内の<code>.ai-jail</code>ファイルはジェイルを締めることしかできません。ホストのリストを縮め、ログインを切ることはできても、その逆はできないので、クローンしたリポジトリが自分でジェイルを開けることはありません。" }
     ],
-    "codeTitles": [ "ドライラン", "ジェイルの中のシェル", "本番の実行", "~/.ai-jail" ],
+    "codeTitles": [
+      "ドライラン",
+      "ジェイルの中のシェル",
+      "本番の実行",
+      "~/.ai-jail"
+    ],
     "gitignore": {
       "title": "プロジェクト内の.ai-jailファイル",
       "text": "通常の実行では、プロジェクトの設定が<code>.ai-jail</code>に保存されることがあります。<code>--env</code>で渡した値をai-jailがそこに書くことはありません。エージェントにはこのファイルは空に見えます。READMEは、ジェイルの中で<code>git status</code>がきれいなままになるよう、<code>.ai-jail</code>を<code>.gitignore</code>に追加することを勧めています。2つの設定ファイルについては<a class=\"link\" href=\"/configure/\">設定</a>のページで説明しています。"
     },
     "exposure": {
       "title": "デフォルトで明け渡すもの",
-      "text": "エージェントのログイン情報は読み書き可能でマウントされ、APIキーの変数（Claude Codeなら<code>ANTHROPIC_API_KEY</code>）はシェルに設定されていればコピーされるので、ジェイルの中で動くものは何でも、実行中はそのログインを使えます。<code>--no-agent-state</code>で両方とも無効になります。許可したホストは、そこが提供するすべてについて信頼されます。<code>github.com</code>を許可すれば、どのリポジトリへのpushも許可したことになります。<code>--network</code>はネットワーク全体なので、エージェントは読めるものを何でも送れます。それでも、SSH鍵やクラウドの認証情報、ほかのプロジェクトはそこになく、読まれることはありません。限界の一覧は<a class=\"link\" href=\"/security/\">セキュリティ</a>のページにあります。"
+      "text": "エージェントのログイン情報は読み書き可能でマウントされ、APIキーの変数（Claude Codeなら<code>ANTHROPIC_API_KEY</code>）は設定されていればシェルからコピーされ、APIホストにも届くので、ジェイル内で動くものは実行中ずっとそのログインを使えます。<code>--no-agent-state</code>はログインとキーを切り、<code>--no-network</code>はAPIホストも閉じます。許可したホストはそれが提供するすべてにおいて信頼されます。<code>github.com</code>を許可すれば、どのリポジトリへのpushも許可されます。<code>--network</code>はネットワーク全体なので、エージェントが読めるものは何でも送れます。それでも、SSH鍵、クラウドの認証情報、他のプロジェクトは読める場所にありません。限界の全リストは<a class=\"link\" href=\"/security/\">Security</a>にあります。"
     },
-    "comments": [ "# または、ネットワーク全体を開けるなら：", "# 以降は、どのプロジェクトでも：" ]
+    "comments": [
+      "# または、ネットワーク全体を開けるなら：",
+      "# リストはデフォルトを置き換えるので、APIホストを残しておく",
+      "# または、一度だけなら："
+    ]
   },
   "see": {
     "title": "中で見えるもの",
     "lede": "プロンプトは<code>(jail)</code>に変わり、プロジェクトはいつもの場所にあります。ツールチェーンも読み取り専用でそこにあります。盗む価値のあるものは見当たりません。例外はエージェント自身のログイン情報で、これは意図してそこにあります。",
     "termTitle": "ai-jail bash、Linuxの場合",
-    "comments": [ "# プロジェクトは実際のパスにある", "# シェルでexportしたトークンは付いてこない", "# このホームにあなたの鍵はない", "# ジェイルには専用のホスト名がある" ],
+    "comments": [
+      "# プロジェクトは実際のパスにある",
+      "# シェルでexportしたトークンは付いてこない",
+      "# このホームにあなたの鍵はない",
+      "# ジェイルには専用のホスト名がある"
+    ],
     "note": "これはLinuxでのセッションです。macOSには別のファイルツリーを組み立てる手段がないので、同じパスは存在しますが、読み取りが拒否されます。",
     "alt": "独房の中からの眺め。エージェントは大きく明るいプロジェクトフォルダの隣にいて、その後ろに空のホームとシステムのツールがあります。格子の外には、SSH鍵、クラウドのログイン、ほかのプロジェクト、ネットワークが暗く、格子がかかった状態で並んでいます。",
-    "caption": "中から見ると、あなたのもので変更できるのはプロジェクトだけです。ツールチェーン（mise、cargo、npmなど）は読み取り専用でそこにあり、依存キャッシュはジェイル専用です。ネットワークは、そのツールチェーンが取得先にするパッケージレジストリを除き、<code>--allow-host</code>でホストを1つ開けるか、<code>--network</code>で全体を開けるまでは外にあります。<a class=\"link\" href=\"/configure/#toolchains\">ツールチェーンのマップのされ方</a>。"
+    "caption": "中から見ると、あなたのもので変更できるのはプロジェクトだけです。ツールチェーン（mise、cargo、npmなど）は読み取り専用でそこにあり、依存キャッシュはジェイル専用です。ネットワークは外に残ります。例外は既知のエージェント自身のAPIホストと、Linuxではそのツールチェーンが取得先にするパッケージレジストリだけで、<code>--allow-host</code>でホストを開けるか、<code>--network</code>で全部開けるまで変わりません。<a class=\"link\" href=\"/configure/#toolchains\">ツールチェーンのマップ方法</a>。"
   },
   "trouble": {
     "title": "起動しないとき",
     "lede": "READMEのトラブルシューティングにあるケースと、つまずく人の多いセットアップ上のルール2つを取り上げます。",
     "items": [
-      {
-        "title": "<code>bwrap: setting up uid map: Permission denied</code>",
-        "text": "Ubuntu 24.04以降とDebian 13以降には、プログラムがrootなしでユーザー名前空間を作ることを禁じるAppArmorポリシーが入っています。bubblewrapはまさにその方法でジェイルを隔離しています。この種のrootなしのツールはどれも影響を受けます。システム全体で緩めるには次のようにします。",
-        "alt": "ポリシーは残して、<code>bwrap</code>だけを対象外にすることもできます。次の内容を<code>/etc/apparmor.d/bwrap</code>として保存し、<code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>を実行してください。"
-      },
-      {
-        "title": "<code>BWRAP_BIN</code>が拒否される",
-        "text": "<code>BWRAP_BIN</code>を使うと、特定のbubblewrapをai-jailに指定できます。ai-jailが受け入れるのは、解決先が、rootが所有しほかのユーザーが書き込めないプログラムである場合か、標準的なマルチユーザーの<code>/nix/store</code>内にある場合だけです。自分のホームに置いたコピーは拒否されます。そのファイルを差し替えられる人なら誰でも、ジェイルを支配できてしまうからです。"
-      },
-      {
-        "title": "opencodeが<code>Starting background server</code>で止まる",
-        "text": "opencode 2.xは共有のバックグラウンドサーバーと通信します。ジェイルは起動のたびに作り直すラッパーで、ホームも新しくなるので、そのサーバーは実行をまたいで残りません。<code>--standalone</code>を付けてopencodeを単体で起動し、毎回打たずに済むよう設定ファイルに固定してください。これなしでopencodeを起動すると、ai-jailは起動時に警告します。"
-      },
-      {
-        "title": "起動時に<code>Failed to create stream fd</code>と出る",
-        "text": "miseのセットアップ中に、Ubuntuデスクトップのログインスクリプトが出すメッセージです。害はなく、miseは問題なく動きます。<code>--no-mise</code>を渡せば、miseのセットアップごとこのメッセージも出なくなります。"
-      }
+      { "title": "<code>bwrap: setting up uid map: Permission denied</code>", "text": "Ubuntu 24.04以降とDebian 13以降には、プログラムがrootなしでユーザー名前空間を作ることを禁じるAppArmorポリシーが入っています。bubblewrapはまさにその方法でジェイルを隔離しています。この種のrootなしのツールはどれも影響を受けます。システム全体で緩めるには次のようにします。", "alt": "ポリシーは残して、<code>bwrap</code>だけを対象外にすることもできます。次の内容を<code>/etc/apparmor.d/bwrap</code>として保存し、<code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>を実行してください。" },
+      { "title": "<code>BWRAP_BIN</code>が拒否される", "text": "<code>BWRAP_BIN</code>を使うと、特定のbubblewrapをai-jailに指定できます。ai-jailが受け入れるのは、解決先が、rootが所有しほかのユーザーが書き込めないプログラムである場合か、標準的なマルチユーザーの<code>/nix/store</code>内にある場合だけです。自分のホームに置いたコピーは拒否されます。そのファイルを差し替えられる人なら誰でも、ジェイルを支配できてしまうからです。" },
+      { "title": "opencodeが<code>Starting background server</code>で止まる", "text": "opencode 2.xは共有のバックグラウンドサーバーと通信します。ジェイルは起動のたびに作り直すラッパーで、ホームも新しくなるので、そのサーバーは実行をまたいで残りません。<code>--standalone</code>を付けてopencodeを単体で起動し、毎回打たずに済むよう設定ファイルに固定してください。これなしでopencodeを起動すると、ai-jailは起動時に警告します。" },
+      { "title": "起動時に<code>Failed to create stream fd</code>と出る", "text": "miseのセットアップ中に、Ubuntuデスクトップのログインスクリプトが出すメッセージです。害はなく、miseは問題なく動きます。<code>--no-mise</code>を渡せば、miseのセットアップごとこのメッセージも出なくなります。" }
     ]
   },
   "agents": {
     "title": "エージェント別",
     "lede": "ai-jailは、各エージェントがログイン情報をどこに保存するかを知っていて、デフォルトでマウントします。対象は起動するエージェントのフォルダだけで、存在する場合に限ります。<code>--no-agent-state</code>で無効になります。シェルに設定されていれば、そのエージェントのAPIキーの変数も一緒に渡ります：<code>ANTHROPIC_API_KEY</code>、<code>OPENAI_API_KEY</code>、<code>GEMINI_API_KEY</code>または<code>GOOGLE_API_KEY</code>、<code>XAI_API_KEY</code>、<code>MOONSHOT_API_KEY</code>。",
-    "head": [ "実行するコマンド", "デフォルトでマウントされるもの", "知っておくとよいこと" ],
+    "head": [
+      "実行するコマンド",
+      "デフォルトでマウントされるもの",
+      "知っておくとよいこと"
+    ],
     "notes": {
       "claude": "2つ目のClaudeプロファイルを使うには、<code>--claude-dir</code>でそのディレクトリを指定します。",
       "codex": "ウィンドウをリサイズすると、画面が描き直されるよう、ai-jailがCodexに再描画のキーを送ります。",
       "opencode": "<code>--standalone</code>が必要です。上のトラブルシューティングの項目を見てください。",
       "antigravity": "GoogleのログインをGeminiと共有するので、一度のサインインで両方に使えます。",
       "kimi": "以前の場所である<code>~/.kimi-code</code>も、存在すればマウントされます。",
-      "aimemory": "ai-jailは、<a class=\"link\" href=\"https://aimemory.io\">ai-memory</a>が起動するエージェントを認識して、そのエージェントの設定を適用します。2つのプログラムは同じジェイルに入ります。"
+      "aimemory": "ai-jailは、<a class=\"link\" href=\"https://aimemory.io\">ai-memory</a>が起動するエージェントを認識して、そのエージェントの設定を適用します。2つのプログラムは同じジェイルに入ります。",
+      "kiro": "macOSでは2つ目のフォルダは代わりに<code>~/Library/Application Support/kiro-cli</code>です。",
+      "prime": "エージェント自身のフォルダだけで、<code>~/.prime</code>全体は決してマウントしません。"
     },
     "aimemoryState": "起動されるエージェントのフォルダ",
-    "more": "<code>crush</code>、<code>grok</code>、<code>jcode</code>、<code>pi</code>、<code>aider</code>、<code>soulforge</code>、<code>omp</code>でも同じように動きます。それ以外のコマンドも実行できます。ジェイルは同じで、ログイン用のフォルダはマウントされません。"
+    "more": "<code>crush</code>、<code>grok</code>、<code>jcode</code>、<code>pi</code>、<code>aider</code>、<code>soulforge</code>、<code>omp</code>でも同じです。それ以外のコマンドも、同じジェイルで、ログインフォルダなしで動きます。ai-jailがAPIホストをデフォルトで開けるのは<code>claude</code>、<code>codex</code>、<code>gemini</code>、<code>grok</code>で、他のエージェントには<code>--allow-host</code>か<code>--network</code>が必要です。"
   },
   "next": {
     "items": [

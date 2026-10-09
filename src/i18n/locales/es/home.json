@@ -34,7 +34,7 @@
       },
       {
         "title": "Abre lo que la tarea necesita",
-        "text": "Un agente en la nube arranca con la sesión iniciada, porque ai-jail monta su login por defecto. Abres una sola cosa, la ruta hacia su API: <code>--allow-host</code> con el host de su API, o <code>--network</code> para toda la red. Todo lo demás sigue cerrado hasta que lo pidas."
+        "text": "Un agente en la nube arranca con la sesión iniciada, porque ai-jail monta su login por defecto. Para Claude, Codex, Gemini y Grok no abres nada: ai-jail deja pasar ese único host de la API por su proxy filtrado y mantiene el resto cerrado. <code>--allow-host</code> añade hosts, <code>--network</code> lo abre todo."
       }
     ]
   },
@@ -47,7 +47,7 @@
   },
   "defaults": {
     "title": "Lo que obtienes sin configurar nada",
-    "lede": "Todo lo que llega a tu máquina está apagado hasta que lo activas, salvo el login del propio agente, tus toolchains (en Linux) y sus registries de paquetes, cada uno con su interruptor <code>--no-</code>. Las escrituras fuera del proyecto van a memoria y desaparecen cuando termina la sesión.",
+    "lede": "Todo lo que alcanza tu máquina está apagado hasta que lo actives, salvo el login del propio agente, el host de su propia API, tus toolchains (en Linux) y sus registries de paquetes, cada uno con un interruptor <code>--no-</code>. Las escrituras fuera del proyecto caen en memoria y desaparecen cuando termina la sesión.",
     "inside": [
       {
         "text": "El directorio del proyecto, en lectura y escritura, en su ruta real"
@@ -57,6 +57,9 @@
       },
       {
         "text": "El login del propio agente, como <code>~/.claude</code>, para que arranque con la sesión iniciada"
+      },
+      {
+        "text": "El host de la API de un agente conocido (Claude, Codex, Gemini, Grok) a través de un proxy filtrado, y los registries de paquetes en Linux"
       },
       {
         "text": "Un directorio home nuevo y un <code>/tmp</code> privado"
@@ -75,7 +78,7 @@
     ],
     "optin": [
       {
-        "text": "<code>--allow-host</code> para los hosts que listas, o <code>--network</code> para toda la red"
+        "text": "<code>--allow-host</code> para más hosts, o <code>--network</code> para toda la red"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> y más"
@@ -129,7 +132,7 @@
       },
       {
         "q": "Mi agente necesita internet. ¿Sigue sirviendo la jaula?",
-        "a": "Sí. <code>--allow-host api.anthropic.com</code> deja que el agente llegue solo a su API. Con <code>--network</code> activado en su lugar, el agente sigue pudiendo leer solo tu proyecto, así que tus claves y el resto de tu home no están ahí para enviarlos. Lo que puede leer, lo puede enviar, y por eso importa enmascarar los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
+        "a": "Sí. Un agente conocido como Claude Code alcanza su API nada más arrancar y ningún otro host. <code>--allow-host</code> añade los hosts que nombres. Con <code>--network</code> activado, en cambio, el agente sigue pudiendo leer solo tu proyecto, así que tus claves y el resto de tu home no están ahí para enviarlos. Lo que puede leer, puede enviarlo, y por eso importa enmascarar los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
       },
       {
         "q": "¿Es gratis?",

@@ -81,3 +81,8 @@ Terms decided while translating. One English term maps to one target term across
 | determined / motivated attacker | atacante decidido |
 | convenience trade | concesión por comodidad |
 | namespace (network) | namespace (kept in English) |
+| keyring (system keyring) | llavero del sistema |
+| package registry | registry de paquetes (pl.: registries de paquetes) |
+| GH_TOKEN / gh / Keychain / seatbelt / namespace | kept in English |
+| known agent (one whose API host ai-jail allows) | agente conocido |
+| the default (noun, the default host list) | el valor por defecto |

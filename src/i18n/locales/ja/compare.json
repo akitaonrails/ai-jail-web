@@ -15,7 +15,7 @@
     "lede": "6つの状況に、答えを1つずつ。根拠はこのページの残りで示します。",
     "items": [
       { "title": "複数のエージェントを使う", "text": "ai-jailです。ポリシーファイル1つでどんなコマンドにも使え、プロセスツリー全体が中に入り、ホームと鍵はデフォルトで隠れ、ツールチェーンとキャッシュは中で使えます。<a class=\"link\" href=\"/install/\">インストール</a>。" },
-      { "title": "Claude Codeしか使わない", "text": "Anthropic自身の<code>sandbox-runtime</code>も、ベータ版ながらプロセス全体を包みます。ai-jailはそこに、空のホーム、無効なネットワーク、環境変数の許可リストをデフォルトで加えます。<a class=\"link\" href=\"#table\">カードを見る</a>。" },
+      { "title": "Claude Codeしか使わない", "text": "Anthropic自身の<code>sandbox-runtime</code>もプロセス全体を包みます（ベータ）。ai-jailはそれに加えて、空のホーム、モデルのホスト以外に閉じたネットワーク、環境変数の許可リストをデフォルトで用意します。<a class=\"link\" href=\"#table\">カードを見る</a>。" },
       { "title": "エージェント自身のサンドボックスとプロンプトを使いたい", "text": "そのまま有効にしておいてください。ai-jailの中でも動き、あなたなら承認しなかったはずのコマンドを止めてくれます。<a class=\"link\" href=\"#both\">両方使う</a>。" },
       { "title": "ツールごとのポリシー、実行時の承認、署名付きの監査証跡が欲しい", "text": "そこではnonoがai-jailより先を行きます。代わりに、ポリシー言語とコマンドごとのスーパーバイザーが必要です。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。" },
       { "title": "コードから、ツール呼び出し1回ずつサンドボックスに入れる", "text": "zeroboxにはそのためのSDKと、巻き戻し用のスナップショットがあります。読み取りは開いたままで、2026年5月以降リリースがありません。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。" },
@@ -48,7 +48,13 @@
     "title": "並べて比べる",
     "lede": "ここに書いた内容はすべて、執筆時点の各製品のドキュメントに基づいています。私たちが読んだドキュメントに答えがなかった項目は、セルにそう記しています。",
     "undocumented": "記載なし",
-    "cols": { "row": "", "claude": "Claude Codeのサンドボックス", "codex": "Codex CLIのサンドボックス", "gemini": "Gemini CLIのサンドボックス", "jail": "ai-jail" },
+    "cols": {
+      "row": "",
+      "claude": "Claude Codeのサンドボックス",
+      "codex": "Codex CLIのサンドボックス",
+      "gemini": "Gemini CLIのサンドボックス",
+      "jail": "ai-jail"
+    },
     "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>。",
     "wrappersTitle": "ai-jailに似たラッパー",
     "wrappersLead": "ほかにも2つのオープンソースツールが、エージェントの周りにカーネルのサンドボックスを置きます。ai-jail 2.2は両方からアイデアを取り入れました。ファントム認証情報はzeroboxとnonoから、ハッシュチェーン付きの監査ログはnonoからです。どちらもRust製でApache-2.0、デーモンなしで動き、ai-jailと同じくカーネルはホストと共有します。",
@@ -119,7 +125,7 @@
           "ドメイン単位の許可リストを持つプロキシ。新しいドメインが出てくると確認を求め、各コマンドにも個別の承認が要ります。プロキシはクライアントが送るホスト名を信頼するため、ドメインフロンティングで回避されうることは、ドキュメントにも書かれています。",
           "<code>workspace-write</code>ではデフォルトで無効。設定1つで有効になり、オプションのプロキシでドメイン単位の許可と拒否のルールを追加できます。ドキュメントによると、このプロキシはMCPサーバーへの接続、Web検索、ブラウザをフィルターしません。",
           "デフォルトのプロファイルはネットワークを許可します。より厳しいプロファイルやプロキシ付きのプロファイルはオプトインです。",
-          "3つのモードがあり、デフォルトは無効です。<code>--allow-host</code>は、指定したホストとそのサブドメインだけを許可します。Linuxではネットワーク名前空間、macOSではseatbeltのエンドポイントルールで強制され、通信は、名前を一度だけ解決して確認済みのアドレスに接続するプロキシを通ります。<code>--network</code>はすべてを開けます。フィルターはTCPのみで、パス単位のルールはなく、確認も求めません。リスト外のホストは拒否され、<code>--audit-log</code>がその試みを記録します。許可したホストは丸ごと信頼されます。ツールチェーンが有効なとき（Linuxのデフォルト）は、ビルドが動くように、プロキシが固定リストのパッケージレジストリも許可します。<code>--no-network</code>でそれも閉じられます。エージェント自身のAPIには引き続き<code>--allow-host</code>が必要です。"
+          "3つのモードがあり、デフォルトはオフです。<code>--allow-host</code>は指定したホストとそのサブドメインを許可し、Linuxではネットワーク名前空間、macOSではseatbeltのendpointルールが強制します。経由するプロキシは各名前を一度だけ解決し、検査したアドレスに接続します。<code>--network</code>はすべてを開けます。フィルターはTCPのみで、パス単位のルールはなく、確認を求めることもありません。リスト外のホストは拒否され、<code>--audit-log</code>がその試みを記録します。許可したホストは丸ごと信頼されます。デフォルトでは、既知のエージェント自身のAPIホストを両プラットフォームでプロキシが通し、ツールチェーンが有効なら（Linuxのデフォルト）、ビルドが動くように固定のパッケージレジストリ一覧も通します。<code>--no-network</code>は両方を閉じます。明示的な<code>--allow-host</code>のリストはそのデフォルトを置き換えます。"
         ]
       },
       {
@@ -180,15 +186,15 @@
   },
   "both": {
     "title": "両方使う",
-    "lede": "ネットワークが無効だと、クラウド型のエージェントは自分のモデルAPIに接続できません。ログイン情報はデフォルトでマウントされ、すでに中にあるので、開けるのは1つ、APIへの経路だけです。ホストを1つ許可するか、ネットワーク全体を開けるかを選びます。",
-    "codeFiltered": "厳しめ：モデルAPIだけ",
+    "lede": "既知のエージェントなら何も開ける必要はありません。ログイン情報はデフォルトでマウントされ、フィルタ付きプロキシはそのモデルのAPIホストだけを通します。ツールがもっと必要なときは、<code>--allow-host</code>でホストを足すか、ネットワーク全体を開けます。",
+    "codeFiltered": "デフォルト：モデルのホストだけ",
     "codeOpen": "手軽：ネットワーク全体",
-    "codeNote": "ai-jailはClaude Code、Codex、Gemini CLIのAPIホストを知っていて、リストにそれが含まれていなければ起動時に警告します。ログイン情報はデフォルトでマウントされ、<code>--no-agent-state</code>を付けるとログアウト状態での実行になります。<a class=\"link\" href=\"/configure/#switches\">すべてのフラグは設定のページにあります</a>。",
+    "codeNote": "ai-jailはClaude Code、Codex、Gemini CLI、GrokのAPIホストを知っていて、デフォルトで許可します。明示的な<code>--allow-host</code>のリストはそのデフォルトを置き換えるので、渡すときはAPIホストも含めてください。ログイン情報はデフォルトでマウントされ、<code>--no-agent-state</code>でログアウト状態の実行になります。<a class=\"link\" href=\"/configure/#switches\">すべてのフラグはConfigureに</a>。",
     "alt": "ai-jailと書かれた大きな壁が、エージェント、MCPサーバー、フック、プロジェクト、シェルコマンドを囲んでいます。エージェントとシェルコマンドの間には、エージェント自身の承認プロンプトがあります。1本の線が壁の門を通ってモデルAPIへ出ています。ホームディレクトリは壁の外にあり、暗く、格子がかかっています。",
     "caption": "外側の壁がai-jailです。その中で、エージェントのプロンプトとルールはこれまでどおり働きます。",
     "points": [
       { "title": "エージェント自身のチェックが引き続き担うこと", "text": "許可プロンプト、許可と拒否のルール、planモードはエージェントというプログラムの一部なので、ジェイルの中でも外と同じように動きます。あなたなら承認しなかったはずのコマンドを、ここで止められます。" },
-      { "title": "その下でai-jailが保証すること", "text": "あなたが何を承認しても、エージェントとそのMCPサーバー、フックからは、ホームディレクトリも鍵もシェルのトークンも見えません。唯一の例外はエージェント自身のログイン情報とAPIキーで、ログイン済みで起動できるようデフォルトでマウントされます。エージェントは読めるものを、許可したどのホストへも送れます。<a class=\"link\" href=\"/configure/#secrets\">プロジェクト内の秘密情報はマスクしてください</a>。" }
+      { "title": "その下でai-jailが保証すること", "text": "エージェント、そのMCPサーバー、そのフックは、何を承認しようと、あなたのホームディレクトリ、鍵、シェルのトークンを見ることはありません。唯一の例外はエージェント自身のログイン情報とAPIキーで、サインイン済みで始まるようデフォルトでマウントされます。エージェントが読めるものは、自身のAPIホストと許可したホストには送れるので、<a class=\"link\" href=\"/configure/#secrets\">プロジェクト内のシークレットはマスクしてください</a>。" }
     ],
     "nestedTitle": "プロンプトは残す。ただしサンドボックスの中のサンドボックスは当てにしない",
     "nestedText": "Linuxでは、ai-jailは<code>unshare</code>や<code>mount</code>など、新しい名前空間やマウントを作るシステムコールをブロックします。プロセスが脱出するときに使う手段だからです。エージェントがジェイルの中で起動するbubblewrapのサンドボックスにはこれらのシステムコールが必要で、この組み合わせが動くとはai-jailのドキュメントに書かれていません。Claude Codeのドキュメントは執筆時点で、入れ子の構成向けに<code>enableWeakerNestedSandbox</code>を用意しており、これは<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">セキュリティを大幅に弱める</a>と説明しています。"
