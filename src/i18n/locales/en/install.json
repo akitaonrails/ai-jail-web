@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Install ai-jail and run your first jailed agent",
-    "description": "Install ai-jail with Homebrew, the AUR, cargo or Nix, preview the sandbox with a dry run, then start Claude Code or Codex already signed in, with one route to its API."
+    "description": "Install ai-jail with Homebrew, the AUR, cargo or Nix, preview the sandbox with a dry run, then start Claude Code or Codex already signed in and able to reach its own API, nothing else."
   },
   "hero": {
     "title": "Install it, look inside, run your agent",
@@ -48,9 +48,9 @@
   },
   "first": {
     "title": "Your first run",
-    "lede": "Three commands take you from a plan, to a look inside, to a working agent. The agent's login is already inside, so the one gate you open is its API host.",
-    "alt": "Three panels from left to right. Dry run: the cell is only a dashed outline and the agent waits outside. Look around: the cell is solid and holds a terminal and the project folder. Run the agent: the agent, the project and the agent's login card are inside, with one opening in the wall, a gate to the agent's API host. Your home folder stays barred outside in all three.",
-    "caption": "Your home directory stays outside at every step, and the agent's login is inside from the start. The last step opens the one thing a cloud agent still needs: its API host.",
+    "lede": "Three commands take you from a plan, to a look inside, to a working agent. The agent's login is already inside, and ai-jail opens the route to its API host for you.",
+    "alt": "Three panels from left to right. Dry run: the cell is only a dashed outline and the agent waits outside. Look around: the cell is solid and holds a terminal and the project folder. Run the agent: the agent, the project and the agent's login card are inside, with one opening in the wall, a gate to the agent's API host that ai-jail opened itself. Your home folder stays barred outside in all three.",
+    "caption": "Your home directory stays outside at every step, and the agent's login is inside from the start. In the last step the one gate a cloud agent needs, its API host, is opened by ai-jail itself when it knows the agent. The rest of the network stays shut.",
     "steps": [
       {
         "title": "See the plan without running anything",
@@ -61,12 +61,12 @@
         "text": "Start a plain shell in the jail. Your project is there at its real path and you can edit it. Your home directory is a fresh one, and your shell's tokens are gone. Type <code>exit</code> to leave."
       },
       {
-        "title": "Run the agent with the one thing it needs",
-        "text": "ai-jail mounts the agent's own state folder by default, so it is already signed in. It still needs a route to its API. <code>--allow-host api.anthropic.com</code> opens that host alone (Codex: <code>api.openai.com</code>, Gemini: <code>generativelanguage.googleapis.com</code>); <code>--network</code> opens the whole network. On Linux, toolchains open package registries such as crates.io, npm and PyPI by default, so builds work, but the agent's own API still needs <code>--allow-host</code> or <code>--network</code>. If you start a known agent without a way to reach its API, ai-jail warns and names the host."
+        "title": "Run the agent",
+        "text": "ai-jail mounts the agent's own state folder by default, so it is already signed in. When it knows the agent, it also lets one host through its filtered proxy, the agent's API: <code>api.anthropic.com</code> for Claude Code, <code>api.openai.com</code> for Codex, <code>generativelanguage.googleapis.com</code> for Gemini, <code>api.x.ai</code> for Grok, on Linux and on macOS. Telemetry hosts stay shut. On Linux, toolchains reach package registries such as crates.io, npm and PyPI by default, so builds work. <code>--network</code> opens the whole network instead."
       },
       {
-        "title": "Make it the default for that agent",
-        "text": "Put the host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. After that the short command is enough. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
+        "title": "When you need more",
+        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. An explicit list replaces the default, so include the API host yourself. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
       }
     ],
     "codeTitles": [
@@ -81,11 +81,12 @@
     },
     "exposure": {
       "title": "What the defaults give away",
-      "text": "The agent's login is mounted read-write, and its API key variable (<code>ANTHROPIC_API_KEY</code> for Claude Code) is copied from your shell when set, so anything running in the jail can use that login for the life of the run. <code>--no-agent-state</code> turns both off. A host you allow is trusted for everything it offers: allowing <code>github.com</code> allows a push to any repository. <code>--network</code> is the whole network, so anything the agent can read, it can send. Your SSH keys, cloud credentials and other projects are still not there to be read. <a class=\"link\" href=\"/security/\">Security</a> has the full list of limits."
+      "text": "The agent's login is mounted read-write, its API key variable (<code>ANTHROPIC_API_KEY</code> for Claude Code) is copied from your shell when set, and its API host is reachable, so anything running in the jail can use that login for the life of the run. <code>--no-agent-state</code> turns the login and the key off; <code>--no-network</code> closes the API host too. A host you allow is trusted for everything it offers: allowing <code>github.com</code> allows a push to any repository. <code>--network</code> is the whole network, so anything the agent can read, it can send. Your SSH keys, cloud credentials and other projects are still not there to be read. <a class=\"link\" href=\"/security/\">Security</a> has the full list of limits."
     },
     "comments": [
       "# or, with the whole network open:",
-      "# from now on, in any project:"
+      "# the list replaces the default, so keep the API host in it",
+      "# or, for one run:"
     ]
   },
   "see": {
@@ -100,7 +101,7 @@
     ],
     "note": "This is a Linux session. macOS has no way to build a separate file tree, so there the same paths exist and reading them is refused.",
     "alt": "The view from inside the cell. The agent sits next to a large, bright project folder, with a fresh home and the system tools behind it. Outside the bars, dim and barred: SSH keys, cloud logins, other projects and the network.",
-    "caption": "From inside, the project is the only thing of yours that you can change. Your toolchains (mise, cargo, npm and others) are there, read only, with a dependency cache the jail owns. The network stays outside, apart from the package registries those toolchains fetch from, until you open a host with <code>--allow-host</code> or all of it with <code>--network</code>. <a class=\"link\" href=\"/configure/#toolchains\">How toolchains are mapped</a>."
+    "caption": "From inside, the project is the only thing of yours that you can change. Your toolchains (mise, cargo, npm and others) are there, read only, with a dependency cache the jail owns. The network stays outside, apart from a known agent's own API host and, on Linux, the package registries those toolchains fetch from, until you open a host with <code>--allow-host</code> or all of it with <code>--network</code>. <a class=\"link\" href=\"/configure/#toolchains\">How toolchains are mapped</a>."
   },
   "trouble": {
     "title": "If it does not start",
@@ -139,10 +140,12 @@
       "opencode": "Needs <code>--standalone</code>. See the troubleshooting item above.",
       "antigravity": "Shares its Google login with Gemini, so one sign in serves both.",
       "kimi": "<code>~/.kimi-code</code>, the older location, is mounted too when it exists.",
-      "aimemory": "ai-jail recognizes the agent that <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> launches and applies that agent's settings, with both programs in one jail."
+      "aimemory": "ai-jail recognizes the agent that <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> launches and applies that agent's settings, with both programs in one jail.",
+      "kiro": "On macOS the second folder is <code>~/Library/Application Support/kiro-cli</code> instead.",
+      "prime": "Only the agent's own folder, never the whole <code>~/.prime</code>."
     },
     "aimemoryState": "The launched agent's folders",
-    "more": "The same works for <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> and <code>omp</code>. Any other command runs too, with the same jail and no login folder."
+    "more": "The same works for <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> and <code>omp</code>. Any other command runs too, with the same jail and no login folder. The API host is opened by default for <code>claude</code>, <code>codex</code>, <code>gemini</code> and <code>grok</code>; other agents need <code>--allow-host</code> or <code>--network</code>."
   },
   "next": {
     "items": [

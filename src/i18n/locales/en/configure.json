@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "Closed by default. You hold the switches.",
-    "lede": "With no options, the agent gets your project, your build tools on Linux and its own login, and no network beyond a short list of package registries. You turn things down one switch at a time, and lockdown closes most of them at once.",
+    "lede": "With no options, the agent gets your project, your build tools on Linux, its own login and its own API host, and no network beyond that and a short list of package registries. You turn things down one switch at a time, and lockdown closes most of them at once.",
     "switches": "See the switches",
     "install": "Install"
   },
@@ -38,8 +38,8 @@
       {
         "title": "Network and services",
         "rows": [
-          { "text": "The whole network. Anything the agent can read, it can send out. If the agent only needs a few hosts, <code>--allow-host</code> is the tighter choice. Without either flag, the sandbox reaches only the <a class=\"link\" href=\"#toolchains\">package registries</a> that toolchains open through the proxy, and <code>--no-network</code> closes those too." },
-          { "text": "The sandbox reaches only the listed host and its subdomains, over TCP through ai-jail's built-in proxy. You can repeat the flag. It cannot be combined with <code>--network</code> or <code>--browser</code>, and a project file may only shrink the list." },
+          { "text": "The whole network. Anything the agent can read, it can send out. If the agent only needs a few hosts, <code>--allow-host</code> is the tighter choice. Without either flag, the sandbox reaches only the <a class=\"link\" href=\"#toolchains\">package registries</a> that toolchains open through the proxy, plus the one API host of a known agent (Claude, Codex, Gemini, Grok), and <code>--no-network</code> closes all of those." },
+          { "text": "The sandbox reaches only the listed host and its subdomains, over TCP through ai-jail's built-in proxy. You can repeat the flag. An explicit list replaces the default, so include the agent's API host yourself. It cannot be combined with <code>--network</code> or <code>--browser</code>, and a project file may only shrink the list." },
           { "text": "Your <code>~/.ssh</code>, read only, and your SSH agent socket, so <code>git push</code> works." },
           { "text": "The Docker socket. This is effectively root on your machine, because the daemon can start containers that mount the host." },
           { "text": "The Tailscale socket." },
@@ -51,7 +51,7 @@
         "rows": [
           { "text": "The agent's own login. The invoked harness's state, such as <code>~/.claude</code> or <code>~/.codex</code>, is mounted read and write, and its API key is copied from your shell when set: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> or <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. The agent starts logged in, and anything in the jail can use that login. <code>--no-agent-state</code> gives a logged-out run. Off under lockdown, and a project file can only turn it off." },
           { "text": "Uses the given directory as Claude's state and sets <code>CLAUDE_CONFIG_DIR</code>." },
-          { "text": "Passes one variable from your shell, or sets one with <code>NAME=VALUE</code>. Repeatable, never saved to disk, and the value never appears on the launcher's command line." },
+          { "text": "Passes one variable from your shell, or sets one with <code>NAME=VALUE</code>. Repeatable and never saved to disk. On Linux the values travel to the sandbox through an in-memory file and never appear on the launcher's command line, but a literal <code>NAME=VALUE</code> is still visible on ai-jail's own command line, so for a secret prefer <code>--env NAME</code> or <code>--env-from-file</code>." },
           { "text": "Reads strict <code>KEY=VALUE</code> lines from a file and passes them like <code>--env</code>, which wins on conflicts. The file must be yours, a regular file, mode 0600 or stricter, and outside the project, or the launch fails. ai-jail never saves the values to disk, and the config key works from the global file only." },
           { "text": "Keeps the real value of <code>KEY</code> out of the sandbox. The agent sees a placeholder, and the proxy puts the real value only into requests to that one host. Needs <code>--allow-host</code>, and the key must already come in through <code>--env</code> or <code>--env-from-file</code>. Global file only, never saved. It covers clients that can talk plain HTTP to the proxy for that host; HTTPS tunnels are untouched." },
           { "text": "Passes your whole shell environment, every secret in it included. Avoid it." },
@@ -61,8 +61,8 @@
       {
         "title": "Toolchains and tool credentials",
         "rows": [
-          { "text": "Your compilers and package managers read only, their dependency caches in a store the jail owns, and the package registries reachable through the filtered proxy. Linux only, and on by default there; on macOS nothing is mapped and the sandbox stays offline. Lockdown turns it off, and a project file can only turn it off. <a class=\"link\" href=\"#toolchains\">Details below</a>." },
-          { "text": "Your <code>~/.config/gh</code>, read only, so <code>gh</code> is logged in. Read only protects the file from changes. Anything in the jail can still act as you on GitHub." },
+          { "text": "Your compilers and package managers read only, their dependency caches in a store the jail owns, and the package registries reachable through the filtered proxy. Linux only, and on by default there; on macOS nothing is mapped and no registry is reachable. Lockdown turns it off, and a project file can only turn it off. <a class=\"link\" href=\"#toolchains\">Details below</a>." },
+          { "text": "Your gh config directory, read only, plus your active github.com token forwarded as <code>GH_TOKEN</code> for that launch, so <code>gh</code> is logged in even when the token lives in the system keyring. ai-jail asks <code>gh auth token</code> on the host and passes the result through an in-memory file, never on a command line or on disk; <code>--dry-run</code> never fetches it, and a <code>GH_TOKEN</code> you pass with <code>--env</code> skips the lookup. Only github.com and only the active account. Anything in the jail can still act as you on GitHub." },
           { "text": "Your <code>~/.aws</code>, read only. Anything in the jail can act as you on AWS while the credential is valid." },
           { "text": "Your <code>~/.kube</code>, read only. Anything in the jail can talk to your clusters as you." },
           { "text": "Your <code>~/.config/gcloud</code>, read only. Anything in the jail can act as you on Google Cloud." },
@@ -158,7 +158,7 @@
     "points": [
       { "title": "Tools, read only", "text": "Since 2.4.1, ai-jail maps mise installs and config read only. For Rust it maps <code>~/.cargo/bin</code> and <code>~/.rustup</code> the same way, so <code>cargo</code> and <code>rustc</code> resolve. Cargo's credentials and <code>config.toml</code> stay out. Because mise cannot install anything into a read-only map, ai-jail sets <code>MISE_NOT_FOUND_AUTO_INSTALL=false</code> inside, so a missing tool fails once instead of on every call." },
       { "title": "A cache the jail owns", "text": "Dependency caches live under <code>~/.local/share/ai-jail/cache/</code> and survive between sessions. Cargo's registry and git caches go there. So does the default cache of pip, uv, Go, npm, yarn, pnpm, bun, deno, Maven, Gradle, Coursier, Composer, Crystal and Zig, when that tool's directory exists on your machine." },
-      { "title": "Registries, through the proxy", "text": "With toolchains on and no network flag given, the sandbox reaches crates.io, npm, PyPI, the Go proxy, Maven Central, Clojars, Packagist and github.com, each with its subdomains, through the same proxy as <code>--allow-host</code>, and nothing else. The agent's own API still needs <code>--allow-host</code> or <code>--network</code>." }
+      { "title": "Registries, through the proxy", "text": "With toolchains on and no network flag given, the sandbox reaches crates.io, npm, PyPI, the Go proxy, Maven Central, Clojars, Packagist and github.com, each with its subdomains, through the same proxy as <code>--allow-host</code>, and nothing else. A known agent's own API host is allowed the same way, on macOS too; the registries are Linux only." }
     ],
     "codeTitle": "terminal",
     "code": {
@@ -179,10 +179,10 @@
     "title": "Turning it down",
     "lede": "The default is tuned for getting work done. Each step below closes one more thing, and <code>--lockdown</code> closes most of them at once. <a class=\"link\" href=\"/security/\">Security explains what each one protects against</a>.",
     "items": [
-      { "text": "The default: the agent's login, your toolchains on Linux, the package registries, and the project read and write." },
+      { "text": "The default: the agent's login and its own API host, your toolchains on Linux, the package registries, and the project read and write." },
+      { "text": "<code>--no-network</code>: fully offline. Or an explicit <code>--allow-host</code> list, which replaces the default with only the hosts you name." },
       { "text": "<code>--no-agent-state</code>: no login. The harness's state stays out and its API key is not copied." },
       { "text": "<code>--no-toolchains</code>: no dependency caches and no package registries." },
-      { "text": "<code>--no-network</code>: fully offline, and <code>--allow-host</code> on top of it gives a short list of hosts through the proxy." },
       { "text": "<code>--mask</code>, <code>--deny-path</code> and <code>--hide-dotdir</code> take single paths away, and a narrow <code>--map</code> or <code>--rw-map</code> replaces a broad grant." },
       { "text": "<code>--lockdown</code>: the project read only, no login, no toolchains, no registries, strict Landlock and seccomp, and still not a VM." }
     ],
@@ -218,25 +218,25 @@
     "title": "Recipes",
     "lede": "Copy one. To see what it builds, run it with <code>--dry-run</code> first.",
     "items": [
-      { "title": "A cloud agent, day to day", "text": "A hosted model needs to reach its API. Its login is already there by default, so the one thing to add is the host. Put it in the global file and the command stays short. Allow the API host alone, or open the whole network with <code>network = true</code>." },
-      { "title": "Only the agent's API host", "text": "The agent reaches only its own API. Claude uses <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> and Gemini <code>generativelanguage.googleapis.com</code>. If the host is missing from the list, the launch warning names it." },
+      { "title": "A cloud agent, day to day", "text": "Nothing to add. A known agent starts logged in and reaches its own API host through the filtered proxy, and nothing else. When a task needs more, put <code>allow_hosts</code> in the global file with the API host plus the extra ones, or open the whole network with <code>network = true</code>." },
+      { "title": "An agent ai-jail does not know", "text": "ai-jail allows the API host by itself for four agents: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code>, Gemini <code>generativelanguage.googleapis.com</code> and Grok <code>api.x.ai</code>. Any other agent gets its host from you with <code>--allow-host</code>. If the host is missing from the list, the launch warning names it." },
       { "title": "A logged-out run", "text": "When the agent should have no credentials at all, <code>--no-agent-state</code> keeps its state directory and its API key out. It starts logged out, and whatever it logs into inside the fresh home is gone when the run ends." },
-      { "title": "Allowed hosts in the global file", "text": "The list applies to every run of that command. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that." },
+      { "title": "Allowed hosts in the global file", "text": "The list applies to every run of that command, and it replaces the default, so keep the API host in it. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that." },
       { "title": "A key the agent never sees", "text": "The sandbox gets a placeholder in <code>ANTHROPIC_API_KEY</code>, and ai-jail's proxy puts the real key only into requests to <code>api.anthropic.com</code>. The client must send plain HTTP to the proxy for that host, which the <code>http://</code> base URL does; ai-jail then carries the request to the real host over TLS. A client that only opens HTTPS tunnels keeps working, without substitution." },
       { "title": "Git push over SSH", "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. Pushing also needs the network." },
       { "title": "Build and test inside the jail", "text": "Nothing to add on Linux. <code>cargo build</code>, <code>npm install</code> or <code>go get</code> fetch from the registries through the proxy and cache into the jail's own store, and mise installs come along read only. For a run that touches nothing and reaches nothing, turn both off." },
-      { "title": "GitHub CLI inside the jail", "text": "<code>--github</code> mounts <code>~/.config/gh</code> read only, so <code>gh</code> is logged in. It reaches <code>api.github.com</code> through the default registry list, which covers <code>github.com</code> and its subdomains, so you add no host. Anything in the jail can then act on GitHub as you." },
+      { "title": "GitHub CLI inside the jail", "text": "<code>--github</code> mounts your gh config directory read only and forwards your active github.com token as <code>GH_TOKEN</code>, so <code>gh</code> is logged in, keyring or not. It reaches <code>api.github.com</code> through the default registry list, which covers <code>github.com</code> and its subdomains, so you add no host. Anything in the jail can then act on GitHub as you." },
       { "title": "A browser for the agent", "text": "<code>--browser</code> alone gives a browser that cannot load a page or open a window. On Linux it also needs <code>--network</code> and <code>--display</code>, and an X11 browser needs <code>--x11</code> in place of <code>--display</code>." },
       { "title": "Separate Claude profiles", "text": "Keep work and personal logins apart by pointing each run at its own Claude directory." },
       { "title": "Try a risky refactor on a copy", "text": "An overlay keeps the agent's writes in a side layer under <code>.ai-jail-overlays</code> in the project. Compare it with the original afterward and keep what you like. Linux only." }
     ],
     "comments": {
-      "once": "# once, in ~/.ai-jail",
-      "then": "# then, in any project",
+      "nothing": "# nothing to add: login and api.anthropic.com come by default",
+      "more": "# when a task needs more, once in ~/.ai-jail (the list replaces the default)",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# or open the whole network: network = true",
-      "hosts": "# codex: api.openai.com   gemini: generativelanguage.googleapis.com   grok: api.x.ai",
+      "hosts": "# claude, codex, gemini and grok need no flag: ai-jail allows their API host by itself",
       "phantom": "# the key lives in the 0600 file; the sandbox only ever sees AIJAIL-PHANTOM-...",
       "build": "# default on Linux: caches on, registries reachable through the proxy",
       "offline": "# nothing mapped, nothing reachable"

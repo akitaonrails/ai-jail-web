@@ -22,7 +22,7 @@
         "text": "Secrets in your shell. ai-jail cuts environment variables down to a small allowlist, so exported tokens stay outside. The one exception is the invoked harness's own API key, for example <code>ANTHROPIC_API_KEY</code> for Claude, copied by default along with its login; <code>--no-agent-state</code> stops that."
       },
       {
-        "text": "The network. It is off, except for a short list of package registries that the filtered proxy lets through when toolchains are on, the default on Linux. <code>--no-network</code> closes that too. The agent's own API stays closed until you open it with <code>--allow-host</code> or <code>--network</code>."
+        "text": "The network. It is off, with two exceptions that pass through the filtered proxy: a short list of package registries when toolchains are on, the default on Linux, and, for a known agent such as <code>claude</code> or <code>codex</code>, its one documented API host, on both platforms. Nothing else, not even telemetry. <code>--no-network</code> closes both."
       },
       {
         "text": "Host shared memory, your display server and your clipboard. Agent output passes through a filter that drops terminal clipboard and query sequences."
@@ -72,8 +72,8 @@
       "gives": "What anything in the sandbox can then do"
     },
     "rows": [
-      "Send anywhere everything it can read. Traffic is unrestricted. <code>--allow-host</code> is the tighter alternative.",
-      "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale.",
+      "Send anywhere everything it can read. Traffic is unrestricted. The default is the known agent's own API host only; <code>--allow-host</code> is the tighter alternative.",
+      "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale. Your list replaces the default, so include the agent's API host yourself.",
       "On by default on Linux. Run your toolchains: <code>~/.cargo/bin</code> and <code>~/.rustup</code> read-only, a jail-owned dependency cache under <code>~/.local/share/ai-jail/cache/</code> that survives between runs, and filtered egress to the package registries. ai-jail never binds the host's own caches. Off under <code>--lockdown</code> and with <code>--no-toolchains</code>.",
       "Nothing new. The real value of that key never enters the sandbox: the agent sees a placeholder, and the proxy swaps in the real value only for plain-HTTP requests to the one host you bound it to. ai-jail's own process sees that request in clear.",
       "Nothing new. This switch weakens nothing: it writes one line per launch to a file with mode 0600 outside the sandbox, so the agent never sees it.",
@@ -83,7 +83,7 @@
       "Ask your systemd user manager to run services on the host.",
       "Read your whole shell environment, secrets included. For API keys, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> passes one file instead.",
       "On by default. Use the agent's own saved login, for example Claude's <code>~/.claude</code>, mounted read-write, plus its API key copied from your shell when set, so it starts logged in. Anything in the sandbox can use those credentials for the life of the launch. <code>--no-agent-state</code> gives an isolated, logged-out run; off under <code>--lockdown</code>.",
-      "Act as you on GitHub with the login in <code>~/.config/gh</code>, mounted read-only. Read-only protects the file, not the credential: it works for as long as it is valid.",
+      "Act as you on GitHub. The <code>gh</code> config directory is mounted read-only, and the active github.com token is read from your keyring on the host and forwarded as <code>GH_TOKEN</code> for that launch, never on the command line or on disk. Read-only protects the file, not the credential: it works for as long as it is valid.",
       "Act as you on AWS with <code>~/.aws</code>, mounted read-only.",
       "Act as you on every cluster in <code>~/.kube</code>, mounted read-only.",
       "Act as you on Google Cloud with <code>~/.config/gcloud</code>, mounted read-only.",
@@ -131,6 +131,8 @@
     "fixes": {
       "title": "Recent security fixes",
       "items": [
+        "2.8.0: macOS: the seatbelt profile keeps Claude Code's Keychain login and allows the Codex control socket, so both launch logged in.",
+        "2.8.0: Cursor-position requests from a launcher are answered by the virtual terminal, so launchers no longer stall.",
         "2.6.2: <code>--lockdown</code> always isolates the network namespace, even with <code>--network</code>. Before, that contradictory pair left the namespace shared.",
         "2.6.2: <code>--env</code> and <code>--env-from-file</code> values no longer sit on the launcher's command line, where any process running as you could read them. They pass through an in-memory file.",
         "2.4.0: A repository's worktree metadata can no longer bind an arbitrary host directory read-write.",

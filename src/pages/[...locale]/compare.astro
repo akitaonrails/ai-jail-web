@@ -32,7 +32,7 @@ const groups = [
 const columns = ['claude', 'codex', 'gemini', 'jail'] as const;
 const heavy = raw<Heavy[]>('heavy.rows');
 const platforms = raw<Platform[]>('platforms.rows');
-const RECIPE_FILTERED = 'cd ~/Projects/my-app\nai-jail --allow-host api.anthropic.com claude';
+const RECIPE_FILTERED = 'cd ~/Projects/my-app\nai-jail claude';
 const RECIPE_OPEN = 'ai-jail --network claude';
 
 const tldr = withText([{ hue: 'cyan' }, { hue: 'cyan' }, { hue: 'gold' }, { hue: 'orange' }, { hue: 'orange' }, { hue: 'red' }] as const, raw<{ title: string; text: string }[]>('tldr.items'));

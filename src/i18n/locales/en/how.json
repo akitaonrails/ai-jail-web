@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": "What happens when you type ai-jail claude",
-    "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off. The network is off, opened to a few named hosts, or fully open: you choose per launch.",
+    "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off. The network is closed except the agent's own API host, opened to a few named hosts, or fully open: you choose per launch.",
     "install": "Install",
     "security": "Read the threat model"
   },
@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "Three ways to the network",
-    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except, on Linux with toolchains on (the default), a short list of package registries through the filtered proxy. The other two are flags you pass on purpose.",
+    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out, except what the filtered proxy lets through: a known agent's own API host on both platforms, and on Linux with toolchains on (the default), a short list of package registries. The other two are flags you pass on purpose.",
     "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
     "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
     "modes": [
       {
         "title": "Off",
-        "text": "The default. The sandbox gets a private network namespace with no route out. On Linux, with toolchains on (the default), the filtered proxy still lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; <code>--no-network</code> makes it fully offline. On macOS the registries stay closed too. The agent's own API stays closed until you open it."
+        "text": "The default. The sandbox gets a private network namespace with no route out, except through the filtered proxy. For a known agent (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>) the proxy lets its one documented API host through, on Linux and macOS, so a bare <code>ai-jail claude</code> works. On Linux, with toolchains on (the default), it also lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; on macOS the registries stay closed. <code>--no-network</code> makes it fully offline."
       },
       {
         "title": "Filtered",
@@ -151,8 +151,8 @@
       },
       {
         "what": "Network",
-        "linux": "Off by default: no route out except the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--no-network</code> closes all. Under <code>--lockdown</code> the open network is always blocked, even with <code>--network</code>.",
-        "macos": "The same default and the same flags, without the registries or the toolchain cache maps, which are Linux only. Lockdown blocks the open network here too."
+        "linux": "Off by default: no route out except a known agent's own API host and the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--no-network</code> closes all. Under <code>--lockdown</code> the open network is always blocked, even with <code>--network</code>.",
+        "macos": "The same default and the same flags, including the known agent's API host, but without the registries or the toolchain cache maps, which are Linux only. Lockdown blocks the open network here too."
       },
       {
         "what": "Other programs",

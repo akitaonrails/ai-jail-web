@@ -15,7 +15,7 @@
     "lede": "Six situations, one answer each. The rest of the page shows the evidence.",
     "items": [
       { "title": "You use more than one agent", "text": "ai-jail. One policy file, any command, the whole process tree inside, home and keys hidden by default, your toolchains and caches inside. <a class=\"link\" href=\"/install/\">Install</a>." },
-      { "title": "You only use Claude Code", "text": "Anthropic's own <code>sandbox-runtime</code> wraps the whole process too, in beta. ai-jail adds an empty home, network off and an environment allowlist by default. <a class=\"link\" href=\"#table\">See the cards</a>." },
+      { "title": "You only use Claude Code", "text": "Anthropic's own <code>sandbox-runtime</code> wraps the whole process too, in beta. ai-jail adds an empty home, a network closed except the model's host, and an environment allowlist by default. <a class=\"link\" href=\"#table\">See the cards</a>." },
       { "title": "You want the agent's own sandbox and prompts", "text": "Keep them on. They work inside ai-jail, and they catch the commands you would not have approved. <a class=\"link\" href=\"#both\">Use both</a>." },
       { "title": "You want policies per tool, approvals at runtime and a signed audit trail", "text": "nono goes further than ai-jail there, at the cost of a policy language and a supervisor per command. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
       { "title": "You sandbox from code, one tool call at a time", "text": "zerobox has SDKs for that and snapshots to roll back. It leaves reads open and has had no release since May 2026. <a class=\"link\" href=\"#wrappers\">Compare the wrappers</a>." },
@@ -145,7 +145,7 @@
           "A proxy with a per-domain allowlist. A new domain prompts you, and each command still gets its own approval. The documentation notes that the proxy trusts the hostname the client sends, so domain fronting can bypass it.",
           "Off by default in <code>workspace-write</code>. One setting turns it on, and an optional proxy adds per-domain allow and deny rules. The documentation says the proxy does not filter MCP server connections, web search or the browser.",
           "The default profile allows network. Stricter and proxied profiles are opt-in.",
-          "Three modes, off by default. <code>--allow-host</code> allows the listed hosts and their subdomains, enforced by the network namespace on Linux or a seatbelt endpoint rule on macOS, through a proxy that resolves each name once and dials the address it checked. <code>--network</code> opens everything. The filter is TCP only, has no per-path rules and never prompts: a host outside the list is denied and <code>--audit-log</code> records the attempt. An allowed host is trusted wholesale. With toolchains on, the default on Linux, the proxy also allows a fixed list of package registries so builds work; <code>--no-network</code> turns that off. The agent's own API still needs <code>--allow-host</code>."
+          "Three modes, off by default. <code>--allow-host</code> allows the listed hosts and their subdomains, enforced by the network namespace on Linux or a seatbelt endpoint rule on macOS, through a proxy that resolves each name once and dials the address it checked. <code>--network</code> opens everything. The filter is TCP only, has no per-path rules and never prompts: a host outside the list is denied and <code>--audit-log</code> records the attempt. An allowed host is trusted wholesale. By default the proxy allows a known agent's own API host on both platforms and, with toolchains on, the default on Linux, a fixed list of package registries so builds work; <code>--no-network</code> closes both. An explicit <code>--allow-host</code> list replaces that default."
         ]
       },
       {
@@ -206,10 +206,10 @@
   },
   "both": {
     "title": "Use both",
-    "lede": "With the network off, a cloud agent cannot reach its own model API. Its login is already inside, mounted by default, so you open one thing: the route to the API. Allow one host, or open the whole network.",
-    "codeFiltered": "tighter: only the model API",
+    "lede": "For a known agent there is nothing to open. Its login is mounted by default, and the filtered proxy lets through its one model API host, nothing else. Add hosts with <code>--allow-host</code>, or open the whole network, only when a tool needs more.",
+    "codeFiltered": "the default: only the model's host",
     "codeOpen": "simpler: the whole network",
-    "codeNote": "ai-jail knows the API host of Claude Code, Codex and Gemini CLI, and warns at launch when the list does not include it. The login is mounted by default; <code>--no-agent-state</code> gives a logged-out run. <a class=\"link\" href=\"/configure/#switches\">Every flag is on Configure</a>.",
+    "codeNote": "ai-jail knows the API host of Claude Code, Codex, Gemini CLI and Grok and allows it by default. An explicit <code>--allow-host</code> list replaces that default, so include the API host yourself when you pass one. The login is mounted by default; <code>--no-agent-state</code> gives a logged-out run. <a class=\"link\" href=\"/configure/#switches\">Every flag is on Configure</a>.",
     "alt": "One large wall labeled ai-jail encloses the agent, its MCP servers, its hooks, the project and its shell commands. Between the agent and the shell commands sits the agent's own approval prompt. One line leaves the wall through a gate to the model API. Your home directory is outside the wall, dim and barred.",
     "caption": "The outer wall is ai-jail. Inside it, the agent's prompts and rules keep doing their job.",
     "points": [
@@ -219,7 +219,7 @@
       },
       {
         "title": "What ai-jail guarantees underneath",
-        "text": "The agent, its MCP servers and its hooks never see your home directory, your keys or the tokens in your shell, whatever you approve. The one exception is the agent's own login and API key, mounted by default so it starts signed in. What the agent can read, it can still send to any host you allowed, so <a class=\"link\" href=\"/configure/#secrets\">mask the secrets inside the project</a>."
+        "text": "The agent, its MCP servers and its hooks never see your home directory, your keys or the tokens in your shell, whatever you approve. The one exception is the agent's own login and API key, mounted by default so it starts signed in. What the agent can read, it can still send to its own API host and to any host you allowed, so <a class=\"link\" href=\"/configure/#secrets\">mask the secrets inside the project</a>."
       }
     ],
     "nestedTitle": "Keep the prompts, but do not count on a sandbox inside a sandbox",
