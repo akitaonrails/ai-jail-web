@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "Uma jaula para o seu agente de código com IA",
-    "lede": "Seu agente de código, o programa que edita e roda código por você, roda com a sua conta de usuário, então lê tudo o que você consegue ler: as chaves dos seus servidores, a sua conta na nuvem, todos os outros projetos no disco. O ai-jail inicia o agente dentro de um sandbox, uma cerca que o sistema operacional mantém em volta de um único programa, feita para conter os erros de um agente confiável. O projeto continua gravável. Suas chaves, seu diretório home e os segredos do seu shell (os tokens e senhas que um terminal guarda em variáveis de ambiente) não estão lá.",
+    "lede": "Entregue o projeto ao agente, não a máquina inteira. O ai‑jail torna esse limite real.",
     "install": "Instalar",
     "why": "Preciso disso?",
     "logoAlt": "Um cadeado feito de trilhas de circuito. Atrás das grades da janela do cadeado há um microchip brilhando: o agente.",

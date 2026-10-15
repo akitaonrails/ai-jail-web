@@ -10,15 +10,15 @@ Every diagram on the site is drawn in code: an SVG in `src/components/diagrams/<
 
 ## The drawing language
 
-Ink on paper, like the rest of the site. Strokes are the text color, 3px, never scaled. Shapes are flat. Labels are monospace capitals that wrap inside their box. Three plates carry meaning and nothing else does:
+Technical linework on wet stone. Strokes are thin, use the current text color and never scale. Shapes stay flat and labels are compact monospace text that wraps inside each box. Three signals carry meaning and nothing else does:
 
 | Plate | Meaning | Part |
 |---|---|---|
-| teal | the agent, and what it may reach | `Chip`, `Box kind="agent"` or `kind="inside"` |
-| mustard | opt-in, reachable only after a flag | `Box kind="optin"` |
-| red hatching | blocked, not there | `Box kind="blocked"`, `Arrow kind="stopped"` |
+| cold teal | the agent, and what it may reach | `Chip`, `Box kind="agent"` or `kind="inside"` |
+| muted mustard | opt-in, reachable only after a flag | `Box kind="optin"` |
+| rust hatching | blocked, not there | `Box kind="blocked"`, `Arrow kind="stopped"` |
 
-Everything else is paper (`Box`, the default), tint (`kind="tint"`), dashed (`kind="ghost"`, for something present on the host and absent in the cell) or solid ink (`kind="ink"`). The other spot colors (`rose`, `clay`, `sage`, `indigo`) are for panels that need telling apart, never for meaning.
+Everything else uses the base stone surface (`Box`, the default), a raised tint (`kind="tint"`), dashed outlines (`kind="ghost"`, for something present on the host and absent in the cell) or the solid ink ground (`kind="ink"`). The other subject colors (`rose`, `clay`, `sage`, `indigo`) distinguish panels and never redefine access state.
 
 The parts, in `src/components/diagrams/parts/`:
 

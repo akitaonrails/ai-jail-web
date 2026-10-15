@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import Section from '@/components/Section.astro';
 import Diagram from '@/components/Diagram.astro';
@@ -9,7 +8,6 @@ import CodeBlock from '@/components/CodeBlock.astro';
 import Faq from '@/components/Faq.astro';
 import CtaBand from '@/components/CtaBand.astro';
 import Lockdown from '@/components/Lockdown.astro';
-import logo from '@/assets/img/logo.png';
 import { site } from '@/data/site';
 import { faqPage, type Faq as FaqItem } from '@/lib/schema';
 import { localePaths, useI18n } from '@/i18n';
@@ -20,21 +18,25 @@ const faq = raw<FaqItem[]>('faq.items');
 type Item = { text: string };
 ---
 <Base schema={[faqPage(faq)]}>
-  <section class="hero">
-    <div class="wrap grid items-center gap-10 lg:grid-cols-[1.2fr_1fr] pt-28 pb-14 md:pt-36 md:pb-20">
-      <div>
+  <section class="home-hero on-ink">
+    <div class="wrap home-hero-inner">
+      <div class="home-hero-copy" data-hue="teal">
+        <div class="flex items-center gap-3 mb-6"><span class="bars" aria-hidden="true"><i></i></span><span class="kicker">{t('site.tagline')}</span></div>
         <h1 class="text-4xl">{t('hero.title')}</h1>
-        <p class="lede mt-6 !text-[1.3rem]">{t('hero.lede')}</p>
-        <div class="mt-8 max-w-md"><CodeBlock code={'cd ~/Projects/my-app\nai-jail claude'} /></div>
+        <p class="lede mt-7">{t('site.description')}</p>
+        <div class="mt-9 max-w-[38rem]"><CodeBlock code={'ai-jail claude'} /></div>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
           <a href={href('/why/')} class="btn btn-ghost">{t('hero.why')}</a>
         </div>
+        <span class="stamp mt-8">{t('hero.stamp')}</span>
       </div>
-      <div class="relative justify-self-center plates text-center">
-        <Image src={logo} alt={t('hero.logoAlt')} widths={[320, 480, 720, 960]} sizes="(min-width: 1024px) 28rem, 64vw" loading="eager" fetchpriority="high" class="relative w-[min(28rem,64vw)] h-auto logo-ink" />
-        <span class="stamp mt-3 md:mt-0 md:absolute md:-bottom-3 md:end-4">{t('hero.stamp')}</span>
-      </div>
+    </div>
+  </section>
+
+  <section class="home-intro band">
+    <div class="wrap-narrow">
+      <p class="home-intro-copy">{t('hero.lede')}</p>
     </div>
   </section>
 
@@ -82,9 +84,21 @@ type Item = { text: string };
 </Base>
 
 <style>
-  /* Two misregistered color plates behind the woodcut, like a cheap print. */
-  .plates::before, .plates::after { content: ''; position: absolute; z-index: -1; }
-  .plates::before { inset: 8% -3% -2% 10%; background: var(--teal-soft); transform: rotate(-1.5deg); }
-  .plates::after { inset: 14% 8% 2% -4%; background: var(--mustard-soft); transform: rotate(1.2deg); }
-  .hero { position: relative; z-index: 0; }
+  .home-hero { position: relative; isolation: isolate; min-block-size: 100svh; display: grid; overflow: hidden; background: var(--ink); border-block-end: var(--rule) solid var(--line); }
+  .home-hero::before { content: ''; position: absolute; inset: 0; z-index: -2; background-image: var(--hero-image); background-size: cover; background-position: 58% center; opacity: 0.82; }
+  .home-hero::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, color-mix(in oklch, var(--ink) 98%, transparent), color-mix(in oklch, var(--ink) 80%, transparent) 42%, color-mix(in oklch, var(--ink) 12%, transparent) 100%), linear-gradient(0deg, color-mix(in oklch, var(--ink) 90%, transparent), transparent 55%); }
+  .home-hero-inner { display: grid; align-items: end; padding-block: clamp(9rem, 18vh, 14rem) clamp(4.5rem, 9vh, 7rem); }
+  .home-hero-copy { max-inline-size: 53rem; }
+  .home-hero h1 { max-inline-size: 10em; color: var(--on-ink); text-shadow: 0 0.5rem 2.2rem var(--ink); }
+  .home-hero .lede { max-inline-size: 35em; color: var(--on-ink-muted); font-size: clamp(1.08rem, 1rem + 0.45vw, 1.35rem); }
+  .home-hero :global(.term) { background: color-mix(in oklch, var(--ink) 82%, transparent); box-shadow: none; border-color: color-mix(in oklch, var(--teal) 52%, transparent); }
+  .home-intro { border-block-end: var(--rule) solid color-mix(in oklch, var(--line) 46%, transparent); }
+  .home-intro :global(.wrap-narrow) { max-inline-size: 58rem; }
+  .home-intro-copy { position: relative; margin: 0; padding-inline-start: clamp(1.25rem, 3vw, 2.25rem); font-family: var(--font-display); font-size: clamp(1.4rem, 1.18rem + 0.85vw, 2rem); line-height: 1.45; color: var(--text); text-wrap: pretty; }
+  .home-intro-copy::before { content: ''; position: absolute; inset-block: 0.2em; inset-inline-start: 0; inline-size: var(--rule); background: var(--teal); }
+  @media (max-width: 40rem) {
+    .home-hero::before { background-position: 65% center; }
+    .home-hero::after { background: linear-gradient(90deg, color-mix(in oklch, var(--ink) 94%, transparent), color-mix(in oklch, var(--ink) 54%, transparent)), linear-gradient(0deg, color-mix(in oklch, var(--ink) 94%, transparent), transparent 67%); }
+    .home-hero-inner { padding-block: 8rem 3.5rem; }
+  }
 </style>

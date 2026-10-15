@@ -1,24 +1,18 @@
 ---
-import { Image } from 'astro:assets';
-import logo from '@/assets/img/logo.png';
 import { nav, site } from '@/data/site';
 import { useI18n, languageLinks } from '@/i18n';
 import { locales } from '@/i18n/config';
 const { t, href, locale } = useI18n(Astro);
-const path = Astro.url.pathname;
-const languages = languageLinks(path);
+const languages = languageLinks(Astro.url.pathname);
 ---
 <header class="site-nav" data-nav>
-  <div class="wrap flex h-16 items-center gap-5">
-    <a href={href('/')} class="flex items-center gap-2 shrink-0" aria-label={t('a11y.home')}>
-      <Image src={logo} alt="" width={36} height={36} densities={[1, 2, 3]} class="size-9 logo-ink" loading="eager" />
-      <span class="font-display text-[1.35rem]">ai-jail</span>
+  <div class="wrap flex h-[4.75rem] items-center gap-5">
+    <a href={href('/')} class="brand-lockup" aria-label={t('a11y.home')}>
+      <span class="brand-sigil" aria-hidden="true">§</span>
+      <span>ai-jail</span>
     </a>
-    <nav class="hidden lg:flex items-center gap-1 ms-3" aria-label={t('a11y.mainNav')}>
-      {nav.map((l) => <a href={href(l.href)} data-hue={l.hue} class="nav-link" aria-current={path === href(l.href) ? 'page' : undefined}>{t(`nav.${l.id}.label`)}</a>)}
-    </nav>
     <div class="ms-auto flex items-center gap-1.5">
-      <a href={site.repo} class="icon-btn" aria-label="GitHub">
+      <a href={site.repo} class="icon-btn hidden sm:inline-grid" aria-label="GitHub">
         <svg width="19" height="19" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
       </a>
       <div class="relative" data-menu>
@@ -33,8 +27,8 @@ const languages = languageLinks(path);
         <svg class="hidden dark:block" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/></svg>
         <svg class="dark:hidden" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.500A8 8 0 0 1 9.500 4a8 8 0 1 0 10.500 10.500Z"/></svg>
       </button>
-      <a href={href('/install/')} class="btn btn-primary hidden md:inline-flex !py-2 !px-4 !text-[0.95rem] ms-2">{t('nav.install.label')}</a>
-      <button type="button" class="icon-btn lg:!hidden" data-drawer-open aria-label={t('a11y.openMenu')} aria-controls="drawer">
+      <a href={href('/install/')} class="btn btn-primary hidden md:inline-flex !min-h-0 !py-2 !px-4 !text-[0.82rem] ms-2">{t('nav.install.label')}</a>
+      <button type="button" class="icon-btn" data-drawer-open aria-label={t('a11y.openMenu')} aria-controls="drawer">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
     </div>
@@ -60,22 +54,18 @@ const languages = languageLinks(path);
 </dialog>
 
 <style is:global>
-  .site-nav { position: fixed; inset-inline: 0; top: 0; z-index: 50; background: var(--bg); border-block-end: var(--rule) solid var(--line); }
-  .logo-ink { display: block; }
-  [data-theme='dark'] .logo-ink { filter: invert(1) brightness(0.95); }
-  .nav-link { padding: 0.4rem 0.7rem; font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; color: var(--text); border-block-end: 3px solid transparent; }
-  .nav-link:hover { border-color: var(--hue); }
-  .nav-link[aria-current] { background: var(--hue-soft); color: var(--text); border-color: var(--hue); }
-  [data-theme='dark'] .nav-link[aria-current] { color: var(--text); }
-  .icon-btn { display: inline-grid; place-items: center; inline-size: 2.4rem; block-size: 2.4rem; color: var(--text); }
-  .icon-btn:hover { background: var(--tint); }
-  .menu-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 0.6rem); min-width: 12rem; padding: 0.3rem; background: var(--surface); border: var(--rule) solid var(--line); box-shadow: var(--press); display: none; }
+  .site-nav { position: fixed; inset-inline: 0; top: 0; z-index: 50; color: var(--on-ink); background: color-mix(in oklch, var(--ink) 90%, transparent); border-block-end: var(--rule) solid color-mix(in oklch, var(--on-ink) 18%, transparent); }
+  .brand-lockup { display: inline-flex; align-items: center; gap: 0.8rem; flex-shrink: 0; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .brand-sigil { inline-size: 1.8rem; block-size: 2.05rem; display: grid; place-items: center; color: var(--on-action); background: var(--action); font: 700 0.9rem/1 var(--font-mono); clip-path: polygon(50% 0,100% 16%,90% 80%,50% 100%,10% 80%,0 16%); }
+  .icon-btn { display: inline-grid; place-items: center; inline-size: 2.4rem; block-size: 2.4rem; color: currentColor; }
+  .icon-btn:hover { background: color-mix(in oklch, var(--on-ink) 10%, transparent); }
+  .menu-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 0.6rem); min-width: 12rem; padding: 0.3rem; color: var(--text); background: var(--surface); border: var(--rule) solid var(--line); box-shadow: var(--press); display: none; }
   [data-menu][data-open] .menu-panel { display: grid; }
   .menu-panel a { padding: 0.5rem 0.8rem; }
   .menu-panel a:hover { background: var(--tint); }
   .menu-panel a[aria-current] { font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
-  .drawer { margin: 0; margin-inline-start: auto; inline-size: min(24rem, 100%); max-inline-size: none; block-size: 100dvh; max-block-size: none; background: var(--bg); color: var(--text); border-inline-start: var(--rule) solid var(--line); }
+  .drawer { margin: 0; margin-inline-start: auto; inline-size: min(28rem, 100%); max-inline-size: none; block-size: 100dvh; max-block-size: none; background: var(--bg); color: var(--text); border-inline-start: var(--rule) solid var(--line); }
   .drawer::backdrop { background: var(--veil); }
-  .drawer-link { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: 0.8rem 0.6rem; border-block-end: 1.5px solid var(--line); }
-  .drawer-link:hover { background: var(--hue-soft); }
+  .drawer-link { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: 1rem 0.6rem; border-block-end: var(--rule) solid color-mix(in oklch, var(--line) 55%, transparent); }
+  .drawer-link:hover { background: color-mix(in oklch, var(--hue-soft) 45%, transparent); }
 </style>

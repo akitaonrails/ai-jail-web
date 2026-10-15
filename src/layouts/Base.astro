@@ -45,6 +45,7 @@ const detect = locale === defaultLocale && !noindex
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark light" />
     <link rel="canonical" href={canonical} />
     {!noindex && alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.url} />)}
     {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(barePath, Astro.site).href} />}
@@ -52,8 +53,9 @@ const detect = locale === defaultLocale && !noindex
     <meta name="robots" content={noindex ? 'noindex' : 'index, follow, max-image-preview:large'} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ecdd" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1816" />
+    <link rel="preload" as="image" href="/images/cellblock-interior.webp" type="image/webp" fetchpriority="high" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eee8dc" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#091013" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content={locales[locale].og} />
@@ -62,10 +64,16 @@ const detect = locale === defaultLocale && !noindex
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(ogImage.src, Astro.site)} />
+    <meta property="og:image:secure_url" content={new URL(ogImage.src, Astro.site)} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={t('site.ogAlt')} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage.src, Astro.site)} />
+    <meta name="twitter:image:alt" content={t('site.ogAlt')} />
     <meta name="author" content={site.author} />
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     {detect && (

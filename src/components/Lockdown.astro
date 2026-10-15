@@ -1,94 +1,70 @@
 ---
-// The homepage scroll scene: what the agent can reach, before and after. The section is tall and its stage is
-// sticky; motion.ts only writes data-step="0..4" from the scroll position and the CSS below does everything else.
-// Without JavaScript or with reduced motion there is no data-step: the stage shows the final state and the
-// captions stack as a normal list.
+// A guided procession through the boundary. Every step gets its own visual field; the final map summarizes the result.
 import { useI18n } from '@/i18n';
 const { t, raw } = useI18n(Astro, 'home');
 const steps = raw<{ title: string; text: string }[]>('scene.steps');
-// `off` is the step at which the tile gets barred; `optin` tiles come back on the mustard plate at the last step; an
-// `inside` tile (the agent's own login, mounted by default) stays reachable on the teal plate at every step.
 const tiles = [
-  { label: '~/.ssh', off: 2 }, { label: '~/.aws', off: 2 }, { label: t('scene.tiles.projects'), off: 2 },
-  { label: '$GITHUB_TOKEN', off: 3 }, null, { label: t('scene.tiles.network'), off: 3, optin: true },
-  { label: 'docker.sock', off: 3 }, { label: t('scene.tiles.display'), off: 3 }, { label: '~/.claude', inside: true },
+  { label: '~/.ssh', state: 'blocked' }, { label: '~/.aws', state: 'blocked' }, { label: t('scene.tiles.projects'), state: 'blocked' },
+  { label: '$GITHUB_TOKEN', state: 'blocked' }, null, { label: t('scene.tiles.network'), state: 'optin' },
+  { label: 'docker.sock', state: 'blocked' }, { label: t('scene.tiles.display'), state: 'blocked' }, { label: '~/.claude', state: 'inside' },
 ];
 ---
-<section class="scene bg-tint" data-scene={steps.length} aria-label={t('scene.label')}>
-  <div class="stage">
-    <div class="wrap grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-16 items-center">
-      <ol class="caps">
-        {steps.map((s, i) => (
-          <li class="cap" data-i={i}>
-            <h2 class="text-3xl">{s.title}</h2>
-            <p class="mt-4 text-lg max-w-[30em]" set:html={s.text} />
-          </li>
-        ))}
-      </ol>
-      <div class="map" dir="ltr" aria-hidden="true">
+<section class="procession" aria-label={t('scene.label')}>
+  <div class="wrap-narrow">
+    <ol class="procession-steps">
+      {steps.map((step, index) => (
+        <li class="procession-step" data-hue={index === steps.length - 1 ? 'mustard' : 'teal'}>
+          <span class="procession-node font-mono" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+          <div class="procession-copy">
+            <h2 class="text-3xl">{step.title}</h2>
+            <p class="lede" set:html={step.text} />
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="boundary-stage on-ink">
+    <div class="wrap">
+      <div class="boundary-map" dir="ltr" aria-hidden="true">
         {tiles.map((tile) => tile ? (
-          <div class="tile" data-off={tile.off} data-optin={tile.optin ? '' : undefined} data-inside={tile.inside ? '' : undefined}><span>{tile.label}</span></div>
+          <div class="boundary-tile" data-state={tile.state}><span>{tile.label}</span></div>
         ) : (
-          <div class="tile project">
-            <span class="chip"><span>{t('scene.agent')}</span></span>
-            <span>{t('scene.project')}</span>
+          <div class="boundary-tile project">
+            <span class="agent-chip">{t('scene.agent')}</span>
+            <strong>{t('scene.project')}</strong>
             <span class="cellbars"><i></i><i></i><i></i><i></i></span>
           </div>
         ))}
       </div>
     </div>
-    <div class="progress" aria-hidden="true"><span data-scene-progress></span></div>
   </div>
 </section>
 
 <style>
-  .scene { position: relative; border-block: var(--rule) solid var(--line); }
-  .stage { padding-block: clamp(4rem, 9vw, 7rem); }
-  .caps { display: grid; gap: 2.5rem; }
-  .progress { display: none; }
-
-  .map { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.6rem, 1.6vw, 1.1rem); max-inline-size: 36rem; inline-size: 100%; margin-inline: auto; }
-  .tile { position: relative; aspect-ratio: 1; display: grid; place-content: center; justify-items: center; gap: 0.5rem; padding: 0.4rem; text-align: center; border: var(--rule) solid var(--line); box-shadow: var(--press); background: var(--surface); color: var(--text); font-family: var(--font-mono); font-weight: 700; font-size: clamp(0.68rem, 1.5vw, 0.9rem); overflow-wrap: anywhere; transition: background 0.5s, color 0.5s; }
-  .tile > span { position: relative; z-index: 1; }
-  /* Final state, which is also the no-script state: everything barred, opt-ins mustard, project inside. */
-  .tile:not(.project) { background: repeating-linear-gradient(45deg, var(--surface) 0 5px, var(--v-red) 5px 7px); }
-  .tile:not(.project) > span { background: var(--surface); padding: 0.15em 0.4em; outline: 1.5px solid var(--line); }
-  .tile[data-optin] { background: var(--v-mustard); color: var(--ink); }
-  .tile[data-optin] > span { background: none; outline: 0; }
-  /* An inside tile is reachable throughout: the same teal as the project, at every step, never barred. */
-  .tile[data-inside], .scene[data-step] .tile[data-inside]:not(.project) { background: var(--v-teal); color: var(--ink); }
-  .tile[data-inside] > span { background: none; outline: 0; }
-  .project { background: var(--v-teal); color: var(--ink); font-family: var(--font-display); font-weight: 400; text-transform: uppercase; }
-  .chip { display: grid; place-items: center; inline-size: clamp(2.6rem, 7vw, 4rem); aspect-ratio: 1; border: var(--rule) solid var(--line); background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 0.7em; font-weight: 700; text-transform: none; }
-  .cellbars { position: absolute; inset: 0; display: flex; justify-content: space-evenly; pointer-events: none; z-index: 2; }
-  .cellbars i { inline-size: 5px; block-size: 100%; background: var(--line); transform-origin: top; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  .cellbars i:nth-child(2) { transition-delay: 0.08s; } .cellbars i:nth-child(3) { transition-delay: 0.16s; } .cellbars i:nth-child(4) { transition-delay: 0.24s; }
-
-  /* Scroll-driven version. */
-  .scene[data-step] { block-size: 520vh; }
-  .scene[data-step] .stage { position: sticky; inset-block-start: 0; block-size: 100dvh; display: grid; align-content: center; padding-block: 5rem 2rem; overflow: hidden; }
-  .scene[data-step] .caps { display: grid; gap: 0; }
-  .scene[data-step] .cap { grid-area: 1 / 1; opacity: 0; transform: translateY(1rem); transition: opacity 0.4s, transform 0.4s; pointer-events: none; }
-  .scene[data-step='0'] .cap[data-i='0'], .scene[data-step='1'] .cap[data-i='1'], .scene[data-step='2'] .cap[data-i='2'],
-  .scene[data-step='3'] .cap[data-i='3'], .scene[data-step='4'] .cap[data-i='4'] { opacity: 1; transform: none; pointer-events: auto; }
-  .scene[data-step] .progress { display: block; position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 5px; }
-  .progress span { display: block; block-size: 100%; background: var(--line); transform: scaleX(0); transform-origin: left; }
-
-  /* A tile is "lit" (reachable, on the clay plate) until the scroll reaches its data-off step. */
-  .scene[data-step='0'] .tile:not(.project), .scene[data-step='1'] .tile:not(.project),
-  .scene[data-step='2'] .tile[data-off='3'] { background: var(--v-clay); color: var(--ink); }
-  .scene[data-step='0'] .tile:not(.project) > span, .scene[data-step='1'] .tile:not(.project) > span, .scene[data-step='2'] .tile[data-off='3'] > span { background: none; outline: 0; }
-  /* Opt-ins are barred like the rest until the last step. */
-  .scene[data-step='2'] .tile[data-optin][data-off='2'], .scene[data-step='3'] .tile[data-optin] { color: var(--text); background: repeating-linear-gradient(45deg, var(--surface) 0 5px, var(--v-red) 5px 7px); }
-  .scene[data-step='2'] .tile[data-optin][data-off='2'] > span, .scene[data-step='3'] .tile[data-optin] > span { background: var(--surface); outline: 1.5px solid var(--line); }
-  .scene[data-step='0'] .project { background: var(--v-clay); }
-  .scene[data-step='0'] .cellbars i { transform: scaleY(0); }
-
-  @media (max-width: 63.99rem) {
-    .scene[data-step] .stage { align-content: start; padding-block-start: 5.5rem; }
-    .scene[data-step] .cap h2 { font-size: var(--text-2xl); }
-    .scene[data-step] .cap p { font-size: 1rem; margin-block-start: 0.6rem; }
-    .scene[data-step] .caps { min-block-size: 15.5rem; }
-    .map { max-inline-size: min(22rem, 46dvh); }
+  .procession { position: relative; border-block: var(--rule) solid color-mix(in oklch, var(--line) 48%, transparent); }
+  .procession-steps { position: relative; padding-block: clamp(5rem, 10vw, 9rem); }
+  .procession-steps::before { content: ''; position: absolute; inset-block: clamp(5rem, 10vw, 9rem); inset-inline-start: 2rem; inline-size: 1px; background: linear-gradient(var(--teal), var(--red)); }
+  .procession-step { min-block-size: min(68svh, 42rem); display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: clamp(2rem, 7vw, 6rem); align-items: center; }
+  .procession-node { position: relative; z-index: 1; inline-size: 4rem; block-size: 4rem; display: grid; place-items: center; color: var(--hue); background: var(--bg); border: var(--rule) solid var(--hue); }
+  .procession-copy { max-inline-size: 43rem; }
+  .procession-copy h2 { margin-block-end: 1.5rem; }
+  .boundary-stage { padding-block: clamp(5rem, 10vw, 9rem); border-block-start: var(--rule) solid var(--line); background-image: linear-gradient(90deg, color-mix(in oklch, var(--ink) 96%, transparent), color-mix(in oklch, var(--ink) 74%, transparent)), var(--hero-image); background-size: cover; background-position: center; }
+  .boundary-map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(0.65rem, 1.6vw, 1.15rem); max-inline-size: 48rem; margin-inline: auto; }
+  .boundary-tile { position: relative; aspect-ratio: 1; display: grid; place-content: center; justify-items: center; gap: 0.6rem; padding: 0.7rem; text-align: center; border: var(--rule) solid var(--line); background: var(--surface); color: var(--text); font-family: var(--font-mono); font-weight: 700; font-size: clamp(0.72rem, 1.5vw, 0.94rem); overflow-wrap: anywhere; }
+  .boundary-tile[data-state='blocked'] { background: repeating-linear-gradient(45deg, var(--surface) 0 7px, color-mix(in oklch, var(--v-red) 62%, var(--surface)) 7px 9px); }
+  .boundary-tile[data-state='blocked'] > span { background: var(--surface); padding: 0.2em 0.45em; }
+  .boundary-tile[data-state='optin'] { color: var(--ink); background: var(--v-mustard); }
+  .boundary-tile[data-state='inside'], .boundary-tile.project { color: var(--ink); background: var(--v-teal); }
+  .boundary-tile.project { font-family: var(--font-display); }
+  .agent-chip { display: grid; place-items: center; inline-size: clamp(2.7rem, 7vw, 4.2rem); aspect-ratio: 1; border: var(--rule) solid var(--ink); background: var(--ink); color: var(--on-ink); font-family: var(--font-mono); font-size: 0.75em; }
+  .cellbars { position: absolute; inset: 0; display: flex; justify-content: space-evenly; pointer-events: none; }
+  .cellbars i { inline-size: 2px; block-size: 100%; background: var(--ink); }
+  @media (max-width: 40rem) {
+    .procession-steps::before { inset-inline-start: 1.5rem; }
+    .procession-step { min-block-size: 74svh; grid-template-columns: 3rem minmax(0, 1fr); gap: 1.5rem; }
+    .procession-node { inline-size: 3rem; block-size: 3rem; }
+    .boundary-map { gap: 0.45rem; }
+    .boundary-tile { padding: 0.35rem; font-size: 0.64rem; }
   }
 </style>

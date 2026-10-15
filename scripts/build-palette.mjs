@@ -1,14 +1,14 @@
-// Derives the color tokens from a few decisions and prints the CSS. The site is printed like a cordel
-// woodcut: black ink on unbleached paper, six flat spot colors, one red for stamps. Paste the output into
+// Derives the color tokens from a few decisions and prints the CSS. The site uses a stormbound prison
+// palette: soot, wet stone, bone, cold signals and one rust warning. Paste the output into
 // src/styles/global.css between the PALETTE markers, or run with --write to do that. See docs/color-study.md.
 import { readFileSync, writeFileSync } from 'node:fs';
-import { clampChroma, parse, wcagContrast, formatCss } from 'culori';
+import { clampChroma, wcagContrast, formatCss } from 'culori';
 
-// The six spot colors, as pastel plates (hue, chroma). One per subject, see docs/design-system.md.
-export const hues = { rose: 25, clay: 50, mustard: 85, sage: 140, teal: 190, indigo: 275, red: 25 };
-const chroma = { rose: 0.065, clay: 0.08, mustard: 0.09, sage: 0.045, teal: 0.045, indigo: 0.05, red: 0.14 };
-const PAPER_HUE = 80; // unbleached paper, slightly warm
-const INK_HUE = 60; // the ink is a warm black
+// Restrained subject signals. Teal means admitted, rust red means withheld, mustard means opt-in.
+export const hues = { rose: 20, clay: 48, mustard: 82, sage: 145, teal: 190, indigo: 255, red: 25 };
+const chroma = { rose: 0.055, clay: 0.055, mustard: 0.07, sage: 0.04, teal: 0.055, indigo: 0.05, red: 0.11 };
+const PAPER_HUE = 80;
+const INK_HUE = 220;
 
 const ok = (l, c, h) => clampChroma({ mode: 'oklch', l, c, h }, 'oklch');
 const fmt = (col) => `oklch(${col.l.toFixed(3)} ${col.c.toFixed(3)} ${Math.round(col.h ?? 0)})`;
@@ -20,22 +20,27 @@ function fitText(l0, c, h, bg, target, dir = -1) {
   return col;
 }
 
-const paper = { bg: ok(0.945, 0.025, PAPER_HUE), tint: ok(0.905, 0.035, PAPER_HUE), text: ok(0.17, 0.008, INK_HUE), muted: ok(0.42, 0.015, INK_HUE) };
-const night = { bg: ok(0.17, 0.008, INK_HUE), tint: ok(0.225, 0.01, INK_HUE), text: ok(0.945, 0.025, PAPER_HUE), muted: ok(0.75, 0.02, PAPER_HUE) };
+const paper = {
+  bg: ok(0.94, 0.012, PAPER_HUE), surface: ok(0.965, 0.009, PAPER_HUE), tint: ok(0.885, 0.018, 90),
+  line: ok(0.42, 0.018, INK_HUE), text: ok(0.16, 0.014, INK_HUE), muted: ok(0.38, 0.018, INK_HUE),
+};
+const night = {
+  bg: ok(0.12, 0.014, INK_HUE), surface: ok(0.145, 0.016, INK_HUE), tint: ok(0.19, 0.02, INK_HUE),
+  line: ok(0.43, 0.025, 190), text: ok(0.91, 0.018, PAPER_HUE), muted: ok(0.70, 0.018, 190),
+};
 
 function theme(name) {
   const n = name === 'light' ? paper : night;
-  const out = [`  --bg: ${fmt(n.bg)};`, `  --surface: ${fmt(n.bg)};`, `  --tint: ${fmt(n.tint)};`, `  --line: ${fmt(n.text)};`, `  --text: ${fmt(n.text)};`, `  --muted: ${fmt(n.muted)};`];
+  const out = [`  --bg: ${fmt(n.bg)};`, `  --surface: ${fmt(n.surface)};`, `  --tint: ${fmt(n.tint)};`, `  --line: ${fmt(n.line)};`, `  --text: ${fmt(n.text)};`, `  --muted: ${fmt(n.muted)};`];
   for (const [k, h] of Object.entries(hues)) {
-    const plate = ok(k === 'red' ? 0.56 : 0.86, chroma[k], h);
     if (name === 'light') {
       // On paper: the plate is the block color, the ink variant is text that reads on the plate and on paper.
-      const soft = k === 'red' ? ok(0.9, 0.04, h) : plate;
+      const soft = k === 'red' ? ok(0.88, 0.035, h) : ok(0.88, chroma[k] * 0.7, h);
       const ink = fitText(0.5, Math.max(chroma[k], 0.1), h, soft, 4.5);
       out.push(`  --${k}: ${fmt(ink)};`, `  --${k}-soft: ${fmt(soft)};`);
     } else {
       // At night the plate is dimmed and the text variant is the plate itself, lightened to read on ink.
-      const soft = ok(0.3, Math.min(chroma[k], 0.06), h);
+      const soft = ok(0.23, Math.min(chroma[k], 0.045), h);
       const ink = fitText(0.78, Math.max(chroma[k], 0.09), h, soft, 4.5, +1);
       out.push(`  --${k}: ${fmt(ink)};`, `  --${k}-soft: ${fmt(soft)};`);
     }
@@ -44,13 +49,13 @@ function theme(name) {
 }
 
 const shared = [
-  // The plates themselves: the same in both themes, for stamps, rules and the misregistered plates behind art.
-  ...Object.entries(hues).map(([k, h]) => `  --v-${k}: ${fmt(ok(k === 'red' ? 0.56 : 0.86, chroma[k], h))};`),
+  // Stable signals used inside diagrams and status marks.
+  ...Object.entries(hues).map(([k, h]) => `  --v-${k}: ${fmt(ok(k === 'red' ? 0.58 : 0.79, chroma[k], h))};`),
   // Always-ink ground: terminals and the closing band.
   `  --ink: ${fmt(night.bg)};`, `  --ink-raised: ${fmt(night.tint)};`, `  --ink-line: ${fmt(ok(0.4, 0.01, INK_HUE))};`, `  --on-ink: ${fmt(night.text)};`, `  --on-ink-muted: ${fmt(night.muted)};`,
-  `  --paper: ${fmt(paper.bg)};`, `  --veil: ${formatCss({ ...night.bg, alpha: 0.6 })};`,
-  // The one action: ink on paper, with a teal plate under it.
-  `  --action: ${fmt(night.bg)};`, `  --action-hi: ${fmt(ok(0.26, 0.01, INK_HUE))};`, `  --on-action: ${fmt(night.text)};`,
+  `  --paper: ${fmt(paper.bg)};`, `  --veil: ${formatCss({ ...night.bg, alpha: 0.78 })};`,
+  // The one action: cold signal on soot, matching the admitted state.
+  `  --action: ${fmt(ok(0.79, chroma.teal, hues.teal))};`, `  --action-hi: ${fmt(ok(0.88, 0.025, PAPER_HUE))};`, `  --on-action: ${fmt(night.bg)};`,
 ].join('\n');
 
 const css = `/* PALETTE:START generated by scripts/build-palette.mjs, do not edit by hand */

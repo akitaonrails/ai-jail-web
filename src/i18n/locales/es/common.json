@@ -2,7 +2,7 @@
   "site": {
     "tagline": "Un sandbox del sistema operativo para agentes de programación con IA",
     "description": "ai-jail ejecuta Claude Code, Codex y otros agentes de programación con IA dentro de un sandbox del sistema operativo en Linux y macOS. El proyecto sigue siendo escribible. Tus claves, tus tokens y tu directorio home quedan fuera de alcance.",
-    "ogAlt": "El logo de ai-jail: un candado hecho de pistas de circuito con un microchip tras las rejas"
+    "ogAlt": "Un oscuro corredor de prisión de piedra con el nombre ai-jail y el mensaje: una cárcel para tu agente de programación con IA"
   },
   "a11y": {
     "skip": "Saltar al contenido",

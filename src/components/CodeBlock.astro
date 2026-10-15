@@ -12,12 +12,12 @@ const lines = code.trim().split('\n');
     <span class="text-sm font-mono" style="color:var(--on-ink-muted)">{title}</span>
     <button type="button" class="ms-auto text-sm font-mono font-bold hover:underline" data-copy><span data-copy-label data-copied={t('code.copied')}>{t('code.copy')}</span></button>
   </div>
-  <pre><code>{lines.map((l) => <span class:list={['block', l.trimStart().startsWith('#') && 'c']}>{l || ' '}</span>)}</code></pre>
+  <pre tabindex="0"><code>{lines.map((l) => <span class:list={['block', l.trimStart().startsWith('#') && 'c']}>{l || ' '}</span>)}</code></pre>
 </div>
 <style is:global>
-  .term { border: var(--rule) solid var(--line); box-shadow: var(--press); overflow: hidden; text-align: left; }
-  .term-bar { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 1rem; background: var(--ink-raised); border-block-end: 1.5px solid var(--ink-line); }
+  .term { border: var(--rule) solid color-mix(in oklch, var(--line) 72%, transparent); box-shadow: var(--press); overflow: hidden; text-align: left; }
+  .term-bar { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 1rem; background: var(--ink-raised); border-block-end: var(--rule) solid var(--ink-line); }
   .term-bar .bars::before, .term-bar .bars::after, .term-bar .bars > i { background: var(--on-ink); }
-  .term pre { padding: 1rem 1.2rem; overflow-x: auto; font-size: 0.95rem; line-height: 1.65; }
+  .term pre { padding: 1.15rem 1.2rem; overflow-x: auto; font-size: 0.95rem; line-height: 1.72; }
   .term .c { color: var(--on-ink-muted); }
 </style>

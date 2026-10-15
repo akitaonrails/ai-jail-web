@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "A jail for your AI coding agent",
-    "lede": "Your coding agent, the program that edits and runs code for you, runs with your user account, so it can read everything you can: the keys to your servers, your cloud account, every other project on the disk. ai-jail starts it inside a sandbox, a fence the operating system holds around one program, built to stop a trusted agent's mistakes. The project is writable. Your keys, your home directory and your shell secrets (the tokens and passwords a terminal keeps in environment variables) are not there.",
+    "lede": "Give the agent the project, not the whole machine. ai‑jail makes that boundary real.",
     "install": "Install",
     "why": "Do I need it?",
     "logoAlt": "A padlock made of circuit traces. Behind the bars in its window sits a glowing microchip: the agent.",

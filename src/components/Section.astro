@@ -6,11 +6,23 @@ const { title, lede, hue, id, tint, narrow, ink } = Astro.props;
 ---
 <section id={id} data-hue={hue} class:list={['band scroll-mt-16', tint && 'bg-tint', ink && 'on-ink']}>
   <div class={narrow ? 'wrap-narrow' : 'wrap'}>
-    <div class="rule flex items-start gap-3 pt-4">
-      <span class="bars mt-1 shrink-0" aria-hidden="true"><i></i></span>
-      <h2 class="text-3xl max-w-[18em]">{title}</h2>
-    </div>
-    {lede && <p class="lede mt-6" set:html={lede} />}
-    <div class="mt-8"><slot /></div>
+    <header class="section-head">
+      <span class="bars" aria-hidden="true"><i></i></span>
+      <div>
+        <h2 class="text-3xl max-w-[17em]">{title}</h2>
+        {lede && <p class="lede mt-7" set:html={lede} />}
+      </div>
+    </header>
+    <div class="section-body"><slot /></div>
   </div>
 </section>
+<style is:global>
+  .section-head { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.5rem); align-items: start; padding-block-start: 1.25rem; border-block-start: var(--rule) solid color-mix(in oklch, var(--line) 58%, transparent); }
+  .section-head h2 { color: var(--text); }
+  .section-body { margin-block-start: clamp(2.75rem, 6vw, 5rem); }
+  .bg-tint { background: color-mix(in oklch, var(--tint) 58%, var(--bg)); }
+  @media (max-width: 40rem) {
+    .section-head { grid-template-columns: 1fr; gap: 1rem; }
+    .section-body { margin-block-start: 2.75rem; }
+  }
+</style>

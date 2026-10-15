@@ -1,5 +1,5 @@
 ---
-// A diagram drawn in code, in the site's ink-on-paper language. Each drawing is src/components/diagrams/<name>.astro
+// A responsive diagram drawn in code. Each drawing is src/components/diagrams/<name>.astro
 // and receives its labels from images.json, so every language gets the same drawing with its own words and no
 // image is generated or stored. Drawings use the parts in diagrams/parts (Box, Arrow, Note, Bars, Chip).
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
@@ -14,7 +14,7 @@ if (!Drawing) throw new Error(`Diagram: no drawing for name="${name}"`);
 ---
 <figure class="fig">
   {/* Diagrams read left to right in every language. */}
-  <div class="plate dg" dir="ltr" role="img" aria-label={alt}>
+  <div class="plate dg" dir="ltr" role="img" aria-label={alt} tabindex="0">
     <svg width="0" height="0" aria-hidden="true" style="position:absolute">
       <defs>
         <pattern id="dg-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="var(--surface)" /><rect width="2.5" height="7" fill="var(--v-red)" /></pattern>
@@ -27,28 +27,28 @@ if (!Drawing) throw new Error(`Diagram: no drawing for name="${name}"`);
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 <style is:global>
-  .fig { margin-block: clamp(2rem, 5vw, 3.5rem); }
-  .plate { border: var(--rule) solid var(--line); background: var(--surface); box-shadow: var(--press); overflow-x: auto; position: relative; }
+  .fig { margin-block: clamp(2.5rem, 6vw, 5rem); }
+  .plate { border: var(--rule) solid color-mix(in oklch, var(--line) 72%, transparent); background: color-mix(in oklch, var(--surface) 84%, var(--tint)); overflow-x: auto; position: relative; }
+  .plate::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 5rem color-mix(in oklch, var(--ink) 10%, transparent); }
   .plate > svg:not([aria-hidden]) { display: block; inline-size: 100%; min-inline-size: 34rem; block-size: auto; color: var(--text); font-family: var(--font-mono); }
-  figcaption { margin-block-start: 1rem; color: var(--muted); font-size: 0.95rem; max-width: 46em; }
-  /* The drawing vocabulary. Strokes are ink, plates are flat, labels are mono capitals. */
-  .dg rect, .dg path, .dg line, .dg circle, .dg polyline, .dg polygon { stroke: currentColor; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; fill: none; vector-effect: non-scaling-stroke; }
+  figcaption { margin-block-start: 1.1rem; color: var(--muted); font-size: 0.95rem; max-width: 46em; }
+  .dg rect, .dg path, .dg line, .dg circle, .dg polyline, .dg polygon { stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; fill: none; vector-effect: non-scaling-stroke; }
   .dg .dg-box > rect { fill: var(--surface); }
   .dg .dg-paper > rect { fill: var(--surface); }
   .dg .dg-tint > rect { fill: var(--tint); }
-  .dg .dg-agent > rect, .dg .dg-inside > rect { fill: var(--v-teal); }
-  .dg .dg-optin > rect { fill: var(--v-mustard); }
+  .dg .dg-agent > rect, .dg .dg-inside > rect { fill: color-mix(in oklch, var(--v-teal) 74%, var(--surface)); }
+  .dg .dg-optin > rect { fill: color-mix(in oklch, var(--v-mustard) 74%, var(--surface)); }
   .dg .dg-blocked > rect { fill: url(#dg-hatch); }
   .dg .dg-ink > rect { fill: var(--text); }
   .dg .dg-ghost > rect { stroke-dasharray: 7 6; fill: none; }
   .dg .dg-plate > rect { stroke: none; }
   .dg .dg-rose > rect { fill: var(--v-rose); } .dg .dg-clay > rect { fill: var(--v-clay); } .dg .dg-mustard > rect { fill: var(--v-mustard); }
   .dg .dg-sage > rect { fill: var(--v-sage); } .dg .dg-teal > rect { fill: var(--v-teal); } .dg .dg-indigo > rect { fill: var(--v-indigo); }
-  .dg .dg-label { display: flex; align-items: center; justify-content: center; block-size: 100%; text-align: center; font: 700 15px/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: 0.03em; padding: 3px 5px; color: var(--text); overflow-wrap: anywhere; }
+  .dg .dg-label { display: flex; align-items: center; justify-content: center; block-size: 100%; text-align: center; font: 700 15px/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 5px; color: var(--text); overflow-wrap: anywhere; }
   .dg .dg-label.dg-small { font-size: 13px; }
   .dg .dg-label.dg-big { font-size: 18px; }
   .dg .dg-label.dg-start { justify-content: flex-start; text-align: start; }
-  .dg .dg-label.dg-title { font-family: var(--font-display); text-transform: uppercase; font-weight: 400; font-size: 20px; letter-spacing: 0.01em; }
+  .dg .dg-label.dg-title { font-family: var(--font-display); text-transform: none; font-weight: 500; font-size: 20px; letter-spacing: -0.02em; }
   .dg .dg-agent .dg-label, .dg .dg-inside .dg-label, .dg .dg-optin .dg-label, .dg :is(.dg-rose, .dg-clay, .dg-mustard, .dg-sage, .dg-teal, .dg-indigo) .dg-label { color: var(--ink); }
   .dg .dg-ink .dg-label { color: var(--bg); }
   .dg .dg-blocked .dg-label span, .dg .dg-ghost .dg-label span { background: var(--surface); padding: 2px 6px; outline: 1.5px solid var(--line); }
@@ -58,9 +58,13 @@ if (!Drawing) throw new Error(`Diagram: no drawing for name="${name}"`);
   .dg .dg-arrow.dg-dashed { stroke-dasharray: 7 6; }
   .dg .dg-arrow.dg-stopped { stroke: var(--v-red); marker-end: url(#dg-stop); }
   .dg .dg-thin { stroke-width: 1.5; }
-  .dg .dg-heavy { stroke-width: 5; }
+  .dg .dg-heavy { stroke-width: 3; }
   .dg .dg-red { stroke: var(--v-red); }
   .dg .dg-bar { fill: var(--text); stroke: none; }
   :lang(ja) .dg .dg-label, :lang(ko) .dg .dg-label, :lang(he) .dg .dg-label { font-family: var(--font-sans); font-weight: 700; letter-spacing: 0; }
   :lang(ja) .dg .dg-chip .dg-label, :lang(ko) .dg .dg-chip .dg-label { font-size: 12px; }
+  @media (max-width: 40rem) {
+    .fig { margin-inline: -1rem; }
+    .fig figcaption { margin-inline: 1rem; }
+  }
 </style>

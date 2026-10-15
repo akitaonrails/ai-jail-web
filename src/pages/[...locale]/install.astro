@@ -165,7 +165,7 @@ const next = withText(
   </Section>
 
   <Section id="agents" title={t('agents.title')} lede={t('agents.lede')} hue="teal">
-    <div class="table-wrap">
+    <div class="table-wrap" tabindex="0">
       <table class="table-site">
         <thead><tr>{raw<string[]>('agents.head').map((h) => <th scope="col" set:html={h} />)}</tr></thead>
         <tbody>
