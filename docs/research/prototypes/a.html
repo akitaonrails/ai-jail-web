@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ai-jail — prototype A: terminal-native</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f3efe4;--ink:#17160f;--mute:#5d5a4e;--rule:#c9c3b2;--amber:#9a5a00;--green:#2f6b2a;--red:#9b2d20;--blue:#1f4c8f}
+*{box-sizing:border-box}html{background:var(--paper);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif}
+body{margin:0}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1.25rem}
+header{display:flex;justify-content:space-between;align-items:baseline;padding:1.1rem 0;border-bottom:1px solid var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.95rem}
+header nav a{color:var(--ink);text-decoration:none;margin-left:1.4rem}
+header nav a:first-child{margin-left:0}
+h1{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:clamp(1.8rem,1rem + 3.2vw,3.4rem);line-height:1.1;letter-spacing:-.01em;margin:3.5rem 0 1rem;max-width:22ch}
+.lede{max-width:46rem;font-size:1.1rem;color:var(--mute);margin:0 0 2.2rem}
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:3rem;align-items:start;padding-bottom:3rem;border-bottom:1px solid var(--rule)}
+.term{white-space:pre;font-family:"IBM Plex Mono",monospace;font-size:.84rem;line-height:1.5;background:var(--ink);color:#e9e4d4;padding:1.1rem 1.2rem;overflow:auto;border-radius:0}
+.term .c{color:#8f8b7c}.term .k{color:#ffd27a}.term .ok{color:#9ad48f}.term .no{color:#ff8f7e}.term .dim{opacity:.6}
+.term .ttl{display:flex;justify-content:space-between;color:#8f8b7c;border-bottom:1px solid #3a3830;padding-bottom:.5rem;margin-bottom:.8rem}
+.cmd{font-family:"IBM Plex Mono",monospace;background:var(--ink);color:#f3efe4;padding:.55rem .9rem;display:inline-block;margin:.4rem 0 1.4rem}
+.btn{display:inline-block;font:600 .95rem "IBM Plex Mono",monospace;border:1.5px solid var(--ink);padding:.6rem 1rem;color:var(--ink);text-decoration:none;margin-right:.6rem}
+.btn.fill{background:var(--ink);color:var(--paper)}
+.ledger{font-family:"IBM Plex Mono",monospace;font-size:.9rem;border-top:1px solid var(--ink);margin-top:0}
+.ledger div{display:grid;grid-template-columns:12rem 1fr 7rem;gap:1rem;padding:.55rem 0;border-bottom:1px solid var(--rule)}
+.ledger div:first-child{color:var(--mute);font-size:.8rem;text-transform:lowercase}
+.in{color:var(--green)}.out{color:var(--red)}.opt{color:var(--amber)}
+.diagram{font-family:"IBM Plex Mono",monospace;font-size:.86rem;line-height:1.35;white-space:pre;margin:2.5rem 0;color:var(--ink)}
+h2{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:1.35rem;margin:2.8rem 0 .6rem}
+p{max-width:60ch}
+footer{margin-top:4rem;padding:1.4rem 0 3rem;border-top:1px solid var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--mute)}
+@media (max-width:48rem){.hero{grid-template-columns:1fr}.ledger div{grid-template-columns:1fr;gap:.1rem}}
+</style></head><body>
+<div class="wrap">
+<header><span>ai-jail(1)</span><nav><a href="#">why</a><a href="#">how</a><a href="#">configure</a><a href="#">security</a><a href="#">compare</a><a href="#">download</a></nav></header>
+
+<h1>Run your coding agent in a jail. Keep your home out of it.</h1>
+<p class="lede">ai-jail starts Claude Code, Codex or any other agent inside a Linux or macOS sandbox. The project is writable. Your SSH keys, cloud credentials, shell secrets and the rest of your home are not there.</p>
+<div class="cmd">$ ai-jail claude</div><br>
+<a class="btn fill" href="#">Install</a><a class="btn" href="#">What it mounts</a>
+
+<section class="hero" style="margin-top:2.5rem">
+<div class="term"><div class="ttl"><span>ai-jail --dry-run claude</span><span>2.8.1</span></div><span class="c"># what ai-jail would ask the kernel for</span>
+bwrap \
+  --ro-bind /usr /usr
+  --ro-bind /etc /etc
+  --tmpfs   /tmp
+  <span class="k">--tmpfs   /home/you</span>                 <span class="c"># a fresh, empty home</span>
+  <span class="ok">--bind    ~/Projects/my-app ~/Projects/my-app</span>
+  <span class="ok">--bind    ~/.claude ~/.claude</span>     <span class="c"># the agent's own login</span>
+  --ro-bind ~/.cargo/bin ~/.cargo/bin
+  --ro-bind ~/.local/share/mise ~/.local/share/mise
+  <span class="no">--unshare-net</span>                        <span class="c"># no route out</span>
+  --unshare-pid --unshare-ipc --die-with-parent
+  <span class="dim">--seccomp 10 --landlock v3 --rlimit nproc=4096</span>
+  -- claude
+<span class="c"># allowed through the proxy: api.anthropic.com, crates.io, registry.npmjs.org, pypi.org, …</span></div>
+<div>
+<div class="ledger">
+<div><span>path</span><span>inside the jail</span><span>state</span></div>
+<div><span>~/Projects/my-app</span><span>your project, read and write</span><span class="in">in</span></div>
+<div><span>~/.ssh</span><span>never mounted</span><span class="out">out</span></div>
+<div><span>~/.aws  ~/.gnupg</span><span>never mounted</span><span class="out">out</span></div>
+<div><span>$GITHUB_TOKEN</span><span>environment cut to an allowlist</span><span class="out">out</span></div>
+<div><span>~/.claude</span><span>the agent's login, on by default</span><span class="in">in</span></div>
+<div><span>api.anthropic.com</span><span>the one host a known agent needs</span><span class="in">in</span></div>
+<div><span>everything else online</span><span>--allow-host or --network</span><span class="opt">opt-in</span></div>
+<div><span>/dev/kvm  docker.sock  X11</span><span>one flag each</span><span class="opt">opt-in</span></div>
+</div>
+</div>
+</section>
+
+<h2>Where the wall is</h2>
+<p>Agents that ship a sandbox put it around the commands the model runs. ai-jail puts the agent itself inside.</p>
+<div class="diagram">
+  built-in sandbox                          ai-jail
+  ┌───────────────────────────┐             ┌──────────────────────────────────────┐
+  │ agent ──┐                 │             │  ┌────────┐  ┌─────┐  ┌───────┐      │
+  │ MCP ────┼──▶ ~/.ssh  ~/.aws│             │  │ agent  │  │ MCP │  │ hooks │      │
+  │ hooks ──┘                 │             │  └───┬────┘  └─────┘  └───────┘      │
+  │   ┌────────────────┐      │             │      ▼                               │
+  │   │ shell commands │ ◀ wall│             │  ┌────────────────┐   ┌───────────┐  │
+  │   └────────────────┘      │             │  │ shell commands │   │  project  │  │
+  └───────────────────────────┘             │  └────────────────┘   └───────────┘  │
+                                            └──────────────────────────────────────┘
+                                                      ~/.ssh  ~/.aws  ── not mounted
+</div>
+<footer>ai-jail 2.8.1 · GPL-3.0 · Linux (bubblewrap, Landlock, seccomp) and macOS (sandbox-exec) · an accident guard for a trusted agent, not a boundary against hostile code</footer>
+</div>
+</body></html>
