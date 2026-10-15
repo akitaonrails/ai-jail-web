@@ -171,7 +171,7 @@
       "opencode": "Necesita <code>--standalone</code>. Mira el punto de arriba en \"Si no arranca\".",
       "antigravity": "Comparte su login de Google con Gemini, así que una sola sesión sirve para los dos.",
       "kimi": "<code>~/.kimi-code</code>, la ubicación antigua, también se monta cuando existe.",
-      "aimemory": "ai-jail reconoce al agente que lanza <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> y aplica los ajustes de ese agente, con ambos programas en una sola jaula.",
+      "aimemory": "ai-jail reconoce al agente que lanza <a class=\"link\" href=\"https://aimemory.sh\">ai-memory</a> y aplica los ajustes de ese agente, con ambos programas en una sola jaula.",
       "kiro": "En macOS la segunda carpeta es <code>~/Library/Application Support/kiro-cli</code> en su lugar.",
       "prime": "Solo la carpeta del propio agente, nunca todo <code>~/.prime</code>.",
       "devin": "La instalación propia del CLI bajo <code>devin/cli/_versions</code> se queda en solo lectura. Actualiza Devin en el host y después abre una sesión nueva."

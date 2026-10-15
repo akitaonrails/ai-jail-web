@@ -171,7 +171,7 @@
       "opencode": "<code>--standalone</code>が必要です。上のトラブルシューティングの項目を見てください。",
       "antigravity": "GoogleのログインをGeminiと共有するので、一度のサインインで両方に使えます。",
       "kimi": "以前の場所である<code>~/.kimi-code</code>も、存在すればマウントされます。",
-      "aimemory": "ai-jailは、<a class=\"link\" href=\"https://aimemory.io\">ai-memory</a>が起動するエージェントを認識して、そのエージェントの設定を適用します。2つのプログラムは同じジェイルに入ります。",
+      "aimemory": "ai-jailは、<a class=\"link\" href=\"https://aimemory.sh\">ai-memory</a>が起動するエージェントを認識して、そのエージェントの設定を適用します。2つのプログラムは同じジェイルに入ります。",
       "kiro": "macOSでは2つ目のフォルダは代わりに<code>~/Library/Application Support/kiro-cli</code>です。",
       "prime": "エージェント自身のフォルダだけで、<code>~/.prime</code>全体は決してマウントしません。",
       "devin": "<code>devin/cli/_versions</code>にあるCLI自身のインストールは読み取り専用のままです。Devinの更新はホストで行い、そのあと新しいセッションを始めてください。"

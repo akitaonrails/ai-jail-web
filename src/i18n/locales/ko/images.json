@@ -52,7 +52,7 @@
     "Exit": "종료",
     "Project": "프로젝트"
   },
-  "how-layers": { "Namespaces": "네임스페이스", "Filesystem": "파일시스템", "Limits": "제한", "Agent": "에이전트", "Your home": "내 홈" },
+  "how-layers": { "Namespaces": "네임스페이스", "Filesystem": "파일시스템", "Landlock": "Landlock", "seccomp": "seccomp", "Limits": "제한", "Agent": "에이전트", "Your home": "내 홈" },
   "how-macos": { "Five layers": "계층 다섯 개", "One profile": "프로파일 하나" },
   "install-first-run": {
     "Dry run": "드라이 런",

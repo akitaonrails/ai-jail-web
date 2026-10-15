@@ -171,7 +171,7 @@
       "opencode": "דורש <code>--standalone</code>. ראו את הסעיף בפתרון התקלות למעלה.",
       "antigravity": "חולק את ההתחברות ל-Google עם Gemini, ולכן התחברות אחת משרתת את שניהם.",
       "kimi": "גם <code>~/.kimi-code</code>, המיקום הישן יותר, מעוגן כשהוא קיים.",
-      "aimemory": "הסוכן ש-<a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> מעלה מזוהה, ההגדרות שלו מוחלות, ושתי התוכנות רצות בכלא אחד.",
+      "aimemory": "הסוכן ש-<a class=\"link\" href=\"https://aimemory.sh\">ai-memory</a> מעלה מזוהה, ההגדרות שלו מוחלות, ושתי התוכנות רצות בכלא אחד.",
       "kiro": "ב-macOS התיקייה השנייה היא <code>~/Library/Application Support/kiro-cli</code>.",
       "prime": "רק התיקייה של הסוכן עצמו, אף פעם לא כל <code>~/.prime</code>.",
       "devin": "ההתקנה של ה-CLI עצמו תחת <code>devin/cli/_versions</code> נשארת לקריאה בלבד. עדכנו את Devin במארח, ואז פתחו סשן חדש."

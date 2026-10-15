@@ -58,6 +58,8 @@
   "how-layers": {
     "Namespaces": "Namespaces",
     "Filesystem": "מערכת קבצים",
+    "Landlock": "Landlock",
+    "seccomp": "seccomp",
     "Limits": "מגבלות",
     "Agent": "סוכן",
     "Your home": "תיקיית הבית"

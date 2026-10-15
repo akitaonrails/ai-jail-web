@@ -171,7 +171,7 @@
       "opencode": "Needs <code>--standalone</code>. See the troubleshooting item above.",
       "antigravity": "Shares its Google login with Gemini, so one sign in serves both.",
       "kimi": "<code>~/.kimi-code</code>, the older location, is mounted too when it exists.",
-      "aimemory": "ai-jail recognizes the agent that <a class=\"link\" href=\"https://aimemory.io\">ai-memory</a> launches and applies that agent's settings, with both programs in one jail.",
+      "aimemory": "ai-jail recognizes the agent that <a class=\"link\" href=\"https://aimemory.sh\">ai-memory</a> launches and applies that agent's settings, with both programs in one jail.",
       "kiro": "On macOS the second folder is <code>~/Library/Application Support/kiro-cli</code> instead.",
       "prime": "Only the agent's own folder, never the whole <code>~/.prime</code>.",
       "devin": "The CLI's own installation under <code>devin/cli/_versions</code> stays read only. Update Devin on the host, then start a new session."

@@ -106,7 +106,7 @@
   "pair": {
     "title": "ai-memoryと一緒に使える",
     "text": "ai-memoryはエージェントに長期記憶を持たせ、ai-jailはエージェントを独房に入れておきます。ai-jailはランチャーの<code>ai-memory run</code>を認識し、その先で動くエージェントのポリシーを適用します。",
-    "link": "aimemory.ioを見る"
+    "link": "aimemory.shを見る"
   },
   "faq": {
     "title": "最初によく聞かれる質問",

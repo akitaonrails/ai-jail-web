@@ -1,6 +1,6 @@
 ---
 // Five kernel walls around the agent, outside in: namespaces, filesystem, Landlock, seccomp, limits. Your home sits
-// outside all of them. Landlock and seccomp are kernel names, the same in every language.
+// outside all of them.
 import Box from './parts/Box.astro';
 import Chip from './parts/Chip.astro';
 import Note from './parts/Note.astro';
@@ -8,8 +8,8 @@ const { labels: L } = Astro.props as { labels: Record<string, string> };
 const rings = [
   { x: 170, y: 10, s: 404, label: L['Namespaces'], kind: 'tint' },
   { x: 198, y: 38, s: 348, label: L['Filesystem'], kind: 'paper' },
-  { x: 226, y: 66, s: 292, label: 'Landlock', kind: 'tint' },
-  { x: 254, y: 94, s: 236, label: 'seccomp', kind: 'paper' },
+  { x: 226, y: 66, s: 292, label: L['Landlock'], kind: 'tint' },
+  { x: 254, y: 94, s: 236, label: L['seccomp'], kind: 'paper' },
   { x: 282, y: 122, s: 180, label: L['Limits'], kind: 'tint' },
 ];
 ---

@@ -106,7 +106,7 @@
   "pair": {
     "title": "עובד יחד עם ai-memory",
     "text": "ai-memory נותן לסוכנים שלכם זיכרון לטווח ארוך, ו-ai-jail משאיר אותם בתא. ai-jail מזהה את ה-launcher של <code>ai-memory run</code> ומחיל את המדיניות של הסוכן שמאחוריו.",
-    "link": "לאתר aimemory.io"
+    "link": "לאתר aimemory.sh"
   },
   "faq": {
     "title": "השאלות ששואלים קודם",

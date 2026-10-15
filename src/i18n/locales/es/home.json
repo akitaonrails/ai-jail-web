@@ -106,7 +106,7 @@
   "pair": {
     "title": "Funciona con ai-memory",
     "text": "ai-memory da a tus agentes una memoria a largo plazo, y ai-jail los mantiene en su celda. ai-jail reconoce el lanzador <code>ai-memory run</code> y aplica la política del agente que hay detrás.",
-    "link": "Visitar aimemory.io"
+    "link": "Visitar aimemory.sh"
   },
   "faq": {
     "title": "Las primeras preguntas de todos",

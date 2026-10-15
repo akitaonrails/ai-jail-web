@@ -4,7 +4,8 @@ export const site = {
   url: 'https://aijail.io',
   repo: 'https://github.com/akitaonrails/ai-jail',
   docs: 'https://github.com/akitaonrails/ai-jail/blob/master/docs',
-  sibling: 'https://aimemory.io',
+  sibling: 'https://aimemory.sh',
+  siblingIntegration: 'https://aimemory.sh/integrations/#yolo',
   author: 'Fabio Akita',
   authorUrl: 'https://akitaonrails.com',
 };

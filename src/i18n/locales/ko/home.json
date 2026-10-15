@@ -106,7 +106,7 @@
   "pair": {
     "title": "ai-memory와 함께 쓰기",
     "text": "ai-memory는 에이전트에 장기 기억을 주고, ai-jail은 에이전트를 감방에 가둬 둡니다. ai-jail은 <code>ai-memory run</code> 런처를 인식해서 그 뒤에 있는 에이전트의 정책을 적용합니다.",
-    "link": "aimemory.io 방문하기"
+    "link": "aimemory.sh 방문하기"
   },
   "faq": {
     "title": "가장 먼저 나오는 질문",

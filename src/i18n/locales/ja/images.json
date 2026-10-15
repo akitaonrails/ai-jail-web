@@ -58,6 +58,8 @@
   "how-layers": {
     "Namespaces": "名前空間",
     "Filesystem": "ファイルシステム",
+    "Landlock": "Landlock",
+    "seccomp": "seccomp",
     "Limits": "リソース制限",
     "Agent": "エージェント",
     "Your home": "あなたのホーム"
