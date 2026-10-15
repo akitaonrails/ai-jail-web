@@ -11,8 +11,8 @@ const languages = languageLinks(path);
 <header class="site-nav" data-nav>
   <div class="wrap flex h-16 items-center gap-5">
     <a href={href('/')} class="flex items-center gap-2 shrink-0" aria-label={t('a11y.home')}>
-      <Image src={logo} alt="" width={36} height={36} densities={[1, 2, 3]} class="size-9" loading="eager" />
-      <span class="font-display text-[1.3rem] font-extrabold tracking-tight">ai-jail</span>
+      <Image src={logo} alt="" width={36} height={36} densities={[1, 2, 3]} class="size-9 logo-ink" loading="eager" />
+      <span class="font-display text-[1.35rem]">ai-jail</span>
     </a>
     <nav class="hidden lg:flex items-center gap-1 ms-3" aria-label={t('a11y.mainNav')}>
       {nav.map((l) => <a href={href(l.href)} data-hue={l.hue} class="nav-link" aria-current={path === href(l.href) ? 'page' : undefined}>{t(`nav.${l.id}.label`)}</a>)}
@@ -33,7 +33,7 @@ const languages = languageLinks(path);
         <svg class="hidden dark:block" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/></svg>
         <svg class="dark:hidden" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.500A8 8 0 0 1 9.500 4a8 8 0 1 0 10.500 10.500Z"/></svg>
       </button>
-      <a href={href('/install/')} class="btn btn-primary hidden md:inline-flex !py-2 !px-4 !text-[0.95rem] ms-1.5">{t('nav.install.label')}</a>
+      <a href={href('/install/')} class="btn btn-primary hidden md:inline-flex !py-2 !px-4 !text-[0.95rem] ms-2">{t('nav.install.label')}</a>
       <button type="button" class="icon-btn lg:!hidden" data-drawer-open aria-label={t('a11y.openMenu')} aria-controls="drawer">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -43,7 +43,7 @@ const languages = languageLinks(path);
 
 <dialog id="drawer" class="drawer" aria-label={t('a11y.menu')}>
   <div class="flex items-center justify-between h-16 px-5">
-    <span class="font-display text-xl font-bold">{t('a11y.menu')}</span>
+    <span class="font-display text-xl">{t('a11y.menu')}</span>
     <button type="button" class="icon-btn" data-drawer-close aria-label={t('a11y.closeMenu')}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
     </button>
@@ -52,7 +52,7 @@ const languages = languageLinks(path);
     {nav.map((l) => (
       <a href={href(l.href)} data-hue={l.hue} class="drawer-link">
         <span class="bars" aria-hidden="true"><i></i></span>
-        <span><span class="block font-display font-bold text-lg leading-tight">{t(`nav.${l.id}.label`)}</span><span class="block text-sm text-muted">{t(`nav.${l.id}.note`)}</span></span>
+        <span><span class="block font-mono font-bold text-lg leading-tight">{t(`nav.${l.id}.label`)}</span><span class="block text-sm text-muted">{t(`nav.${l.id}.note`)}</span></span>
       </a>
     ))}
     <a href={href('/install/')} class="btn btn-primary mt-5">{t('nav.install.label')}</a>
@@ -60,19 +60,22 @@ const languages = languageLinks(path);
 </dialog>
 
 <style is:global>
-  .site-nav { position: fixed; inset-inline: 0; top: 0; z-index: 50; transition: background 0.3s, border-color 0.3s; border-block-end: 1px solid transparent; }
-  .site-nav[data-scrolled] { background: color-mix(in oklch, var(--bg) 82%, transparent); backdrop-filter: blur(14px) saturate(1.4); border-color: var(--line); }
-  .nav-link { padding: 0.45rem 0.8rem; border-radius: 99px; font-weight: 600; font-size: 0.97rem; color: var(--muted); transition: color 0.2s, background 0.2s; }
-  .nav-link:hover, .nav-link[aria-current] { color: var(--hue); background: var(--hue-soft); }
-  .icon-btn { display: inline-grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: 99px; color: var(--muted); transition: color 0.2s, background 0.2s; }
-  .icon-btn:hover { color: var(--text); background: var(--tint); }
-  .menu-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 0.5rem); min-width: 12rem; padding: 0.4rem; background: var(--surface); border: 1.5px solid var(--line); border-radius: 1rem; box-shadow: var(--shadow); display: none; }
+  .site-nav { position: fixed; inset-inline: 0; top: 0; z-index: 50; background: var(--bg); border-block-end: var(--rule) solid var(--line); }
+  .logo-ink { display: block; }
+  [data-theme='dark'] .logo-ink { filter: invert(1) brightness(0.95); }
+  .nav-link { padding: 0.4rem 0.7rem; font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; color: var(--text); border-block-end: 3px solid transparent; }
+  .nav-link:hover { border-color: var(--hue); }
+  .nav-link[aria-current] { background: var(--hue-soft); color: var(--text); border-color: var(--hue); }
+  [data-theme='dark'] .nav-link[aria-current] { color: var(--text); }
+  .icon-btn { display: inline-grid; place-items: center; inline-size: 2.4rem; block-size: 2.4rem; color: var(--text); }
+  .icon-btn:hover { background: var(--tint); }
+  .menu-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 0.6rem); min-width: 12rem; padding: 0.3rem; background: var(--surface); border: var(--rule) solid var(--line); box-shadow: var(--press); display: none; }
   [data-menu][data-open] .menu-panel { display: grid; }
-  .menu-panel a { padding: 0.5rem 0.8rem; border-radius: 0.65rem; }
+  .menu-panel a { padding: 0.5rem 0.8rem; }
   .menu-panel a:hover { background: var(--tint); }
-  .menu-panel a[aria-current] { color: var(--cyan); font-weight: 700; }
-  .drawer { margin: 0; margin-inline-start: auto; inline-size: min(24rem, 100%); max-inline-size: none; block-size: 100dvh; max-block-size: none; background: var(--bg); color: var(--text); border-inline-start: 1.5px solid var(--line); }
-  .drawer::backdrop { background: var(--veil); backdrop-filter: blur(4px); }
-  .drawer-link { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: 0.8rem 0.6rem; border-radius: 1rem; }
-  .drawer-link:hover { background: var(--tint); }
+  .menu-panel a[aria-current] { font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+  .drawer { margin: 0; margin-inline-start: auto; inline-size: min(24rem, 100%); max-inline-size: none; block-size: 100dvh; max-block-size: none; background: var(--bg); color: var(--text); border-inline-start: var(--rule) solid var(--line); }
+  .drawer::backdrop { background: var(--veil); }
+  .drawer-link { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; padding: 0.8rem 0.6rem; border-block-end: 1.5px solid var(--line); }
+  .drawer-link:hover { background: var(--hue-soft); }
 </style>

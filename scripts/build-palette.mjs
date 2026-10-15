@@ -1,42 +1,56 @@
-// Derives the color tokens from a few decisions (hues, one lightness per role) and prints the CSS.
-// For every hue it finds the highest chroma that still fits sRGB at the role's lightness, then caps it, so all
-// hues carry the same visual weight. Paste the output into src/styles/global.css between the PALETTE markers,
-// or run with --write to do that.   See docs/color-study.md.
+// Derives the color tokens from a few decisions and prints the CSS. The site is printed like a cordel
+// woodcut: black ink on unbleached paper, six flat spot colors, one red for stamps. Paste the output into
+// src/styles/global.css between the PALETTE markers, or run with --write to do that. See docs/color-study.md.
 import { readFileSync, writeFileSync } from 'node:fs';
-import { clampChroma } from 'culori';
+import { clampChroma, parse, wcagContrast, formatCss } from 'culori';
 
-// Four warm hues from the padlock body, left to right, and the one cool hue of the chip.
-export const hues = { gold: 88, orange: 55, red: 27, magenta: 352, cyan: 215 };
-const NEUTRAL = 355; // the logo's outline, a maroon so dark it reads as black
+// The six spot colors, as pastel plates (hue, chroma). One per subject, see docs/design-system.md.
+export const hues = { rose: 25, clay: 50, mustard: 85, sage: 140, teal: 190, indigo: 275, red: 25 };
+const chroma = { rose: 0.065, clay: 0.08, mustard: 0.09, sage: 0.045, teal: 0.045, indigo: 0.05, red: 0.14 };
+const PAPER_HUE = 80; // unbleached paper, slightly warm
+const INK_HUE = 60; // the ink is a warm black
 
-const fit = (l, c, h) => { const k = clampChroma({ mode: 'oklch', l, c, h }, 'oklch'); return `oklch(${l} ${Math.min(c, k.c).toFixed(3)} ${h})`; };
-const roles = {
-  light: { ink: [0.47, 0.16], soft: [0.955, 0.035] },
-  dark: { ink: [0.83, 0.13], soft: [0.27, 0.06] },
-};
-// The logo's own colors: same in both themes, never used for text.
-const vivid = { gold: [0.87, 0.16], orange: [0.76, 0.17], red: [0.66, 0.21], magenta: [0.62, 0.23], cyan: [0.84, 0.12] };
+const ok = (l, c, h) => clampChroma({ mode: 'oklch', l, c, h }, 'oklch');
+const fmt = (col) => `oklch(${col.l.toFixed(3)} ${col.c.toFixed(3)} ${Math.round(col.h ?? 0)})`;
+const contrast = (a, b) => wcagContrast(a, b);
+// Darken (or lighten) a color step by step until it reads at `target` on `bg`.
+function fitText(l0, c, h, bg, target, dir = -1) {
+  let l = l0, col = ok(l, c, h);
+  while (contrast(col, bg) < target && l > 0.05 && l < 0.98) { l += dir * 0.005; col = ok(l, c, h); }
+  return col;
+}
 
-const neutrals = {
-  light: { bg: [0.985, 0.005], surface: [1, 0], tint: [0.96, 0.01], line: [0.885, 0.014], text: [0.2, 0.03], muted: [0.45, 0.025] },
-  dark: { bg: [0.145, 0.022], surface: [0.185, 0.026], tint: [0.225, 0.03], line: [0.33, 0.035], text: [0.955, 0.008], muted: [0.75, 0.02] },
-};
+const paper = { bg: ok(0.945, 0.025, PAPER_HUE), tint: ok(0.905, 0.035, PAPER_HUE), text: ok(0.17, 0.008, INK_HUE), muted: ok(0.42, 0.015, INK_HUE) };
+const night = { bg: ok(0.17, 0.008, INK_HUE), tint: ok(0.225, 0.01, INK_HUE), text: ok(0.945, 0.025, PAPER_HUE), muted: ok(0.75, 0.02, PAPER_HUE) };
 
 function theme(name) {
-  const out = [];
-  for (const [k, [l, c]] of Object.entries(neutrals[name])) out.push(`  --${k}: ${fit(l, c, NEUTRAL)};`);
+  const n = name === 'light' ? paper : night;
+  const out = [`  --bg: ${fmt(n.bg)};`, `  --surface: ${fmt(n.bg)};`, `  --tint: ${fmt(n.tint)};`, `  --line: ${fmt(n.text)};`, `  --text: ${fmt(n.text)};`, `  --muted: ${fmt(n.muted)};`];
   for (const [k, h] of Object.entries(hues)) {
-    out.push(`  --${k}: ${fit(...roles[name].ink, h)};`, `  --${k}-soft: ${fit(...roles[name].soft, h)};`);
+    const plate = ok(k === 'red' ? 0.56 : 0.86, chroma[k], h);
+    if (name === 'light') {
+      // On paper: the plate is the block color, the ink variant is text that reads on the plate and on paper.
+      const soft = k === 'red' ? ok(0.9, 0.04, h) : plate;
+      const ink = fitText(0.5, Math.max(chroma[k], 0.1), h, soft, 4.5);
+      out.push(`  --${k}: ${fmt(ink)};`, `  --${k}-soft: ${fmt(soft)};`);
+    } else {
+      // At night the plate is dimmed and the text variant is the plate itself, lightened to read on ink.
+      const soft = ok(0.3, Math.min(chroma[k], 0.06), h);
+      const ink = fitText(0.78, Math.max(chroma[k], 0.09), h, soft, 4.5, +1);
+      out.push(`  --${k}: ${fmt(ink)};`, `  --${k}-soft: ${fmt(soft)};`);
+    }
   }
   return out.join('\n');
 }
+
 const shared = [
-  ...Object.entries(hues).map(([k, h]) => `  --v-${k}: ${fit(...vivid[k], h)};`),
-  `  --ink: ${fit(0.145, 0.022, NEUTRAL)};`, `  --ink-raised: ${fit(0.195, 0.028, NEUTRAL)};`, `  --ink-line: ${fit(0.33, 0.035, NEUTRAL)};`, `  --on-ink: ${fit(0.955, 0.008, NEUTRAL)};`, `  --on-ink-muted: ${fit(0.75, 0.02, NEUTRAL)};`,
-  // The chip's cyan is the complement of the warm body, so one cyan button is the loudest thing on a page.
-  // The deep end of the chip's gradient, and the veil behind dialogs.
-  `  --v-cyan-deep: ${fit(0.7, 0.15, 245)};`, `  --veil: oklch(0.145 0.022 ${NEUTRAL} / 0.6);`, `  --shade: oklch(0 0 0 / 0.15);`,
-  `  --action: ${fit(0.84, 0.12, 215)};`, `  --action-hi: ${fit(0.9, 0.1, 210)};`, `  --on-action: ${fit(0.2, 0.05, 235)};`,
+  // The plates themselves: the same in both themes, for stamps, rules and the misregistered plates behind art.
+  ...Object.entries(hues).map(([k, h]) => `  --v-${k}: ${fmt(ok(k === 'red' ? 0.56 : 0.86, chroma[k], h))};`),
+  // Always-ink ground: terminals and the closing band.
+  `  --ink: ${fmt(night.bg)};`, `  --ink-raised: ${fmt(night.tint)};`, `  --ink-line: ${fmt(ok(0.4, 0.01, INK_HUE))};`, `  --on-ink: ${fmt(night.text)};`, `  --on-ink-muted: ${fmt(night.muted)};`,
+  `  --paper: ${fmt(paper.bg)};`, `  --veil: ${formatCss({ ...night.bg, alpha: 0.6 })};`,
+  // The one action: ink on paper, with a teal plate under it.
+  `  --action: ${fmt(night.bg)};`, `  --action-hi: ${fmt(ok(0.26, 0.01, INK_HUE))};`, `  --on-action: ${fmt(night.text)};`,
 ].join('\n');
 
 const css = `/* PALETTE:START generated by scripts/build-palette.mjs, do not edit by hand */

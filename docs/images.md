@@ -1,38 +1,39 @@
-# Diagrams and illustrations
+# Diagrams
 
-The diagrams are generated with Google's Gemini image model (`gemini-3-pro-image`), then checked by eye. A generated diagram can misspell a label or draw something the product does not do, so nothing ships unseen.
+Every diagram on the site is drawn in code: an SVG in `src/components/diagrams/<name>.astro`, shown through `Diagram.astro`. The labels come from `src/i18n/locales/<locale>/images.json`, so the same drawing serves every language with its own words. There is no image generation, no image localization and no raster to regenerate when a label changes.
 
-## Make or redo one
-
-```bash
-export GEMINI_API_KEY=...          # https://aistudio.google.com/apikey
-$EDITOR scripts/prompts/how-layers.txt
-node scripts/gen-image.mjs how-layers               # 16:9
-node scripts/gen-image.mjs how-layers --aspect 4:3  # also 1:1, 21:9, 3:2
+```astro
+<Diagram name="how-layers" alt={t('layers.alt')} caption={t('layers.caption')} />
 ```
 
-The result is `src/assets/img/gen/how-layers.webp`, 1920 px wide. Import it in a page and show it with `Figure`. Astro produces the responsive sizes at build time.
+`name` is the file name in `src/components/diagrams/` and the key in `images.json`. The `alt` sentence says what the drawing says; it is the only thing a screen reader gets, since the SVG is one `role="img"`.
 
-Every request gets two things added:
+## The drawing language
 
-- `scripts/prompts/_style.txt`, the art direction: dark maroon ground, the warm gold to magenta spectrum for the jail, cyan for the agent and what it may reach, short off-white labels. Change the look of the whole set there.
-- The logo, as a style reference. Pass `--no-ref` to leave it out.
+Ink on paper, like the rest of the site. Strokes are the text color, 3px, never scaled. Shapes are flat. Labels are monospace capitals that wrap inside their box. Three plates carry meaning and nothing else does:
 
-## Writing a prompt that works
+| Plate | Meaning | Part |
+|---|---|---|
+| teal | the agent, and what it may reach | `Chip`, `Box kind="agent"` or `kind="inside"` |
+| mustard | opt-in, reachable only after a flag | `Box kind="optin"` |
+| red hatching | blocked, not there | `Box kind="blocked"`, `Arrow kind="stopped"` |
 
-- Describe the layout and the objects. Leave style to `_style.txt`.
-- Put every label in double quotes and keep them to one to three words. Eight labels is about the limit before spelling slips.
-- Say which way it reads: "left to right", "bottom to top".
-- State the facts the picture must get right ("the dashed arrows are optional paths").
+Everything else is paper (`Box`, the default), tint (`kind="tint"`), dashed (`kind="ghost"`, for something present on the host and absent in the cell) or solid ink (`kind="ink"`). The other spot colors (`rose`, `clay`, `sage`, `indigo`) are for panels that need telling apart, never for meaning.
 
-## Check before you commit
+The parts, in `src/components/diagrams/parts/`:
 
-1. Every label is spelled correctly and no invented text appears.
-2. The picture says nothing untrue about the product.
-3. The ground is the dark maroon. It has to sit inside the `Figure` frame in both themes.
-4. It is still readable at phone width.
-5. The `alt` text says what the diagram says, in a sentence.
+- `Box x y w h label kind size align muted`: a labeled rectangle. The label wraps; allow about 9px per character at the default size, less with `size="small"`. `size="title"` is a panel heading in the display face.
+- `Note x y w h label size muted red`: a label with no box.
+- `Arrow d kind thin`: a path with an arrowhead. `dashed` is an optional path, `stopped` ends in a red cross, `both` has two heads, `line` has none.
+- `Bars x y w h n gap`: the wall of the cell, a frame with thick vertical bars. Draw it first, then what sits inside it. `gap="right"` opens a gate on the right.
+- `Chip x y w label`: the agent. Always this shape, always teal.
 
-If it fails, change the prompt and run it again. If it fails three times, remove labels. The prompts are committed so any image can be reproduced or restyled later.
+Rules for a new drawing:
 
-Generation costs a few cents per image and is not part of the build. Netlify and GitHub Actions never need the key.
+1. `viewBox` between 640 and 800 wide and 300 to 420 tall. The figure scrolls sideways below 34rem instead of shrinking the words to nothing.
+2. Use only the labels in `images.json` for that name: `L['Your home']`. A product name or a hostname (`ai-jail`, `api.anthropic.com`) can be typed, since it is the same in every language. Add no other words.
+3. Say nothing untrue about the product. The drawing is checked like a sentence.
+4. Leave room: labels are up to twice as long in Portuguese and Spanish as in English.
+5. Look at it in the browser in English, Portuguese and Japanese, light and dark, at desktop and 360px, before committing.
+
+Adding a label means adding the key to `images.json` in all six languages in the same change, like any other text.

@@ -1,0 +1,35 @@
+---
+// The first run in three steps. Dry run: the cell is only a plan and the agent waits outside. Look around: a shell
+// inside the cell with the project. Run the agent: agent, project and login inside, one gate to the API host that
+// ai-jail opened itself. Your home stays outside every step.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+  {/* Dry run */}
+  <Note x={10} y={12} w={220} h={40} label={L['Dry run']} size="title" />
+  <Box x={150} y={60} w={80} h={200} kind="ghost" />
+  <Chip x={22} y={118} w={100} label={L['Agent']} />
+  {/* Look around */}
+  <Note x={245} y={12} w={225} h={40} label={L['Look around']} size="title" />
+  <Bars x={250} y={60} w={215} h={200} n={6} />
+  <Box x={268} y={100} w={76} h={56} kind="tint" />
+  <path d="M280 116 L292 128 L280 140" />
+  <rect x={302} y={119} width={9} height={18} class="dg-bar" />
+  <Box x={356} y={104} w={96} h={48} label={L['Project']} kind="teal" size="small" />
+  {/* Run the agent */}
+  <Note x={480} y={12} w={310} h={40} label={L['Run the agent']} size="title" />
+  <Bars x={480} y={60} w={200} h={200} n={5} gap="right" />
+  <path d="M680 60 V92 M680 152 V260" class="dg-heavy" />
+  <Chip x={496} y={86} w={100} label={L['Agent']} />
+  <Box x={486} y={204} w={92} h={44} label={L['Project']} kind="teal" size="small" />
+  <Box x={584} y={204} w={92} h={44} label={L['Login']} kind="teal" size="small" />
+  <Arrow d="M612 138 L696 138" />
+  <Box x={700} y={116} w={94} h={44} label={L['API host']} kind="teal" size="small" />
+  {/* Outside every step */}
+  <Box x={330} y={300} w={140} h={60} label={L['Your home']} kind="blocked" />
+</svg>

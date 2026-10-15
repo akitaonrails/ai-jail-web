@@ -1,0 +1,32 @@
+---
+// The same chain twice. Without a jail the poisoned page reaches the agent, the agent reads the SSH key and sends
+// it out. With ai-jail the agent sits behind bars: the page still reaches it, nothing leaves, key and internet are
+// not there.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  {/* Top row: without a jail */}
+  <Note x={20} y={12} w={400} h={34} label={L['Without a jail']} size="title" align="start" />
+  <Box x={30} y={78} w={150} h={60} label={L['Poisoned page']} />
+  <Chip x={264} y={56} w={100} label={L['Agent']} />
+  <Box x={450} y={78} w={130} h={60} label={L['SSH key']} />
+  <Box x={650} y={78} w={130} h={60} label={L['Internet']} />
+  <Arrow d="M184 108 L248 108" />
+  <Arrow d="M384 108 L446 108" />
+  <Arrow d="M584 108 L646 108" />
+  <path d="M20 190 H780" class="dg-thin" style="stroke-dasharray:4 6" />
+  {/* Bottom row: with ai-jail */}
+  <Note x={20} y={204} w={400} h={34} label={L['With ai-jail']} size="title" align="start" />
+  <Bars x={220} y={240} w={190} h={150} n={5} />
+  <Box x={30} y={288} w={150} h={60} label={L['Poisoned page']} />
+  <Chip x={264} y={266} w={100} label={L['Agent']} />
+  <Arrow d="M184 318 L216 318" />
+  <Arrow d="M384 318 L398 318" kind="stopped" />
+  <Box x={450} y={288} w={130} h={60} label={L['SSH key']} kind="blocked" />
+  <Box x={650} y={288} w={130} h={60} label={L['Internet']} kind="blocked" />
+</svg>

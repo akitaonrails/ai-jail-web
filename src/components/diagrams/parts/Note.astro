@@ -1,0 +1,9 @@
+---
+// A label with no box: a title above a panel, a caption under an object. Same wrapping as Box.
+interface Props { x: number; y: number; w: number; h?: number; label: string; size?: 'small' | 'big' | 'title'; align?: 'start'; muted?: boolean; red?: boolean }
+const { x, y, w, h = 28, label, size, align, muted, red } = Astro.props;
+const xhtml = { xmlns: 'http://www.w3.org/1999/xhtml' } as Record<string, string>;
+---
+<g class:list={['dg-note', muted && 'dg-muted']}>
+  <foreignObject x={x} y={y} width={w} height={h}><div {...xhtml} class:list={['dg-label', size && `dg-${size}`, align && `dg-${align}`]} dir="auto" style={red ? 'color:var(--red)' : undefined}><span>{label}</span></div></foreignObject>
+</g>

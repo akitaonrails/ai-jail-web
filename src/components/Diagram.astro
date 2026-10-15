@@ -1,0 +1,66 @@
+---
+// A diagram drawn in code, in the site's ink-on-paper language. Each drawing is src/components/diagrams/<name>.astro
+// and receives its labels from images.json, so every language gets the same drawing with its own words and no
+// image is generated or stored. Drawings use the parts in diagrams/parts (Box, Arrow, Note, Bars, Chip).
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import { useI18n } from '@/i18n';
+interface Props { name: string; alt: string; caption?: string }
+const { name, alt, caption } = Astro.props;
+const { raw } = useI18n(Astro, 'images');
+const labels = raw<Record<string, string>>(name);
+const drawings = import.meta.glob<{ default: AstroComponentFactory }>('./diagrams/*.astro', { eager: true });
+const Drawing = drawings[`./diagrams/${name}.astro`]?.default;
+if (!Drawing) throw new Error(`Diagram: no drawing for name="${name}"`);
+---
+<figure class="fig">
+  {/* Diagrams read left to right in every language. */}
+  <div class="plate dg" dir="ltr" role="img" aria-label={alt}>
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+      <defs>
+        <pattern id="dg-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="var(--surface)" /><rect width="2.5" height="7" fill="var(--v-red)" /></pattern>
+        <marker id="dg-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none" /></marker>
+        <marker id="dg-stop" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M1 1 L9 9 M9 1 L1 9" stroke="var(--v-red)" stroke-width="2" fill="none" /></marker>
+      </defs>
+    </svg>
+    <Drawing labels={labels} />
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+<style is:global>
+  .fig { margin-block: clamp(2rem, 5vw, 3.5rem); }
+  .plate { border: var(--rule) solid var(--line); background: var(--surface); box-shadow: var(--press); overflow-x: auto; position: relative; }
+  .plate > svg:not([aria-hidden]) { display: block; inline-size: 100%; min-inline-size: 34rem; block-size: auto; color: var(--text); font-family: var(--font-mono); }
+  figcaption { margin-block-start: 1rem; color: var(--muted); font-size: 0.95rem; max-width: 46em; }
+  /* The drawing vocabulary. Strokes are ink, plates are flat, labels are mono capitals. */
+  .dg rect, .dg path, .dg line, .dg circle, .dg polyline, .dg polygon { stroke: currentColor; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; fill: none; vector-effect: non-scaling-stroke; }
+  .dg .dg-box > rect { fill: var(--surface); }
+  .dg .dg-paper > rect { fill: var(--surface); }
+  .dg .dg-tint > rect { fill: var(--tint); }
+  .dg .dg-agent > rect, .dg .dg-inside > rect { fill: var(--v-teal); }
+  .dg .dg-optin > rect { fill: var(--v-mustard); }
+  .dg .dg-blocked > rect { fill: url(#dg-hatch); }
+  .dg .dg-ink > rect { fill: var(--text); }
+  .dg .dg-ghost > rect { stroke-dasharray: 7 6; fill: none; }
+  .dg .dg-plate > rect { stroke: none; }
+  .dg .dg-rose > rect { fill: var(--v-rose); } .dg .dg-clay > rect { fill: var(--v-clay); } .dg .dg-mustard > rect { fill: var(--v-mustard); }
+  .dg .dg-sage > rect { fill: var(--v-sage); } .dg .dg-teal > rect { fill: var(--v-teal); } .dg .dg-indigo > rect { fill: var(--v-indigo); }
+  .dg .dg-label { display: flex; align-items: center; justify-content: center; block-size: 100%; text-align: center; font: 700 15px/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: 0.03em; padding: 3px 5px; color: var(--text); overflow-wrap: anywhere; }
+  .dg .dg-label.dg-small { font-size: 13px; }
+  .dg .dg-label.dg-big { font-size: 18px; }
+  .dg .dg-label.dg-start { justify-content: flex-start; text-align: start; }
+  .dg .dg-label.dg-title { font-family: var(--font-display); text-transform: uppercase; font-weight: 400; font-size: 20px; letter-spacing: 0.01em; }
+  .dg .dg-agent .dg-label, .dg .dg-inside .dg-label, .dg .dg-optin .dg-label, .dg :is(.dg-rose, .dg-clay, .dg-mustard, .dg-sage, .dg-teal, .dg-indigo) .dg-label { color: var(--ink); }
+  .dg .dg-ink .dg-label { color: var(--bg); }
+  .dg .dg-blocked .dg-label span, .dg .dg-ghost .dg-label span { background: var(--surface); padding: 2px 6px; outline: 1.5px solid var(--line); }
+  .dg .dg-muted .dg-label { color: var(--muted); }
+  .dg .dg-arrow { fill: none; marker-end: url(#dg-arrow); }
+  .dg .dg-arrow.dg-both { marker-start: url(#dg-arrow); }
+  .dg .dg-arrow.dg-dashed { stroke-dasharray: 7 6; }
+  .dg .dg-arrow.dg-stopped { stroke: var(--v-red); marker-end: url(#dg-stop); }
+  .dg .dg-thin { stroke-width: 1.5; }
+  .dg .dg-heavy { stroke-width: 5; }
+  .dg .dg-red { stroke: var(--v-red); }
+  .dg .dg-bar { fill: var(--text); stroke: none; }
+  :lang(ja) .dg .dg-label, :lang(ko) .dg .dg-label, :lang(he) .dg .dg-label { font-family: var(--font-sans); font-weight: 700; letter-spacing: 0; }
+  :lang(ja) .dg .dg-chip .dg-label, :lang(ko) .dg .dg-chip .dg-label { font-size: 12px; }
+</style>

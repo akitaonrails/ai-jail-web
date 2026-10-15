@@ -1,0 +1,22 @@
+---
+// Normal: the project is read and write. Lockdown: a thicker wall and a read-only project.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 340" xmlns="http://www.w3.org/2000/svg">
+  <Note x={20} y={10} w={360} label={L['Normal']} size="title" />
+  <Bars x={20} y={50} w={360} h={260} n={4} />
+  <Chip x={50} y={130} label={L['Agent']} />
+  <Box x={190} y={125} w={180} h={100} label={L['Project: read and write']} kind="teal" size="small" />
+  <Arrow d="M154 176 L190 176" kind="both" />
+  <path d="M400 20 V320" class="dg-thin" style="stroke-dasharray:4 6" />
+  <Note x={420} y={10} w={360} label={L['Lockdown']} size="title" />
+  <Bars x={420} y={50} w={360} h={260} n={11} />
+  <Chip x={450} y={130} label={L['Agent']} />
+  <Box x={590} y={125} w={180} h={100} label={L['Project: read only']} kind="paper" size="small" />
+  <Arrow d="M590 176 L554 176" />
+</svg>

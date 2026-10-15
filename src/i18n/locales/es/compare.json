@@ -163,7 +163,7 @@
           "Un proxy con una lista de permitidos por dominio. Un dominio nuevo te pide confirmación, y cada comando sigue teniendo su propia aprobación. La documentación señala que el proxy confía en el hostname que envía el cliente, así que el domain fronting puede saltárselo.",
           "Apagada por defecto en <code>workspace-write</code>. Un ajuste la activa, y un proxy opcional añade reglas de permitir y denegar por dominio. La documentación dice que el proxy no filtra las conexiones de los servidores MCP, la búsqueda web ni el navegador.",
           "El perfil por defecto permite la red. Los perfiles más estrictos y los que usan proxy son opt-in.",
-          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts de la lista y sus subdominios, aplicado por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y marca la dirección que comprobó. <code>--network</code> abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. Por defecto el proxy deja pasar el host de la API de un agente conocido en ambas plataformas y, con las toolchains activadas (lo normal en Linux), una lista fija de registries de paquetes para que las compilaciones funcionen. <code>--no-network</code> cierra ambas cosas. Una lista explícita con <code>--allow-host</code> sustituye ese valor por defecto."
+          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts de la lista y sus subdominios, aplicado por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y marca la dirección que comprobó. <code>--network</code> abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. Por defecto el proxy deja pasar el host de la API de un agente conocido en ambas plataformas y, con las toolchains activadas (lo normal en Linux), una lista fija de registries de paquetes para que las compilaciones funcionen. <code>--no-network</code> cierra ambas cosas. Una lista explícita con <code>--allow-host</code> se suma a ese valor por defecto. En Linux, <code>--forward-port</code> reenvía un puerto del loopback del host hacia el sandbox, sin ninguna regla sobre lo que pasa."
         ]
       },
       {
@@ -181,7 +181,7 @@
           "Sí. <code>.git/hooks</code>, <code>.git/config</code>, los ajustes de <code>.claude</code>, <code>.mcp.json</code>, los archivos rc de la shell y otros quedan en solo lectura.",
           "Sí. <code>.git</code>, <code>.agents</code> y <code>.codex</code> bajo las raíces escribibles quedan en solo lectura.",
           "",
-          "Ninguna integrada. Todo el proyecto es escribible. Enmascaras o deniegas rutas tú mismo con <code>--mask</code> y <code>deny_paths</code>."
+          "Ninguna integrada. Todo el proyecto es escribible, <code>.git/</code> incluido, y el git del host confía en lo que encuentra ahí. Enmascaras o deniegas rutas tú mismo con <code>--mask</code> y <code>deny_paths</code>. <a class=\"link\" href=\"/security/#limits\">Por qué importa <code>.git/</code></a>."
         ]
       },
       {
@@ -227,7 +227,7 @@
     "lede": "Un agente conocido no necesita que abras nada. Su login se monta por defecto y el proxy filtrado deja pasar solo el host de la API de su modelo. Añade hosts con <code>--allow-host</code>, o abre toda la red, cuando una herramienta necesite más.",
     "codeFiltered": "por defecto: solo el host del modelo",
     "codeOpen": "más simple: toda la red",
-    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex, Gemini CLI y Grok y lo permite por defecto. Una lista explícita con <code>--allow-host</code> sustituye ese valor por defecto, así que incluye el host de la API cuando pases una. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
+    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex, Gemini CLI, Grok y Devin y lo permite por defecto; Codex recibe además <code>chatgpt.com</code> para su login de ChatGPT. Una lista explícita con <code>--allow-host</code> se suma a ese valor por defecto, así que el host de la API sigue permitido. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
     "alt": "Un muro grande con la etiqueta ai-jail encierra al agente, sus servidores MCP, sus hooks, el proyecto y sus comandos de shell. Entre el agente y los comandos de shell está la solicitud de aprobación del propio agente. Una línea sale del muro por una puerta hacia la API del modelo. Tu directorio home queda fuera del muro, atenuado y tras barrotes.",
     "caption": "El muro exterior es ai-jail. Dentro, las solicitudes y las reglas del agente siguen haciendo su trabajo.",
     "points": [
@@ -292,7 +292,7 @@
       {
         "label": "Red",
         "openshell": "Denegada por defecto. Las reglas coinciden por programa, host y puerto, con inspección opcional de métodos, rutas y herramientas MCP. Un endpoint denegado se puede aprobar desde el lado del operador.",
-        "jail": "Apagada, filtrada por host o abierta. El filtro es una valla de namespace y un proxy CONNECT; ve hosts y puertos, pero no el contenido, y un host permitido es de confianza por completo."
+        "jail": "Apagada, filtrada por host o abierta. El filtro es una valla de namespace y un proxy CONNECT; ve hosts y puertos, pero no el contenido, y un host permitido es de confianza por completo. Un puerto del loopback del host reenviado con <code>--forward-port</code> también es de confianza por completo, sin ninguna regla encima."
       },
       {
         "label": "Credenciales",

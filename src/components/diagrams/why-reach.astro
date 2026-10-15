@@ -1,0 +1,23 @@
+---
+// What one program can reach on a laptop without a jail: the agent in the middle, six things around it, a line to
+// every one. No wall anywhere in this picture.
+import Box from './parts/Box.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+  <Chip x={348} y={138} w={100} label={L['Agent']} />
+  <Box x={40} y={40} w={180} h={60} label={L['SSH keys']} />
+  <Box x={580} y={40} w={180} h={60} label={L['Cloud credentials']} />
+  <Box x={10} y={160} w={180} h={60} label={L['Browser profiles']} />
+  <Box x={610} y={160} w={180} h={60} label={L['Shell tokens']} />
+  <Box x={40} y={290} w={180} h={60} label={L['Other projects']} />
+  <Box x={580} y={290} w={180} h={60} label={L['Your project']} kind="teal" />
+  <Arrow d="M340 146 L224 96" />
+  <Arrow d="M460 146 L576 96" />
+  <Arrow d="M332 190 L194 190" />
+  <Arrow d="M468 190 L606 190" />
+  <Arrow d="M340 234 L224 294" />
+  <Arrow d="M460 234 L576 294" />
+</svg>

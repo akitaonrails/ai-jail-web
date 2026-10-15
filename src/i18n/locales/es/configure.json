@@ -17,7 +17,7 @@
     "points": [
       {
         "title": "<code>.ai-jail</code> del proyecto",
-        "text": "ai-jail lo trata como no confiable: puede endurecer la jaula y nunca abrirla. ai-jail nunca lo sigue a través de un symlink, y el agente ve un archivo vacío en su lugar."
+        "text": "ai-jail lo trata como no confiable: puede endurecer la jaula y nunca abrirla. Puede recortar una lista <code>allow_hosts</code> o <code>forward_ports</code> y nunca añadirle nada. ai-jail nunca lo sigue a través de un symlink, y el agente ve un archivo vacío en su lugar."
       },
       {
         "title": "<code>~/.ai-jail</code> global",
@@ -57,10 +57,13 @@
         "title": "Red y servicios",
         "rows": [
           {
-            "text": "Toda la red. Todo lo que el agente pueda leer, puede enviarlo fuera. Si el agente solo necesita unos pocos hosts, <code>--allow-host</code> es más estricto. Sin ninguno de los dos flags, el sandbox alcanza solo los <a class=\"link\" href=\"#toolchains\">registries de paquetes</a> que las toolchains abren a través del proxy, más el único host de la API de un agente conocido (Claude, Codex, Gemini, Grok), y <code>--no-network</code> cierra todo eso."
+            "text": "Toda la red. Todo lo que el agente pueda leer, puede enviarlo fuera. Si el agente solo necesita unos pocos hosts, <code>--allow-host</code> es más estricto. Sin ninguno de los dos flags, el sandbox alcanza solo los <a class=\"link\" href=\"#toolchains\">registries de paquetes</a> que las toolchains abren a través del proxy, más el host de la API de un agente conocido (Claude, Codex, Gemini, Grok, Devin; Codex recibe además <code>chatgpt.com</code> para su login de ChatGPT), y <code>--no-network</code> cierra todo eso."
           },
           {
             "text": "El sandbox alcanza solo el host de la lista y sus subdominios, por TCP a través del proxy integrado de ai-jail. Puedes repetir el flag. Desde 2.8.1 la lista se suma al valor por defecto, así que un agente conocido conserva el host de su propia API. No se puede combinar con <code>--network</code> ni con <code>--browser</code>, y un archivo de proyecto solo puede recortar la lista."
+          },
+          {
+            "text": "Un puerto del loopback del host, reenviado al loopback propio del sandbox. Un servidor MCP local, un socket del editor o una base de datos de desarrollo en el <code>127.0.0.1</code> del host responde en el mismo puerto dentro, y todos los demás puertos del host siguen cerrados. Repite el flag para más puertos. Solo Linux, y se rechaza con <code>--network</code> y para puertos por debajo de 1024. Funciona con <code>--allow-host</code> y bajo <code>--lockdown</code>. El servicio detrás del puerto es de confianza por completo, sin lista de permitidos ni registro de auditoría. Un archivo de proyecto solo puede recortar la lista, y <code>forward_ports</code> va bajo una tabla <code>[commands.&lt;name&gt;]</code>: una entrada en la tabla base hace fallar cada arranque con navegador y cada arranque en macOS."
           },
           {
             "text": "Tu <code>~/.ssh</code>, en solo lectura, y el socket de tu agente SSH, para que <code>git push</code> funcione."
@@ -80,7 +83,7 @@
         "title": "Agente y entorno",
         "rows": [
           {
-            "text": "El login del propio agente. El estado del harness que arrancas, como <code>~/.claude</code> o <code>~/.codex</code>, se monta en lectura y escritura, y su clave de API se copia de tu shell si está definida: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> o <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. El agente arranca con la sesión iniciada, y cualquier cosa dentro de la jaula puede usar ese login. <code>--no-agent-state</code> da una ejecución sin sesión. Apagado bajo lockdown, y un archivo de proyecto solo puede apagarlo."
+            "text": "El login del propio agente. El estado del harness que arrancas, como <code>~/.claude</code>, <code>~/.codex</code> o los <code>~/.local/share/devin</code> y <code>~/.config/devin</code> de Devin, se monta en lectura y escritura, y su clave de API se copia de tu shell si está definida: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> o <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. El agente arranca con la sesión iniciada, y cualquier cosa dentro de la jaula puede usar ese login. <code>--no-agent-state</code> da una ejecución sin sesión. Apagado bajo lockdown, y un archivo de proyecto solo puede apagarlo."
           },
           {
             "text": "Usa el directorio indicado como estado de Claude y define <code>CLAUDE_CONFIG_DIR</code>."
@@ -237,7 +240,7 @@
     "points": [
       {
         "title": "<code>--mask &lt;PATH|GLOB&gt;</code>",
-        "text": "Reemplaza cada coincidencia por un marcador vacío. El agente ve que el archivo existe y no recibe contenido, así que las herramientas que solo comprueban su existencia siguen funcionando."
+        "text": "Reemplaza cada coincidencia por un marcador vacío. El agente ve que el archivo existe y no recibe contenido, así que las herramientas que solo comprueban su existencia siguen funcionando. La máscara cambia solo lo que ve el sandbox. Un ayudante en el host que actúa por el agente, como el daemon de Docker o un servidor MCP, sigue leyendo el archivo real."
       },
       {
         "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>",
@@ -316,7 +319,7 @@
         "text": "<code>--no-toolchains</code>: sin cachés de dependencias y sin registries de paquetes."
       },
       {
-        "text": "<code>--mask</code>, <code>--deny-path</code> y <code>--hide-dotdir</code> quitan rutas sueltas, y un <code>--map</code> o <code>--rw-map</code> estrecho sustituye a un permiso amplio."
+        "text": "<code>--mask</code>, <code>--deny-path</code> y <code>--hide-dotdir</code> quitan rutas sueltas, y un <code>--map</code> o <code>--rw-map</code> estrecho sustituye a un permiso amplio. Cambian lo que ve el sandbox; un ayudante en el host, como el daemon de Docker o un servicio detrás de <code>--forward-port</code>, sigue leyendo los archivos reales."
       },
       {
         "text": "<code>--lockdown</code>: el proyecto en solo lectura, sin login, sin toolchains, sin registries, Landlock y seccomp estrictos, y sigue sin ser una VM."
@@ -374,11 +377,11 @@
     "items": [
       {
         "title": "Un agente en la nube, a diario",
-        "text": "Un agente conocido arranca con la sesión iniciada y alcanza solo el host de su propia API a través del proxy filtrado. Cuando una tarea necesite más, pon <code>allow_hosts</code> en el archivo global con el host de la API más los extra, o abre toda la red con <code>network = true</code>."
+        "text": "Un agente conocido arranca con la sesión iniciada y alcanza solo el host de su propia API a través del proxy filtrado; Codex recibe un segundo, <code>chatgpt.com</code>, para su login de ChatGPT. Cuando una tarea necesite más, pon <code>allow_hosts</code> en el archivo global con el host de la API más los extra, o abre toda la red con <code>network = true</code>."
       },
       {
         "title": "Un agente que ai-jail no conoce",
-        "text": "ai-jail permite el host de la API por sí solo para cuatro agentes: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code>, Gemini <code>generativelanguage.googleapis.com</code> y Grok <code>api.x.ai</code>. Cualquier otro agente recibe su host de ti con <code>--allow-host</code>. Si el host falta en la lista, el aviso de arranque lo nombra."
+        "text": "ai-jail permite el host de la API por sí solo para cinco agentes: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> más <code>chatgpt.com</code> para su login de ChatGPT, Gemini <code>generativelanguage.googleapis.com</code>, Grok <code>api.x.ai</code> y Devin <code>server.codeium.com</code>. Cualquier otro agente recibe su host de ti con <code>--allow-host</code>. Si el host falta en la lista, el aviso de arranque lo nombra."
       },
       {
         "title": "Una ejecución sin sesión",
@@ -387,6 +390,10 @@
       {
         "title": "Hosts permitidos en el archivo global",
         "text": "La lista se aplica a cada ejecución de ese comando, además del host de la propia API del agente. Un host permitido es de confianza por completo: <code>github.com</code> deja que el agente haga push a cualquier repositorio al que lleguen tus credenciales, así que añádelo solo cuando quieras eso."
+      },
+      {
+        "title": "Un servidor MCP o una base de datos local",
+        "text": "Sin <code>--network</code> el sandbox tiene su propio loopback, así que un servidor en el <code>127.0.0.1</code> de tu host queda fuera de alcance. <code>--forward-port</code> reenvía ese único puerto y nada más, en Linux. En el archivo global, pon <code>forward_ports</code> bajo la tabla del comando y nunca en la tabla base: el flag se rechaza con <code>--network</code>, que <code>--browser</code> normalmente implica, y en macOS, así que una entrada en la base haría fallar esos arranques."
       },
       {
         "title": "Una clave que el agente nunca ve",
@@ -421,12 +428,13 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# o abre toda la red: network = true",
-      "hosts": "# claude, codex, gemini y grok no necesitan flag: ai-jail permite su host de la API por sí solo",
+      "hosts": "# claude, codex, gemini, grok y devin no necesitan flag: ai-jail permite su host de la API por sí solo",
       "phantom": "# la clave vive en el archivo 0600; el sandbox solo ve AIJAIL-PHANTOM-...",
       "build": "# por defecto en Linux: cachés activadas, registries accesibles a través del proxy",
       "offline": "# nada mapeado, nada accesible",
       "nothing": "# nada que añadir: el login y api.anthropic.com vienen por defecto",
-      "more": "# cuando una tarea necesite más, una vez en ~/.ai-jail (se suma al host de la propia API del agente)"
+      "more": "# cuando una tarea necesite más, una vez en ~/.ai-jail (se suma al host de la propia API del agente)",
+      "forward": "# o una vez en ~/.ai-jail, bajo el comando, nunca en la tabla base"
     }
   },
   "compat": {

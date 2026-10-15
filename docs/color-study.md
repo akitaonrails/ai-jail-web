@@ -1,153 +1,149 @@
 # Color study
 
-Every color on the site comes from the logo, and every token is built in OKLCH, a color space where equal numeric steps look like equal steps. That lets five hues sit side by side at the same visual weight, and makes the light and dark themes mirrors of each other instead of two designs.
+The site is printed: ink on paper, with six flat spot colors. Every token is built in OKLCH, a color space where equal numeric steps look like equal steps, so the six plates sit side by side at the same visual weight and the light and dark themes are mirrors of one decision instead of two designs.
 
 Nothing on the site uses a color that is not a token. The tokens are generated, not typed:
 
 ```bash
-npm run colors:sample              # where the logo's colors sit in OKLCH
 node scripts/build-palette.mjs --write   # decisions in, tokens out, into src/styles/global.css
-npm run check:colors               # WCAG contrast for every pairing the site uses
+npm run check:colors                     # WCAG contrast for every pairing the site uses, and no color values outside the tokens
 ```
 
-## 1. The pair
+## 1. Paper and ink
 
-ai-jail and ai-memory are meant to be used together, so their palettes are built as complements.
-
-| | ai-memory | ai-jail |
+| Token | Light (paper) | Dark (night print) |
 |---|---|---|
-| Body of the logo | cool arc, hue 155 to 355 (green, teal, azure, violet, rose) | warm arc, hue 352 to 88 (magenta, red, orange, gold) |
-| The chip | warm amber, hue 75 | cool cyan, hue 215 |
-| Action color | amber | cyan |
-| Neutrals tinted with | indigo, hue 282 | maroon, hue 355 |
+| `--bg`, `--surface` | unbleached paper, `oklch(0.945 0.025 80)` | warm black ink, `oklch(0.17 0.008 60)` |
+| `--tint` | the darker paper of a second sheet | a raised ink |
+| `--text`, `--line` | the ink | the paper |
+| `--muted` | a thinner ink | a greyed paper |
 
-Each product carries the other's color at its center. Together the two spectra cover the whole wheel and never overlap, so a screenshot of either site is identifiable at a glance, and the two logos side by side read as one family.
+Paper is tinted warm (hue 80) and ink is a warm black (hue 60), the way printed black is never neutral. The paper also carries a faint dot screen (`body` background in `global.css`), the grain of a cheap print. At night the sheet and the ink swap; the plates dim; the terminals and the closing band stay on ink in both themes (`.on-ink`).
 
-## 2. What the logo contains
+## 2. The six plates and the red
 
-`npm run colors:sample` measures the artwork. Share is weighted by chroma, so it says how much of the color the eye sees comes from each hue.
-
-| Where in the logo | Sampled | OKLCH hue | Share |
+| Plate | Hue | Chroma | Subject |
 |---|---|---|---|
-| Shackle and left edge | `#f9df7d`, `#f2c769`, `#d09b4e` | 70 to 99 (gold) | 13% |
-| Left half of the body | `#b57b3f`, `#b36e3c`, `#cc7750` | 40 to 69 (orange) | 25% |
-| Right half of the body | `#c0553b`, `#9e3a37` | 20 to 39 (red) | 29% |
-| Lower right corner | `#972f3f`, `#98294e`, `#98295f` | 350 to 19 (crimson, magenta) | 26% |
-| The chip | `#87e4e4`, `#63bfd4`, `#4989bd` | 190 to 259 (cyan to blue) | 7% |
-| Outline and window | `#321523` | 351, chroma 0.05 | |
+| rose | 25 | 0.065 | Do I need it? |
+| clay | 50 | 0.080 | How it works |
+| mustard | 85 | 0.090 | What you turn on (opt-in) |
+| sage | 140 | 0.045 | spare |
+| teal | 190 | 0.045 | the agent, what it may reach, the one action |
+| indigo | 275 | 0.050 | Compare |
+| red | 25 | 0.140 | blocked, limits, the stamp |
 
-Measured left to right, the mean body hue falls steadily: 54, 57, 46, 33, 23, 10. The gradient runs gold to magenta in hue order across about 100 degrees. The chip sits 160 to 190 degrees away from the body, which is as close to complementary as a color can be. It covers 7% of the artwork and is the first thing the eye finds. The site keeps that ratio.
-
-## 3. Decisions
-
-**Four warm hues and one cool one: 88, 55, 27, 352, 215.** Warm hues are harder to tell apart than cool ones at the same spacing, so the steps are about 30 degrees and there are four of them, where ai-memory has five at 50. At text lightness the four read as olive gold, brown orange, brick red and wine, distinct enough to mark five subjects in a nav.
-
-**One lightness per role.** In a given theme all text-safe hues share a lightness: 0.47 on light, 0.83 on dark. No subject looks heavier than its neighbours, which hex picking cannot guarantee: a pure yellow and a pure red at the same HSL lightness differ enormously in perceived brightness. `build-palette.mjs` finds, for every hue, the highest chroma that still fits sRGB at that lightness and caps it, so gold is not dull and magenta is not loud.
+The plates are pastel: lightness 0.86, low chroma, like inks mixed with a lot of white. Six hues spread around the wheel at 35 to 85 degree steps, so each reads as a different color in a thumbnail, and none is loud. The red is darker (0.56) and more saturated, because it is a stamp and a hatch, not a plate: it has to be read as a warning at a glance and in greyscale, where it is the only dark accent.
 
 **Three tiers per hue.**
 
-| Tier | Token | Use | Text-safe |
-|---|---|---|---|
-| Ink | `--red` | text, links, icons | yes, 4.5:1 or better on every ground |
-| Soft | `--red-soft` | fills behind that hue's content | ground only |
-| Vivid | `--v-red` | bars, dots, glows, the gradient | never for text |
+| Tier | Token | Light | Dark | Use |
+|---|---|---|---|---|
+| Ink | `--teal` | the hue darkened until it reads 4.5:1 on its own plate and on paper | the plate lightened until it reads 4.5:1 on ink | text, links, rules, the bars |
+| Plate | `--teal-soft` | the pastel plate | the plate dimmed to lightness 0.3 | fills: cells, callouts, nav state |
+| Printed | `--v-teal` | the pastel plate, in both themes | | the misregistered plates behind the logo, the diagrams' fills, the shadow under the primary button; never for text |
 
-Vivid is the same in both themes because it is the logo's own color. Ink and soft flip with the theme.
+`build-palette.mjs` finds the ink tier by stepping lightness until the contrast target is met (`fitText`), so a plate can be changed without redoing the text colors by hand.
 
-**Cyan means the agent, and action.** In the logo cyan is the thing inside the jail. On the site it marks what the agent may reach (the "inside" state), the pages about agents, and the one primary button: `--action` `oklch(0.84 0.12 215)` with `--on-action` text, identical in both themes. Because it is the complement of everything around it, a single cyan button is the loudest thing on a page without being large. Nothing decorative is cyan.
+**One plate per subject.** Risk is rose, the layers are clay, opt-ins are mustard, comparisons are indigo, limits are red, and the agent is teal. The mapping is in `src/data/site.ts` and applied with `data-hue`.
 
-**Three states, three fixed colors.** Inside the jail is a cyan ring. Out of reach is red bars. Off until you ask is a gold ring. The states also differ in shape (ring, bars, ring), so they survive color blindness and greyscale. Red and cyan are the most separable pair in the palette for every common form of color vision deficiency; gold and cyan differ strongly in both hue and lightness.
+**Three states, three fixed looks.** Inside the jail is the teal plate. Out of reach is red hatching. Off until you ask is the mustard plate. They differ in pattern as well as hue (flat, hatched, flat with a different lightness), so they survive color blindness and greyscale.
 
-**Tinted neutrals.** Every neutral carries the outline's maroon (hue 355) at low chroma: dark ground `oklch(0.145 0.022 355)`, light ground `oklch(0.985 0.005 355)`. Pure grey next to a saturated warm spectrum looks dead and slightly green. A cool neutral would belong to ai-memory.
+**One action.** The primary button is ink on paper with the teal plate as its offset shadow. Nothing else on a page is as dark and as large, so the eye finds it without a color shout.
 
-**One hue per subject.** Risk is magenta, the layers are orange, agents are cyan, what you turn on is gold, limits are red. The mapping is in `src/data/site.ts` and applied with `data-hue`.
+## 3. Why these and not the logo's colors
 
-**The gradient is interpolated in OKLCH.** `linear-gradient(90deg in oklch, ...)` keeps the orange midpoint saturated. The same stops in sRGB go brown between gold and red.
+The previous palette sampled a neon logo and spread its five hues over a dark ground. Readers recognized the look as generated. The redesign (`docs/research/design-study.md`) kept the subject-per-hue rule and the three states, and changed the material: paper instead of a dark ground, pastel plates instead of vivid neon, no gradient. The woodcut logo is pure ink and takes its color from the plates behind it, so the logo no longer dictates the palette; the palette dresses the logo.
 
-## 4. Light and dark
+## 4. Measured contrast
 
-The themes are mirrors: text lightness 0.2 on ground 0.985 in light, 0.955 on 0.145 in dark. Accent ink flips from 0.47 to 0.83. Terminals, generated diagrams, the scroll scene and the CTA band stay on the dark ink ground in both themes (`.on-ink`), the way a terminal does on a real desktop. That also means every diagram is generated once.
-
-The theme follows the operating system until the visitor picks one. The footer has a "System" option that clears the choice. An inline script sets the theme before first paint, so there is no flash.
-
-## 5. Measured contrast
-
-WCAG 2.x ratios, computed from the tokens by `scripts/check-contrast.mjs`. Targets: 7:1 for body text (AAA), 4.5:1 for accents and muted text (AA). Regenerate this table with `node scripts/check-contrast.mjs --md`.
+WCAG 2.x ratios, computed from the tokens by `scripts/check-contrast.mjs`. Targets: 7:1 for body text (AAA), 4.5:1 for accents and muted text (AA), each ink tier on its own plate included. Regenerate this table with `node scripts/check-contrast.mjs --md`.
 
 ### light
 
 | Foreground | Background | Ratio | Target | |
 |---|---|---|---|---|
-| `text` #211017 | `bg` #fdf9fa | 17.44 | 7 | pass |
-| `text` #211017 | `surface` #ffffff | 18.25 | 7 | pass |
-| `text` #211017 | `tint` #f8eff2 | 16.18 | 7 | pass |
-| `muted` #615056 | `bg` #fdf9fa | 7.21 | 4.5 | pass |
-| `muted` #615056 | `surface` #ffffff | 7.54 | 4.5 | pass |
-| `muted` #615056 | `tint` #f8eff2 | 6.69 | 4.5 | pass |
-| `gold` #715700 | `bg` #fdf9fa | 6.56 | 4.5 | pass |
-| `gold` #715700 | `surface` #ffffff | 6.86 | 4.5 | pass |
-| `gold` #715700 | `tint` #f8eff2 | 6.09 | 4.5 | pass |
-| `gold` #715700 | `gold-soft` #faefd6 | 6.02 | 4.5 | pass |
-| `orange` #8b4501 | `bg` #fdf9fa | 6.80 | 4.5 | pass |
-| `orange` #8b4501 | `surface` #ffffff | 7.11 | 4.5 | pass |
-| `orange` #8b4501 | `tint` #f8eff2 | 6.31 | 4.5 | pass |
-| `orange` #8b4501 | `orange-soft` #ffece0 | 6.21 | 4.5 | pass |
-| `red` #a12623 | `bg` #fdf9fa | 7.09 | 4.5 | pass |
-| `red` #a12623 | `surface` #ffffff | 7.41 | 4.5 | pass |
-| `red` #a12623 | `tint` #f8eff2 | 6.57 | 4.5 | pass |
-| `red` #a12623 | `red-soft` #ffebe8 | 6.46 | 4.5 | pass |
-| `magenta` #982664 | `bg` #fdf9fa | 7.15 | 4.5 | pass |
-| `magenta` #982664 | `surface` #ffffff | 7.48 | 4.5 | pass |
-| `magenta` #982664 | `tint` #f8eff2 | 6.63 | 4.5 | pass |
-| `magenta` #982664 | `magenta-soft` #ffe9f2 | 6.49 | 4.5 | pass |
-| `cyan` #006678 | `bg` #fdf9fa | 6.32 | 4.5 | pass |
-| `cyan` #006678 | `surface` #ffffff | 6.61 | 4.5 | pass |
-| `cyan` #006678 | `tint` #f8eff2 | 5.87 | 4.5 | pass |
-| `cyan` #006678 | `cyan-soft` #d7f7ff | 5.86 | 4.5 | pass |
-| `on-action` #001926 | `action` #5bdefb | 11.44 | 7 | pass |
-| `on-action` #001926 | `action-hi` #93efff | 13.76 | 7 | pass |
-| `on-ink` #f5eef0 | `ink` #11070b | 17.37 | 7 | pass |
-| `on-ink` #f5eef0 | `ink-raised` #1f0f15 | 16.11 | 7 | pass |
-| `on-ink-muted` #b9a9ae | `ink-raised` #1f0f15 | 8.20 | 4.5 | pass |
-| `line` #e1d5d9 | `bg` #fdf9fa | 1.36 | 1.2 | pass |
+| `text` #120f0c | `bg` #f6ebdb | 16.28 | 7 | pass |
+| `text` #120f0c | `surface` #f6ebdb | 16.28 | 7 | pass |
+| `text` #120f0c | `tint` #ecdec6 | 14.40 | 7 | pass |
+| `muted` #534b45 | `bg` #f6ebdb | 7.22 | 4.5 | pass |
+| `muted` #534b45 | `surface` #f6ebdb | 7.22 | 4.5 | pass |
+| `muted` #534b45 | `tint` #ecdec6 | 6.39 | 4.5 | pass |
+| `rose` #8a423d | `bg` #f6ebdb | 6.11 | 4.5 | pass |
+| `rose` #8a423d | `surface` #f6ebdb | 6.11 | 4.5 | pass |
+| `rose` #8a423d | `tint` #ecdec6 | 5.40 | 4.5 | pass |
+| `rose` #8a423d | `rose-soft` #f9c1bc | 4.58 | 4.5 | pass |
+| `clay` #864821 | `bg` #f6ebdb | 6.03 | 4.5 | pass |
+| `clay` #864821 | `surface` #f6ebdb | 6.03 | 4.5 | pass |
+| `clay` #864821 | `tint` #ecdec6 | 5.33 | 4.5 | pass |
+| `clay` #864821 | `clay-soft` #fdc2a2 | 4.54 | 4.5 | pass |
+| `mustard` #725401 | `bg` #f6ebdb | 5.98 | 4.5 | pass |
+| `mustard` #725401 | `surface` #f6ebdb | 5.98 | 4.5 | pass |
+| `mustard` #725401 | `tint` #ecdec6 | 5.29 | 4.5 | pass |
+| `mustard` #725401 | `mustard-soft` #eccd8c | 4.58 | 4.5 | pass |
+| `sage` #37652d | `bg` #f6ebdb | 5.82 | 4.5 | pass |
+| `sage` #37652d | `surface` #f6ebdb | 5.82 | 4.5 | pass |
+| `sage` #37652d | `tint` #ecdec6 | 5.15 | 4.5 | pass |
+| `sage` #37652d | `sage-soft` #c2d9bd | 4.54 | 4.5 | pass |
+| `teal` #026662 | `bg` #f6ebdb | 5.82 | 4.5 | pass |
+| `teal` #026662 | `surface` #f6ebdb | 5.82 | 4.5 | pass |
+| `teal` #026662 | `tint` #ecdec6 | 5.15 | 4.5 | pass |
+| `teal` #026662 | `teal-soft` #b0dbd7 | 4.55 | 4.5 | pass |
+| `indigo` #4b5592 | `bg` #f6ebdb | 5.94 | 4.5 | pass |
+| `indigo` #4b5592 | `surface` #f6ebdb | 5.94 | 4.5 | pass |
+| `indigo` #4b5592 | `tint` #ecdec6 | 5.25 | 4.5 | pass |
+| `indigo` #4b5592 | `indigo-soft` #c7cff3 | 4.54 | 4.5 | pass |
+| `red` #a43b38 | `bg` #f6ebdb | 5.48 | 4.5 | pass |
+| `red` #a43b38 | `surface` #f6ebdb | 5.48 | 4.5 | pass |
+| `red` #a43b38 | `tint` #ecdec6 | 4.85 | 4.5 | pass |
+| `red` #a43b38 | `red-soft` #f8d4d1 | 4.72 | 4.5 | pass |
+| `on-action` #f6ebdb | `action` #120f0c | 16.28 | 7 | pass |
+| `on-action` #f6ebdb | `action-hi` #28231f | 13.24 | 7 | pass |
+| `on-ink` #f6ebdb | `ink` #120f0c | 16.28 | 7 | pass |
+| `on-ink` #f6ebdb | `ink-raised` #1f1b17 | 14.57 | 7 | pass |
+| `on-ink-muted` #b5ada0 | `ink-raised` #1f1b17 | 7.69 | 4.5 | pass |
+| `line` #120f0c | `bg` #f6ebdb | 16.28 | 1.2 | pass |
 
 ### dark
 
 | Foreground | Background | Ratio | Target | |
 |---|---|---|---|---|
-| `text` #f5eef0 | `bg` #11070b | 17.37 | 7 | pass |
-| `text` #f5eef0 | `surface` #1c0e13 | 16.40 | 7 | pass |
-| `text` #f5eef0 | `tint` #27161c | 15.10 | 7 | pass |
-| `muted` #b9a9ae | `bg` #11070b | 8.84 | 4.5 | pass |
-| `muted` #b9a9ae | `surface` #1c0e13 | 8.35 | 4.5 | pass |
-| `muted` #b9a9ae | `tint` #27161c | 7.69 | 4.5 | pass |
-| `gold` #eac25a | `bg` #11070b | 11.72 | 4.5 | pass |
-| `gold` #eac25a | `surface` #1c0e13 | 11.06 | 4.5 | pass |
-| `gold` #eac25a | `tint` #27161c | 10.19 | 4.5 | pass |
-| `gold` #eac25a | `gold-soft` #322400 | 8.91 | 4.5 | pass |
-| `orange` #ffb481 | `bg` #11070b | 11.45 | 4.5 | pass |
-| `orange` #ffb481 | `surface` #1c0e13 | 10.81 | 4.5 | pass |
-| `orange` #ffb481 | `tint` #27161c | 9.95 | 4.5 | pass |
-| `orange` #ffb481 | `orange-soft` #3c1d05 | 8.82 | 4.5 | pass |
-| `red` #ffb0a6 | `bg` #11070b | 11.36 | 4.5 | pass |
-| `red` #ffb0a6 | `surface` #1c0e13 | 10.72 | 4.5 | pass |
-| `red` #ffb0a6 | `tint` #27161c | 9.87 | 4.5 | pass |
-| `red` #ffb0a6 | `red-soft` #3f1916 | 8.80 | 4.5 | pass |
-| `magenta` #ffa9cf | `bg` #11070b | 11.21 | 4.5 | pass |
-| `magenta` #ffa9cf | `surface` #1c0e13 | 10.59 | 4.5 | pass |
-| `magenta` #ffa9cf | `tint` #27161c | 9.75 | 4.5 | pass |
-| `magenta` #ffa9cf | `magenta-soft` #3c1929 | 8.72 | 4.5 | pass |
-| `cyan` #45dcfc | `bg` #11070b | 12.22 | 4.5 | pass |
-| `cyan` #45dcfc | `surface` #1c0e13 | 11.54 | 4.5 | pass |
-| `cyan` #45dcfc | `tint` #27161c | 10.62 | 4.5 | pass |
-| `cyan` #45dcfc | `cyan-soft` #002c35 | 9.15 | 4.5 | pass |
-| `on-action` #001926 | `action` #5bdefb | 11.44 | 7 | pass |
-| `on-action` #001926 | `action-hi` #93efff | 13.76 | 7 | pass |
-| `on-ink` #f5eef0 | `ink` #11070b | 17.37 | 7 | pass |
-| `on-ink` #f5eef0 | `ink-raised` #1f0f15 | 16.11 | 7 | pass |
-| `on-ink-muted` #b9a9ae | `ink-raised` #1f0f15 | 8.20 | 4.5 | pass |
-| `line` #442e36 | `bg` #11070b | 1.60 | 1.2 | pass |
-
-## 6. Generated images
-
-The art direction in `scripts/prompts/_style.txt` names the same hex values and the same rules: the warm spectrum is the jail, cyan is only ever the agent and what it may reach, blocked things are dim and barred. The logo is attached to every request as a style reference. That is why the diagrams look like they belong to the logo.
+| `text` #f6ebdb | `bg` #120f0c | 16.28 | 7 | pass |
+| `text` #f6ebdb | `surface` #120f0c | 16.28 | 7 | pass |
+| `text` #f6ebdb | `tint` #1f1b17 | 14.57 | 7 | pass |
+| `muted` #b5ada0 | `bg` #120f0c | 8.59 | 4.5 | pass |
+| `muted` #b5ada0 | `surface` #120f0c | 8.59 | 4.5 | pass |
+| `muted` #b5ada0 | `tint` #1f1b17 | 7.69 | 4.5 | pass |
+| `rose` #eca19a | `bg` #120f0c | 9.22 | 4.5 | pass |
+| `rose` #eca19a | `surface` #120f0c | 9.22 | 4.5 | pass |
+| `rose` #eca19a | `tint` #1f1b17 | 8.26 | 4.5 | pass |
+| `rose` #eca19a | `rose-soft` #47211e | 6.73 | 4.5 | pass |
+| `clay` #e7a783 | `bg` #120f0c | 9.32 | 4.5 | pass |
+| `clay` #e7a783 | `surface` #120f0c | 9.32 | 4.5 | pass |
+| `clay` #e7a783 | `tint` #1f1b17 | 8.34 | 4.5 | pass |
+| `clay` #e7a783 | `clay-soft` #45240f | 6.76 | 4.5 | pass |
+| `mustard` #d2b373 | `bg` #120f0c | 9.53 | 4.5 | pass |
+| `mustard` #d2b373 | `surface` #120f0c | 9.53 | 4.5 | pass |
+| `mustard` #d2b373 | `tint` #1f1b17 | 8.53 | 4.5 | pass |
+| `mustard` #d2b373 | `mustard-soft` #3c2b02 | 6.82 | 4.5 | pass |
+| `sage` #99c68f | `bg` #120f0c | 9.86 | 4.5 | pass |
+| `sage` #99c68f | `surface` #120f0c | 9.86 | 4.5 | pass |
+| `sage` #99c68f | `tint` #1f1b17 | 8.83 | 4.5 | pass |
+| `sage` #99c68f | `sage-soft` #21331d | 6.92 | 4.5 | pass |
+| `teal` #6ccac4 | `bg` #120f0c | 9.93 | 4.5 | pass |
+| `teal` #6ccac4 | `surface` #120f0c | 9.93 | 4.5 | pass |
+| `teal` #6ccac4 | `tint` #1f1b17 | 8.89 | 4.5 | pass |
+| `teal` #6ccac4 | `teal-soft` #0b3533 | 6.94 | 4.5 | pass |
+| `indigo` #a6b3f1 | `bg` #120f0c | 9.45 | 4.5 | pass |
+| `indigo` #a6b3f1 | `surface` #120f0c | 9.45 | 4.5 | pass |
+| `indigo` #a6b3f1 | `tint` #1f1b17 | 8.46 | 4.5 | pass |
+| `indigo` #a6b3f1 | `indigo-soft` #262c47 | 6.78 | 4.5 | pass |
+| `red` #ff958e | `bg` #120f0c | 9.08 | 4.5 | pass |
+| `red` #ff958e | `surface` #120f0c | 9.08 | 4.5 | pass |
+| `red` #ff958e | `tint` #1f1b17 | 8.13 | 4.5 | pass |
+| `red` #ff958e | `red-soft` #47211e | 6.63 | 4.5 | pass |
+| `on-action` #f6ebdb | `action` #120f0c | 16.28 | 7 | pass |
+| `on-action` #f6ebdb | `action-hi` #28231f | 13.24 | 7 | pass |
+| `on-ink` #f6ebdb | `ink` #120f0c | 16.28 | 7 | pass |
+| `on-ink` #f6ebdb | `ink-raised` #1f1b17 | 14.57 | 7 | pass |
+| `on-ink-muted` #b5ada0 | `ink-raised` #1f1b17 | 7.69 | 4.5 | pass |
+| `line` #f6ebdb | `bg` #120f0c | 16.28 | 1.2 | pass |

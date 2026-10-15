@@ -1,0 +1,37 @@
+---
+// One launch, left to right: the command, the config, the sandbox being built, the agent running inside it next
+// to the project, and the exit where the walls go and the project stays.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+const stations = [20, 176, 332, 488, 644];
+const names = ['Your command', 'Read config', 'Build the sandbox', 'Start the agent', 'Exit'];
+---
+<svg viewBox="0 0 800 340" xmlns="http://www.w3.org/2000/svg">
+  {/* 1: a terminal with a prompt */}
+  <Box x={28} y={110} w={120} h={80} kind="tint" />
+  <path d="M48 134 L62 150 L48 166" />
+  <rect x={72} y={141} width={10} height={18} class="dg-bar" />
+  {/* 2: three sheets of config, the largest on top */}
+  <Box x={186} y={96} w={96} h={72} />
+  <Box x={198} y={110} w={96} h={72} />
+  <Box x={210} y={124} w={96} h={72} />
+  {/* 3: the wall going up, its last side still dashed */}
+  <Bars x={344} y={80} w={120} h={140} n={4} gap="right" />
+  <path d="M464 80 V220" class="dg-heavy" style="stroke-dasharray:8 8" />
+  {/* 4: the agent inside, next to the project */}
+  <Bars x={496} y={70} w={136} h={150} n={4} />
+  <Chip x={534} y={84} w={60} label="" />
+  <Box x={520} y={176} w={88} h={36} label={L['Project']} kind="teal" size="small" />
+  {/* 5: the wall gone, the project still there */}
+  <Box x={660} y={70} w={120} h={150} kind="ghost" />
+  <Box x={676} y={176} w={88} h={36} label={L['Project']} kind="teal" size="small" />
+  <Arrow d="M152 150 L182 150" />
+  <Arrow d="M310 150 L340 150" />
+  <Arrow d="M468 150 L492 150" />
+  <Arrow d="M636 150 L656 150" />
+  {stations.map((x, i) => <Note x={x - 10} y={236} w={156} h={80} label={L[names[i]]} />)}
+</svg>

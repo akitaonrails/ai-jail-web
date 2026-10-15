@@ -84,13 +84,13 @@
   },
   "egress": {
     "title": "שלוש דרכים אל הרשת",
-    "lede": "כל הפעלה בוחרת אחד משלושה מצבי רשת. ברירת המחדל היא המצב ההדוק ביותר: בלי יציאה, חוץ ממה שהפרוקסי המסנן מעביר, כלומר ה-host של ה-API של סוכן מוכר בשתי הפלטפורמות, וב-Linux כשה-toolchains דלוקים (ברירת המחדל) גם רשימה קצרה של registries של חבילות. שני האחרים הם דגלים שמעבירים בכוונה.",
+    "lede": "כל הפעלה בוחרת אחד משלושה מצבי רשת. ברירת המחדל היא המצב ההדוק ביותר: בלי יציאה, חוץ ממה שהפרוקסי המסנן מעביר, כלומר ה-host של ה-API של סוכן מוכר בשתי הפלטפורמות (שניים ל-Codex), וב-Linux כשה-toolchains דלוקים (ברירת המחדל) גם רשימה קצרה של registries של חבילות. שני האחרים הם דגלים שמעבירים בכוונה.",
     "alt": "שלושה חלקים, משמאל לימין. כבויה: שבב הסוכן בתוך חומה סגורה, ובחוץ ענן מעומעם וחסום. מסוננת: שער קטן בחומה מוביל לתיבת פרוקסי, שמתחברת לענן בצבע ציאן עם הכיתוב api.anthropic.com, בזמן שענן שני נשאר מעומעם וחסום. פתוחה: צד הרשת של החומה חסר, והשבב מתחבר ישירות לענן.",
     "caption": "כבויה היא ברירת המחדל. מסוננת פותחת שער רק ל-hosts בשם. פתוחה מסירה את החומה בצד הרשת.",
     "modes": [
       {
         "title": "כבויה",
-        "text": "ברירת המחדל. ה-sandbox מקבל network namespace פרטי בלי שום יציאה, חוץ מדרך הפרוקסי המסנן. לסוכן מוכר (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>) הפרוקסי מעביר את ה-host היחיד של ה-API המתועד שלו, ב-Linux וב-macOS, ולכן <code>ai-jail claude</code> חשוף עובד. ב-Linux, כשה-toolchains דלוקים (ברירת המחדל), הפרוקסי מעביר גם <a class=\"link\" href=\"/configure/#toolchains\">רשימה קבועה של registries של חבילות</a>, ולכן <code>npm install</code> ו-<code>cargo build</code> עובדים; ב-macOS ה-registries נשארים סגורים. <code>--no-network</code> מנתק לגמרי."
+        "text": "ברירת המחדל. ה-sandbox מקבל network namespace פרטי בלי שום יציאה, חוץ מדרך הפרוקסי המסנן. לסוכן מוכר (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>, <code>devin</code>) הפרוקסי מעביר את ה-host של ה-API המתועד שלו, ב-Linux וב-macOS, ולכן <code>ai-jail claude</code> חשוף עובד; Codex מקבל שניים, כי ההתחברות שלו ל-ChatGPT משתמשת גם ב-<code>chatgpt.com</code>. ב-Linux, כשה-toolchains דלוקים (ברירת המחדל), הפרוקסי מעביר גם <a class=\"link\" href=\"/configure/#toolchains\">רשימה קבועה של registries של חבילות</a>, ולכן <code>npm install</code> ו-<code>cargo build</code> עובדים; ב-macOS ה-registries נשארים סגורים. <code>--no-network</code> מנתק לגמרי."
       },
       {
         "title": "מסוננת",
@@ -151,8 +151,8 @@
       },
       {
         "what": "רשת",
-        "linux": "כבויה כברירת מחדל: בלי יציאה, חוץ מה-host של ה-API של סוכן מוכר ומה-registries של חבילות שמותרים כשה-toolchains דלוקים. <code>--allow-host</code> או <code>--network</code> פותחים יותר, <code>--no-network</code> סוגר הכול. תחת <code>--lockdown</code> הרשת הפתוחה חסומה תמיד, גם עם <code>--network</code>.",
-        "macos": "אותה ברירת מחדל ואותם דגלים, כולל ה-host של ה-API של הסוכן המוכר, בלי ה-registries ובלי מיפויי ה-cache של ה-toolchains, שקיימים רק ב-Linux. גם כאן lockdown חוסם את הרשת הפתוחה."
+        "linux": "כבויה כברירת מחדל: בלי יציאה, חוץ מה-host של ה-API של סוכן מוכר ומה-registries של חבילות שמותרים כשה-toolchains דלוקים. <code>--allow-host</code> או <code>--network</code> פותחים יותר, <code>--forward-port</code> מעביר פורט אחד מה-loopback של המארח, <code>--no-network</code> סוגר הכול. תחת <code>--lockdown</code> הרשת הפתוחה חסומה תמיד, גם עם <code>--network</code>.",
+        "macos": "אותה ברירת מחדל ואותם דגלים, כולל ה-host של ה-API של הסוכן המוכר, אבל בלי <code>--forward-port</code>, בלי ה-registries ובלי מיפויי ה-cache של ה-toolchains, שקיימים רק ב-Linux. גם כאן lockdown חוסם את הרשת הפתוחה."
       },
       {
         "what": "תוכנות אחרות",

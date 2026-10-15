@@ -26,8 +26,8 @@ const mb = (bytes: number) => number(bytes / 1048576, { minimumFractionDigits: 1
 // Structure per build: file, platform id for the visitor badge, hue. Words come from the catalog.
 const builds = withText(
   [
-    { file: 'ai-jail-linux-x86_64.tar.gz', platform: 'linux', hue: 'orange' },
-    { file: 'ai-jail-macos-aarch64.tar.gz', platform: 'mac', hue: 'cyan' },
+    { file: 'ai-jail-linux-x86_64.tar.gz', platform: 'linux', hue: 'clay' },
+    { file: 'ai-jail-macos-aarch64.tar.gz', platform: 'mac', hue: 'teal' },
   ] as const,
   raw<Words[]>('builds.items'),
 ).map((b) => ({ ...b, size: asset(b.file)?.size ?? 0 }));
@@ -63,21 +63,21 @@ const releases = gh.releases.slice(0, 6).map((r) => ({ ...r, html: md.parse(r.bo
 
 const next = withText(
   [
-    { hue: 'cyan', href: href('/install/') },
-    { hue: 'gold', href: href('/configure/') },
+    { hue: 'teal', href: href('/install/') },
+    { hue: 'mustard', href: href('/configure/') },
     { hue: 'red', href: href('/security/') },
   ] as const,
   raw<Words[]>('next.items'),
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <PageHero hue="cyan" kicker={t('kicker.download')} title={t('hero.title', { tag })} lede={t('hero.lede', { date: date(latest.date), license: facts.license })}>
+  <PageHero hue="teal" page="download" kicker={t('kicker.download')} title={t('hero.title', { tag })} lede={t('hero.lede', { date: date(latest.date), license: facts.license })}>
     <a href="#builds" class="btn btn-primary">{t('hero.jump')}</a>
     <a href="#changelog" class="btn btn-ghost">{t('hero.changelog')}</a>
   </PageHero>
 
-  <Section id="builds" title={t('builds.title')} lede={t('builds.lede')} hue="cyan">
-    <div class="grid gap-6 md:grid-cols-2" data-reveal="children" data-builds>
+  <Section id="builds" title={t('builds.title')} lede={t('builds.lede')} hue="teal">
+    <div class="grid gap-6 md:grid-cols-2" data-builds>
       {builds.map((b) => (
         <div data-hue={b.hue} data-platform={b.platform} class="cell build grid gap-4 content-start min-w-0">
           <div class="flex items-center justify-between gap-3">
@@ -106,8 +106,8 @@ const next = withText(
     </div>
   </Section>
 
-  <Section id="channels" title={t('channels.title')} lede={t('channels.lede')} hue="cyan" tint>
-    <div class="grid gap-x-8 gap-y-10 md:grid-cols-2" data-reveal="children">
+  <Section id="channels" title={t('channels.title')} lede={t('channels.lede')} hue="teal" tint>
+    <div class="grid gap-x-8 gap-y-10 md:grid-cols-2">
       {channels.map((c) => (
         <div class="grid gap-3 content-start min-w-0">
           <span class="bars" aria-hidden="true"><i></i></span>
@@ -120,16 +120,16 @@ const next = withText(
     <a href={href('/install/')} class="btn btn-ghost mt-10">{t('channels.link')}</a>
   </Section>
 
-  <Section id="changelog" title={t('changelog.title')} lede={t('changelog.lede', { n: number(releases.length) })} hue="cyan" narrow>
+  <Section id="changelog" title={t('changelog.title')} lede={t('changelog.lede', { n: number(releases.length) })} hue="teal" narrow>
     <p class="text-sm text-muted">{t('changelog.english')}</p>
-    <div class="mt-6 border-t border-line">
+    <div class="mt-6 rule-thin">
       {releases.map((r) => (
-        <details class="rel border-b border-line">
+        <details class="rel border-b-[1.5px] border-line">
           <summary>
             <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span dir="ltr">{r.tag}</span>
               <span class="text-sm text-muted font-sans font-normal">{date(r.date)}</span>
-              {r.prerelease && <span class="badge" data-hue="gold">{t('changelog.prerelease')}</span>}
+              {r.prerelease && <span class="badge" data-hue="mustard">{t('changelog.prerelease')}</span>}
             </span>
             <span class="bars" aria-hidden="true"><i></i></span>
           </summary>
@@ -157,7 +157,7 @@ const next = withText(
 
 <style>
   /* The same accordion as the Faq component, self-contained because this page does not use Faq. */
-  .rel summary { display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding-block: 1.25rem; cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); }
+  .rel summary { display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding-block: 1.25rem; cursor: pointer; list-style: none; font-weight: 600; font-size: var(--text-lg); }
   .rel summary::-webkit-details-marker { display: none; }
   .rel .bars { block-size: 1.1rem; gap: 0.3rem; flex-shrink: 0; transition: transform 0.3s; }
   .rel[open] .bars { transform: rotate(90deg); }
@@ -165,7 +165,7 @@ const next = withText(
   .notes :global(:is(h3, h4, h5)) { color: var(--text); font-size: var(--text-base); margin-block-start: 1.6em; }
   .notes :global(ul) { list-style: disc; padding-inline-start: 1.4em; }
   .notes :global(li + li) { margin-block-start: 0.5em; }
-  .notes :global(pre) { overflow-x: auto; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: 0.8rem; background: var(--tint); font-size: 0.9rem; line-height: 1.6; }
+  .notes :global(pre) { overflow-x: auto; padding: 0.9rem 1.1rem; border: 1.5px solid var(--line); background: var(--tint); font-size: 0.9rem; line-height: 1.6; }
   .notes :global(p code), .notes :global(li code) { overflow-wrap: anywhere; }
   .notes :global(strong) { color: var(--text); }
   .badge[hidden] { display: none; }

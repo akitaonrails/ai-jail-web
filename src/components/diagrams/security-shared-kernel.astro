@@ -1,0 +1,24 @@
+---
+// A sandbox shares the kernel with what it protects; a disposable VM brings its own.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+  {/* Left: the cage and your system stand on one shared kernel */}
+  <Box x={20} y={254} w={430} h={60} label={L['Your kernel']} kind="tint" />
+  <Box x={40} y={160} w={160} h={94} label={L['Your system']} kind="paper" />
+  <Note x={240} y={44} w={190} label="ai-jail" size="title" />
+  <Bars x={240} y={80} w={190} h={174} n={5} />
+  <Chip x={289} y={110} label={L['Agent']} />
+  <Arrow d="M335 214 V302 H120 V254" kind="dashed" />
+  <path d="M470 20 V340" class="dg-thin" style="stroke-dasharray:4 6" />
+  {/* Right: a disposable VM with a kernel of its own */}
+  <Box x={500} y={40} w={280} h={274} kind="paper" />
+  <Note x={510} y={48} w={260} label={L['Disposable VM']} size="title" />
+  <Box x={520} y={240} w={240} h={60} label={L['Its own kernel']} kind="tint" />
+  <Chip x={594} y={126} label={L['Agent']} />
+</svg>

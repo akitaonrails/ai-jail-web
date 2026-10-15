@@ -145,7 +145,7 @@
           "A proxy with a per-domain allowlist. A new domain prompts you, and each command still gets its own approval. The documentation notes that the proxy trusts the hostname the client sends, so domain fronting can bypass it.",
           "Off by default in <code>workspace-write</code>. One setting turns it on, and an optional proxy adds per-domain allow and deny rules. The documentation says the proxy does not filter MCP server connections, web search or the browser.",
           "The default profile allows network. Stricter and proxied profiles are opt-in.",
-          "Three modes, off by default. <code>--allow-host</code> allows the listed hosts and their subdomains, enforced by the network namespace on Linux or a seatbelt endpoint rule on macOS, through a proxy that resolves each name once and dials the address it checked. <code>--network</code> opens everything. The filter is TCP only, has no per-path rules and never prompts: a host outside the list is denied and <code>--audit-log</code> records the attempt. An allowed host is trusted wholesale. By default the proxy lets a known agent's own API host through on both platforms and, with toolchains on (the default on Linux), a fixed list of package registries so builds work. <code>--no-network</code> closes both. An explicit <code>--allow-host</code> list replaces that default."
+          "Three modes, off by default. <code>--allow-host</code> allows the listed hosts and their subdomains, enforced by the network namespace on Linux or a seatbelt endpoint rule on macOS, through a proxy that resolves each name once and dials the address it checked. <code>--network</code> opens everything. The filter is TCP only, has no per-path rules and never prompts: a host outside the list is denied and <code>--audit-log</code> records the attempt. An allowed host is trusted wholesale. By default the proxy lets a known agent's own API host through on both platforms and, with toolchains on (the default on Linux), a fixed list of package registries so builds work. <code>--no-network</code> closes both. An explicit <code>--allow-host</code> list adds to that default. On Linux, <code>--forward-port</code> relays one port of the host's loopback into the sandbox, with no rule on what passes."
         ]
       },
       {
@@ -163,7 +163,7 @@
           "Yes. <code>.git/hooks</code>, <code>.git/config</code>, <code>.claude</code> settings, <code>.mcp.json</code>, shell rc files and more stay read only.",
           "Yes. <code>.git</code>, <code>.agents</code> and <code>.codex</code> under writable roots are read only.",
           "",
-          "None built in. The whole project is writable. You mask or deny paths yourself with <code>--mask</code> and <code>deny_paths</code>."
+          "None built in. The whole project is writable, <code>.git/</code> included, and host-side git trusts what it finds there. You mask or deny paths yourself with <code>--mask</code> and <code>deny_paths</code>. <a class=\"link\" href=\"/security/#limits\">Why <code>.git/</code> matters</a>."
         ]
       },
       {
@@ -209,7 +209,7 @@
     "lede": "A known agent needs nothing opened. Its login is mounted by default and the filtered proxy lets through only its model API host. Add hosts with <code>--allow-host</code>, or open the whole network, when a tool needs more.",
     "codeFiltered": "the default: only the model's host",
     "codeOpen": "simpler: the whole network",
-    "codeNote": "ai-jail knows the API host of Claude Code, Codex, Gemini CLI and Grok and allows it by default. An explicit <code>--allow-host</code> list replaces that default, so include the API host when you pass one. The login is mounted by default; <code>--no-agent-state</code> gives a logged-out run. <a class=\"link\" href=\"/configure/#switches\">Every flag is on Configure</a>.",
+    "codeNote": "ai-jail knows the API host of Claude Code, Codex, Gemini CLI, Grok and Devin and allows it by default; Codex also gets <code>chatgpt.com</code> for its ChatGPT login. An explicit <code>--allow-host</code> list adds to that default, so the API host stays allowed. The login is mounted by default; <code>--no-agent-state</code> gives a logged-out run. <a class=\"link\" href=\"/configure/#switches\">Every flag is on Configure</a>.",
     "alt": "One large wall labeled ai-jail encloses the agent, its MCP servers, its hooks, the project and its shell commands. Between the agent and the shell commands sits the agent's own approval prompt. One line leaves the wall through a gate to the model API. Your home directory is outside the wall, dim and barred.",
     "caption": "The outer wall is ai-jail. Inside it, the agent's prompts and rules keep doing their job.",
     "points": [
@@ -274,7 +274,7 @@
       {
         "label": "Network",
         "openshell": "Deny by default. Rules match program, host and port, with optional inspection of methods, paths and MCP tools. A denied endpoint can be approved from the operator's side.",
-        "jail": "Off, filtered by host, or open. The filter is a namespace fence and a CONNECT proxy; it sees hosts and ports but not content, and an allowed host is trusted wholesale."
+        "jail": "Off, filtered by host, or open. The filter is a namespace fence and a CONNECT proxy; it sees hosts and ports but not content, and an allowed host is trusted wholesale. A host loopback port relayed with <code>--forward-port</code> is trusted whole as well, with no rule on it."
       },
       {
         "label": "Credentials",

@@ -1,0 +1,22 @@
+---
+// The agent sees the project with some files masked: three files reachable, two hatched and unreachable.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg">
+  <Chip x={40} y={124} label={L['Agent']} />
+  <Box x={200} y={30} w={490} h={290} kind="paper" />
+  <Note x={210} y={40} w={470} label={L['Your project']} size="title" />
+  <Arrow d="M144 150 L230 102" thin />
+  <Arrow d="M144 165 L230 148" thin />
+  <Arrow d="M144 180 L230 194" thin />
+  <Box x={230} y={84} w={430} h={36} kind="inside" />
+  <Box x={230} y={130} w={430} h={36} kind="inside" />
+  <Box x={230} y={176} w={430} h={36} kind="inside" />
+  <Box x={230} y={222} w={430} h={36} kind="blocked" />
+  <Box x={230} y={268} w={430} h={36} kind="blocked" />
+</svg>

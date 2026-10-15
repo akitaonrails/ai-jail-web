@@ -22,7 +22,7 @@
         "text": "Los secretos de tu shell. ai-jail reduce las variables de entorno a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera. La única excepción es la clave de API del propio harness que arrancas, por ejemplo <code>ANTHROPIC_API_KEY</code> para Claude, copiada por defecto junto con su login; <code>--no-agent-state</code> lo impide."
       },
       {
-        "text": "La red. Está apagada, con dos excepciones que pasan por el proxy filtrado: una lista corta de registries de paquetes cuando las toolchains están activadas, lo normal en Linux, y, para un agente conocido como <code>claude</code> o <code>codex</code>, su único host de la API documentado, en ambas plataformas. Los hosts de telemetría siguen cerrados. <code>--no-network</code> cierra ambas cosas."
+        "text": "La red. Está apagada, con dos excepciones que pasan por el proxy filtrado: una lista corta de registries de paquetes cuando las toolchains están activadas, lo normal en Linux, y, para un agente conocido como <code>claude</code> o <code>codex</code>, su host de la API documentado, en ambas plataformas (dos en el caso de Codex). Los hosts de telemetría siguen cerrados. <code>--no-network</code> cierra ambas cosas."
       },
       {
         "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta."
@@ -49,6 +49,8 @@
       "Landlock, las reglas del propio kernel, solo valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos, en modo best-effort. Los kernels más antiguos se quedan solo con las reglas de sistema de archivos y de red, así que con <code>--x11</code>, <code>--network</code> o <code>--systemd-user</code> los sockets abstractos y las señales del host siguen al alcance.",
       "Secretos dentro del proyecto. Un archivo <code>.env</code> en el repositorio se puede leer salvo que lo enmascares. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascarar archivos</a>.",
       "Las máscaras cubren solo las rutas que existen cuando arranca el sandbox. Un archivo con secretos creado después, durante la sesión, no queda oculto.",
+      "El git del host confía en el <code>.git/</code> del proyecto, que es escribible. Un programa nombrado en <code>.git/config</code>, como <code>core.fsmonitor</code> o <code>core.pager</code>, o dejado en <code>.git/hooks/</code> corre como tú, fuera del sandbox, la próxima vez que un comando git que coincida se ejecute en el host; para <code>core.fsmonitor</code> basta un simple <code>git status</code>, incluso uno que tu editor lance en segundo plano, y nada aparece en <code>git diff</code>. <code>--lockdown</code> lo cierra al dejar el proyecto en solo lectura, y <code>--map .git</code> mantiene el repositorio en solo lectura en una ejecución normal, a cambio de no poder hacer commit desde dentro. Después de una sesión que te sorprenda, lee <code>.git/config</code> y lista <code>.git/hooks</code> con herramientas de archivos simples antes de ejecutar git en el host, porque el propio <code>git config --list</code> arranca el pager configurado.",
+      "<code>--mask</code> y <code>--deny-path</code> cambian solo lo que ve el sandbox. Cualquier cosa fuera del sandbox que actúe por el agente sigue leyendo los archivos reales: el daemon de Docker bajo <code>--docker</code>, un servidor MCP alcanzado por un socket mapeado o un servicio detrás de <code>--forward-port</code>.",
       "Canales laterales y algunas clases de comunicación entre procesos.",
       "Un host permitido es de confianza por completo. Permitir <code>github.com</code> con <code>--allow-host</code> deja que el agente haga push a cualquier repositorio de ahí, no solo a los tuyos.",
       "La salida filtrada es solo TCP. No hay UDP, así que un programa que lo necesite no funciona; tampoco puede sacar nada por ahí.",
@@ -74,6 +76,7 @@
     "rows": [
       "Enviar todo lo que pueda leer a cualquier sitio, sin restricción de tráfico. El valor por defecto permite solo el host de la API del propio agente conocido; <code>--allow-host</code> es la alternativa más estricta.",
       "Alcanzar exactamente los hosts que listas, y sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo. Tu lista se suma al host de la propia API del agente; <code>--no-network</code> con una lista te deja solo esa lista.",
+      "Usar por completo un servicio del loopback de tu host. Lo que acepte el servidor MCP, el socket del editor o la base de datos en ese puerto, el agente puede pedirlo, sin lista de permitidos, sin inspección y sin registro de auditoría. Todos los demás puertos del host siguen cerrados. Solo Linux, y se rechaza con <code>--network</code>.",
       "Activado por defecto en Linux. Ejecutar tus toolchains: <code>~/.cargo/bin</code> y <code>~/.rustup</code> en solo lectura, una caché de dependencias propia de la jaula en <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre ejecuciones, y salida filtrada hacia los registries de paquetes. Las cachés reales del host nunca se montan. Apagado bajo <code>--lockdown</code> y con <code>--no-toolchains</code>.",
       "Nada nuevo. El valor real de esa clave nunca entra al sandbox: el agente ve un marcador de posición, y el proxy pone el valor real solo en las peticiones HTTP plano al único host al que la vinculaste. El propio proceso de ai-jail ve esa petición en claro.",
       "Nada nuevo. Este interruptor no debilita nada: escribe una línea por arranque en un archivo con modo 0600 fuera del sandbox, así que el agente nunca lo ve.",
@@ -82,7 +85,7 @@
       "Registrar pulsaciones de teclas y tomar capturas de otras ventanas de X11.",
       "Pedirle a tu gestor de usuario de systemd que ejecute servicios en el host.",
       "Leer todo el entorno de tu shell, secretos incluidos. Para las claves de API, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> pasa un solo archivo en su lugar.",
-      "Activado por defecto. Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude, montado en lectura y escritura, más su clave de API copiada de tu shell si está definida, para que arranque con la sesión iniciada. Cualquier cosa dentro del sandbox puede usar esas credenciales mientras dure el arranque. <code>--no-agent-state</code> da una ejecución aislada y sin sesión; apagado bajo <code>--lockdown</code>.",
+      "Activado por defecto. Usar el login guardado del agente, por ejemplo el <code>~/.claude</code> de Claude o los <code>~/.local/share/devin</code> y <code>~/.config/devin</code> de Devin, montados en lectura y escritura, más su clave de API copiada de tu shell si está definida, para que arranque con la sesión iniciada. Cualquier cosa dentro del sandbox puede usar esas credenciales mientras dure el arranque. <code>--no-agent-state</code> da una ejecución aislada y sin sesión; apagado bajo <code>--lockdown</code>.",
       "Actuar como tú en GitHub. El directorio de configuración de <code>gh</code> se monta en solo lectura, y el token activo de github.com se lee de tu llavero en el host y se reenvía como <code>GH_TOKEN</code> para ese arranque, nunca por la línea de comandos ni por disco. La solo lectura protege el archivo; el token sigue funcionando mientras sea válido.",
       "Actuar como tú en AWS con <code>~/.aws</code>, montado en solo lectura.",
       "Actuar como tú en todos los clústeres de <code>~/.kube</code>, montado en solo lectura.",
@@ -101,6 +104,7 @@
       "<code>--lockdown</code> cuando Landlock, las reglas de sistema de archivos del propio kernel, falta, es parcial o no se puede aplicar. <code>--lockdown --no-landlock</code> también se rechaza.",
       "<code>--allow-tcp-port</code>. Esa interfaz no puede restringir UDP, así que el flag se acepta por compatibilidad, el arranque falla y el error apunta a <code>--allow-host</code>.",
       "<code>--network</code> junto con <code>--allow-host</code>, o <code>--browser</code> con <code>--allow-host</code>. Los dos se contradicen, así que ai-jail se niega a arrancar.",
+      "<code>--forward-port</code> junto con <code>--network</code>, donde el loopback del host ya está al alcance; fuera de Linux; y para el puerto 0 o un puerto por debajo de 1024, que el sandbox no puede enlazar. Una entrada <code>forward_ports</code> en la tabla base del archivo global tropieza con las dos primeras en cada arranque con navegador y en cada arranque en macOS.",
       "Un archivo de <code>--env-from-file</code> que es un symlink, que puede leer su grupo o todo el mundo, que pertenece a otra persona o que está dentro del proyecto.",
       "Un <code>BWRAP_BIN</code> que apunta a un binario de bubblewrap que alguien distinto de root pudo haber reemplazado. Se ignora con una advertencia, y sin un bubblewrap de confianza el arranque falla.",
       "Un overlay que no se puede montar: falta el origen, el destino se solapa con otro mapeo o falla el almacenamiento. Desde la 2.4 el arranque aborta en vez de caer a un bind simple de lectura y escritura sobre los archivos reales."
@@ -131,6 +135,9 @@
     "fixes": {
       "title": "Correcciones de seguridad recientes",
       "items": [
+        "2.9.0: <code>--x11</code> por sí solo deja pasar X11. Antes, sin <code>--display</code> no hacía nada, en silencio.",
+        "2.9.0: el guardado automático ya no escribe en el archivo de proyecto opt-ins que la carga no confiable rechaza después, así que un archivo guardado nunca avisa en la siguiente ejecución.",
+        "2.9.0: macOS: Codex vuelve a arrancar bajo Seatbelt con un <code>ps</code> shim privado en lugar del <code>ps</code> setuid del host.",
         "2.8.0: macOS: el perfil de seatbelt conserva el login de Claude Code en el Keychain y permite el socket de control de Codex, así que ambos arrancan con la sesión iniciada.",
         "2.8.0: las peticiones de posición del cursor de un lanzador las responde la terminal virtual, así que los lanzadores ya no se quedan colgados.",
         "2.6.2: <code>--lockdown</code> siempre aísla el namespace de red, incluso con <code>--network</code>. Antes, ese par contradictorio dejaba el namespace compartido.",

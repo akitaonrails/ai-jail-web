@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import Section from '@/components/Section.astro';
-import Figure from '@/components/Figure.astro';
+import Diagram from '@/components/Diagram.astro';
 import FeatureGrid from '@/components/FeatureGrid.astro';
 import Reach from '@/components/Reach.astro';
 import Callout from '@/components/Callout.astro';
@@ -18,37 +18,37 @@ export const getStaticPaths = localePaths;
 
 const { t, raw, href } = useI18n(Astro, 'home');
 const faq = raw<FaqItem[]>('faq.items');
-const points = withText([{ hue: 'orange' }, { hue: 'gold' }, { hue: 'red' }] as const, raw<{ title: string; text: string }[]>('how.points'));
+const points = withText([{ hue: 'clay' }, { hue: 'mustard' }, { hue: 'red' }] as const, raw<{ title: string; text: string }[]>('how.points'));
 type Item = { text: string };
 ---
 <Base schema={[faqPage(faq)]}>
-  <section class="hero" data-exit>
-    <div class="wrap grid items-center gap-10 lg:grid-cols-[1.25fr_1fr] pt-32 pb-16 md:pt-40 md:pb-24">
+  <section class="hero">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-[1.2fr_1fr] pt-28 pb-14 md:pt-36 md:pb-20">
       <div>
-        <h1 class="text-4xl" data-reveal>{t('hero.title')}</h1>
-        <p class="lede mt-7 !text-[1.3rem]">{t('hero.lede')}</p>
+        <h1 class="text-4xl">{t('hero.title')}</h1>
+        <p class="lede mt-6 !text-[1.3rem]">{t('hero.lede')}</p>
         <div class="mt-8 max-w-md"><CodeBlock code={'cd ~/Projects/my-app\nai-jail claude'} /></div>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
           <a href={href('/why/')} class="btn btn-ghost">{t('hero.why')}</a>
         </div>
       </div>
-      <div class="relative justify-self-center" data-parallax="0.08">
-        <div class="hero-glow" aria-hidden="true"></div>
-        <Image src={logo} alt={t('hero.logoAlt')} widths={[320, 480, 720, 960]} sizes="(min-width: 1024px) 30rem, 70vw" loading="eager" fetchpriority="high" class="relative w-[min(30rem,70vw)] h-auto" />
+      <div class="relative justify-self-center plates text-center">
+        <Image src={logo} alt={t('hero.logoAlt')} widths={[320, 480, 720, 960]} sizes="(min-width: 1024px) 28rem, 64vw" loading="eager" fetchpriority="high" class="relative w-[min(28rem,64vw)] h-auto logo-ink" />
+        <span class="stamp mt-3 md:mt-0 md:absolute md:-bottom-3 md:end-4">{t('hero.stamp')}</span>
       </div>
     </div>
   </section>
 
   <Lockdown />
 
-  <Section title={t('wrap.title')} lede={t('wrap.lede')} hue="cyan" fill>
-    <Figure name="home-wrap" alt={t('wrap.alt')} caption={t('wrap.caption')} />
+  <Section title={t('wrap.title')} lede={t('wrap.lede')} hue="indigo">
+    <Diagram name="home-wrap" alt={t('wrap.alt')} caption={t('wrap.caption')} />
     <a href={href('/compare/')} class="btn btn-ghost">{t('wrap.link')}</a>
   </Section>
 
-  <Section title={t('defaults.title')} lede={t('defaults.lede')} hue="gold" tint>
-    <div class="grid gap-10 md:grid-cols-3" data-reveal="children">
+  <Section title={t('defaults.title')} lede={t('defaults.lede')} hue="mustard" tint>
+    <div class="grid gap-10 md:grid-cols-3">
       <Reach title={t('reach.inside')} items={raw<Item[]>('defaults.inside')} state="inside" />
       <Reach title={t('reach.blocked')} items={raw<Item[]>('defaults.blocked')} state="blocked" />
       <Reach title={t('reach.optin')} items={raw<Item[]>('defaults.optin')} state="optin" />
@@ -56,7 +56,7 @@ type Item = { text: string };
     <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('defaults.link')}</a>
   </Section>
 
-  <Section title={t('how.title')} lede={t('how.lede')} hue="orange">
+  <Section title={t('how.title')} lede={t('how.lede')} hue="clay">
     <FeatureGrid items={points} />
     <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('how.link')}</a>
   </Section>
@@ -66,7 +66,7 @@ type Item = { text: string };
       <p set:html={t('limits.text')} />
       <p><a class="link" href={href('/security/')}>{t('limits.link')}</a></p>
     </Callout>
-    <Callout title={t('pair.title')} hue="cyan">
+    <Callout title={t('pair.title')} hue="teal">
       <p set:html={t('pair.text')} />
       <p><a class="link" href={site.sibling}>{t('pair.link')}</a></p>
     </Callout>
@@ -77,6 +77,9 @@ type Item = { text: string };
 </Base>
 
 <style>
-  .hero { background: var(--bg); transform-origin: 50% 100%; }
-  .hero-glow { position: absolute; inset: 8%; background: var(--spectrum); filter: blur(90px); opacity: 0.35; border-radius: 50%; }
+  /* Two misregistered color plates behind the woodcut, like a cheap print. */
+  .plates::before, .plates::after { content: ''; position: absolute; z-index: -1; }
+  .plates::before { inset: 8% -3% -2% 10%; background: var(--teal-soft); transform: rotate(-1.5deg); }
+  .plates::after { inset: 14% 8% 2% -4%; background: var(--mustard-soft); transform: rotate(1.2deg); }
+  .hero { position: relative; z-index: 0; }
 </style>

@@ -4,7 +4,8 @@
     "lede": "에이전트는 내 사용자 계정으로 실행되므로 내가 읽을 수 있는 것은 전부 읽을 수 있습니다. ai-jail은 신뢰하는 에이전트의 실수를 막도록 만든 OS 샌드박스 안에서 에이전트를 시작합니다. 프로젝트에는 쓸 수 있지만 키와 셸 시크릿, 홈 디렉터리는 그 안에 없습니다.",
     "install": "설치",
     "why": "나에게 필요할까?",
-    "logoAlt": "회로 패턴으로 그린 자물쇠. 자물쇠 창의 창살 뒤에서 빛나는 마이크로칩이 에이전트입니다."
+    "logoAlt": "회로 패턴으로 그린 자물쇠. 자물쇠 창의 창살 뒤에서 빛나는 마이크로칩이 에이전트입니다.",
+    "stamp": "VM 아님"
   },
   "scene": {
     "label": "ai-jail 적용 전과 후, 에이전트가 닿을 수 있는 범위",
@@ -34,7 +35,7 @@
       },
       {
         "title": "작업에 필요한 것만 여세요",
-        "text": "클라우드 에이전트는 로그인된 상태로 시작합니다. ai-jail이 로그인을 기본으로 마운트하기 때문입니다. Claude, Codex, Gemini, Grok은 아무것도 열 필요가 없습니다. ai-jail이 그 API 호스트 하나만 필터링 프록시로 통과시키고 나머지는 닫아 둡니다. <code>--allow-host</code>는 호스트를 더하고, <code>--network</code>는 전부 엽니다."
+        "text": "클라우드 에이전트는 로그인된 상태로 시작합니다. ai-jail이 로그인을 기본으로 마운트하기 때문입니다. Claude, Codex, Gemini, Grok, Devin은 아무것도 열 필요가 없습니다. ai-jail이 에이전트 자신의 API 호스트만 필터링 프록시로 통과시키고 나머지는 닫아 둡니다. <code>--allow-host</code>는 호스트를 더하고, <code>--network</code>는 전부 엽니다."
       }
     ]
   },
@@ -59,7 +60,7 @@
         "text": "<code>~/.claude</code> 같은 에이전트 자신의 로그인. 로그인된 상태로 시작"
       },
       {
-        "text": "알려진 에이전트(Claude, Codex, Gemini, Grok)의 API 호스트. 필터링 프록시를 통해, Linux에서는 패키지 레지스트리도"
+        "text": "알려진 에이전트(Claude, Codex, Gemini, Grok, Devin)의 API 호스트. 필터링 프록시를 통해, Linux에서는 패키지 레지스트리도"
       },
       {
         "text": "새 홈 디렉터리와 전용 <code>/tmp</code>"
@@ -78,7 +79,7 @@
     ],
     "optin": [
       {
-        "text": "호스트를 더 여는 <code>--allow-host</code>, 또는 전부 여는 <code>--network</code>"
+        "text": "호스트를 더 여는 <code>--allow-host</code>, Linux에서 로컬 서비스 하나를 여는 <code>--forward-port</code>, 또는 전부 여는 <code>--network</code>"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> 등"
@@ -124,7 +125,7 @@
       },
       {
         "q": "어떤 에이전트를 지원하나요?",
-        "a": "어떤 명령이든 됩니다. Claude Code, Codex, Gemini CLI, OpenCode, Crush, Grok, Kimi, pi, jcode, SoulForge용 프리셋이 있고, <code>ai-jail bash</code>로 감옥 안에서 셸을 열어 둘러볼 수 있습니다."
+        "a": "어떤 명령이든 됩니다. Claude Code, Codex, Gemini CLI, Devin, OpenCode, Crush, Grok, Kimi, pi, jcode, SoulForge용 프리셋이 있고, <code>ai-jail bash</code>로 감옥 안에서 셸을 열어 둘러볼 수 있습니다."
       },
       {
         "q": "Windows에서도 되나요?",
@@ -132,7 +133,7 @@
       },
       {
         "q": "에이전트에 인터넷이 필요한데, 그래도 감옥이 쓸모 있나요?",
-        "a": "네. Claude Code 같은 알려진 에이전트는 바로 자기 API에 닿고 다른 호스트에는 닿지 않습니다. <code>--allow-host</code>는 지정한 호스트를 더합니다. 대신 <code>--network</code>를 켜도 에이전트가 읽을 수 있는 것은 여전히 프로젝트뿐이라서, 키나 홈 디렉터리의 나머지는 보낼 것 자체가 없습니다. 다만 읽을 수 있는 것은 보낼 수 있으므로 프로젝트 안의 시크릿을 마스킹해야 합니다. <a class=\"link\" href=\"/configure/#secrets\">마스킹 방법 보기</a>."
+        "a": "네. Claude Code 같은 알려진 에이전트는 바로 자기 API 호스트에 닿고 다른 호스트에는 닿지 않습니다. <code>--allow-host</code>는 지정한 호스트를 더합니다. 대신 <code>--network</code>를 켜도 에이전트가 읽을 수 있는 것은 여전히 프로젝트뿐이라서, 키나 홈 디렉터리의 나머지는 보낼 것 자체가 없습니다. 다만 읽을 수 있는 것은 보낼 수 있으므로 프로젝트 안의 시크릿을 마스킹해야 합니다. <a class=\"link\" href=\"/configure/#secrets\">마스킹 방법 보기</a>."
       },
       {
         "q": "무료인가요?",

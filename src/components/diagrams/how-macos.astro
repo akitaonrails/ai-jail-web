@@ -1,0 +1,32 @@
+---
+// Linux: the agent and its project behind five walls. macOS: the same two behind one sandbox-exec profile.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+const rings = [
+  { x: 48, y: 56, w: 332, h: 274, kind: 'tint' },
+  { x: 68, y: 76, w: 292, h: 234, kind: 'paper' },
+  { x: 88, y: 96, w: 252, h: 194, kind: 'tint' },
+  { x: 108, y: 116, w: 212, h: 154, kind: 'paper' },
+  { x: 128, y: 136, w: 172, h: 114, kind: 'tint' },
+];
+---
+<svg viewBox="0 0 800 390" xmlns="http://www.w3.org/2000/svg">
+  {/* Left: Linux */}
+  <Note x={20} y={12} w={388} h={34} label="Linux" size="title" />
+  {rings.map((r) => <Box x={r.x} y={r.y} w={r.w} h={r.h} kind={r.kind} />)}
+  <Chip x={150} y={156} w={72} label="" />
+  <Box x={244} y={176} w={44} h={34} kind="teal" />
+  <path d="M244 176 V168 H264 L270 176" />
+  <Note x={48} y={344} w={332} h={34} label={L['Five layers']} />
+  <path d="M400 20 V370" class="dg-thin" style="stroke-dasharray:4 6" />
+  {/* Right: macOS */}
+  <Note x={412} y={12} w={388} h={34} label="macOS" size="title" />
+  <Bars x={448} y={56} w={332} h={274} n={8} />
+  <Chip x={550} y={156} w={72} label="" />
+  <Box x={644} y={176} w={44} h={34} kind="teal" />
+  <path d="M644 176 V168 H664 L670 176" />
+  <Note x={448} y={344} w={332} h={34} label={L['One profile']} />
+</svg>

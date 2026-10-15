@@ -14,21 +14,20 @@
     "check:colors": "node scripts/check-contrast.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "i18n:stamp": "node scripts/check-i18n.mjs --stamp",
-    "colors:sample": "node scripts/sample-logo.mjs",
-    "snapshot:github": "node scripts/snapshot-github.mjs"
+    "snapshot:github": "node scripts/snapshot-github.mjs",
+    "check:ui": "node scripts/check-ui.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/heebo": "^5.3.0",
+    "@fontsource-variable/lora": "^5.3.0",
     "@fontsource-variable/noto-sans-jp": "^5.3.0",
     "@fontsource-variable/noto-sans-kr": "^5.3.0",
-    "@fontsource-variable/red-hat-display": "^5.3.0",
-    "@fontsource-variable/red-hat-mono": "^5.3.0",
-    "@fontsource-variable/red-hat-text": "^5.3.0",
     "@fontsource-variable/rubik": "^5.3.0",
+    "@fontsource/alfa-slab-one": "^5.3.0",
+    "@fontsource/courier-prime": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.3",
-    "gsap": "^3.15.0",
     "marked": "^18.0.14",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3"

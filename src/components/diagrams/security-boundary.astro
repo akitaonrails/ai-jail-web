@@ -1,0 +1,30 @@
+---
+// What the wall stops: home and keys, shell secrets, the network, screen and clipboard. Your terminal reaches the
+// agent, and the jail policy sets the wall, both from outside.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <Bars x={230} y={40} w={340} h={340} n={6} />
+  <Chip x={330} y={160} label={L['Agent']} />
+  <Box x={450} y={290} w={100} h={50} label={L['Project']} kind="teal" size="small" />
+  <Arrow d="M376 264 V290 H450" />
+  {/* Blocked, outside: stopped at the wall */}
+  <Box x={20} y={60} w={170} h={56} label={L['Home and keys']} kind="blocked" size="small" />
+  <Arrow d="M318 190 L248 96" kind="stopped" />
+  <Box x={20} y={182} w={170} h={56} label={L['Shell secrets']} kind="blocked" size="small" />
+  <Arrow d="M318 206 L248 210" kind="stopped" />
+  <Box x={20} y={304} w={170} h={56} label={L['Network']} kind="blocked" size="small" />
+  <Arrow d="M318 222 L248 324" kind="stopped" />
+  <Box x={610} y={60} w={170} h={56} label={L['Screen and clipboard']} kind="blocked" size="small" />
+  <Arrow d="M434 190 L552 96" kind="stopped" />
+  {/* The honest edge: the terminal is yours and the policy is set by you, outside */}
+  <Box x={610} y={182} w={170} h={56} label={L['Your terminal']} kind="paper" size="small" />
+  <Arrow d="M610 210 L434 206" kind="both" />
+  <Box x={610} y={304} w={170} h={56} label={L['Jail policy']} kind="paper" size="small" />
+  <Arrow d="M610 332 L578 332" />
+</svg>

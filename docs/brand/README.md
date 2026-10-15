@@ -1,14 +1,21 @@
 # Logo files
 
+The logo is a woodcut: a padlock cut in black ink, circuit traces in its body, and in its window, behind bars, a chip. The padlock is the jail, the chip is the agent. It prints on the unbleached paper of the site and inverts to paper-on-ink at night (`.logo-ink` in `Nav.astro`).
+
 | File | What it is |
 |---|---|
-| `logo-hd-1760.png` | The master: 1760x1760, transparent background. Use this for the GitHub README, slides or print. |
-| `logo-original-2048.png` | The generated artwork on its white ground, before the cutout. |
-| `../../src/assets/img/logo.png` | What the site uses: the master at 1600px. Astro generates the sizes each screen needs. |
-| `candidates/` | The three concepts that were considered (padlock, cell, shield) and the first, cool-colored padlock. |
+| `woodcut-2048.jpg` | The cut as generated: black ink on cream paper, 2048x2048. The master for any new export. |
+| `../../src/assets/img/logo.png` | What the site uses: the ink alone on a transparent ground, 1024px, made from the master with ImageMagick (see below). Astro generates the sizes each screen needs. |
+| `../../public/favicon.png` | The same at 128px. |
+| `../../src/assets/img/og.png` | The share card, 1200x630: the title in Alfa Slab One, the padlock on two misregistered color plates, the "NOT A VM" stamp. Rendered from a small HTML file with headless Chromium. |
 
-The logo was generated with Gemini (`gemini-3-pro-image`) using the ai-memory logo as the style reference, then recolored so the two products are complements: ai-memory has a cool body and a warm chip, ai-jail a warm body and a cool chip. See `../color-study.md`. The padlock is the jail, the chip behind the bars is the agent.
+The woodcut was generated with Gemini (`gemini-3-pro-image`) as a style transfer from the previous, neon logo during the 2026-10-15 redesign (`../research/design-study.md`), as a stand-in for a commissioned cut. A hand-finished xilogravura can replace the master without touching anything else: export the ink with the command below and the site follows.
 
-The cutout is a flood fill of the white ground from a corner and from inside the shackle, eroded by a pixel and a half to drop the fringe. The favicon (`public/favicon.png`) and the share card (`src/assets/img/og.png`) are made from the master with ImageMagick.
+```bash
+magick woodcut-2048.jpg -colorspace Gray -negate -level 12%,65% -trim +repage -resize 1024x1024 \
+  \( +clone -fill black -colorize 100 \) +swap -alpha off -compose CopyOpacity -composite \
+  -background none -gravity center -extent 1024x1024 ../../src/assets/img/logo.png
+magick ../../src/assets/img/logo.png -resize 128x128 ../../public/favicon.png
+```
 
-An SVG version is not worth making: the artwork is painterly, with glows and gradients, and a vector trace would be either very large or visibly flattened.
+The ink is pure black with alpha, so the same file prints on paper and, inverted by CSS, on ink.

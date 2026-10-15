@@ -4,7 +4,7 @@ import Facts from '@/components/Facts.astro';
 import factsData from '@/data/facts.json';
 import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
-import Figure from '@/components/Figure.astro';
+import Diagram from '@/components/Diagram.astro';
 import Reach from '@/components/Reach.astro';
 import Callout from '@/components/Callout.astro';
 import Faq from '@/components/Faq.astro';
@@ -22,13 +22,13 @@ const advisory = `${site.repo}/security/advisories/new`;
 const faq = raw<FaqItem[]>('faq.items');
 type Point = { title: string; text: string };
 const next = withText([
-  { href: '/how-it-works/', hue: 'orange' },
-  { href: '/configure/', hue: 'gold' },
-  { href: '/compare/', hue: 'cyan' },
+  { href: '/how-it-works/', hue: 'clay' },
+  { href: '/configure/', hue: 'mustard' },
+  { href: '/compare/', hue: 'teal' },
 ] as const, raw<Point[]>('next'));
 
 // Flags are structure; the consequence of each one is in the catalog, in the same order.
-const flags = ['--network', '--allow-host', '--toolchains', '--secret', '--audit-log', '--docker', '--kvm', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--github', '--aws', '--kube', '--gcloud', '--docker-config', '--audio', '--no-private-home'];
+const flags = ['--network', '--allow-host', '--forward-port', '--toolchains', '--secret', '--audit-log', '--docker', '--kvm', '--x11', '--systemd-user', '--inherit-env', '--agent-state', '--github', '--aws', '--kube', '--gcloud', '--docker-config', '--audio', '--no-private-home'];
 const consequences = raw<string[]>('switches.rows');
 
 // Counted in the ai-jail repository at facts.testsCountedAt: #[test] in tests/sandbox_escape.rs and in src/.
@@ -36,21 +36,21 @@ const factLabels = raw<{ label: string }[]>('checked.facts').map((f, i) => (i ==
 const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }, { n: 0, count: false }], factLabels);
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
-  <PageHero hue="red" kicker={t('kicker.security')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="red" page="security" kicker={t('kicker.security')} title={t('hero.title')} lede={t('hero.lede')}>
     <a href={advisory} class="btn btn-primary">{t('hero.report')}</a>
     <a href={`${site.docs}/SECURITY.md`} class="btn btn-ghost">{t('hero.doc')}</a>
   </PageHero>
 
   <Section title={t('stops.title')} lede={t('stops.lede')} hue="red">
-    <Figure name="security-boundary" alt={t('stops.alt')} caption={t('stops.caption')} />
-    <div class="max-w-[46em]" data-reveal>
+    <Diagram name="security-boundary" alt={t('stops.alt')} caption={t('stops.caption')} />
+    <div class="max-w-[46em]">
       <Reach title={t('reach.blocked')} items={raw<{ text: string }[]>('stops.items')} state="blocked" />
     </div>
     <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('stops.link')}</a>
   </Section>
 
   <Section id="limits" title={t('edge.title')} lede={t('edge.lede')} hue="red" tint fill>
-    <Figure name="security-shared-kernel" alt={t('edge.alt')} caption={t('edge.caption')} />
+    <Diagram name="security-shared-kernel" alt={t('edge.alt')} caption={t('edge.caption')} />
     <h3 class="text-xl mb-5">{t('edge.listTitle')}</h3>
     <ul class="ticks max-w-[46em]">
       {raw<string[]>('edge.items').map((item) => <li set:html={item} />)}
@@ -60,7 +60,7 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
     </Callout>
   </Section>
 
-  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold">
+  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="mustard">
     <div class="table-wrap">
       <table class="table-site">
         <thead><tr><th>{t('switches.head.flag')}</th><th>{t('switches.head.gives')}</th></tr></thead>
@@ -73,11 +73,11 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
     </div>
   </Section>
 
-  <Section id="fails-closed" title={t('closed.title')} lede={t('closed.lede')} hue="orange" tint>
+  <Section id="fails-closed" title={t('closed.title')} lede={t('closed.lede')} hue="clay" tint>
     <ul class="ticks max-w-[46em]">
       {raw<string[]>('closed.items').map((item) => <li set:html={item} />)}
     </ul>
-    <Callout title={t('closed.counter.title')} hue="gold">
+    <Callout title={t('closed.counter.title')} hue="mustard">
       <p set:html={t('closed.counter.text')} />
     </Callout>
   </Section>
@@ -88,17 +88,17 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
     <Callout title={t('checked.audit.title')}>
       <p set:html={t('checked.audit.text', { date: date(auditDate) })} />
     </Callout>
-    <div class="max-w-[46em]" data-reveal>
+    <div class="max-w-[46em]">
       <h3 class="text-xl mb-5">{t('checked.fixes.title')}</h3>
       <ul class="ticks">{raw<string[]>('checked.fixes.items').map((item) => <li set:html={item} />)}</ul>
     </div>
 
-    <Callout title={t('checked.log.title')} hue="gold">
+    <Callout title={t('checked.log.title')} hue="mustard">
       <p set:html={t('checked.log.text')} />
     </Callout>
 
     <div class="grid gap-x-12 gap-y-10 md:grid-cols-2 mt-12">
-      <div data-hue="orange">
+      <div data-hue="clay">
         <h3 class="text-xl mb-5">{t('checked.release.title')}</h3>
         <ul class="ticks">{raw<string[]>('checked.release.items').map((item) => <li set:html={item} />)}</ul>
       </div>

@@ -1,8 +1,42 @@
 {
-  "fetchedAt": "2026-10-09T13:29:30.726Z",
-  "stars": 1329,
-  "forks": 128,
+  "fetchedAt": "2026-10-15T15:50:55.993Z",
+  "stars": 1353,
+  "forks": 133,
   "releases": [
+    {
+      "tag": "v2.9.0",
+      "name": "v2.9.0",
+      "date": "2026-10-14T04:41:42Z",
+      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.9.0",
+      "prerelease": false,
+      "body": "# v2.9.0\n\nA feature release: one narrow way to reach a host loopback service without\n`--network`, Devin launching pre-authenticated with its installation\nprotected, Codex starting under macOS Seatbelt again, and two correctness\nfixes.\n\nBackward compatible: every pre-2.9.0 `.ai-jail` keeps working.\n\n## Added\n\n- **`--forward-port PORT` relays one host loopback port into the sandbox\n  (#164, closes #158).** Without `--network` the sandbox has its own\n  loopback, so a local MCP server, an editor's IDE socket, or a dev database\n  on the host's `127.0.0.1` was unreachable, and `--network` — the whole\n  host network back on — was the only way out. `--forward-port` (repeatable;\n  `forward_ports` in the global config) relays exactly that port through a\n  per-launch Unix socket onto the sandbox's own loopback: the private\n  network namespace stays up and every other host port stays unreachable.\n  It composes with filtered egress and `--lockdown`, is refused with\n  `--network`, for ports below 1024, and outside Linux; the agent starts\n  only once every forward bridge is listening, and a bridge that cannot\n  bind fails the launch. At most 256 relays run per forward. A forwarded\n  port is trusted in full — no allowlist, inspection, or audit record — and\n  only the CLI and global config can open one: a project `.ai-jail` cannot,\n  and auto-save and `--init` never write one. The host side dials\n  `127.0.0.1` first and falls back to `[::1]` for IPv6-only services.\n  Thanks @lucascouts.\n\n- **Devin launches pre-authenticated with its managed installation protected\n  (#163).** `ai-jail devin` now shares the existing `devin` state roots\n  under `$XDG_DATA_HOME` and `$XDG_CONFIG_HOME` (defaults `~/.local/share`\n  and `~/.config`) read-write — login, settings, and session history — while\n  the self-managed CLI installation under `devin/cli` stays pinned: `cli` is\n  a mountpoint so it cannot be renamed, and `cli/_versions` is read-only on\n  both backends, with the mutable `current` selector write-denied by node on\n  macOS. A present-but-invalid installation falls back conservatively\n  (read-only data); an absent `cli` (an external install) shares state\n  without installation rules. XDG overrides are resolved physically —\n  symlinked bases and `..` never collapse lexically — and Devin's API host\n  `server.codeium.com` joins the default filtered-egress table, unioned with\n  explicit `--allow-host` as for the other agents. Thanks @lhzapata.\n\n- **`chatgpt.com` joins Codex's default filtered egress (#168).** Workspace-\n  backed Codex needs it alongside `api.openai.com` for ChatGPT OAuth\n  routing; API-key traffic alone needed only the API host.\n\n## Fixed\n\n- **Codex starts again under macOS Seatbelt (#168).** Codex 0.162.1 calls\n  the setuid `/bin/ps` to validate its managed app-server, which Seatbelt\n  refuses to exec. Non-lockdown Codex launches now get a private,\n  unprivileged `ps` shim (this binary, symlinked into the session temp dir)\n  that answers only that one PID/start-time query, reading no command lines\n  or other host process data. The shim also reaches the canonical executable\n  through symlinked launch paths, and Codex's app-server gets the macOS\n  services it needs (CFPreferences shared memory, cfprefsd/trustd lookups)\n  scoped to Codex with `--no-agent-state` opting out. Thanks @andrelramos.\n\n- **`--x11` alone passes X11 through, as documented (#167).** All X11\n  handling lived behind `--display`, so `--x11` without it gave the sandbox\n  no `DISPLAY` and no `/tmp/.X11-unix` — silently, not even under\n  `--verbose` — although every doc describes X11 as its own opt-in. Each\n  flag now gates its own protocol; `--lockdown` still turns both off.\n  Thanks @diogochaves.\n\n- **Auto-save no longer writes opt-ins an untrusted project file would\n  refuse (#166).** One `ai-jail --pictures --no-network true` was enough to\n  get `project .ai-jail pictures ignored because it weakens the baseline\nsandbox` on every later run: auto-save wrote CLI capability opt-ins into\n  the project file that the untrusted merge then rejects. Auto-save now\n  writes exactly what the project layer's own load accepts (tightening\n  values kept; trusted projects unchanged), so a saved file never warns on\n  reload, and files polluted by earlier versions clean themselves up.\n  Thanks @diogochaves.\n\n## Documentation\n\n- **Host-side git and masks noted as residual risks (#165).** The writable\n  project includes `.git/`, which host-side git trusts: a program named in\n  `.git/config` (for example `core.fsmonitor`) or dropped into `.git/hooks/`\n  runs outside the sandbox on the next matching host git operation. The note\n  says what closes it today (`--lockdown`, `--map .git`) and that\n  `--mask`/`--deny-path` change only what the sandbox sees — host-side\n  helpers acting for the agent still read the real files.\n\n## Checksums (SHA256)\n```\n9a6120a67c0e8d14dd57b06c4b003c28b0e565dd1c8632bf998b3c7f878872a9  ai-jail-linux-x86_64.tar.gz\n62b3ece819a899760ef41fa04ab026729703cc388fde486e54b177a7eb253f37  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
+      "assets": [
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.9.0/ai-jail-linux-x86_64.tar.gz",
+          "size": 1626519,
+          "downloads": 114
+        },
+        {
+          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.9.0/ai-jail-linux-x86_64.tar.gz.sha256",
+          "size": 94,
+          "downloads": 7
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.9.0/ai-jail-macos-aarch64.tar.gz",
+          "size": 1370005,
+          "downloads": 46
+        },
+        {
+          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
+          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.9.0/ai-jail-macos-aarch64.tar.gz.sha256",
+          "size": 95,
+          "downloads": 1
+        }
+      ]
+    },
     {
       "tag": "v2.8.1",
       "name": "v2.8.1",
@@ -15,25 +49,25 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-linux-x86_64.tar.gz",
           "size": 1608583,
-          "downloads": 0
+          "downloads": 220
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-linux-x86_64.tar.gz.sha256",
           "size": 94,
-          "downloads": 0
+          "downloads": 25
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-macos-aarch64.tar.gz",
           "size": 1355011,
-          "downloads": 0
+          "downloads": 81
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.1/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
-          "downloads": 0
+          "downloads": 5
         }
       ]
     },
@@ -49,7 +83,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.8.0/ai-jail-linux-x86_64.tar.gz",
           "size": 1608652,
-          "downloads": 32
+          "downloads": 34
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -83,7 +117,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.7.0/ai-jail-linux-x86_64.tar.gz",
           "size": 1606029,
-          "downloads": 148
+          "downloads": 153
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -117,13 +151,13 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.4/ai-jail-linux-x86_64.tar.gz",
           "size": 1602564,
-          "downloads": 1403
+          "downloads": 1730
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.4/ai-jail-linux-x86_64.tar.gz.sha256",
           "size": 94,
-          "downloads": 19
+          "downloads": 20
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz",
@@ -151,7 +185,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.3/ai-jail-linux-x86_64.tar.gz",
           "size": 1598351,
-          "downloads": 74
+          "downloads": 121
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -163,7 +197,7 @@
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.3/ai-jail-macos-aarch64.tar.gz",
           "size": 1344369,
-          "downloads": 15
+          "downloads": 16
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
@@ -185,7 +219,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.2/ai-jail-linux-x86_64.tar.gz",
           "size": 1598167,
-          "downloads": 220
+          "downloads": 255
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -197,13 +231,13 @@
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.2/ai-jail-macos-aarch64.tar.gz",
           "size": 1344231,
-          "downloads": 47
+          "downloads": 48
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.6.2/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
-          "downloads": 1
+          "downloads": 2
         }
       ]
     },
@@ -355,7 +389,7 @@
           "name": "ai-jail-linux-x86_64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-linux-x86_64.tar.gz",
           "size": 1583590,
-          "downloads": 15
+          "downloads": 16
         },
         {
           "name": "ai-jail-linux-x86_64.tar.gz.sha256",
@@ -367,45 +401,11 @@
           "name": "ai-jail-macos-aarch64.tar.gz",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-macos-aarch64.tar.gz",
           "size": 1333682,
-          "downloads": 3
+          "downloads": 4
         },
         {
           "name": "ai-jail-macos-aarch64.tar.gz.sha256",
           "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.4.0/ai-jail-macos-aarch64.tar.gz.sha256",
-          "size": 95,
-          "downloads": 1
-        }
-      ]
-    },
-    {
-      "tag": "v2.3.0",
-      "name": "v2.3.0",
-      "date": "2026-09-30T18:24:32Z",
-      "url": "https://github.com/akitaonrails/ai-jail/releases/tag/v2.3.0",
-      "prerelease": false,
-      "body": "# v2.3.0\n\nA focused audit-log usability and hardening release: readable local summaries,\nshared safe-open checks, and bounded record processing.\n\n## Added\n\n- **Readable local audit summaries with `ai-jail --audit-show`.** Launches,\n  filtered-network decisions, and credential-substitution records are rendered\n  as concise local text. The command exits 0 after a successful display,\n  including an empty log; 1 for malformed records or an I/O/security error;\n  and 2 when the log does not exist. Verification likewise uses 0 for an\n  intact chain, 1 for a broken chain or read/security error, and 2 when the log\n  is missing. The display view summarizes recognized record\n  syntax but intentionally does not verify hash-chain integrity — use\n  `--audit-verify` for that separate check. Displayed launch records may\n  include command arguments, so avoid secrets in argv.\n\n## Security\n\n- **Audit display, verification, and writing now share safe-open hardening.**\n  HOME is the trusted starting directory and may itself be a symlink, including\n  through symlinked ancestors. Once HOME is pinned as a directory descriptor,\n  no symlink is followed below it through\n  `.local/share/ai-jail/history.jsonl`. Readers reject special files,\n  foreign-owned logs, and logs with group or other permissions. The writer\n  rejects special or foreign-owned logs, while preserving compatibility by\n  tightening an existing user-owned regular log to mode 0600 through its opened\n  descriptor. Record handling is bounded for display, verification, and\n  append-time chain seeding,\n  so a malformed oversized record cannot cause unbounded memory growth. The\n  hash chain remains a tamper-evident internal-consistency check, not keyed\n  authenticity.\n- **Audit-logging failures remain best-effort.** Offline audit commands exit 1\n  when HOME is missing, empty, or invalid; a missing log below a valid HOME\n  still exits 2. Failures specific to optional launch logging, including an\n  unusable HOME at audit-log setup, disable logging with a warning but do not\n  prevent launch or override the child's status. Configuration and sandbox\n  validation errors remain fatal, and no fallback audit log is written under\n  `/tmp`.\n\n## Fixed\n\n- **`--audit-show` remains a valid child argument after the command.** As with\n  other command arguments, `ai-jail COMMAND --audit-show` passes the flag to\n  the child; only `ai-jail --audit-show` invokes ai-jail's audit summary. This\n  preserves positional-command compatibility.\n\n## Checksums (SHA256)\n```\ne603b7d8ee582a29cf00631aecbff2cbe906e2e5a829e7ff654f875d88b7ae03  ai-jail-linux-x86_64.tar.gz\nc6facf3905e930f952634e368aa2fbd2d470107b3c7731a388e3f608ffdf5d85  ai-jail-macos-aarch64.tar.gz\n```\n\n## Install\n```bash\nbrew tap akitaonrails/tap && brew install ai-jail\nyay -S ai-jail-bin\ncargo install --locked ai-jail\n```\n",
-      "assets": [
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-linux-x86_64.tar.gz",
-          "size": 1584002,
-          "downloads": 37
-        },
-        {
-          "name": "ai-jail-linux-x86_64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-linux-x86_64.tar.gz.sha256",
-          "size": 94,
-          "downloads": 2
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-macos-aarch64.tar.gz",
-          "size": 1333224,
-          "downloads": 14
-        },
-        {
-          "name": "ai-jail-macos-aarch64.tar.gz.sha256",
-          "url": "https://github.com/akitaonrails/ai-jail/releases/download/v2.3.0/ai-jail-macos-aarch64.tar.gz.sha256",
           "size": 95,
           "downloads": 1
         }

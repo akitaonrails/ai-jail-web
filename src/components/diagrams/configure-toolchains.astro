@@ -1,0 +1,29 @@
+---
+// Toolchains read only from the host, a cache the jail owns, registries and the model API through the proxy;
+// the host cache stays outside.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <Bars x={20} y={30} w={430} h={240} n={6} />
+  <Chip x={60} y={90} label={L['Agent']} />
+  <Box x={240} y={60} w={160} h={56} label={L['Toolchains']} kind="paper" size="small" />
+  <Box x={240} y={150} w={160} h={56} label={L['Jail cache']} kind="teal" size="small" />
+  <Arrow d="M164 120 L240 90" />
+  <Arrow d="M164 150 L240 176" />
+  {/* The gate on the right and the proxy outside it */}
+  <g class="dg-box dg-plate"><rect x={442} y={226} width={16} height={28} /></g>
+  <Arrow d="M106 194 V240 H490" />
+  <Box x={490} y={215} w={90} h={50} label={L['Proxy']} kind="paper" size="small" />
+  <Arrow d="M580 240 L660 240" />
+  <Box x={660} y={215} w={120} h={50} label={L['Registries']} kind="teal" size="small" />
+  <Arrow d="M535 215 V135 H660" />
+  <Box x={660} y={110} w={120} h={50} label={L['Model API']} kind="teal" size="small" />
+  {/* The host cache: outside the wall, no way in */}
+  <Arrow d="M320 272 V296" kind="stopped" />
+  <Box x={240} y={314} w={160} h={56} label={L['Host cache']} kind="blocked" size="small" />
+</svg>

@@ -1,9 +1,4 @@
-// Header: solid ground after the first scroll, the language menu, the mobile drawer, and the language cookie.
-const header = document.querySelector<HTMLElement>('[data-nav]');
-const onScroll = () => header?.toggleAttribute('data-scrolled', scrollY > 8);
-addEventListener('scroll', onScroll, { passive: true });
-onScroll();
-
+// Header: the language menu, the mobile drawer, and the language cookie.
 const drawer = document.querySelector<HTMLDialogElement>('#drawer');
 document.addEventListener('click', (e) => {
   const el = e.target as HTMLElement;

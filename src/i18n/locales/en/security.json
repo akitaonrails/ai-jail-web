@@ -22,7 +22,7 @@
         "text": "Secrets in your shell. ai-jail cuts environment variables down to a small allowlist, so exported tokens stay outside. The one exception is the invoked harness's own API key, for example <code>ANTHROPIC_API_KEY</code> for Claude, copied by default along with its login; <code>--no-agent-state</code> stops that."
       },
       {
-        "text": "The network. It is off, with two exceptions that pass through the filtered proxy: a short list of package registries when toolchains are on, the default on Linux, and, for a known agent such as <code>claude</code> or <code>codex</code>, its one documented API host, on both platforms. Telemetry hosts stay closed. <code>--no-network</code> closes both."
+        "text": "The network. It is off, with two exceptions that pass through the filtered proxy: a short list of package registries when toolchains are on, the default on Linux, and, for a known agent such as <code>claude</code> or <code>codex</code>, its own documented API host, on both platforms (two for Codex). Telemetry hosts stay closed. <code>--no-network</code> closes both."
       },
       {
         "text": "Host shared memory, your display server and your clipboard. Agent output passes through a filter that drops terminal clipboard and query sequences."
@@ -49,6 +49,8 @@
       "Landlock, the kernel's own rules, fences abstract Unix sockets and signals only on kernels 6.12 and newer, best effort. Older kernels keep only the filesystem and network rules, so with <code>--x11</code>, <code>--network</code> or <code>--systemd-user</code> the host's abstract sockets and signals stay reachable.",
       "Secrets inside the project. A <code>.env</code> file in the repository is readable unless you mask it. <a class=\"link\" href=\"/configure/#secrets\">See how to mask files</a>.",
       "Masks cover only paths that exist when the sandbox starts. A secret file created later, during the session, is not hidden.",
+      "Host-side git trusts the project's <code>.git/</code>, which is writable. A program named in <code>.git/config</code>, such as <code>core.fsmonitor</code> or <code>core.pager</code>, or dropped into <code>.git/hooks/</code> runs as you, outside the sandbox, the next time a matching git command runs on the host; for <code>core.fsmonitor</code> a plain <code>git status</code> is enough, even one your editor runs in the background, and nothing shows in <code>git diff</code>. <code>--lockdown</code> closes it by making the project read only, and <code>--map .git</code> keeps the repository read only in a normal run, at the cost of committing from inside. After a session that surprised you, read <code>.git/config</code> and list <code>.git/hooks</code> with plain file tools before you run git on the host, since <code>git config --list</code> itself starts the configured pager.",
+      "<code>--mask</code> and <code>--deny-path</code> change only what the sandbox sees. Anything outside the sandbox that acts for the agent still reads the real files: the Docker daemon under <code>--docker</code>, an MCP server reached through a mapped socket, or a service behind <code>--forward-port</code>.",
       "Side channels and some classes of inter-process communication.",
       "An allowed host is trusted wholesale. Allowing <code>github.com</code> with <code>--allow-host</code> lets the agent push to any repository there, not only yours.",
       "Filtered egress is TCP only. There is no UDP, so a program that needs it does not work; it also cannot leak through it.",
@@ -74,6 +76,7 @@
     "rows": [
       "Send everything it can read anywhere, with no restriction on traffic. The default allows only the known agent's own API host; <code>--allow-host</code> is the tighter alternative.",
       "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale. Your list adds to the agent's own API host; <code>--no-network</code> with a list gives you that list alone.",
+      "Use one service on your host's loopback in full. Whatever the MCP server, editor socket or database on that port accepts, the agent can ask for, with no allowlist, no inspection and no audit record on it. Every other host port stays shut. Linux only, and refused with <code>--network</code>.",
       "On by default on Linux. Run your toolchains: <code>~/.cargo/bin</code> and <code>~/.rustup</code> read-only, a jail-owned dependency cache under <code>~/.local/share/ai-jail/cache/</code> that survives between runs, and filtered egress to the package registries. ai-jail never binds the host's own caches. Off under <code>--lockdown</code> and with <code>--no-toolchains</code>.",
       "Nothing new. The real value of that key never enters the sandbox: the agent sees a placeholder, and the proxy swaps in the real value only for plain-HTTP requests to the one host you bound it to. ai-jail's own process sees that request in clear.",
       "Nothing new. This switch weakens nothing: it writes one line per launch to a file with mode 0600 outside the sandbox, so the agent never sees it.",
@@ -82,7 +85,7 @@
       "Log keystrokes and take screenshots of other X11 windows.",
       "Ask your systemd user manager to run services on the host.",
       "Read your whole shell environment, secrets included. For API keys, <a class=\"link\" href=\"/configure/#secrets\"><code>--env-from-file</code></a> passes one file instead.",
-      "On by default. Use the agent's own saved login, for example Claude's <code>~/.claude</code>, mounted read-write, plus its API key copied from your shell when set, so it starts logged in. Anything in the sandbox can use those credentials for the life of the launch. <code>--no-agent-state</code> gives an isolated, logged-out run; off under <code>--lockdown</code>.",
+      "On by default. Use the agent's own saved login, for example Claude's <code>~/.claude</code> or Devin's <code>~/.local/share/devin</code> and <code>~/.config/devin</code>, mounted read-write, plus its API key copied from your shell when set, so it starts logged in. Anything in the sandbox can use those credentials for the life of the launch. <code>--no-agent-state</code> gives an isolated, logged-out run; off under <code>--lockdown</code>.",
       "Act as you on GitHub. The <code>gh</code> config directory is mounted read-only, and the active github.com token is read from your keyring on the host and forwarded as <code>GH_TOKEN</code> for that launch, never on the command line or on disk. Read-only protects the file; the token still works for as long as it is valid.",
       "Act as you on AWS with <code>~/.aws</code>, mounted read-only.",
       "Act as you on every cluster in <code>~/.kube</code>, mounted read-only.",
@@ -101,6 +104,7 @@
       "<code>--lockdown</code> when Landlock, the kernel's own filesystem rules, is missing, partial or fails to apply. <code>--lockdown --no-landlock</code> is rejected too.",
       "<code>--allow-tcp-port</code>. That interface cannot constrain UDP, so the flag is accepted for compatibility, the launch fails, and the error points at <code>--allow-host</code>.",
       "<code>--network</code> together with <code>--allow-host</code>, or <code>--browser</code> with <code>--allow-host</code>. The two contradict each other, so ai-jail refuses to launch.",
+      "<code>--forward-port</code> together with <code>--network</code>, where the host loopback is already reachable; outside Linux; and for port 0 or a port below 1024, which the sandbox cannot bind. A <code>forward_ports</code> entry in the base table of the global file hits the first two on every browser launch and every macOS launch.",
       "An <code>--env-from-file</code> file that is a symlink, readable by its group or by everyone, owned by someone else or inside the project.",
       "A <code>BWRAP_BIN</code> that points at a bubblewrap binary someone other than root could have replaced. It is ignored with a warning, and with no trusted bubblewrap the launch fails.",
       "An overlay that cannot be set up: a missing source, a destination that overlaps another map, or a storage failure. Since 2.4 the launch aborts instead of falling back to a plain read-write bind of the real files."
@@ -131,6 +135,9 @@
     "fixes": {
       "title": "Recent security fixes",
       "items": [
+        "2.9.0: <code>--x11</code> alone passes X11 through. Before, it silently did nothing without <code>--display</code>.",
+        "2.9.0: Auto-save no longer writes opt-ins into the project file that the untrusted load then refuses, so a saved file never warns on the next run.",
+        "2.9.0: macOS: Codex launches again under Seatbelt with a private <code>ps</code> shim in place of the setuid host <code>ps</code>.",
         "2.8.0: macOS: the seatbelt profile keeps Claude Code's Keychain login and allows the Codex control socket, so both launch logged in.",
         "2.8.0: Cursor-position requests from a launcher are answered by the virtual terminal, so launchers no longer stall.",
         "2.6.2: <code>--lockdown</code> always isolates the network namespace, even with <code>--network</code>. Before, that contradictory pair left the namespace shared.",

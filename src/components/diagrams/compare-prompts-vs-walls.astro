@@ -1,0 +1,28 @@
+---
+// A prompt is a decision: approve and the path to your keys is open. A sandbox is a wall: the kernel rule stops it.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+  {/* Left panel: the permission prompt lets the line through */}
+  <Note x={20} y={14} w={360} label={L['Permission prompt']} size="title" />
+  <Arrow d="M116 160 L308 160" />
+  <Chip x={24} y={120} w={80} label={L['Agent']} />
+  <Box x={130} y={100} w={120} h={80} kind="paper" />
+  <Box x={140} y={110} w={120} h={80} kind="paper" />
+  <Box x={150} y={120} w={120} h={80} kind="paper" />
+  <Box x={162} y={158} w={96} h={32} label={L['Approve']} kind="ink" size="small" />
+  <Box x={310} y={128} w={84} h={64} label={L['Your keys']} kind="optin" size="small" />
+  <path d="M400 20 V300" class="dg-thin" style="stroke-dasharray:4 6" />
+  {/* Right panel: the kernel rule stands between the agent and the keys */}
+  <Note x={420} y={14} w={360} label={L['Sandbox']} size="title" />
+  <Chip x={440} y={120} w={80} label={L['Agent']} />
+  <Arrow d="M532 160 L562 160" kind="stopped" />
+  <Bars x={580} y={70} w={90} h={180} n={3} />
+  <Note x={555} y={256} w={140} h={50} label={L['Kernel rule']} size="small" />
+  <Box x={700} y={128} w={84} h={64} label={L['Your keys']} kind="blocked" size="small" />
+</svg>

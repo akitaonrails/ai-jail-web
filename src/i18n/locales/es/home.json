@@ -4,7 +4,8 @@
     "lede": "Tu agente se ejecuta con tu cuenta de usuario, así que puede leer todo lo que tú puedes leer. ai-jail lo arranca dentro de un sandbox del sistema operativo hecho para frenar los errores de un agente de confianza: el proyecto es escribible, y tus claves, los secretos de tu shell y tu directorio home no están ahí.",
     "install": "Instalar",
     "why": "¿Lo necesito?",
-    "logoAlt": "Un candado hecho de pistas de circuito. Tras las rejas de su ventana hay un microchip que brilla: el agente."
+    "logoAlt": "Un candado hecho de pistas de circuito. Tras las rejas de su ventana hay un microchip que brilla: el agente.",
+    "stamp": "No es una VM"
   },
   "scene": {
     "label": "Lo que el agente puede alcanzar, antes y después de ai-jail",
@@ -34,7 +35,7 @@
       },
       {
         "title": "Abre lo que la tarea necesita",
-        "text": "Un agente en la nube arranca con la sesión iniciada, porque ai-jail monta su login por defecto. Para Claude, Codex, Gemini y Grok no abres nada: ai-jail deja pasar ese único host de la API por su proxy filtrado y mantiene el resto cerrado. <code>--allow-host</code> añade hosts, <code>--network</code> lo abre todo."
+        "text": "Un agente en la nube arranca con la sesión iniciada, porque ai-jail monta su login por defecto. Para Claude, Codex, Gemini, Grok y Devin no abres nada: ai-jail deja pasar el host de la API del propio agente por su proxy filtrado y mantiene el resto cerrado. <code>--allow-host</code> añade hosts, <code>--network</code> lo abre todo."
       }
     ]
   },
@@ -59,7 +60,7 @@
         "text": "El login del propio agente, como <code>~/.claude</code>, para que arranque con la sesión iniciada"
       },
       {
-        "text": "El host de la API de un agente conocido (Claude, Codex, Gemini, Grok) a través de un proxy filtrado, y los registries de paquetes en Linux"
+        "text": "El host de la API de un agente conocido (Claude, Codex, Gemini, Grok, Devin) a través de un proxy filtrado, y los registries de paquetes en Linux"
       },
       {
         "text": "Un directorio home nuevo y un <code>/tmp</code> privado"
@@ -78,7 +79,7 @@
     ],
     "optin": [
       {
-        "text": "<code>--allow-host</code> para más hosts, o <code>--network</code> para toda la red"
+        "text": "<code>--allow-host</code> para más hosts, <code>--forward-port</code> para un servicio local en Linux, o <code>--network</code> para toda la red"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> y más"
@@ -124,7 +125,7 @@
       },
       {
         "q": "¿Qué agentes soporta?",
-        "a": "Cualquier comando. Tiene presets para Claude Code, Codex, Gemini CLI, OpenCode, Crush, Grok, Kimi, pi, jcode y SoulForge, y <code>ai-jail bash</code> te da una shell dentro de la jaula para echar un vistazo."
+        "a": "Cualquier comando. Tiene presets para Claude Code, Codex, Gemini CLI, Devin, OpenCode, Crush, Grok, Kimi, pi, jcode y SoulForge, y <code>ai-jail bash</code> te da una shell dentro de la jaula para echar un vistazo."
       },
       {
         "q": "¿Funciona en Windows?",
@@ -132,7 +133,7 @@
       },
       {
         "q": "Mi agente necesita internet. ¿Sigue sirviendo la jaula?",
-        "a": "Sí. Un agente conocido como Claude Code alcanza su API nada más arrancar y ningún otro host. <code>--allow-host</code> añade los hosts que nombres. Con <code>--network</code> activado, en cambio, el agente sigue pudiendo leer solo tu proyecto, así que tus claves y el resto de tu home no están ahí para enviarlos. Lo que puede leer, puede enviarlo, y por eso importa enmascarar los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
+        "a": "Sí. Un agente conocido como Claude Code alcanza el host de su propia API nada más arrancar y nada más. <code>--allow-host</code> añade los hosts que nombres. Con <code>--network</code> activado, en cambio, el agente sigue pudiendo leer solo tu proyecto, así que tus claves y el resto de tu home no están ahí para enviarlos. Lo que puede leer, puede enviarlo, y por eso importa enmascarar los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
       },
       {
         "q": "¿Es gratis?",

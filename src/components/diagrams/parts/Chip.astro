@@ -1,0 +1,14 @@
+---
+// The agent: a chip with pins, on the teal plate. Always this shape, always teal, in every diagram.
+interface Props { x: number; y: number; w?: number; label: string }
+const { x, y, w = 92, label } = Astro.props;
+const h = w;
+const pins = Array.from({ length: 4 }, (_, i) => y + h * (0.22 + i * 0.19));
+const xhtml = { xmlns: 'http://www.w3.org/1999/xhtml' } as Record<string, string>;
+---
+<g class="dg-box dg-agent dg-chip">
+  {pins.map((py) => <path d={`M${x - 12} ${py} H${x} M${x + w} ${py} H${x + w + 12}`} />)}
+  {pins.map((py) => <path d={`M${py - y + x} ${y - 12} V${y} M${py - y + x} ${y + h} V${y + h + 12}`} />)}
+  <rect x={x} y={y} width={w} height={h} />
+  {label && <foreignObject x={x} y={y} width={w} height={h}><div {...xhtml} class="dg-label" dir="auto"><span>{label}</span></div></foreignObject>}
+</g>

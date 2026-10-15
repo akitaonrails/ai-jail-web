@@ -1,16 +1,16 @@
 ---
-// A band with an h2. `fill` lights the lede word by word as it crosses the viewport (one per page).
+// A chapter: a heavy rule, a numbered-feeling heading, the lede. `tint` prints it on the darker paper.
 import type { Hue } from '@/data/site';
 interface Props { title: string; lede?: string; hue?: Hue; id?: string; tint?: boolean; narrow?: boolean; fill?: boolean; ink?: boolean }
-const { title, lede, hue, id, tint, narrow, fill, ink } = Astro.props;
+const { title, lede, hue, id, tint, narrow, ink } = Astro.props;
 ---
 <section id={id} data-hue={hue} class:list={['band scroll-mt-16', tint && 'bg-tint', ink && 'on-ink']}>
   <div class={narrow ? 'wrap-narrow' : 'wrap'}>
-    <h2 class="text-3xl max-w-[18em]">{title}</h2>
-    {lede && <p class:list={['mt-6', fill ? 'fill-lede' : 'lede']} data-fill={fill ? '' : undefined} set:html={lede} />}
-    <div class="mt-10"><slot /></div>
+    <div class="rule flex items-start gap-3 pt-4">
+      <span class="bars mt-1 shrink-0" aria-hidden="true"><i></i></span>
+      <h2 class="text-3xl max-w-[18em]">{title}</h2>
+    </div>
+    {lede && <p class="lede mt-6" set:html={lede} />}
+    <div class="mt-8"><slot /></div>
   </div>
 </section>
-<style is:global>
-  .fill-lede { font-family: var(--font-display); font-weight: 700; font-size: var(--text-2xl); line-height: 1.25; letter-spacing: -0.015em; max-width: 26em; }
-</style>

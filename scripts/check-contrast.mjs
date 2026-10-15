@@ -17,7 +17,7 @@ function block(selector) {
 
 const root = block(':root');
 const themes = { light: root, dark: { ...root, ...block("\\[data-theme='dark'\\]") } };
-const hues = ['gold', 'orange', 'red', 'magenta', 'cyan'];
+const hues = ['rose', 'clay', 'mustard', 'sage', 'teal', 'indigo', 'red'];
 
 let failed = 0;
 const md = process.argv.includes('--md');

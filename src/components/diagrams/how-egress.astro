@@ -1,0 +1,33 @@
+---
+// The network, three ways. Off: the wall is closed and the internet is not there. Filtered: one gate leads to a
+// proxy, which reaches only the named host. Open: the network side of the wall is gone.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+  {/* Off */}
+  <Note x={10} y={12} w={160} h={34} label={L['Off']} size="title" />
+  <Bars x={20} y={60} w={100} h={200} n={3} />
+  <Chip x={38} y={128} w={64} label="" />
+  <Box x={130} y={140} w={40} h={40} kind="blocked" />
+  {/* Filtered: a gate in the right wall */}
+  <Note x={180} y={12} w={370} h={34} label={L['Filtered']} size="title" />
+  <Bars x={190} y={60} w={100} h={200} n={3} gap="right" />
+  <path d="M290 60 V130 M290 190 V260" class="dg-heavy" />
+  <Chip x={208} y={128} w={64} label="" />
+  <Arrow d="M284 160 L298 160" />
+  <Box x={302} y={142} w={70} h={36} label={L['Proxy']} size="small" />
+  <Arrow d="M372 150 L390 128" />
+  <Box x={392} y={100} w={158} h={40} label="api.anthropic.com" kind="teal" size="small" />
+  <Box x={434} y={190} w={40} h={40} kind="blocked" />
+  {/* Open: the whole network side is missing */}
+  <Note x={560} y={12} w={230} h={34} label={L['Open']} size="title" />
+  <Bars x={570} y={60} w={100} h={200} n={3} gap="right" />
+  <Chip x={588} y={128} w={64} label="" />
+  <Arrow d="M664 160 L716 160" />
+  <Box x={720} y={140} w={40} h={40} kind="teal" />
+</svg>

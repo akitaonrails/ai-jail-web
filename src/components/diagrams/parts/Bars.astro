@@ -1,0 +1,11 @@
+---
+// A wall of prison bars: a rectangle with thick vertical strokes, the window of the padlock. Things inside the
+// wall are what the sandbox holds. `gap`: 'right' leaves the right side open (a gate).
+interface Props { x: number; y: number; w: number; h: number; n?: number; gap?: 'right' }
+const { x, y, w, h, n = 6, gap } = Astro.props;
+const step = w / (n + 1);
+---
+<g class="dg-bars">
+  <path d={gap === 'right' ? `M${x + w} ${y} H${x} V${y + h} H${x + w}` : `M${x} ${y} H${x + w} V${y + h} H${x} Z`} class="dg-heavy" />
+  {Array.from({ length: n }, (_, i) => <rect x={x + step * (i + 1) - 2.5} y={y} width={5} height={h} class="dg-bar" />)}
+</g>

@@ -4,7 +4,8 @@
     "lede": "הסוכן שלכם רץ תחת חשבון המשתמש שלכם, ולכן הוא יכול לקרוא כל מה שאתם יכולים. עם ai-jail הוא עולה בתוך sandbox (ארגז חול) של מערכת ההפעלה שנבנה לעצור טעויות של סוכן אמין: הפרויקט פתוח לכתיבה, והמפתחות, הסודות מה-shell ותיקיית הבית שלכם פשוט לא נמצאים שם.",
     "install": "התקנה",
     "why": "צריכים את זה?",
-    "logoAlt": "מנעול תלוי שעשוי ממוליכי מעגל מודפס. מאחורי הסורגים שבחלון שלו יושב שבב זוהר: הסוכן."
+    "logoAlt": "מנעול תלוי שעשוי ממוליכי מעגל מודפס. מאחורי הסורגים שבחלון שלו יושב שבב זוהר: הסוכן.",
+    "stamp": "לא VM"
   },
   "scene": {
     "label": "לאן הסוכן יכול להגיע, לפני ai-jail ואחריו",
@@ -34,7 +35,7 @@
       },
       {
         "title": "פותחים את מה שהמשימה צריכה",
-        "text": "סוכן שרץ מול הענן עולה מחובר, כי ai-jail מעגן את ההתחברות שלו כברירת מחדל. ל-Claude, Codex, Gemini ו-Grok אין מה לפתוח: ai-jail מעביר את ה-host של ה-API שלהם דרך הפרוקסי המסנן ושומר על כל השאר סגור. <code>--allow-host</code> מוסיף hosts, <code>--network</code> פותח את הכול."
+        "text": "סוכן שרץ מול הענן עולה מחובר, כי ai-jail מעגן את ההתחברות שלו כברירת מחדל. ל-Claude, Codex, Gemini, Grok ו-Devin אין מה לפתוח: ai-jail מעביר את ה-host של ה-API של הסוכן דרך הפרוקסי המסנן ושומר על כל השאר סגור. <code>--allow-host</code> מוסיף hosts, <code>--network</code> פותח את הכול."
       }
     ]
   },
@@ -59,7 +60,7 @@
         "text": "ההתחברות של הסוכן עצמו, למשל <code>~/.claude</code>, כדי שהוא יעלה מחובר"
       },
       {
-        "text": "ה-host של ה-API של סוכן מוכר (Claude, Codex, Gemini, Grok) דרך פרוקסי מסנן, וב-Linux גם ה-registries של החבילות"
+        "text": "ה-host של ה-API של סוכן מוכר (Claude, Codex, Gemini, Grok, Devin) דרך פרוקסי מסנן, וב-Linux גם ה-registries של החבילות"
       },
       {
         "text": "תיקיית בית חדשה ותיקיית <code>/tmp</code> פרטית"
@@ -78,7 +79,7 @@
     ],
     "optin": [
       {
-        "text": "<code>--allow-host</code> ל-hosts נוספים, או <code>--network</code> לכל הרשת"
+        "text": "<code>--allow-host</code> ל-hosts נוספים, <code>--forward-port</code> לשירות מקומי אחד ב-Linux, או <code>--network</code> לכל הרשת"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> ועוד"
@@ -124,7 +125,7 @@
       },
       {
         "q": "באילו סוכנים זה תומך?",
-        "a": "בכל פקודה. יש presets מוכנים עבור Claude Code, Codex, Gemini CLI, OpenCode, Crush, Grok, Kimi, pi, jcode ו-SoulForge, והפקודה <code>ai-jail bash</code> פותחת shell בתוך הכלא כדי שתוכלו להסתכל מסביב."
+        "a": "בכל פקודה. יש presets מוכנים עבור Claude Code, Codex, Gemini CLI, Devin, OpenCode, Crush, Grok, Kimi, pi, jcode ו-SoulForge, והפקודה <code>ai-jail bash</code> פותחת shell בתוך הכלא כדי שתוכלו להסתכל מסביב."
       },
       {
         "q": "זה עובד ב-Windows?",
@@ -132,7 +133,7 @@
       },
       {
         "q": "הסוכן שלי צריך אינטרנט. הכלא עדיין מועיל?",
-        "a": "כן. סוכן מוכר כמו Claude Code מגיע ל-API שלו מיד, בלי הגדרה, ולא לשום host אחר. <code>--allow-host</code> מוסיף את ה-hosts שתציינו. גם אם במקום זה <code>--network</code> דלוק, הסוכן יכול לקרוא רק את הפרויקט שלכם, כך שהמפתחות ושאר תיקיית הבית לא נמצאים שם ואין מה לשלוח. מה שהוא יכול לקרוא, הוא יכול גם לשלוח, ולכן חשוב למסך סודות שנמצאים בתוך הפרויקט. <a class=\"link\" href=\"/configure/#secrets\">כך ממסכים אותם</a>."
+        "a": "כן. סוכן מוכר כמו Claude Code מגיע ל-host של ה-API שלו מיד, בלי הגדרה, ולא לשום מקום אחר. <code>--allow-host</code> מוסיף את ה-hosts שתציינו. גם אם במקום זה <code>--network</code> דלוק, הסוכן יכול לקרוא רק את הפרויקט שלכם, כך שהמפתחות ושאר תיקיית הבית לא נמצאים שם ואין מה לשלוח. מה שהוא יכול לקרוא, הוא יכול גם לשלוח, ולכן חשוב למסך סודות שנמצאים בתוך הפרויקט. <a class=\"link\" href=\"/configure/#secrets\">כך ממסכים אותם</a>."
       },
       {
         "q": "זה בחינם?",

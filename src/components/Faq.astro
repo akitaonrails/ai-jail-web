@@ -7,20 +7,23 @@ const { items, title, hue } = Astro.props;
 ---
 <section class="band" data-hue={hue}>
   <div class="wrap-narrow">
-    <h2 class="text-3xl">{title}</h2>
-    <div class="mt-8 border-t border-line">
+    <div class="rule flex items-start gap-3 pt-4"><span class="bars mt-1 shrink-0" aria-hidden="true"><i></i></span><h2 class="text-3xl">{title}</h2></div>
+    <div class="mt-8 rule-thin">
       {items.map((f) => (
-        <details class="faq border-b border-line">
-          <summary><span>{f.q}</span><span class="bars" aria-hidden="true"><i></i></span></summary>
-          <div class="pb-6 text-muted prose-site" set:html={f.a} />
+        <details class="faq border-b-[1.5px] border-line">
+          <summary><span>{f.q}</span><span class="faq-mark" aria-hidden="true">+</span></summary>
+          <div class="pb-6 prose-site" set:html={f.a} />
         </details>
       ))}
     </div>
   </div>
 </section>
 <style is:global>
-  .faq summary { display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding-block: 1.25rem; cursor: pointer; list-style: none; font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); }
+  .faq summary { display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding-block: 1.1rem; cursor: pointer; list-style: none; font-weight: 600; font-size: var(--text-lg); }
   .faq summary::-webkit-details-marker { display: none; }
-  .faq .bars { block-size: 1.1rem; gap: 0.3rem; flex-shrink: 0; transition: transform 0.3s; }
-  .faq[open] .bars { transform: rotate(90deg); }
+  .faq-mark { font-family: var(--font-mono); font-weight: 700; font-size: 1.4rem; line-height: 1; flex-shrink: 0; inline-size: 1.6rem; block-size: 1.6rem; display: grid; place-items: center; border: 2px solid var(--line); color: var(--hue, var(--text)); }
+  .faq[open] .faq-mark { background: var(--text); color: var(--bg); }
+  .faq[open] .faq-mark::before { content: '–'; }
+  .faq[open] .faq-mark { font-size: 0; }
+  .faq[open] .faq-mark::before { font-size: 1.4rem; }
 </style>

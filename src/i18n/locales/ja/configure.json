@@ -15,7 +15,7 @@
     "alt": "3つの設定元がジェイルにつながっています。プロジェクトの.ai-jailファイルはジェイルを厳しくすることしかできません。グローバルの~/.ai-jailファイルは信頼されます。コマンドラインのフラグはどちらよりも優先されます。ジェイルの中では、エージェントがスイッチの列の奥にいて、スイッチのほとんどはオフです。",
     "caption": "cloneしたリポジトリが、自分のジェイルを開けることはできません。",
     "points": [
-      { "title": "プロジェクトの<code>.ai-jail</code>", "text": "ai-jailはこれを信頼できないものとして扱います。ジェイルを厳しくはできても、開けることはできません。ai-jailがシンボリックリンク越しにこのファイルを読むことはなく、エージェントにはその場所に空のファイルが見えます。" },
+      { "title": "プロジェクトの<code>.ai-jail</code>", "text": "ai-jailはこれを信頼できないものとして扱います。ジェイルを厳しくはできても、開けることはできません。<code>allow_hosts</code>や<code>forward_ports</code>のリストを縮めることはできても、足すことはできません。ai-jailがシンボリックリンク越しにこのファイルを読むことはなく、エージェントにはその場所に空のファイルが見えます。" },
       { "title": "グローバルの<code>~/.ai-jail</code>", "text": "あなたのものなので、ai-jailは信頼します。すべての実行に適用される基本テーブルと、コマンドの最初の単語で選ばれる<code>[commands.&lt;name&gt;]</code>テーブルを持てます。" },
       { "title": "コマンドラインのフラグ", "text": "フラグの権限が最も強くなります。ほとんどのスイッチは<code>--network</code>と<code>--no-network</code>のように対になっているので、ファイルが開けたものをフラグで閉じることもできます。" }
     ],
@@ -38,8 +38,9 @@
       {
         "title": "ネットワークとサービス",
         "rows": [
-          { "text": "ネットワーク全体。エージェントが読めるものは何でも外に送れます。必要なホストが少数なら、<code>--allow-host</code>のほうが厳密です。どちらのフラグもなければ、サンドボックスが届くのはツールチェーンがプロキシ経由で開ける<a class=\"link\" href=\"#toolchains\">パッケージレジストリ</a>と、既知のエージェント（Claude、Codex、Gemini、Grok）のAPIホスト1つだけで、<code>--no-network</code>はそれらもすべて閉じます。" },
+          { "text": "ネットワーク全体。エージェントが読めるものは何でも外に送れます。必要なホストが少数なら、<code>--allow-host</code>のほうが厳密です。どちらのフラグもなければ、サンドボックスが届くのはツールチェーンがプロキシ経由で開ける<a class=\"link\" href=\"#toolchains\">パッケージレジストリ</a>と、既知のエージェント（Claude、Codex、Gemini、Grok、Devin。CodexにはChatGPTログイン用の<code>chatgpt.com</code>も）のAPIホストだけで、<code>--no-network</code>はそれらもすべて閉じます。" },
           { "text": "サンドボックスは、指定したホストとそのサブドメインにだけ、ai-jail組み込みのプロキシ経由のTCPで届きます。フラグは繰り返せます。2.8.1からはリストがデフォルトに足されるので、既知のエージェントは自身のAPIホストを保ちます。<code>--network</code>や<code>--browser</code>とは併用できず、プロジェクトファイルはリストを縮めることしかできません。" },
+          { "text": "ホストのループバックのポート1つを、サンドボックス自身のループバックに中継します。ホストの<code>127.0.0.1</code>にあるローカルのMCPサーバー、エディタのソケット、開発用データベースが中でも同じポートで応答し、ホストのほかのポートはすべて閉じたままです。ポートを増やすにはフラグを繰り返します。Linuxのみで、<code>--network</code>との併用と1024未満のポートは拒否されます。<code>--allow-host</code>と併用でき、<code>--lockdown</code>下でも動きます。ポートの先のサービスは丸ごと信頼され、許可リストも監査の記録もありません。プロジェクトファイルはリストを縮めることしかできず、<code>forward_ports</code>は<code>[commands.&lt;name&gt;]</code>テーブルの下に書きます。ベーステーブルに書くと、ブラウザ起動とmacOSでの起動がすべて失敗します。" },
           { "text": "読み取り専用の<code>~/.ssh</code>とSSHエージェントのソケット。<code>git push</code>が動くようになります。" },
           { "text": "Dockerソケット。デーモンはホストをマウントしたコンテナを起動できるので、事実上そのマシンのroot権限です。" },
           { "text": "Tailscaleのソケット。" },
@@ -49,7 +50,7 @@
       {
         "title": "エージェントと環境",
         "rows": [
-          { "text": "エージェント自身のログイン情報。<code>~/.claude</code>や<code>~/.codex</code>など、起動したハーネスの状態を読み書き可能でマウントし、シェルに設定されていればそのAPIキーもコピーします：<code>ANTHROPIC_API_KEY</code>、<code>OPENAI_API_KEY</code>、<code>GEMINI_API_KEY</code>または<code>GOOGLE_API_KEY</code>、<code>XAI_API_KEY</code>、<code>MOONSHOT_API_KEY</code>。エージェントはログイン済みで起動し、ジェイルの中のものは何でもそのログインを使えます。<code>--no-agent-state</code>を付けるとログアウト状態での実行になります。ロックダウンでは無効で、プロジェクトファイルは無効にすることしかできません。" },
+          { "text": "エージェント自身のログイン情報。<code>~/.claude</code>や<code>~/.codex</code>、Devinの<code>~/.local/share/devin</code>と<code>~/.config/devin</code>など、起動したハーネスの状態を読み書き可能でマウントし、シェルに設定されていればそのAPIキーもコピーします：<code>ANTHROPIC_API_KEY</code>、<code>OPENAI_API_KEY</code>、<code>GEMINI_API_KEY</code>または<code>GOOGLE_API_KEY</code>、<code>XAI_API_KEY</code>、<code>MOONSHOT_API_KEY</code>。エージェントはログイン済みで起動し、ジェイルの中のものは何でもそのログインを使えます。<code>--no-agent-state</code>を付けるとログアウト状態での実行になります。ロックダウンでは無効で、プロジェクトファイルは無効にすることしかできません。" },
           { "text": "指定したディレクトリをClaudeの状態保存先として使い、<code>CLAUDE_CONFIG_DIR</code>を設定します。" },
           { "text": "シェルの変数を1つ渡すか、<code>NAME=VALUE</code>で1つ設定します。繰り返し指定でき、ディスクには保存されません。Linuxでは値はメモリ上のファイルを通してサンドボックスに渡り、ランチャーのコマンドラインには現れませんが、<code>NAME=VALUE</code>をそのまま書けばai-jail自身のコマンドラインには見えるので、シークレットには<code>--env NAME</code>か<code>--env-from-file</code>を使ってください。" },
           { "text": "ファイルから厳密な<code>KEY=VALUE</code>形式の行を読み、<code>--env</code>と同じように渡します。重なった場合はそちらが優先です。ファイルはあなたが所有する通常ファイルで、モードは0600かそれより厳しく、プロジェクトの外にある必要があります。満たさなければ起動は失敗します。ai-jailが値をディスクに保存することはなく、設定キーはグローバルファイルでのみ有効です。" },
@@ -129,7 +130,7 @@
     "alt": "プロジェクトフォルダの図。エージェントはsrc、package.json、README.mdに届きます。.envファイルはマスクされ、secretsフォルダは拒否されています。どちらも暗く、格子がかかっていて、エージェントからの線は届いていません。",
     "caption": "プロジェクトのそれ以外の部分は元のままです。",
     "points": [
-      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "一致したものをすべて空のプレースホルダーに置き換えます。エージェントにはファイルがあることは見えますが、中身は得られません。存在を確認するだけのツールはそのまま動きます。" },
+      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "一致したものをすべて空のプレースホルダーに置き換えます。エージェントにはファイルがあることは見えますが、中身は得られません。存在を確認するだけのツールはそのまま動きます。マスクが変えるのはサンドボックスから見えるものだけです。DockerデーモンやMCPサーバーなど、ホスト側でエージェントの代わりに動くものは本物のファイルを読みます。" },
       { "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>", "text": "一致したものすべてを、アクセスすると権限エラーになるようにします。" },
       { "title": "<code>--mask-except</code>と<code>--deny-path-except</code>", "text": "ルールからパスを1つ除外します。保護を弱めるので、プロジェクトファイルでは設定できません。" }
     ],
@@ -153,8 +154,8 @@
   "toolchains": {
     "title": "ツールチェーンも一緒に入る",
     "lede": "ビルドにはコンパイラ、パッケージマネージャー、そのキャッシュが要ります。Linuxでは、ai-jailがデフォルトでそれらを持ち込みます。ツールは読み取り専用、キャッシュはジェイル専用のストア、パッケージレジストリにはフィルタ付きプロキシ経由で届きます。",
-    "alt": "ジェイルの壁の中で、エージェントは「ツールチェーン」と書かれた鍵付きの工具箱と、「ジェイルのキャッシュ」と書かれた箱に手が届く。壁の外では、ホストのキャッシュが暗く格子がかかり、そこへの線はない。右側では、エージェントからの線がゲートとプロキシの箱を通って「レジストリ」と書かれた雲へ伸びる。その上の「モデルAPI」の雲は暗く、格子がかかっている。",
-    "caption": "ホスト自身のキャッシュは外に残るので、ジェイル内のビルドがホストのビルド元を汚染することはありません。エージェントのAPIは、自分で開けるまで閉じたままです。",
+    "alt": "ジェイルの壁の中で、エージェントは「ツールチェーン」と書かれた箱と、「ジェイルのキャッシュ」と書かれた箱に手が届く。壁の下では、ホストのキャッシュに斜線がかかり、そこへの線は切れている。右側では、エージェントからの線がゲートを抜けてプロキシの箱へ伸び、そこから「レジストリ」と「モデルAPI」へつながる。",
+    "caption": "ホスト自身のキャッシュは外に残るので、ジェイル内のビルドがホストのビルド元を汚染することはありません。プロキシが通すのはレジストリとエージェント自身のAPIホストだけです。",
     "points": [
       { "title": "ツールは読み取り専用", "text": "2.4.1から、ai-jailはmiseでインストールしたものと設定を読み取り専用でマップします。Rustでは<code>~/.cargo/bin</code>と<code>~/.rustup</code>も同じ方法でマップするので、<code>cargo</code>と<code>rustc</code>が解決できます。Cargoの認証情報と<code>config.toml</code>は入れません。miseは読み取り専用のマップには何もインストールできないので、ai-jailは中で<code>MISE_NOT_FOUND_AUTO_INSTALL=false</code>を設定し、足りないツールは一度だけ失敗し、呼び出しのたびに失敗することはありません。" },
       { "title": "ジェイル専用のキャッシュ", "text": "依存キャッシュは<code>~/.local/share/ai-jail/cache/</code>の下に置かれ、セッションをまたいで残ります。Cargoのレジストリとgitのキャッシュもここです。pip、uv、Go、npm、yarn、pnpm、bun、deno、Maven、Gradle、Coursier、Composer、Crystal、Zigのデフォルトのキャッシュも、そのツールのディレクトリがマシンにあれば同じです。" },
@@ -179,7 +180,7 @@
       { "text": "<code>--no-network</code>：完全にオフライン。<code>--allow-host</code>のリストを併用すると、サンドボックスは指定したホストだけに到達し、自動のデフォルトは付きません。" },
       { "text": "<code>--no-agent-state</code>：ログインなし。ハーネスの状態は外に残り、APIキーもコピーされません。" },
       { "text": "<code>--no-toolchains</code>：依存キャッシュもパッケージレジストリもなし。" },
-      { "text": "<code>--mask</code>、<code>--deny-path</code>、<code>--hide-dotdir</code>は個別のパスを取り除き、狭い<code>--map</code>や<code>--rw-map</code>は広い許可の代わりになります。" },
+      { "text": "<code>--mask</code>、<code>--deny-path</code>、<code>--hide-dotdir</code>は個別のパスを取り除き、狭い<code>--map</code>や<code>--rw-map</code>は広い許可の代わりになります。これらが変えるのはサンドボックスから見えるものだけで、Dockerデーモンや<code>--forward-port</code>の先のサービスなど、ホスト側のヘルパーは本物のファイルを読みます。" },
       { "text": "<code>--lockdown</code>：プロジェクトは読み取り専用、ログインもツールチェーンもレジストリもなし、Landlockとseccompは厳格。それでもVMではありません。" }
     ],
     "other": {
@@ -190,7 +191,7 @@
   "lockdown": {
     "title": "ロックダウン：変更させたくないコードを読ませる",
     "lede": "<code>--lockdown</code>はレビューや監査のためのモードです。エージェントはプロジェクトを読んで質問に答えられますが、ファイルは1つも変更できません。",
-    "alt": "2枚のパネル。通常モードでは、エージェントは壁の中で、読み書きできるプロジェクトフォルダと/tmpフォルダの隣にいます。ロックダウンでは壁が厚くなり、プロジェクトフォルダは読み取り専用で、書き込めるのは/tmpだけです。",
+    "alt": "2枚のパネル。通常モードでは、エージェントは壁の中で、読み書きできるプロジェクトの隣にいます。ロックダウンでは壁の格子が増え、プロジェクトは読み取り専用になります。",
     "caption": "エージェントとプロジェクトは同じで、書き込めるのは一時ディレクトリだけです。",
     "changes": "変わる点",
     "items": [
@@ -214,10 +215,11 @@
     "title": "レシピ",
     "lede": "コピーして使ってください。何が組み立てられるかを確かめるには、先に<code>--dry-run</code>を付けて実行します。",
     "items": [
-      { "title": "クラウド型エージェントを日常的に使う", "text": "既知のエージェントはログイン済みで始まり、フィルタ付きプロキシ経由で自身のAPIホストにだけ届きます。タスクにもっと必要なら、グローバルファイルの<code>allow_hosts</code>にAPIホストと追加分を書くか、<code>network = true</code>でネットワーク全体を開けます。" },
-      { "title": "ai-jailが知らないエージェント", "text": "ai-jailが自らAPIホストを許可するのは4つのエージェントです。Claude <code>api.anthropic.com</code>、Codex <code>api.openai.com</code>、Gemini <code>generativelanguage.googleapis.com</code>、Grok <code>api.x.ai</code>。それ以外のエージェントのホストは<code>--allow-host</code>であなたが指定します。リストにホストがなければ、起動時の警告がその名前を示します。" },
+      { "title": "クラウド型エージェントを日常的に使う", "text": "既知のエージェントはログイン済みで始まり、フィルタ付きプロキシ経由で自身のAPIホストにだけ届きます。Codexにはもう1つ、ChatGPTログイン用の<code>chatgpt.com</code>も加わります。タスクにもっと必要なら、グローバルファイルの<code>allow_hosts</code>にAPIホストと追加分を書くか、<code>network = true</code>でネットワーク全体を開けます。" },
+      { "title": "ai-jailが知らないエージェント", "text": "ai-jailが自らAPIホストを許可するのは5つのエージェントです。Claude <code>api.anthropic.com</code>、Codex <code>api.openai.com</code>とChatGPTログイン用の<code>chatgpt.com</code>、Gemini <code>generativelanguage.googleapis.com</code>、Grok <code>api.x.ai</code>、Devin <code>server.codeium.com</code>。それ以外のエージェントのホストは<code>--allow-host</code>であなたが指定します。リストにホストがなければ、起動時の警告がその名前を示します。" },
       { "title": "ログアウト状態での実行", "text": "エージェントに認証情報を一切持たせたくないときは、<code>--no-agent-state</code>で状態ディレクトリもAPIキーも外に置きます。エージェントはログアウト状態で起動し、新しいホームの中でログインしたものも、実行が終わると消えます。" },
       { "title": "グローバルファイルに許可ホストを書く", "text": "このリストはそのコマンドの毎回の実行に、エージェント自身のAPIホストに加えて適用されます。許可したホストは丸ごと信頼されます。<code>github.com</code>を許可すると、あなたの認証情報が届くどのリポジトリにもエージェントがpushできるので、それを望むときだけ足してください。" },
+      { "title": "ローカルのMCPサーバーやデータベース", "text": "<code>--network</code>なしではサンドボックスに専用のループバックがあるので、ホストの<code>127.0.0.1</code>で動くサーバーには届きません。<code>--forward-port</code>はそのポート1つだけを中継します。Linuxのみです。グローバルファイルでは<code>forward_ports</code>をコマンドのテーブルの下に書き、ベーステーブルには書かないでください。このフラグは<code>--network</code>（<code>--browser</code>は通常これを含みます）との併用時とmacOSでは拒否されるので、ベースに書くとそれらの起動が失敗します。" },
       { "title": "エージェントが決して見ないキー", "text": "サンドボックスの<code>ANTHROPIC_API_KEY</code>にはプレースホルダーが入り、ai-jailのプロキシが本物のキーを<code>api.anthropic.com</code>宛てのリクエストだけに入れます。クライアントはそのホストに向けてプロキシへ平文のHTTPを送る必要があり、<code>http://</code>のベースURLならそうなります。その後、ai-jailがリクエストをTLSで本物のホストへ運びます。HTTPSトンネルしか開かないクライアントは、置き換えなしでそのまま動きます。" },
       { "title": "SSH経由でgit pushする", "text": "<code>--ssh</code>は<code>~/.ssh</code>を読み取り専用でマウントし、SSHエージェントのソケットを転送します。pushにはネットワークも必要です。" },
       { "title": "ジェイルの中でビルドとテスト", "text": "Linuxでは何も足す必要がありません。<code>cargo build</code>、<code>npm install</code>、<code>go get</code>はプロキシ経由でレジストリから取得してジェイル専用のストアにキャッシュし、miseでインストールしたものも読み取り専用で付いてきます。何にも触れず、どこにも届かない実行にしたいなら、両方を無効にします。" },
@@ -230,7 +232,8 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# または、ネットワーク全体を開ける：network = true",
-      "hosts": "# claude、codex、gemini、grokにフラグは不要：ai-jailが自らAPIホストを許可する",
+      "hosts": "# claude、codex、gemini、grok、devinにフラグは不要：ai-jailが自らAPIホストを許可する",
+      "forward": "# または~/.ai-jailに一度だけ、コマンドの下に書く。ベーステーブルには書かない",
       "phantom": "# キーは0600のファイルにある。サンドボックスに見えるのはAIJAIL-PHANTOM-...だけ",
       "build": "# Linuxのデフォルト：キャッシュ有効、レジストリにはプロキシ経由で届く",
       "offline": "# 何もマップせず、どこにも届かない",

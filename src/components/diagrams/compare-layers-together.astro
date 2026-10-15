@@ -1,0 +1,28 @@
+---
+// Both at once: ai-jail wraps the agent, its MCP servers, hooks, project and shell commands; the agent's own prompt
+// keeps working inside; the only way out is the line to the model API; your home stays outside.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <Note x={24} y={8} w={200} label="ai-jail" size="title" />
+  <Bars x={20} y={46} w={570} h={334} n={7} />
+  <Box x={40} y={92} w={120} h={50} label={L['MCP servers']} kind="teal" size="small" />
+  <Box x={40} y={166} w={120} h={50} label={L['Hooks']} kind="teal" size="small" />
+  <Box x={40} y={240} w={120} h={50} label={L['Project']} kind="teal" size="small" />
+  <Chip x={195} y={120} label={L['Agent']} />
+  <Box x={330} y={130} w={120} h={72} label={L["Agent's prompts"]} kind="paper" size="small" />
+  <Arrow d="M299 166 L330 166" />
+  <Box x={470} y={142} w={100} h={48} label={L['Shell commands']} kind="paper" size="small" />
+  <Arrow d="M450 166 L470 166" />
+  {/* The gate: a cut in the wall where the model API line leaves */}
+  <g class="dg-box dg-plate"><rect x={582} y={68} width={16} height={28} /></g>
+  <Arrow d="M241 108 V82 H660" />
+  <Box x={660} y={58} w={120} h={48} label={L['Model API']} kind="teal" size="small" />
+  <Box x={670} y={250} w={110} h={64} label={L['Your home']} kind="blocked" size="small" />
+  <Arrow d="M596 282 L650 282" kind="stopped" />
+</svg>

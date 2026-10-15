@@ -1,0 +1,19 @@
+---
+// The view from inside the cell: the agent, the project, a fresh home and the system tools. Beyond the bars, not
+// there: SSH keys, cloud logins, other projects, the network.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <Bars x={150} y={40} w={500} h={320} n={10} />
+  <Chip x={196} y={104} w={100} label={L['Agent']} />
+  <Box x={330} y={80} w={170} h={110} label={L['Project']} kind="teal" size="big" />
+  <Box x={330} y={230} w={130} h={64} label={L['Empty home']} kind="tint" />
+  <Box x={476} y={230} w={154} h={64} label={L['System tools']} kind="tint" />
+  <Box x={16} y={80} w={120} h={64} label={L['SSH keys']} kind="blocked" />
+  <Box x={16} y={250} w={120} h={64} label={L['Cloud logins']} kind="blocked" />
+  <Box x={660} y={80} w={126} h={64} label={L['Other projects']} kind="blocked" />
+  <Box x={660} y={250} w={126} h={64} label={L['Network']} kind="blocked" />
+</svg>

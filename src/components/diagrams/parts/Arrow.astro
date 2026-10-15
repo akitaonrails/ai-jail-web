@@ -1,0 +1,7 @@
+---
+// A connection. `d` is an SVG path (M x y L x y ...). kind: solid (default), dashed (optional path), stopped (ends
+// in a red cross: this path is cut), both (arrowheads at both ends), line (no arrowhead).
+interface Props { d: string; kind?: 'solid' | 'dashed' | 'stopped' | 'both' | 'line'; thin?: boolean }
+const { d, kind = 'solid', thin } = Astro.props;
+---
+<path d={d} class:list={[kind !== 'line' && 'dg-arrow', kind !== 'solid' && kind !== 'line' && `dg-${kind}`, thin && 'dg-thin']} />

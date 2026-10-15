@@ -15,7 +15,7 @@
     "alt": "Três fontes alimentam a jaula. O arquivo .ai-jail do projeto só consegue apertá-la. O arquivo global ~/.ai-jail é confiável. As flags de linha de comando têm prioridade sobre os dois. Dentro da jaula fica o agente, atrás de uma fileira de interruptores, a maioria desligada.",
     "caption": "Um repositório que você clonou não consegue abrir a própria jaula.",
     "points": [
-      { "title": "<code>.ai-jail</code> do projeto", "text": "O ai-jail trata esse arquivo como não confiável: ele pode apertar a jaula, nunca abrir. O ai-jail nunca o segue através de um symlink, e o agente vê um arquivo vazio no lugar dele." },
+      { "title": "<code>.ai-jail</code> do projeto", "text": "O ai-jail trata esse arquivo como não confiável: ele pode apertar a jaula, nunca abrir. Pode encurtar uma lista <code>allow_hosts</code> ou <code>forward_ports</code>, nunca acrescentar a ela. O ai-jail nunca o segue através de um symlink, e o agente vê um arquivo vazio no lugar dele." },
       { "title": "<code>~/.ai-jail</code> global", "text": "É seu, então o ai-jail confia nele. Ele guarda uma tabela base para todas as execuções, mais tabelas <code>[commands.&lt;name&gt;]</code> escolhidas pela primeira palavra do comando." },
       { "title": "Flags de linha de comando", "text": "As flags têm a maior autoridade. A maioria das opções vem em pares, como <code>--network</code> e <code>--no-network</code>, então uma flag também fecha o que um arquivo abriu." }
     ],
@@ -38,8 +38,9 @@
       {
         "title": "Rede e serviços",
         "rows": [
-          { "text": "A rede inteira. Tudo o que o agente consegue ler, ele consegue enviar para fora. Se o agente só precisa de alguns hosts, <code>--allow-host</code> é a escolha mais apertada. Sem nenhuma das duas flags, o sandbox alcança só os <a class=\"link\" href=\"#toolchains\">registries de pacotes</a> que as toolchains abrem pelo proxy, mais o único host da API de um agente conhecido (Claude, Codex, Gemini, Grok), e <code>--no-network</code> fecha todos esses." },
+          { "text": "A rede inteira. Tudo o que o agente consegue ler, ele consegue enviar para fora. Se o agente só precisa de alguns hosts, <code>--allow-host</code> é a escolha mais apertada. Sem nenhuma das duas flags, o sandbox alcança só os <a class=\"link\" href=\"#toolchains\">registries de pacotes</a> que as toolchains abrem pelo proxy, mais o host da API de um agente conhecido (Claude, Codex, Gemini, Grok, Devin; o Codex também recebe <code>chatgpt.com</code>, para o login via ChatGPT), e <code>--no-network</code> fecha todos esses." },
           { "text": "O sandbox alcança só o host listado e seus subdomínios, por TCP, pelo proxy embutido do ai-jail. A flag pode ser repetida. Desde a 2.8.1 a lista soma ao padrão, então um agente conhecido continua com o próprio host da API. Não combina com <code>--network</code> nem com <code>--browser</code>, e um arquivo de projeto só pode encurtar a lista." },
+          { "text": "Uma porta do loopback do host, repassada para o loopback do próprio sandbox. Um servidor MCP local, o socket de um editor ou um banco de dados de desenvolvimento no <code>127.0.0.1</code> do host responde na mesma porta lá dentro, e todas as outras portas do host continuam fechadas. Repita a flag para mais portas. Só no Linux, e recusada com <code>--network</code> e para portas abaixo de 1024. Funciona com <code>--allow-host</code> e sob <code>--lockdown</code>. O serviço atrás da porta é confiável por inteiro, sem allowlist e sem registro no log de auditoria. Um arquivo de projeto só consegue encurtar a lista, e <code>forward_ports</code> fica embaixo de uma tabela <code>[commands.&lt;name&gt;]</code>: uma entrada na tabela base faz falhar toda inicialização com navegador e toda inicialização no macOS." },
           { "text": "O seu <code>~/.ssh</code>, somente leitura, e o socket do seu agente SSH, para o <code>git push</code> funcionar." },
           { "text": "O socket do Docker. Na prática é root na sua máquina, porque o daemon pode subir containers que montam o host." },
           { "text": "O socket do Tailscale." },
@@ -49,7 +50,7 @@
       {
         "title": "Agente e ambiente",
         "rows": [
-          { "text": "O login do próprio agente. O estado do harness iniciado, como <code>~/.claude</code> ou <code>~/.codex</code>, é montado com leitura e escrita, e a chave de API dele é copiada do seu shell quando estiver definida: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> ou <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. O agente começa logado, e tudo o que roda na jaula pode usar esse login. <code>--no-agent-state</code> dá uma execução sem login. Desligado no lockdown, e um arquivo de projeto só pode desligar." },
+          { "text": "O login do próprio agente. O estado do harness iniciado, como <code>~/.claude</code>, <code>~/.codex</code> ou, no caso do Devin, <code>~/.local/share/devin</code> e <code>~/.config/devin</code>, é montado com leitura e escrita, e a chave de API dele é copiada do seu shell quando estiver definida: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> ou <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>. O agente começa logado, e tudo o que roda na jaula pode usar esse login. <code>--no-agent-state</code> dá uma execução sem login. Desligado no lockdown, e um arquivo de projeto só pode desligar." },
           { "text": "Usa o diretório informado como estado do Claude e define <code>CLAUDE_CONFIG_DIR</code>." },
           { "text": "Repassa uma variável do seu shell, ou define uma com <code>NAME=VALUE</code>. Pode ser repetida e nunca é salva em disco. No Linux os valores viajam até o sandbox por um arquivo em memória e nunca aparecem na linha de comando do launcher, mas um <code>NAME=VALUE</code> literal continua visível na linha de comando do próprio ai-jail, então para um segredo prefira <code>--env NAME</code> ou <code>--env-from-file</code>." },
           { "text": "Lê linhas <code>KEY=VALUE</code> estritas de um arquivo e as repassa como <code>--env</code>, que ganha em caso de conflito. O arquivo precisa ser seu, um arquivo regular, com modo 0600 ou mais restrito e fora do projeto, senão a inicialização falha. O ai-jail nunca grava os valores em disco, e a chave de configuração só funciona a partir do arquivo global." },
@@ -129,7 +130,7 @@
     "alt": "Uma pasta de projeto. O agente alcança src, package.json e README.md. O arquivo .env está mascarado e a pasta secrets está negada: os dois aparecem apagados e gradeados, e nenhuma linha do agente chega até eles.",
     "caption": "O resto do projeto continua como estava.",
     "points": [
-      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "Substitui cada arquivo que bate com o padrão por um placeholder vazio. O agente vê que o arquivo existe e não recebe conteúdo nenhum, então ferramentas que só checam a existência dele continuam funcionando." },
+      { "title": "<code>--mask &lt;PATH|GLOB&gt;</code>", "text": "Substitui cada arquivo que bate com o padrão por um placeholder vazio. O agente vê que o arquivo existe e não recebe conteúdo nenhum, então ferramentas que só checam a existência dele continuam funcionando. A máscara muda só o que o sandbox vê. Um ajudante no host que age em nome do agente, como o daemon do Docker ou um servidor MCP, continua lendo o arquivo real." },
       { "title": "<code>--deny-path &lt;PATH|GLOB&gt;</code>", "text": "Transforma cada caminho que bate com o padrão num erro de permissão." },
       { "title": "<code>--mask-except</code> e <code>--deny-path-except</code>", "text": "Tiram um caminho de dentro de uma regra. Elas enfraquecem a proteção, então um arquivo de projeto não pode defini-las." }
     ],
@@ -153,8 +154,8 @@
   "toolchains": {
     "title": "Suas toolchains vão junto",
     "lede": "Um build precisa de compiladores, gerenciadores de pacotes e seus caches. No Linux, o ai-jail leva tudo isso para dentro por padrão: as ferramentas em somente leitura, os caches num store que pertence à jaula, e os registries de pacotes alcançáveis pelo proxy filtrado.",
-    "alt": "Dentro do muro da jaula, o agente alcança uma caixa de ferramentas trancada chamada Toolchains e uma caixa chamada Cache da jaula. Fora do muro, o cache do host aparece apagado e gradeado, sem nenhuma linha até ele. À direita, uma linha sai do agente, passa por um portão e por uma caixa de proxy e chega a uma nuvem chamada Registries. Acima dela, a nuvem da API do modelo aparece apagada e gradeada.",
-    "caption": "Os caches do próprio host ficam do lado de fora, então um build na jaula não consegue envenenar o que o host compila a partir deles. A API do agente continua fechada até você abrir.",
+    "alt": "Dentro do muro da jaula, o agente alcança uma caixa chamada Toolchains e uma caixa chamada Cache da jaula. Abaixo do muro, o cache do host aparece hachurado, com a linha até ele cortada. À direita, uma linha sai do agente por um portão até uma caixa de proxy, e dali até Registries e até a API do modelo.",
+    "caption": "Os caches do próprio host ficam do lado de fora, então um build na jaula não consegue envenenar o que o host compila a partir deles. O proxy deixa passar os registries e o host da API do próprio agente, e nada mais.",
     "points": [
       { "title": "Ferramentas, somente leitura", "text": "Desde a 2.4.1, o ai-jail mapeia as instalações e a configuração do mise em somente leitura. Para Rust, mapeia <code>~/.cargo/bin</code> e <code>~/.rustup</code> do mesmo jeito, para o <code>cargo</code> e o <code>rustc</code> resolverem. As credenciais do Cargo e o <code>config.toml</code> ficam de fora. Como o mise não consegue instalar nada num mapeamento somente leitura, o ai-jail define <code>MISE_NOT_FOUND_AUTO_INSTALL=false</code> lá dentro, então uma ferramenta que falta falha uma vez, em vez de a cada chamada." },
       { "title": "Um cache da própria jaula", "text": "Os caches de dependências ficam em <code>~/.local/share/ai-jail/cache/</code> e sobrevivem entre sessões. O registry e os caches de git do Cargo vão para lá. O cache padrão de pip, uv, Go, npm, yarn, pnpm, bun, deno, Maven, Gradle, Coursier, Composer, Crystal e Zig também, quando o diretório daquela ferramenta existe na sua máquina." },
@@ -183,7 +184,7 @@
       { "text": "<code>--no-network</code>: totalmente offline. Junto com uma lista de <code>--allow-host</code>, o sandbox alcança só os hosts que você nomear, sem os padrões automáticos." },
       { "text": "<code>--no-agent-state</code>: sem login. O estado do harness fica de fora e a chave de API dele não é copiada." },
       { "text": "<code>--no-toolchains</code>: sem caches de dependências e sem registries de pacotes." },
-      { "text": "<code>--mask</code>, <code>--deny-path</code> e <code>--hide-dotdir</code> tiram caminhos específicos, e um <code>--map</code> ou <code>--rw-map</code> estreito substitui uma permissão ampla." },
+      { "text": "<code>--mask</code>, <code>--deny-path</code> e <code>--hide-dotdir</code> tiram caminhos específicos, e um <code>--map</code> ou <code>--rw-map</code> estreito substitui uma permissão ampla. Eles mudam o que o sandbox vê; um ajudante no host, como o daemon do Docker ou um serviço atrás de <code>--forward-port</code>, continua lendo os arquivos reais." },
       { "text": "<code>--lockdown</code>: o projeto em somente leitura, sem login, sem toolchains, sem registries, Landlock e seccomp estritos, e ainda assim não é uma VM." }
     ],
     "other": {
@@ -194,7 +195,7 @@
   "lockdown": {
     "title": "Lockdown: o agente lê o código e não pode alterar nada",
     "lede": "<code>--lockdown</code> serve para revisões e auditorias. O agente lê o projeto e responde perguntas sobre ele, mas não consegue alterar nenhum arquivo.",
-    "alt": "Dois painéis. No modo normal, o agente fica dentro do muro ao lado de uma pasta de projeto em que pode ler e escrever e de uma pasta /tmp. No lockdown o muro é mais grosso, a pasta do projeto é somente leitura e /tmp é o único lugar gravável.",
+    "alt": "Dois painéis. No modo normal, o agente fica dentro do muro ao lado de um projeto em que pode ler e escrever. No lockdown o muro tem mais grades e o projeto é somente leitura.",
     "caption": "O agente e o projeto são os mesmos, e só um diretório temporário é gravável.",
     "changes": "O que muda",
     "items": [
@@ -218,10 +219,11 @@
     "title": "Receitas",
     "lede": "Copie uma. Para ver o que ela monta, rode antes com <code>--dry-run</code>.",
     "items": [
-      { "title": "Um agente em nuvem, no dia a dia", "text": "Um agente conhecido começa logado e alcança só o próprio host da API, pelo proxy filtrado. Quando uma tarefa precisa de mais, coloque <code>allow_hosts</code> no arquivo global com o host da API mais os extras, ou abra a rede inteira com <code>network = true</code>." },
-      { "title": "Um agente que o ai-jail não conhece", "text": "O ai-jail libera o host da API por conta própria para quatro agentes: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code>, Gemini <code>generativelanguage.googleapis.com</code> e Grok <code>api.x.ai</code>. Qualquer outro agente recebe o host de você, com <code>--allow-host</code>. Se o host estiver faltando na lista, o aviso de inicialização diz qual é." },
+      { "title": "Um agente em nuvem, no dia a dia", "text": "Um agente conhecido começa logado e alcança só o próprio host da API, pelo proxy filtrado; o Codex recebe um segundo, <code>chatgpt.com</code>, para o login via ChatGPT. Quando uma tarefa precisa de mais, coloque <code>allow_hosts</code> no arquivo global com o host da API mais os extras, ou abra a rede inteira com <code>network = true</code>." },
+      { "title": "Um agente que o ai-jail não conhece", "text": "O ai-jail libera o host da API por conta própria para cinco agentes: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> mais <code>chatgpt.com</code> para o login via ChatGPT, Gemini <code>generativelanguage.googleapis.com</code>, Grok <code>api.x.ai</code> e Devin <code>server.codeium.com</code>. Qualquer outro agente recebe o host de você, com <code>--allow-host</code>. Se o host estiver faltando na lista, o aviso de inicialização diz qual é." },
       { "title": "Uma execução sem login", "text": "Quando o agente não deve ter credencial nenhuma, <code>--no-agent-state</code> deixa de fora o diretório de estado e a chave de API dele. Ele começa deslogado, e qualquer login que fizer dentro do home novo some quando a execução termina." },
       { "title": "Hosts permitidos no arquivo global", "text": "A lista vale para toda execução daquele comando, além do host da API do próprio agente. Um host permitido é confiável por inteiro: <code>github.com</code> deixa o agente fazer push em qualquer repositório que as suas credenciais alcançam, então só adicione se for isso mesmo que você quer." },
+      { "title": "Um servidor MCP ou banco de dados local", "text": "Sem <code>--network</code> o sandbox tem o próprio loopback, então um servidor no <code>127.0.0.1</code> do seu host fica fora de alcance. <code>--forward-port</code> repassa essa única porta e nada mais, no Linux. No arquivo global, coloque <code>forward_ports</code> embaixo da tabela do comando e nunca na tabela base: a flag é recusada com <code>--network</code>, que <code>--browser</code> normalmente implica, e no macOS, então uma entrada na base faria essas inicializações falharem." },
       { "title": "Uma chave que o agente nunca vê", "text": "O sandbox recebe um placeholder em <code>ANTHROPIC_API_KEY</code>, e o proxy do ai-jail coloca a chave real só nas requisições para <code>api.anthropic.com</code>. O cliente precisa enviar HTTP puro ao proxy para esse host, e é o que a URL base <code>http://</code> faz; o ai-jail então leva a requisição até o host real por TLS. Um cliente que só abre túneis HTTPS continua funcionando, sem substituição." },
       { "title": "Git push via SSH", "text": "<code>--ssh</code> monta <code>~/.ssh</code> como somente leitura e encaminha o socket do seu agente SSH. O push também precisa da rede." },
       { "title": "Compilar e testar dentro da jaula", "text": "No Linux, nada a acrescentar. <code>cargo build</code>, <code>npm install</code> ou <code>go get</code> baixam dos registries pelo proxy e guardam o cache no store da própria jaula, e as instalações do mise vão junto em somente leitura. Para uma execução que não toca em nada e não alcança nada, desligue os dois." },
@@ -236,7 +238,8 @@
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# ou abra a rede inteira: network = true",
-      "hosts": "# claude, codex, gemini e grok não precisam de flag: o ai-jail libera o host da API deles sozinho",
+      "hosts": "# claude, codex, gemini, grok e devin não precisam de flag: o ai-jail libera o host da API deles sozinho",
+      "forward": "# ou uma vez em ~/.ai-jail, embaixo do comando, nunca na tabela base",
       "phantom": "# a chave mora no arquivo 0600; o sandbox só vê AIJAIL-PHANTOM-...",
       "build": "# padrão no Linux: caches ligados, registries alcançáveis pelo proxy",
       "offline": "# nada mapeado, nada alcançável"

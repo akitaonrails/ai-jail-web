@@ -1,0 +1,12 @@
+---
+// A labeled box. kind: paper (default), tint, agent, inside, optin, blocked, ink, ghost, plate, or a spot color
+// (rose, clay, mustard, sage, teal, indigo). `size`: small, big or title changes the label. The label wraps inside
+// the box, so give long labels room: about 9px per character at the default size.
+interface Props { x: number; y: number; w: number; h: number; label?: string; kind?: string; size?: 'small' | 'big' | 'title'; align?: 'start'; muted?: boolean; class?: string }
+const { x, y, w, h, label, kind = 'paper', size, align, muted, class: cls } = Astro.props;
+const xhtml = { xmlns: 'http://www.w3.org/1999/xhtml' } as Record<string, string>;
+---
+<g class:list={['dg-box', `dg-${kind}`, muted && 'dg-muted', cls]}>
+  <rect x={x} y={y} width={w} height={h} />
+  {label && <foreignObject x={x} y={y} width={w} height={h}><div {...xhtml} class:list={['dg-label', size && `dg-${size}`, align && `dg-${align}`]} dir="auto"><span>{label}</span></div></foreignObject>}
+</g>

@@ -1,14 +1,50 @@
 ---
-// Top of every detail page. Slot: one or two buttons.
+// Top of every detail page: a kicker in the subject's color, a wood-type title, the lede. Slot: one or two buttons.
+// `page` picks the page's own ornament, so a reader knows where they are before reading: a poster plate behind the
+// title (why), nested rings (how), ruled ledger paper (compare), a row of switches (configure), a hatched warning
+// band (security), a punched ticket (install), a parcel label with a double border (download).
 import type { Hue } from '@/data/site';
-interface Props { hue: Hue; kicker: string; title: string; lede: string }
-const { hue, kicker, title, lede } = Astro.props;
+interface Props { hue: Hue; page?: 'why' | 'how' | 'compare' | 'configure' | 'security' | 'install' | 'download'; kicker: string; title: string; lede: string }
+const { hue, page, kicker, title, lede } = Astro.props;
 ---
-<section data-hue={hue} class="pt-36 pb-10 md:pt-44">
+<section data-hue={hue} data-page={page} class="hero pt-28 pb-10 md:pt-36">
   <div class="wrap">
-    <div class="flex items-center gap-3 mb-6"><span class="bars" aria-hidden="true"><i></i></span><span class="kicker">{kicker}</span></div>
-    <h1 class="text-4xl max-w-[15em]" data-reveal>{title}</h1>
-    <p class="lede mt-7 !text-[1.35rem]">{lede}</p>
-    {Astro.slots.has('default') && <div class="mt-9 flex flex-wrap gap-3"><slot /></div>}
+    <div class="hero-box">
+      <div class="flex items-center gap-3 mb-5"><span class="bars" aria-hidden="true"><i></i></span><span class="kicker">{kicker}</span></div>
+      <h1 class="text-4xl max-w-[14em]"><span class="title-plate">{title}</span></h1>
+      <p class="lede mt-6 !text-[1.3rem]">{lede}</p>
+      {Astro.slots.has('default') && <div class="mt-8 flex flex-wrap gap-3"><slot /></div>}
+      {page === 'how' && <svg class="rings" viewBox="0 0 200 200" aria-hidden="true"><rect x="4" y="4" width="192" height="192" /><rect x="28" y="28" width="144" height="144" /><rect x="52" y="52" width="96" height="96" /><rect x="76" y="76" width="48" height="48" /><rect x="92" y="92" width="16" height="16" class="core" /></svg>}
+      {page === 'configure' && <svg class="switches" viewBox="0 0 320 24" aria-hidden="true">{[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <rect x={i * 40 + 2} y="2" width="20" height="20" class={i % 3 === 0 ? 'on' : undefined} />)}</svg>}
+    </div>
+    <div class="rule-double mt-10" aria-hidden="true"></div>
   </div>
 </section>
+<style>
+  .hero-box { position: relative; }
+  /* why: the title on a poster plate, pulled a little out of register. */
+  [data-page='why'] .title-plate { position: relative; display: inline; }
+  [data-page='why'] .title-plate::before { content: ''; position: absolute; inset: 0.05em -0.25em -0.02em -0.2em; background: var(--hue-soft); z-index: -1; transform: rotate(-0.6deg); }
+  [data-page='why'] h1 { position: relative; z-index: 0; }
+  /* how: the five layers, nested, at the end side. */
+  .rings { position: absolute; inset-inline-end: 0; inset-block-start: -1rem; inline-size: clamp(7rem, 16vw, 12rem); block-size: auto; fill: none; stroke: var(--line); stroke-width: 3; z-index: -1; opacity: 0.9; }
+  .rings rect:nth-child(odd) { fill: var(--hue-soft); }
+  .rings .core { fill: var(--v-teal); }
+  /* compare: ruled paper, like a ledger. */
+  [data-page='compare'] { background-image: repeating-linear-gradient(0deg, transparent 0 2.1rem, color-mix(in oklch, var(--hue) 35%, transparent) 2.1rem calc(2.1rem + 1.5px)); background-size: 100% 100%; }
+  [data-page='compare'] .hero-box { border-inline-start: 3px solid var(--hue); padding-inline-start: 1.25rem; }
+  /* configure: a row of switches under the lede. */
+  .switches { display: block; inline-size: min(20rem, 100%); block-size: auto; margin-block-start: 1.75rem; fill: var(--surface); stroke: var(--line); stroke-width: 2; }
+  .switches .on { fill: var(--hue-vivid); }
+  /* security: a hatched warning band along the start edge. */
+  [data-page='security'] .hero-box { padding-inline-start: 1.5rem; }
+  [data-page='security'] .hero-box::before { content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: 0.75rem; background: repeating-linear-gradient(45deg, var(--surface) 0 6px, var(--v-red) 6px 10px); border: 2px solid var(--line); }
+  /* install: a punched ticket around the kicker and title. */
+  [data-page='install'] .hero-box { padding: 1.25rem 1.5rem; border: var(--rule) dashed var(--line); background: var(--hue-soft); }
+  [data-page='install'] .hero-box::before, [data-page='install'] .hero-box::after { content: ''; position: absolute; inset-block-start: 50%; inline-size: 1.4rem; block-size: 1.4rem; border-radius: 50%; background: var(--bg); border: var(--rule) solid var(--line); transform: translateY(-50%); }
+  [data-page='install'] .hero-box::before { inset-inline-start: -0.9rem; }
+  [data-page='install'] .hero-box::after { inset-inline-end: -0.9rem; }
+  /* download: a parcel label with a double border and the offset shadow. */
+  [data-page='download'] .hero-box { padding: 1.5rem 1.75rem; border: var(--rule) double var(--line); outline: var(--rule) solid var(--line); outline-offset: 4px; background: var(--surface); box-shadow: var(--press); margin-inline: 4px; }
+  @media (max-width: 47.99rem) { .rings { inline-size: 5rem; inset-block-start: -2.5rem; } }
+</style>

@@ -1,0 +1,25 @@
+---
+// Five kernel walls around the agent, outside in: namespaces, filesystem, Landlock, seccomp, limits. Your home sits
+// outside all of them. Landlock and seccomp are kernel names, the same in every language.
+import Box from './parts/Box.astro';
+import Chip from './parts/Chip.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+const rings = [
+  { x: 170, y: 10, s: 404, label: L['Namespaces'], kind: 'tint' },
+  { x: 198, y: 38, s: 348, label: L['Filesystem'], kind: 'paper' },
+  { x: 226, y: 66, s: 292, label: 'Landlock', kind: 'tint' },
+  { x: 254, y: 94, s: 236, label: 'seccomp', kind: 'paper' },
+  { x: 282, y: 122, s: 180, label: L['Limits'], kind: 'tint' },
+];
+---
+<svg viewBox="0 0 700 420" xmlns="http://www.w3.org/2000/svg">
+  {rings.map((r) => (
+    <>
+      <Box x={r.x} y={r.y} w={r.s} h={r.s} kind={r.kind} />
+      <Note x={r.x} y={r.y + 1} w={r.s} h={26} label={r.label} size="small" />
+    </>
+  ))}
+  <Chip x={320} y={166} w={100} label={L['Agent']} />
+  <Box x={16} y={190} w={140} h={60} label={L['Your home']} kind="blocked" />
+</svg>

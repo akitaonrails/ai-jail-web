@@ -1,0 +1,29 @@
+---
+// Three sources feed the jail: the project file can only tighten, the global file is trusted, the flags win.
+import Box from './parts/Box.astro';
+import Bars from './parts/Bars.astro';
+import Chip from './parts/Chip.astro';
+import Arrow from './parts/Arrow.astro';
+import Note from './parts/Note.astro';
+const { labels: L } = Astro.props as { labels: Record<string, string> };
+---
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+  <Box x={30} y={40} w={210} h={56} label={L['Project .ai-jail']} kind="ghost" size="small" muted />
+  <Note x={30} y={100} w={210} h={30} label={L['Can only tighten']} size="small" muted />
+  <Box x={30} y={150} w={210} h={56} label={L['Global ~/.ai-jail']} kind="paper" size="small" />
+  <Note x={30} y={210} w={210} h={30} label={L['Trusted']} size="small" />
+  <Box x={30} y={260} w={210} h={56} label={L['Command-line flags']} kind="ink" size="small" />
+  <Note x={30} y={320} w={210} h={30} label={L['Wins']} size="small" />
+  <Arrow d="M240 68 L380 176" kind="dashed" thin />
+  <Arrow d="M240 178 L380 200" />
+  <path d="M240 288 L380 224" class="dg-arrow dg-heavy" />
+  <Note x={400} y={8} w={300} label={L['The jail']} size="title" />
+  <Bars x={400} y={44} w={300} h={316} n={6} />
+  <Chip x={520} y={150} label={L['Agent']} />
+  {/* The row of switches on the wall: two open, three shut */}
+  <Box x={392} y={124} w={18} h={28} kind="paper" />
+  <Box x={392} y={158} w={18} h={28} kind="optin" />
+  <Box x={392} y={192} w={18} h={28} kind="paper" />
+  <Box x={392} y={226} w={18} h={28} kind="paper" />
+  <Box x={392} y={260} w={18} h={28} kind="optin" />
+</svg>

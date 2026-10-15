@@ -2,7 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import Section from '@/components/Section.astro';
-import Figure from '@/components/Figure.astro';
+import Diagram from '@/components/Diagram.astro';
 import FeatureGrid from '@/components/FeatureGrid.astro';
 import Reach from '@/components/Reach.astro';
 import Callout from '@/components/Callout.astro';
@@ -15,7 +15,7 @@ export const getStaticPaths = localePaths;
 const { t, raw, href } = useI18n(Astro, 'configure');
 type Text = { title: string; text: string };
 
-const sources = withText([{ hue: 'red' }, { hue: 'gold' }, { hue: 'orange' }] as const, raw<Text[]>('authority.points'));
+const sources = withText([{ hue: 'red' }, { hue: 'mustard' }, { hue: 'clay' }] as const, raw<Text[]>('authority.points'));
 const globalToml = [
   t('authority.codeBase'),
   'hide_dotdirs = [".my_secrets"]',
@@ -28,12 +28,13 @@ const globalToml = [
   'mask = ["*.pem"]',
 ].join('\n');
 
-// Structure of the switch tables. `risk`: optin (gold) opens one thing, weakens (red) is on the Security list, default (cyan) is on unless turned off.
+// Structure of the switch tables. `risk`: optin (mustard) opens one thing, weakens (red) is on the Security list, default (teal) is on unless turned off.
 type Risk = 'optin' | 'weakens' | 'default' | undefined;
 const rows: { flag: string; key?: string; risk?: Risk }[][] = [
   [
     { flag: '--network', key: 'network = true', risk: 'weakens' },
     { flag: '--allow-host <HOST>', key: 'allow_hosts = [...]', risk: 'optin' },
+    { flag: '--forward-port <PORT>', key: 'forward_ports = [...]', risk: 'weakens' },
     { flag: '--ssh', key: 'ssh = true', risk: 'optin' },
     { flag: '--docker', key: 'no_docker = false', risk: 'weakens' },
     { flag: '--tailscale', key: 'tailscale = true', risk: 'optin' },
@@ -96,11 +97,11 @@ const groups = raw<{ title: string; rows: { text: string }[] }[]>('switches.grou
   title: g.title,
   rows: withText(rows[i], g.rows),
 }));
-const riskHue = { optin: 'gold', weakens: 'red', default: 'cyan' } as const;
+const riskHue = { optin: 'mustard', weakens: 'red', default: 'teal' } as const;
 const utility = rows.length - 1; // the last group has no config keys and no risk column
 const layers = 5;
 
-const maskPoints = withText([{ hue: 'gold' }, { hue: 'red' }, { hue: 'orange' }] as const, raw<Text[]>('secrets.points'));
+const maskPoints = withText([{ hue: 'mustard' }, { hue: 'red' }, { hue: 'clay' }] as const, raw<Text[]>('secrets.points'));
 const maskFlags = [
   t('secrets.flagsNote'),
   "ai-jail --mask .env --mask '.env.*' --mask '*.pem' --deny-path secrets/ claude",
@@ -123,7 +124,7 @@ const keysToml = [
   'env_from_file = ["~/.secrets/claude.env"]',
 ].join('\n');
 
-const toolPoints = withText([{ hue: 'gold' }, { hue: 'gold' }, { hue: 'cyan' }] as const, raw<Text[]>('toolchains.points'));
+const toolPoints = withText([{ hue: 'mustard' }, { hue: 'mustard' }, { hue: 'teal' }] as const, raw<Text[]>('toolchains.points'));
 const toolCode = [
   t('toolchains.code.default'),
   'ai-jail claude',
@@ -140,6 +141,7 @@ const recipeCode = [
   { code: ['ai-jail --allow-host api.example.com myagent', t('recipes.comments.hosts')].join('\n') },
   { code: 'ai-jail --no-agent-state claude' },
   { code: '[commands.claude]\nallow_hosts = ["github.com"]', codeTitle: '~/.ai-jail' },
+  { code: ['ai-jail --forward-port 49374 claude', '', t('recipes.comments.forward'), '[commands.claude]', 'forward_ports = [49374]'].join('\n'), codeTitle: '~/.ai-jail' },
   { code: [t('recipes.comments.phantom'), 'ai-jail --allow-host api.anthropic.com \\', '  --env-from-file ~/.secrets/claude.env \\', '  --secret ANTHROPIC_API_KEY=api.anthropic.com \\', '  --env ANTHROPIC_BASE_URL=http://api.anthropic.com claude'].join('\n') },
   { code: 'ai-jail --network --ssh claude' },
   { code: [t('recipes.comments.build'), 'ai-jail claude', '', t('recipes.comments.offline'), 'ai-jail --no-toolchains --no-network claude'].join('\n') },
@@ -157,29 +159,29 @@ const turnDown = withText(
 );
 
 const next = withText(
-  [{ hue: 'red', href: '/security/' }, { hue: 'orange', href: '/how-it-works/' }, { hue: 'cyan', href: '/install/' }] as const,
+  [{ hue: 'red', href: '/security/' }, { hue: 'clay', href: '/how-it-works/' }, { hue: 'teal', href: '/install/' }] as const,
   raw<Text[]>('next.items'),
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <PageHero hue="gold" kicker={t('kicker.configure')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="mustard" page="configure" kicker={t('kicker.configure')} title={t('hero.title')} lede={t('hero.lede')}>
     <a href="#switches" class="btn btn-primary">{t('hero.switches')}</a>
     <a href={href('/install/')} class="btn btn-ghost">{t('hero.install')}</a>
   </PageHero>
 
-  <Section title={t('authority.title')} lede={t('authority.lede')} hue="gold">
-    <Figure name="configure-authority" alt={t('authority.alt')} caption={t('authority.caption')} />
+  <Section title={t('authority.title')} lede={t('authority.lede')} hue="mustard">
+    <Diagram name="configure-authority" alt={t('authority.alt')} caption={t('authority.caption')} />
     <FeatureGrid items={sources} />
     <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-start">
       <div>
         <p class="lede" set:html={t('authority.merge')} />
-        <Callout title={t('authority.trust.title')} hue="gold"><p set:html={t('authority.trust.text')} /></Callout>
+        <Callout title={t('authority.trust.title')} hue="mustard"><p set:html={t('authority.trust.text')} /></Callout>
       </div>
       <CodeBlock code={globalToml} title={t('authority.codeTitle')} />
     </div>
   </Section>
 
-  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="gold" tint>
+  <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="mustard" tint>
     <div class="grid gap-14">
       {groups.map((g, gi) => (
         <div>
@@ -213,8 +215,8 @@ const next = withText(
     <p class="mt-10 text-muted" set:html={t('switches.more')} />
   </Section>
 
-  <Section id="secrets" title={t('secrets.title')} lede={t('secrets.lede')} hue="gold">
-    <Figure name="configure-mask" alt={t('secrets.alt')} caption={t('secrets.caption')} />
+  <Section id="secrets" title={t('secrets.title')} lede={t('secrets.lede')} hue="mustard">
+    <Diagram name="configure-mask" alt={t('secrets.alt')} caption={t('secrets.caption')} />
     <FeatureGrid items={maskPoints} />
     <div class="mt-12 grid gap-6 lg:grid-cols-2 items-start">
       <CodeBlock code={maskFlags} title={t('secrets.flagsTitle')} />
@@ -231,12 +233,12 @@ const next = withText(
     </div>
   </Section>
 
-  <Section id="toolchains" title={t('toolchains.title')} lede={t('toolchains.lede')} hue="gold" tint>
-    <Figure name="configure-toolchains" alt={t('toolchains.alt')} caption={t('toolchains.caption')} />
+  <Section id="toolchains" title={t('toolchains.title')} lede={t('toolchains.lede')} hue="mustard" tint>
+    <Diagram name="configure-toolchains" alt={t('toolchains.alt')} caption={t('toolchains.caption')} />
     <FeatureGrid items={toolPoints} />
     <div class="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr] items-start">
       <div class="grid gap-6">
-        <Callout title={t('toolchains.optout.title')} hue="gold"><p set:html={t('toolchains.optout.text')} /></Callout>
+        <Callout title={t('toolchains.optout.title')} hue="mustard"><p set:html={t('toolchains.optout.text')} /></Callout>
         <Callout title={t('toolchains.caveat.title')}><p set:html={t('toolchains.caveat.text')} /></Callout>
       </div>
       <CodeBlock code={toolCode} title={t('toolchains.codeTitle')} />
@@ -251,7 +253,7 @@ const next = withText(
   </Section>
 
   <Section id="lockdown" title={t('lockdown.title')} lede={t('lockdown.lede')} hue="red" tint>
-    <Figure name="configure-lockdown" alt={t('lockdown.alt')} caption={t('lockdown.caption')} />
+    <Diagram name="configure-lockdown" alt={t('lockdown.alt')} caption={t('lockdown.caption')} />
     <div class="grid gap-10 lg:grid-cols-2 items-start">
       <Reach title={t('lockdown.changes')} items={raw<{ text: string }[]>('lockdown.items')} state="blocked" />
       <div>
@@ -261,8 +263,8 @@ const next = withText(
     </div>
   </Section>
 
-  <Section title={t('recipes.title')} lede={t('recipes.lede')} hue="gold">
-    <div class="grid gap-x-8 gap-y-12 lg:grid-cols-2" data-reveal="children">
+  <Section title={t('recipes.title')} lede={t('recipes.lede')} hue="mustard">
+    <div class="grid gap-x-8 gap-y-12 lg:grid-cols-2">
       {recipes.map((r) => (
         <div class="grid gap-4 content-start min-w-0">
           <span class="bars" aria-hidden="true"><i></i></span>
@@ -274,7 +276,7 @@ const next = withText(
     </div>
   </Section>
 
-  <Section title={t('compat.title')} hue="gold" narrow tint>
+  <Section title={t('compat.title')} hue="mustard" narrow tint>
     <div class="prose-site">
       <p set:html={t('compat.text')} />
       <p class="text-muted" set:html={t('compat.legacy')} />
