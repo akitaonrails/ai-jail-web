@@ -1,6 +1,6 @@
 # Design study: leaving the "AI slop" look
 
-Written 2026-10-15 after the owner reported that readers call the site's design "AI slop". Prototypes live in `docs/research/prototypes/` (`a.html`, `b.html`, `c.html`, open them in a browser; `desktop.jpg` and `phone.jpg` are the review sheets).
+Written 2026-10-15 after the owner reported that readers call the site's design "AI slop". The chosen prototype lives in `docs/research/prototypes/c.html` (open it in a browser; `desktop.jpg` and `phone.jpg` are the review sheets). The terminal-native and blueprint prototypes were dropped on 2026-10-15 after the owner chose C.
 
 ## What people are recognizing
 
@@ -42,9 +42,11 @@ Brazilian xilogravura: black ink on unbleached paper, a hand-cut padlock with th
 - For: the most original of the three and the only one tied to the author rather than to a template; it does not look like any developer tool; the printed-page grammar (rules, columns, stamps) replaces cards and glow at no cost; it also makes a good sticker and README header.
 - Against: illustrations for every technical diagram would be slow by hand; pair it with code-built line diagrams in the same black-on-paper language, and reserve woodcuts for the logo and one hero per page.
 
-## Recommendation
+## Decision (2026-10-15)
 
-**C, with B's diagram engine.** The woodcut gives the brand a face that is unmistakably not generated; code-built SVG line diagrams in the same ink-on-paper language give the technical pages precision and free localization. Keep the cyan as the one accent for the agent and the primary button (it survives on cream as a deep teal), and keep the warm family only in the generated-free form of red ink stamps and rules.
+The owner chose **C, with B's diagram engine**, and asked for a little more color: muted pastel spot colors, in the cordel vibe, to give cards and sections character. The prototype now carries six flat spot colors (rose, mustard, sage, teal, indigo, clay) on cream, each with a darker ink variant for text, used as flat tinted blocks with thick ink borders and hard offset shadows, and as misregistered color plates behind the woodcut. Subject mapping stays one color per subject.
+
+**Original recommendation:** C, with B's diagram engine. The woodcut gives the brand a face that is unmistakably not generated; code-built SVG line diagrams in the same ink-on-paper language give the technical pages precision and free localization. Keep the cyan as the one accent for the agent and the primary button (it survives on cream as a deep teal), and keep the warm family only in the generated-free form of red ink stamps and rules.
 
 Order of work if approved:
 
