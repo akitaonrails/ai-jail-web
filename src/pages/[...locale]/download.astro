@@ -71,7 +71,7 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <PageHero hue="teal" page="download" kicker={t('kicker.download')} title={t('hero.title', { tag })} lede={t('hero.lede', { date: date(latest.date), license: facts.license })}>
+  <PageHero hue="teal" page="download" kicker={t('kicker.download')} title={t('hero.title', { tag })} lede={t('hero.lede', { date: date(latest.date), license: facts.license })} audience={t('hero.audience')}>
     <a href="#builds" class="btn btn-primary">{t('hero.jump')}</a>
     <a href="#changelog" class="btn btn-ghost">{t('hero.changelog')}</a>
   </PageHero>
@@ -123,8 +123,8 @@ const next = withText(
   <Section id="changelog" title={t('changelog.title')} lede={t('changelog.lede', { n: number(releases.length) })} hue="teal" narrow>
     <p class="text-sm text-muted">{t('changelog.english')}</p>
     <div class="mt-6 rule-thin">
-      {releases.map((r) => (
-        <details class="rel border-b-[1.5px] border-line">
+      {releases.map((r, i) => (
+        <details class="rel border-b-[1.5px] border-line" open={i === 0}>
           <summary>
             <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span dir="ltr">{r.tag}</span>

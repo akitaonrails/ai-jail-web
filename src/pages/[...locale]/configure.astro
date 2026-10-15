@@ -136,16 +136,17 @@ const toolCode = [
   'ai-jail --no-toolchains --no-network claude',
 ].join('\n');
 
-const recipeCode = [
-  { code: [t('recipes.comments.nothing'), 'ai-jail claude', '', t('recipes.comments.more'), '[commands.claude]', 'allow_hosts = ["github.com"]', t('recipes.comments.open')].join('\n'), codeTitle: '~/.ai-jail' },
+// `id` anchors a recipe other sections link to.
+const recipeCode: { code: string; codeTitle?: string; id?: string }[] = [
+  { code: [t('recipes.comments.nothing'), 'ai-jail claude', '', t('recipes.comments.more'), '[commands.claude]', 'allow_hosts = ["api.example.com"]', t('recipes.comments.open')].join('\n'), codeTitle: '~/.ai-jail' },
   { code: ['ai-jail --allow-host api.example.com myagent', t('recipes.comments.hosts')].join('\n') },
   { code: 'ai-jail --no-agent-state claude' },
-  { code: '[commands.claude]\nallow_hosts = ["github.com"]', codeTitle: '~/.ai-jail' },
-  { code: ['ai-jail --forward-port 49374 claude', '', t('recipes.comments.forward'), '[commands.claude]', 'forward_ports = [49374]'].join('\n'), codeTitle: '~/.ai-jail' },
+  { code: '[commands.claude]\nallow_hosts = ["api.example.com"]', codeTitle: '~/.ai-jail' },
+  { code: ['ai-jail --forward-port 49374 claude', '', t('recipes.comments.forward'), '[commands.claude]', 'forward_ports = [49374]'].join('\n'), codeTitle: '~/.ai-jail', id: 'forward' },
   { code: [t('recipes.comments.phantom'), 'ai-jail --allow-host api.anthropic.com \\', '  --env-from-file ~/.secrets/claude.env \\', '  --secret ANTHROPIC_API_KEY=api.anthropic.com \\', '  --env ANTHROPIC_BASE_URL=http://api.anthropic.com claude'].join('\n') },
   { code: 'ai-jail --network --ssh claude' },
   { code: [t('recipes.comments.build'), 'ai-jail claude', '', t('recipes.comments.offline'), 'ai-jail --no-toolchains --no-network claude'].join('\n') },
-  { code: 'ai-jail --github claude' },
+  { code: ['ai-jail --github claude', '', t('recipes.comments.github'), 'ai-jail --github --allow-host github.com claude'].join('\n') },
   { code: [t('recipes.comments.wayland'), 'ai-jail --browser=soft --network --display chromium', t('recipes.comments.x11'), 'ai-jail --browser=soft --network --x11 chromium'].join('\n') },
   { code: 'ai-jail --network --claude-dir ~/.claude-work claude' },
   { code: 'ai-jail --network --overlay-map ~/Projects/my-app/src claude' },
@@ -164,7 +165,7 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <PageHero hue="mustard" page="configure" kicker={t('kicker.configure')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="mustard" page="configure" kicker={t('kicker.configure')} title={t('hero.title')} lede={t('hero.lede')} audience={t('hero.audience')}>
     <a href="#switches" class="btn btn-primary">{t('hero.switches')}</a>
     <a href={href('/install/')} class="btn btn-ghost">{t('hero.install')}</a>
   </PageHero>
@@ -266,7 +267,7 @@ const next = withText(
   <Section title={t('recipes.title')} lede={t('recipes.lede')} hue="mustard">
     <div class="grid gap-x-8 gap-y-12 lg:grid-cols-2">
       {recipes.map((r) => (
-        <div class="grid gap-4 content-start min-w-0">
+        <div id={r.id} class="grid gap-4 content-start min-w-0 scroll-mt-24">
           <span class="bars" aria-hidden="true"><i></i></span>
           <h3 class="text-xl">{r.title}</h3>
           <p class="text-muted max-w-[40em]" set:html={r.text} />

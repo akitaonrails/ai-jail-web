@@ -7,7 +7,8 @@
     "title": "インストールして、中を見て、エージェントを動かす",
     "lede": "ai-jailは1つのプログラムで、デーモンもrootも要りません。インストールして、いつも打っているコマンドの前にその名前を置けば、エージェントはサンドボックスの中で起動します。",
     "jump": "インストール方法を選ぶ",
-    "releases": "GitHubのリリース"
+    "releases": "GitHubのリリース",
+    "audience": "キーボードの前にいる人へ。"
   },
   "install": {
     "title": "インストール",
@@ -31,9 +32,18 @@
     "platforms": {
       "title": "システムに必要なもの",
       "items": [
-        { "title": "Linux", "text": "bubblewrapをインストールしてください。ai-jailがサンドボックスの構築に使う小さなプログラムです。ほとんどのディストリビューションでは<code>bubblewrap</code>という名前でパッケージになっています。" },
-        { "title": "macOS", "text": "インストールするものはありません。ai-jailはmacOSに付属の<code>sandbox-exec</code>を使います。Appleはこのインターフェースを非推奨としています。" },
-        { "title": "Windows", "text": "対応していません。WSL2を使い、その中でLinuxの手順に従ってください。" }
+        {
+          "title": "Linux",
+          "text": "bubblewrapをインストールしてください。ai-jailがサンドボックスの構築に使う小さなプログラムです。ほとんどのディストリビューションでは<code>bubblewrap</code>という名前でパッケージになっています。"
+        },
+        {
+          "title": "macOS",
+          "text": "インストールするものはありません。ai-jailはmacOSに付属の<code>sandbox-exec</code>を使います。Appleはこのインターフェースを非推奨としています。macOSではパッケージレジストリにデフォルトでは届きません。<code>--allow-host</code>で1つ足すか、<code>--network</code>でネットワークを開けてください。"
+        },
+        {
+          "title": "Windows",
+          "text": "対応していません。WSL2を使い、その中でLinuxの手順に従ってください。"
+        }
       ]
     }
   },
@@ -43,10 +53,22 @@
     "alt": "左から右へ3つのパネル。ドライラン：独房は破線の輪郭だけで、エージェントは外で待っている。中を見る：独房は実線になり、ターミナルとプロジェクトフォルダがある。エージェントを実行：エージェント、プロジェクト、エージェントのログインカードが中にあり、壁に開口部が1つ、ai-jailが自ら開けたエージェントのAPIホストへの門がある。あなたのホームフォルダは3つとも外で遮られたまま。",
     "caption": "あなたのホームディレクトリはどの段階でも外に残り、エージェントのログイン情報は最初から中にあります。最後の段階で、ai-jailはエージェントを知っていれば、クラウドのエージェントに必要なただ1つの門、そのAPIホストを開けます。残りのネットワークは閉じたままです。",
     "steps": [
-      { "title": "何も実行せずに計画を見る", "text": "プロジェクトに移動して、ドライランを実行します。ai-jailは、使うはずのサンドボックスコマンドを表示して終了します。ドライランがファイルを書き込むことはありません。" },
-      { "title": "中を見て回る", "text": "ジェイルの中で普通のシェルを起動します。プロジェクトは実際のパスにあり、編集もできます。ホームディレクトリは新しい空のもので、シェルのトークンは消えています。出るには<code>exit</code>と打ちます。" },
-      { "title": "エージェントを実行する", "text": "ai-jailはエージェント自身の状態フォルダをデフォルトでマウントするので、すでにサインイン済みです。エージェントを知っていれば、フィルタ付きプロキシでエージェント自身のAPIホストも通します。Claude Codeなら<code>api.anthropic.com</code>、Codexなら<code>api.openai.com</code>と<code>chatgpt.com</code>、Geminiなら<code>generativelanguage.googleapis.com</code>、Grokなら<code>api.x.ai</code>、Devinなら<code>server.codeium.com</code>で、LinuxでもmacOSでも同じです。テレメトリのホストは閉じたままです。Linuxでは、ツールチェーンがcrates.io、npm、PyPIなどのパッケージレジストリにデフォルトで届くので、ビルドが動きます。代わりに<code>--network</code>はネットワーク全体を開けます。" },
-      { "title": "もっと必要なとき", "text": "あなた自身の設定ファイル<code>~/.ai-jail</code>に、エージェント名の下にホストのリストを書きます。リストはエージェント自身のAPIホストに足され、APIホストは許可されたままです。あるいは<code>--network</code>でネットワーク全体を開けます。ログアウト状態で実行するなら<code>--no-agent-state</code>を渡します。プロジェクト内の<code>.ai-jail</code>ファイルはジェイルを締めることしかできません。ホストのリストや<code>forward_ports</code>のリストを縮め、ログインを切ることはできても、その逆はできないので、クローンしたリポジトリが自分でジェイルを開けることはありません。" }
+      {
+        "title": "何も実行せずに計画を見る",
+        "text": "プロジェクトに移動して、ドライランを実行します。ai-jailは、使うはずのサンドボックスコマンドを表示して終了します。ドライランがファイルを書き込むことはありません。"
+      },
+      {
+        "title": "中を見て回る",
+        "text": "ジェイルの中で普通のシェルを起動します。プロジェクトは実際のパスにあり、編集もできます。ホームディレクトリは新しい空のもので、シェルのトークンは消えています。出るには<code>exit</code>と打ちます。"
+      },
+      {
+        "title": "エージェントを実行する",
+        "text": "ai-jailはエージェント自身の状態フォルダをデフォルトでマウントするので、すでにサインイン済みです。エージェントを知っていれば、フィルタ付きプロキシでエージェント自身のAPIホストも通します。Claude Codeなら<code>api.anthropic.com</code>、Codexなら<code>api.openai.com</code>と<code>chatgpt.com</code>、Geminiなら<code>generativelanguage.googleapis.com</code>、Grokなら<code>api.x.ai</code>、Devinなら<code>server.codeium.com</code>で、LinuxでもmacOSでも同じです。テレメトリのホストは閉じたままです。Linuxでは、ツールチェーンがcrates.io、npm、PyPIなどのパッケージレジストリにデフォルトで届くので、ビルドが動きます。代わりに<code>--network</code>はネットワーク全体を開けます。"
+      },
+      {
+        "title": "もっと必要なとき",
+        "text": "あなた自身の設定ファイル<code>~/.ai-jail</code>に、エージェント名の下にホストのリストを書きます。リストはエージェント自身のAPIホストに足され、APIホストは許可されたままです。Linuxでは<code>github.com</code>とパッケージレジストリが最初から入っています。あるいは<code>--network</code>でネットワーク全体を開けます。ログアウト状態で実行するなら<code>--no-agent-state</code>を渡します。プロジェクト内の<code>.ai-jail</code>ファイルはジェイルを厳しくすることしかできません。ホストのリストや<code>forward_ports</code>のリストを縮め、ログインを切ることはできても、その逆はできないので、cloneしたリポジトリが自分でジェイルを開けることはありません。"
+      }
     ],
     "codeTitles": [
       "ドライラン",
@@ -64,7 +86,7 @@
     },
     "comments": [
       "# または、ネットワーク全体を開けるなら：",
-      "# ai-jailがすでに許可しているAPIホストに足される",
+      "# ai-jailがすでに許可しているAPIホストとレジストリに足される",
       "# または、一度だけなら："
     ]
   },
@@ -82,14 +104,57 @@
     "alt": "独房の中からの眺め。エージェントは大きく明るいプロジェクトフォルダの隣にいて、その後ろに空のホームとシステムのツールがあります。格子の外には、SSH鍵、クラウドのログイン、ほかのプロジェクト、ネットワークが暗く、格子がかかった状態で並んでいます。",
     "caption": "中から見ると、あなたのもので変更できるのはプロジェクトだけです。ツールチェーン（mise、cargo、npmなど）は読み取り専用でそこにあり、依存キャッシュはジェイル専用です。ネットワークは外に残ります。例外は既知のエージェント自身のAPIホストと、Linuxではそのツールチェーンが取得先にするパッケージレジストリだけで、<code>--allow-host</code>でホストを開けるか、<code>--forward-port</code>でローカルのポート1つを開けるか、<code>--network</code>で全部開けるまで変わりません。<a class=\"link\" href=\"/configure/#toolchains\">ツールチェーンのマップ方法</a>。"
   },
+  "blocked": {
+    "title": "ジェイルが何かを止めたとき",
+    "lede": "エージェントが起動するものはすべて一緒に中で動くので、止められたものは失敗し、あなたに尋ねるものはありません。それがどう見えるか、どう確かめるかをまとめます。",
+    "items": [
+      "プロジェクト外のファイルは存在しません。Linuxではパスそのものがなく、macOSではパスはあっても読み取りが拒否されます。",
+      "リスト外のホストには届きません。接続が失敗します。<code>--allow-host HOST</code>を付けると次の実行から届きます。",
+      "シェルの変数は、<code>--env NAME</code>か<code>--env-from-file</code>で渡さない限り、中では空です。",
+      "何が拒否されたかを見るには<code>--audit-log</code>を足します。起動のたびに記録し、プロキシが許可または拒否した接続をすべて残します。<code>ai-jail --audit-show</code>で表示できます。",
+      "自分で中を見て回るには、<code>ai-jail bash</code>で同じジェイルの中にシェルを開けます。"
+    ],
+    "dayTitle": "初日に開けることになるもの",
+    "cells": [
+      {
+        "title": "インストール",
+        "text": "Linuxではそのまま動きます。レジストリと<code>github.com</code>はデフォルトのリストに入っています。macOSでは<code>--allow-host registry.npmjs.org</code>のように1つ足すか、<code>--network</code>ですべて開けます。"
+      },
+      {
+        "title": "ローカルのサービス",
+        "text": "自分のマシンのループバックにあるデータベース、ローカルのMCPサーバー、エディタのソケット。Linuxでは<code>--forward-port 5432</code>でそのポート1つを中継します。macOSでは<code>--network</code>です。"
+      },
+      {
+        "title": "Git push",
+        "text": "GitHubからのcloneとpullはLinuxでそのまま動きます。pushには認証情報が要ります。HTTPS経由でghのトークンを使うなら<code>--github</code>（macOSでは<code>--allow-host github.com</code>も足します）、SSH鍵なら<code>--network --ssh</code>です。"
+      },
+      {
+        "title": "MCPサーバー",
+        "text": "エージェントと一緒にジェイルの中で起動します。シェルのトークンを読むものは、<code>--env GITHUB_TOKEN</code>か<code>--env-from-file</code>で渡すまで何も受け取れません。HTTP経由のリモートのものは、そのホストを<code>--allow-host</code>に入れる必要があります。"
+      }
+    ]
+  },
   "trouble": {
     "title": "起動しないとき",
     "lede": "READMEのトラブルシューティングにあるケースと、つまずく人の多いセットアップ上のルール2つを取り上げます。",
     "items": [
-      { "title": "<code>bwrap: setting up uid map: Permission denied</code>", "text": "Ubuntu 24.04以降とDebian 13以降には、プログラムがrootなしでユーザー名前空間を作ることを禁じるAppArmorポリシーが入っています。bubblewrapはまさにその方法でジェイルを隔離しています。この種のrootなしのツールはどれも影響を受けます。システム全体で緩めるには次のようにします。", "alt": "ポリシーは残して、<code>bwrap</code>だけを対象外にすることもできます。次の内容を<code>/etc/apparmor.d/bwrap</code>として保存し、<code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>を実行してください。" },
-      { "title": "<code>BWRAP_BIN</code>が拒否される", "text": "<code>BWRAP_BIN</code>を使うと、特定のbubblewrapをai-jailに指定できます。ai-jailが受け入れるのは、解決先が、rootが所有しほかのユーザーが書き込めないプログラムである場合か、標準的なマルチユーザーの<code>/nix/store</code>内にある場合だけです。自分のホームに置いたコピーは拒否されます。そのファイルを差し替えられる人なら誰でも、ジェイルを支配できてしまうからです。" },
-      { "title": "opencodeが<code>Starting background server</code>で止まる", "text": "opencode 2.xは共有のバックグラウンドサーバーと通信します。ジェイルは起動のたびに作り直すラッパーで、ホームも新しくなるので、そのサーバーは実行をまたいで残りません。<code>--standalone</code>を付けてopencodeを単体で起動し、毎回打たずに済むよう設定ファイルに固定してください。これなしでopencodeを起動すると、ai-jailは起動時に警告します。" },
-      { "title": "起動時に<code>Failed to create stream fd</code>と出る", "text": "miseのセットアップ中に、Ubuntuデスクトップのログインスクリプトが出すメッセージです。害はなく、miseは問題なく動きます。<code>--no-mise</code>を渡せば、miseのセットアップごとこのメッセージも出なくなります。" }
+      {
+        "title": "<code>bwrap: setting up uid map: Permission denied</code>",
+        "text": "Ubuntu 24.04以降とDebian 13以降には、プログラムがrootなしでユーザー名前空間を作ることを禁じるAppArmorポリシーが入っています。bubblewrapはまさにその方法でジェイルを隔離しています。この種のrootなしのツールはどれも影響を受けます。システム全体で緩めるには次のようにします。",
+        "alt": "ポリシーは残して、<code>bwrap</code>だけを対象外にすることもできます。次の内容を<code>/etc/apparmor.d/bwrap</code>として保存し、<code>sudo apparmor_parser -r /etc/apparmor.d/bwrap</code>を実行してください。"
+      },
+      {
+        "title": "<code>BWRAP_BIN</code>が拒否される",
+        "text": "<code>BWRAP_BIN</code>を使うと、特定のbubblewrapをai-jailに指定できます。ai-jailが受け入れるのは、解決先が、rootが所有しほかのユーザーが書き込めないプログラムである場合か、標準的なマルチユーザーの<code>/nix/store</code>内にある場合だけです。自分のホームに置いたコピーは拒否されます。そのファイルを差し替えられる人なら誰でも、ジェイルを支配できてしまうからです。"
+      },
+      {
+        "title": "opencodeが<code>Starting background server</code>で止まる",
+        "text": "opencode 2.xは共有のバックグラウンドサーバーと通信します。ジェイルは起動のたびに作り直すラッパーで、ホームも新しくなるので、そのサーバーは実行をまたいで残りません。<code>--standalone</code>を付けてopencodeを単体で起動し、毎回打たずに済むよう設定ファイルに固定してください。これなしでopencodeを起動すると、ai-jailは起動時に警告します。"
+      },
+      {
+        "title": "起動時に<code>Failed to create stream fd</code>と出る",
+        "text": "miseのセットアップ中に、Ubuntuデスクトップのログインスクリプトが出すメッセージです。害はなく、miseは問題なく動きます。<code>--no-mise</code>を渡せば、miseのセットアップごとこのメッセージも出なくなります。"
+      }
     ]
   },
   "agents": {
@@ -112,13 +177,22 @@
       "devin": "<code>devin/cli/_versions</code>にあるCLI自身のインストールは読み取り専用のままです。Devinの更新はホストで行い、そのあと新しいセッションを始めてください。"
     },
     "aimemoryState": "起動されるエージェントのフォルダ",
-    "more": "<code>crush</code>、<code>grok</code>、<code>jcode</code>、<code>pi</code>、<code>aider</code>、<code>soulforge</code>、<code>omp</code>でも同じです。それ以外のコマンドも、同じジェイルで、ログインフォルダなしで動きます。ai-jailがAPIホストをデフォルトで開けるのは<code>claude</code>、<code>codex</code>、<code>gemini</code>、<code>grok</code>、<code>devin</code>で、他のエージェントには<code>--allow-host</code>か<code>--network</code>が必要です。"
+    "more": "<code>crush</code>、<code>grok</code>、<code>jcode</code>、<code>pi</code>、<code>aider</code>、<code>soulforge</code>、<code>omp</code>でも同じです。それ以外のコマンドも、同じジェイルで、ログインフォルダなしで動きます。ai-jailがAPIホストをデフォルトで開けるのは<a class=\"link\" href=\"#first\">ステップ03の5つのエージェント</a>で、ほかのエージェントには<code>--allow-host</code>か<code>--network</code>が必要です。"
   },
   "next": {
     "items": [
-      { "title": "設定", "text": "すべてのフラグと設定キー、そしてタスクに必要なものだけを開ける方法。" },
-      { "title": "仕組み", "text": "LinuxとmacOSで、エージェントとシステムの間にある層。" },
-      { "title": "セキュリティ", "text": "ai-jailが止めるもの、止めないもの、リリースの署名方法。" }
+      {
+        "title": "設定",
+        "text": "すべてのフラグと設定キー、そしてタスクに必要なものだけを開ける方法。"
+      },
+      {
+        "title": "仕組み",
+        "text": "LinuxとmacOSで、エージェントとシステムの間にある層。"
+      },
+      {
+        "title": "セキュリティ",
+        "text": "ai-jailが止めるもの、止めないもの、リリースの署名方法。"
+      }
     ]
   }
 }

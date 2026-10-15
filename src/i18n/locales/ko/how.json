@@ -7,7 +7,8 @@
     "title": "ai-jail claude를 입력하면 일어나는 일",
     "lede": "ai-jail은 시스템을 작고 닫힌 형태로 복제한 다음 그 안에 프로젝트를 넣고 에이전트를 시작합니다. 벽은 운영체제가 직접 제공하는 기능이라서 에이전트는 제 속도로 실행되고, 벽을 끌 수도 없습니다. 네트워크는 에이전트 자신의 API 호스트 말고는 닫힌 상태, 지정한 호스트 몇 개만 연 상태, 전부 연 상태 중 하나이고, 실행할 때마다 직접 고릅니다.",
     "install": "설치",
-    "security": "위협 모델 읽기"
+    "security": "위협 모델 읽기",
+    "audience": "무엇이 실제로 강제되는지 알고 싶은 엔지니어를 위한 글입니다. 그 밖의 분께는 첫 문단과 첫 그림이면 충분합니다."
   },
   "launch": {
     "title": "실행할 때 일어나는 일",
@@ -60,7 +61,7 @@
         "name": "seccomp",
         "tag": "시스템 콜",
         "is": "프로그램은 시스템 콜로 커널에 요청을 보냅니다. seccomp는 이 호출을 거르는 필터이고, ai-jail은 코딩 에이전트에 필요할 일이 없는 호출을 seccomp로 거부합니다.",
-        "stops": "필터가 막는 것은 <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, 커널 모듈, <code>io_uring</code>, 커널 키링, raw 소켓, 그리고 터미널에 키 입력을 밀어 넣는 호출인 <code>TIOCSTI</code>(커널이 읽는 방식 그대로 비교)입니다. 컴파일러와 런타임이 계속 동작하도록 일부러 차단 목록 방식을 택했습니다. Landlock과 seccomp이 적용되기 전에 시작되는 유일한 프로세스는 필터링된 네트워크 트래픽을 밖으로 나르는 작은 브리지이며, 이 프로세스만 제한 없이 남습니다."
+        "stops": "필터가 막는 것은 <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, 커널 모듈, <code>io_uring</code>, 커널 키링, raw 소켓, 그리고 내 터미널에 키 입력을 밀어 넣을 수 있는 호출인 <code>TIOCSTI</code>입니다. 컴파일러와 런타임이 계속 동작하도록 일부러 차단 목록 방식을 택했습니다. Landlock과 seccomp이 적용되기 전에 시작되는 유일한 프로세스는 필터링된 네트워크 트래픽을 밖으로 나르는 작은 브리지이며, 이 프로세스만 제한 없이 남습니다."
       },
       {
         "name": "리소스 제한",
@@ -84,13 +85,13 @@
   },
   "egress": {
     "title": "네트워크로 가는 세 가지 길",
-    "lede": "실행할 때마다 세 가지 네트워크 모드 중 하나를 고릅니다. 기본값이 가장 엄격해서, 필터링 프록시가 통과시키는 것 말고는 밖으로 나가는 경로가 없습니다. 프록시가 통과시키는 것은 두 플랫폼 모두에서 알려진 에이전트 자신의 API 호스트(Codex는 둘), 그리고 Linux에서 툴체인이 켜져 있을 때(기본값) 짧은 패키지 레지스트리 목록입니다. 나머지 둘은 일부러 넘기는 플래그입니다.",
+    "lede": "실행할 때마다 세 가지 네트워크 모드 중 하나를 고릅니다. 기본값이 가장 엄격해서, 필터링 프록시가 통과시키는 것 말고는 밖으로 나가는 경로가 없습니다. 프록시가 통과시키는 것은 두 플랫폼 모두에서 <a class=\"link\" href=\"/install/#first\">알려진 에이전트 자신의 API 호스트</a>, 그리고 Linux에서 툴체인이 켜져 있을 때(기본값) 짧은 패키지 레지스트리 목록입니다. 나머지 둘은 일부러 넘기는 플래그입니다.",
     "alt": "왼쪽에서 오른쪽으로 패널 세 개. 꺼짐: 닫힌 벽 안에 에이전트 칩이 있고 바깥에는 흐리게 막힌 구름이 있습니다. 필터링: 벽의 작은 문이 프록시 상자로 이어지고, 프록시는 api.anthropic.com이라고 적힌 청록색 구름에 연결되며 두 번째 구름은 흐리게 막혀 있습니다. 열림: 벽의 네트워크 쪽이 없고 칩이 구름에 바로 연결됩니다.",
-    "caption": "기본은 꺼짐입니다. 필터링은 지정한 호스트로만 가는 문을 엽니다. 열림은 네트워크 쪽 벽을 없앱니다.",
+    "caption": "기본은 꺼짐이고, 에이전트 자신의 API 호스트와 Linux의 레지스트리로 가는 문 하나만 있습니다. 필터링은 지정한 호스트로만 가는 문을 엽니다. 열림은 네트워크 쪽 벽을 없앱니다.",
     "modes": [
       {
         "title": "꺼짐",
-        "text": "기본값입니다. 샌드박스는 필터링 프록시 말고는 밖으로 나가는 경로가 없는 전용 네트워크 네임스페이스를 받습니다. 알려진 에이전트(<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>, <code>devin</code>)라면 프록시가 문서화된 API 호스트를 Linux와 macOS 모두에서 통과시켜, 플래그 없는 <code>ai-jail claude</code>가 그대로 동작합니다. Codex는 ChatGPT 로그인이 <code>chatgpt.com</code>도 쓰기 때문에 호스트 둘을 받습니다. Linux에서 툴체인이 켜져 있으면(기본값) <a class=\"link\" href=\"/configure/#toolchains\">고정된 패키지 레지스트리 목록</a>도 통과시켜 <code>npm install</code>과 <code>cargo build</code>가 동작합니다. macOS에서는 레지스트리가 닫혀 있습니다. <code>--no-network</code>를 주면 완전히 오프라인이 됩니다."
+        "text": "기본값입니다. 샌드박스는 필터링 프록시 말고는 밖으로 나가는 경로가 없는 전용 네트워크 네임스페이스를 받습니다. <a class=\"link\" href=\"/install/#first\">알려진 에이전트</a>라면 프록시가 자기 API 호스트를 Linux와 macOS 모두에서 통과시켜, 플래그 없는 <code>ai-jail claude</code>가 그대로 동작합니다. Linux에서 툴체인이 켜져 있으면(기본값) <a class=\"link\" href=\"/configure/#toolchains\">고정된 패키지 레지스트리 목록</a>도 통과시켜 <code>npm install</code>과 <code>cargo build</code>가 동작합니다. macOS에서는 레지스트리가 닫혀 있습니다. <code>--no-network</code>를 주면 완전히 오프라인이 됩니다."
       },
       {
         "title": "필터링",
@@ -151,7 +152,7 @@
       },
       {
         "what": "네트워크",
-        "linux": "기본으로 꺼짐. 알려진 에이전트 자신의 API 호스트와, 툴체인이 켜져 있을 때 허용되는 패키지 레지스트리 말고는 밖으로 나가는 경로가 없습니다. <code>--allow-host</code>나 <code>--network</code>로 더 열고, <code>--forward-port</code>는 호스트 루프백의 포트 하나를 중계하며, <code>--no-network</code>는 전부 닫습니다. <code>--lockdown</code>에서는 <code>--network</code>를 줘도 열린 네트워크가 항상 차단됩니다.",
+        "linux": "기본으로 닫힘. 알려진 에이전트 자신의 API 호스트와, 툴체인이 켜져 있을 때 허용되는 패키지 레지스트리 말고는 밖으로 나가는 경로가 없습니다. <code>--allow-host</code>나 <code>--network</code>로 더 열고, <code>--forward-port</code>는 호스트 루프백의 포트 하나를 중계하며, <code>--no-network</code>는 전부 닫습니다. <code>--lockdown</code>에서는 <code>--network</code>를 줘도 열린 네트워크가 항상 차단됩니다.",
         "macos": "같은 기본값, 같은 플래그를 쓰고 알려진 에이전트의 API 호스트도 같지만, <code>--forward-port</code>, 레지스트리, 툴체인 캐시 매핑은 Linux에만 있습니다. 락다운은 여기서도 열린 네트워크를 차단합니다."
       },
       {

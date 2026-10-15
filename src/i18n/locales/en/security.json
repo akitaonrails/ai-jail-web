@@ -7,7 +7,8 @@
     "title": "A useful layer, with known edges",
     "lede": "ai-jail is built to stop a trusted agent's mistakes and keep the damage inside the project: the project directory is the blast radius, and your home, your keys and the network stay outside it. It is a process sandbox that shares your kernel, so it is not a boundary against hostile code or a motivated attacker and does not replace a disposable virtual machine.",
     "report": "Report a vulnerability",
-    "doc": "Read SECURITY.md"
+    "doc": "Read SECURITY.md",
+    "audience": "For the person who signs off, then for the security engineer."
   },
   "stops": {
     "title": "What it is built to stop",
@@ -22,7 +23,7 @@
         "text": "Secrets in your shell. ai-jail cuts environment variables down to a small allowlist, so exported tokens stay outside. The one exception is the invoked harness's own API key, for example <code>ANTHROPIC_API_KEY</code> for Claude, copied by default along with its login; <code>--no-agent-state</code> stops that."
       },
       {
-        "text": "The network. It is off, with two exceptions that pass through the filtered proxy: a short list of package registries when toolchains are on, the default on Linux, and, for a known agent such as <code>claude</code> or <code>codex</code>, its own documented API host, on both platforms (two for Codex). Telemetry hosts stay closed. <code>--no-network</code> closes both."
+        "text": "The network. It is closed, with two exceptions that pass through the filtered proxy: a short list of package registries when toolchains are on, the default on Linux, and, for <a class=\"link\" href=\"/install/#first\">a known agent</a>, its own API host, on both platforms. Telemetry hosts stay closed. <code>--no-network</code> closes both."
       },
       {
         "text": "Host shared memory, your display server and your clipboard. Agent output passes through a filter that drops terminal clipboard and query sequences."
@@ -41,26 +42,34 @@
     "lede": "The jail and your system stand on the same kernel. A bug in that kernel, in a driver or in the sandbox backend is a way around the wall, and ai-jail cannot do anything about it. A virtual machine brings its own kernel, which is why it is the stronger boundary.",
     "alt": "On the left, your system and the ai-jail cage holding the agent stand on one shared slab, your kernel, and a dashed line runs from the agent through the slab to your system. On the right, a disposable VM encloses an agent standing on its own separate kernel.",
     "caption": "A sandbox shares the ground with what it protects, and a VM brings its own.",
-    "listTitle": "What stays at risk",
-    "items": [
-      "Kernel and driver vulnerabilities. Every sandboxed process talks to the same kernel as the rest of your machine.",
-      "Bugs in your terminal emulator, above all with <code>--terminal-passthrough</code>, which turns the output filter off.",
-      "Defects in the sandbox backend itself: bubblewrap, Landlock and seccomp on Linux, <code>sandbox-exec</code> on macOS.",
-      "Landlock, the kernel's own rules, fences abstract Unix sockets and signals only on kernels 6.12 and newer, best effort. Older kernels keep only the filesystem and network rules, so with <code>--x11</code>, <code>--network</code> or <code>--systemd-user</code> the host's abstract sockets and signals stay reachable.",
-      "Secrets inside the project. A <code>.env</code> file in the repository is readable unless you mask it. <a class=\"link\" href=\"/configure/#secrets\">See how to mask files</a>.",
-      "Masks cover only paths that exist when the sandbox starts. A secret file created later, during the session, is not hidden.",
-      "Host-side git trusts the project's <code>.git/</code>, which is writable. A program named in <code>.git/config</code>, such as <code>core.fsmonitor</code> or <code>core.pager</code>, or dropped into <code>.git/hooks/</code> runs as you, outside the sandbox, the next time a matching git command runs on the host; for <code>core.fsmonitor</code> a plain <code>git status</code> is enough, even one your editor runs in the background, and nothing shows in <code>git diff</code>. <code>--lockdown</code> closes it by making the project read only, and <code>--map .git</code> keeps the repository read only in a normal run, at the cost of committing from inside. After a session that surprised you, read <code>.git/config</code> and list <code>.git/hooks</code> with plain file tools before you run git on the host, since <code>git config --list</code> itself starts the configured pager.",
-      "<code>--mask</code> and <code>--deny-path</code> change only what the sandbox sees. Anything outside the sandbox that acts for the agent still reads the real files: the Docker daemon under <code>--docker</code>, an MCP server reached through a mapped socket, or a service behind <code>--forward-port</code>.",
-      "Side channels and some classes of inter-process communication.",
-      "An allowed host is trusted wholesale. Allowing <code>github.com</code> with <code>--allow-host</code> lets the agent push to any repository there, not only yours.",
-      "Filtered egress is TCP only. There is no UDP, so a program that needs it does not work; it also cannot leak through it.",
-      "DNS under <code>--allow-host</code>. On Linux, name lookups inside the sandbox fail, so there is no DNS channel out. On macOS the system resolver is not fenced, so a low-bandwidth DNS channel remains, the same gap Anthropic documents for its own sandbox-runtime.",
-      "The proxy sees the host, the port and the timing of each connection. What travels inside stays between the two ends. <a class=\"link\" href=\"/how-it-works/#network\">How filtered egress is built</a>.",
-      "Phantom credentials move trust to ai-jail itself. With <code>--secret</code>, requests to the bound host pass through ai-jail in clear so it can insert the real key, and it re-encrypts them on the way out. Tunnels to every other host stay opaque. It only covers clients that can talk plain HTTP to the proxy for that host.",
-      "Credentials you pass with <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> or <code>--docker-config</code>. Read-only protects the file from changes, not the credential from use: anything in the sandbox can act as you on that service while it is valid.",
-      "ai-jail mounts the agent's own login by default, read-write, so a misled agent can use it for the life of the launch. The project documents this as a convenience trade; <code>--no-agent-state</code> gives a logged-out run.",
-      "On macOS, <code>sandbox-exec</code> is deprecated by Apple and is not equivalent to the Linux isolation. <a class=\"link\" href=\"/how-it-works/\">See the macOS differences</a>."
-    ],
+    "data": {
+      "title": "What this means for your data",
+      "items": [
+        "Secrets inside the project. A <code>.env</code> file in the repository is readable unless you mask it. <a class=\"link\" href=\"/configure/#secrets\">See how to mask files</a>.",
+        "Masks cover only paths that exist when the sandbox starts. A secret file created later, during the session, is not hidden.",
+        "An allowed host is trusted wholesale. Allowing <code>github.com</code> with <code>--allow-host</code> lets the agent push to any repository there, not only yours.",
+        "<code>--network</code> opens the whole network, so anything the agent can read, your project included, it can send out.",
+        "ai-jail mounts the agent's own login by default, read-write, so a misled agent can use it for the life of the launch. The project documents this as a convenience trade; <code>--no-agent-state</code> gives a logged-out run.",
+        "Host-side git trusts the project's <code>.git/</code>, which is writable. A program named in <code>.git/config</code>, such as <code>core.fsmonitor</code> or <code>core.pager</code>, or dropped into <code>.git/hooks/</code> runs as you, outside the sandbox, the next time a matching git command runs on the host; for <code>core.fsmonitor</code> a plain <code>git status</code> is enough, even one your editor runs in the background, and nothing shows in <code>git diff</code>. <code>--lockdown</code> closes it by making the project read only, and <code>--map .git</code> keeps the repository read only in a normal run, at the cost of committing from inside. After a session that surprised you, read <code>.git/config</code> and list <code>.git/hooks</code> with plain file tools before you run git on the host, since <code>git config --list</code> itself starts the configured pager.",
+        "<code>--mask</code> and <code>--deny-path</code> change only what the sandbox sees. Anything outside the sandbox that acts for the agent still reads the real files: the Docker daemon under <code>--docker</code>, an MCP server reached through a mapped socket, or a service behind <code>--forward-port</code>."
+      ]
+    },
+    "engineer": {
+      "title": "For the security engineer",
+      "items": [
+        "Kernel and driver vulnerabilities. Every sandboxed process talks to the same kernel as the rest of your machine.",
+        "Bugs in your terminal emulator, above all with <code>--terminal-passthrough</code>, which turns the output filter off.",
+        "Defects in the sandbox backend itself: bubblewrap, Landlock and seccomp on Linux, <code>sandbox-exec</code> on macOS.",
+        "Landlock, the kernel's own rules, fences abstract Unix sockets and signals only on kernels 6.12 and newer, best effort. Older kernels keep only the filesystem and network rules, so with <code>--x11</code>, <code>--network</code> or <code>--systemd-user</code> the host's abstract sockets and signals stay reachable.",
+        "Side channels and some classes of inter-process communication.",
+        "Filtered egress is TCP only. There is no UDP, so a program that needs it does not work; it also cannot leak through it.",
+        "DNS under <code>--allow-host</code>. On Linux, name lookups inside the sandbox fail, so there is no DNS channel out. On macOS the system resolver is not fenced, so a low-bandwidth DNS channel remains, the same gap Anthropic documents for its own sandbox-runtime.",
+        "The proxy sees the host, the port and the timing of each connection. What travels inside stays between the two ends. <a class=\"link\" href=\"/how-it-works/#network\">How filtered egress is built</a>.",
+        "Phantom credentials move trust to ai-jail itself. With <code>--secret</code>, requests to the bound host pass through ai-jail in clear so it can insert the real key, and it re-encrypts them on the way out. Tunnels to every other host stay opaque. It only covers clients that can talk plain HTTP to the proxy for that host.",
+        "Credentials you pass with <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> or <code>--docker-config</code>. Read-only protects the file from changes, not the credential from use: anything in the sandbox can act as you on that service while it is valid.",
+        "On macOS, <code>sandbox-exec</code> is deprecated by Apple and is not equivalent to the Linux isolation. <a class=\"link\" href=\"/how-it-works/\">See the macOS differences</a>."
+      ]
+    },
     "callout": {
       "title": "For code you believe is hostile, use a disposable VM",
       "text": "ai-jail is for agents that are useful and sometimes wrong or misled. For malware analysis, or a repository you already distrust, start a virtual machine you can throw away. <a class=\"link\" href=\"/compare/\">Compare the options</a>."
@@ -74,7 +83,7 @@
       "gives": "What anything in the sandbox can then do"
     },
     "rows": [
-      "Send everything it can read anywhere, with no restriction on traffic. The default allows only the known agent's own API host; <code>--allow-host</code> is the tighter alternative.",
+      "Send everything it can read anywhere, with no restriction on traffic. The default allows only a known agent's own API host and, on Linux, the package registries; <code>--allow-host</code> is the tighter alternative.",
       "Reach exactly the hosts you list, and their subdomains, over TCP through a built-in proxy. Each listed host is trusted wholesale. Your list adds to the agent's own API host; <code>--no-network</code> with a list gives you that list alone.",
       "Use one service on your host's loopback in full. Whatever the MCP server, editor socket or database on that port accepts, the agent can ask for, with no allowlist, no inspection and no audit record on it. Every other host port stays shut. Linux only, and refused with <code>--network</code>.",
       "On by default on Linux. Run your toolchains: <code>~/.cargo/bin</code> and <code>~/.rustup</code> read-only, a jail-owned dependency cache under <code>~/.local/share/ai-jail/cache/</code> that survives between runs, and filtered egress to the package registries. ai-jail never binds the host's own caches. Off under <code>--lockdown</code> and with <code>--no-toolchains</code>.",
@@ -130,7 +139,7 @@
     ],
     "audit": {
       "title": "Audited in the open",
-      "text": "Before 1.0 the project <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">audited itself</a> and published the reports. On {date} the project published two independent source audits of 2.3.0 in the repository, with a comparison and a remediation plan: <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">audit A</a>, which its header says an AI model performed, and <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">audit B</a>. They produced two GitHub advisories, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> and <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, both closed in 2.4.0 with regression tests. No third-party firm has audited ai-jail."
+      "text": "Before 1.0 the project <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">audited itself</a> and published the reports. On {date} the project published two independent source audits of 2.3.0 in the repository, with a comparison and a remediation plan: <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">audit A</a>, which its header says an AI model performed, and <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">audit B</a>. They produced two GitHub advisories, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> and <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, both closed in 2.4.0 with regression tests. No third-party firm has audited ai-jail. What that means for you: ai-jail takes things away from a run and adds nothing you did not turn on. A bug in it leaves a gap in the wall, and the agent behind that gap has at most what it would have had without ai-jail."
     },
     "fixes": {
       "title": "Recent security fixes",

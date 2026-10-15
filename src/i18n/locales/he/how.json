@@ -7,7 +7,8 @@
     "title": "מה קורה כשמקלידים ai-jail claude",
     "lede": "הכלי ai-jail בונה עותק קטן וסגור של המערכת שלכם, שם בתוכו את הפרויקט ומעלה את הסוכן בפנים. החומות הן יכולות של מערכת ההפעלה עצמה, ולכן הסוכן רץ במהירות מלאה ולא יכול לכבות אותן. בכל הפעלה הרשת סגורה חוץ מה-host של ה-API של הסוכן עצמו, פתוחה לכמה hosts בשם, או פתוחה לגמרי.",
     "install": "התקנה",
-    "security": "למודל האיומים"
+    "security": "למודל האיומים",
+    "audience": "למהנדס שרוצה לדעת מה נאכף. לכל השאר מספיקים הפסקה הראשונה והתמונה הראשונה."
   },
   "launch": {
     "title": "מה קורה בזמן ההפעלה",
@@ -60,7 +61,7 @@
         "name": "seccomp",
         "tag": "קריאות מערכת",
         "is": "תוכנות מבקשות דברים מהקרנל דרך קריאות מערכת (syscalls). המנגנון seccomp מסנן את הקריאות האלה, ו-ai-jail משתמש בו כדי לסרב לקריאות שסוכן קוד אף פעם לא צריך.",
-        "stops": "המסנן חוסם את <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, מודולי קרנל, <code>io_uring</code>, ה-keyring של הקרנל, raw sockets, וגם את <code>TIOCSTI</code>, הקריאה שמקלידה תווים לתוך טרמינל, שמושווית כפי שהקרנל קורא אותה. זו רשימת חסימה בכוונה, כדי שקומפיילרים ו-runtimes ימשיכו לעבוד. התהליך היחיד שעולה לפני ש-Landlock ו-seccomp חלים הוא הגשר הקטן שמוציא החוצה את תעבורת הרשת המסוננת, ולכן רק הוא נשאר בלי הגבלה."
+        "stops": "המסנן חוסם את <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, מודולי קרנל, <code>io_uring</code>, ה-keyring של הקרנל, raw sockets, וגם את <code>TIOCSTI</code>, קריאה שיכולה להקליד תווים לתוך הטרמינל שלכם. זו רשימת חסימה בכוונה, כדי שקומפיילרים ו-runtimes ימשיכו לעבוד. התהליך היחיד שעולה לפני ש-Landlock ו-seccomp חלים הוא הגשר הקטן שמוציא החוצה את תעבורת הרשת המסוננת, ולכן רק הוא נשאר בלי הגבלה."
       },
       {
         "name": "מגבלות משאבים",
@@ -84,13 +85,13 @@
   },
   "egress": {
     "title": "שלוש דרכים אל הרשת",
-    "lede": "כל הפעלה בוחרת אחד משלושה מצבי רשת. ברירת המחדל היא המצב ההדוק ביותר: בלי יציאה, חוץ ממה שהפרוקסי המסנן מעביר, כלומר ה-host של ה-API של סוכן מוכר בשתי הפלטפורמות (שניים ל-Codex), וב-Linux כשה-toolchains דלוקים (ברירת המחדל) גם רשימה קצרה של registries של חבילות. שני האחרים הם דגלים שמעבירים בכוונה.",
+    "lede": "כל הפעלה בוחרת אחד משלושה מצבי רשת. ברירת המחדל היא המצב ההדוק ביותר: בלי יציאה, חוץ ממה שהפרוקסי המסנן מעביר, כלומר <a class=\"link\" href=\"/install/#first\">ה-host של ה-API של סוכן מוכר</a> בשתי הפלטפורמות, וב-Linux כשה-toolchains דלוקים (ברירת המחדל) גם רשימה קצרה של registries של חבילות. שני האחרים הם דגלים שמעבירים בכוונה.",
     "alt": "שלושה חלקים, משמאל לימין. כבויה: שבב הסוכן בתוך חומה סגורה, ובחוץ ענן מעומעם וחסום. מסוננת: שער קטן בחומה מוביל לתיבת פרוקסי, שמתחברת לענן בצבע ציאן עם הכיתוב api.anthropic.com, בזמן שענן שני נשאר מעומעם וחסום. פתוחה: צד הרשת של החומה חסר, והשבב מתחבר ישירות לענן.",
-    "caption": "כבויה היא ברירת המחדל. מסוננת פותחת שער רק ל-hosts בשם. פתוחה מסירה את החומה בצד הרשת.",
+    "caption": "כבויה היא ברירת המחדל, עם שער אחד ל-host של ה-API של הסוכן עצמו, וב-Linux גם ל-registries. מסוננת פותחת שער רק ל-hosts בשם. פתוחה מסירה את החומה בצד הרשת.",
     "modes": [
       {
         "title": "כבויה",
-        "text": "ברירת המחדל. ה-sandbox מקבל network namespace פרטי בלי שום יציאה, חוץ מדרך הפרוקסי המסנן. לסוכן מוכר (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>, <code>devin</code>) הפרוקסי מעביר את ה-host של ה-API המתועד שלו, ב-Linux וב-macOS, ולכן <code>ai-jail claude</code> חשוף עובד; Codex מקבל שניים, כי ההתחברות שלו ל-ChatGPT משתמשת גם ב-<code>chatgpt.com</code>. ב-Linux, כשה-toolchains דלוקים (ברירת המחדל), הפרוקסי מעביר גם <a class=\"link\" href=\"/configure/#toolchains\">רשימה קבועה של registries של חבילות</a>, ולכן <code>npm install</code> ו-<code>cargo build</code> עובדים; ב-macOS ה-registries נשארים סגורים. <code>--no-network</code> מנתק לגמרי."
+        "text": "ברירת המחדל. ה-sandbox מקבל network namespace פרטי בלי שום יציאה, חוץ מדרך הפרוקסי המסנן. ל<a class=\"link\" href=\"/install/#first\">סוכן מוכר</a> הפרוקסי מעביר את ה-host של ה-API שלו, ב-Linux וב-macOS, ולכן <code>ai-jail claude</code> חשוף עובד. ב-Linux, כשה-toolchains דלוקים (ברירת המחדל), הוא מעביר גם <a class=\"link\" href=\"/configure/#toolchains\">רשימה קבועה של registries של חבילות</a>, ולכן <code>npm install</code> ו-<code>cargo build</code> עובדים; ב-macOS ה-registries נשארים סגורים. <code>--no-network</code> מנתק לגמרי."
       },
       {
         "title": "מסוננת",
@@ -151,7 +152,7 @@
       },
       {
         "what": "רשת",
-        "linux": "כבויה כברירת מחדל: בלי יציאה, חוץ מה-host של ה-API של סוכן מוכר ומה-registries של חבילות שמותרים כשה-toolchains דלוקים. <code>--allow-host</code> או <code>--network</code> פותחים יותר, <code>--forward-port</code> מעביר פורט אחד מה-loopback של המארח, <code>--no-network</code> סוגר הכול. תחת <code>--lockdown</code> הרשת הפתוחה חסומה תמיד, גם עם <code>--network</code>.",
+        "linux": "סגורה כברירת מחדל: בלי יציאה, חוץ מה-host של ה-API של סוכן מוכר ומה-registries של החבילות שמותרים כשה-toolchains דלוקים. <code>--allow-host</code> או <code>--network</code> פותחים יותר, <code>--forward-port</code> מעביר פורט אחד מה-loopback של המארח, <code>--no-network</code> סוגר הכול. תחת <code>--lockdown</code> הרשת הפתוחה חסומה תמיד, גם עם <code>--network</code>.",
         "macos": "אותה ברירת מחדל ואותם דגלים, כולל ה-host של ה-API של הסוכן המוכר, אבל בלי <code>--forward-port</code>, בלי ה-registries ובלי מיפויי ה-cache של ה-toolchains, שקיימים רק ב-Linux. גם כאן lockdown חוסם את הרשת הפתוחה."
       },
       {

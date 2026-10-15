@@ -7,7 +7,8 @@
     "title": "Download ai-jail {tag}",
     "lede": "Released {date}. One archive for Linux and one for macOS, each with a SHA-256 checksum next to it. Free software under {license}.",
     "jump": "Get the binary",
-    "changelog": "What changed"
+    "changelog": "What changed",
+    "audience": "For the person at the keyboard."
   },
   "builds": {
     "title": "Binaries",

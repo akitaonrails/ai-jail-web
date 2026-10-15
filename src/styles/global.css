@@ -180,6 +180,7 @@
   .ticks { display: grid; gap: 0.7rem; }
   .ticks > li { padding-inline-start: 1.4rem; position: relative; }
   .ticks > li::before { content: ''; position: absolute; inset-inline-start: 0; inset-block-start: 0.35em; inline-size: 0.5rem; block-size: 0.95em; background: var(--hue-vivid, var(--text)); border: 1.5px solid var(--line); }
+  .cell .ticks > li::before { background: var(--hue, var(--text)); }
 
   .table-wrap { overflow-x: auto; border: var(--rule) solid var(--line); background: var(--surface); box-shadow: var(--press); }
   .table-site { width: 100%; border-collapse: collapse; font-size: 0.97rem; }

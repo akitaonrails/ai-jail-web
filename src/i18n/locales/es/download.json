@@ -6,6 +6,7 @@
   "hero": {
     "title": "Descargar ai-jail {tag}",
     "lede": "Publicada el {date}. Un archivo comprimido para Linux y otro para macOS, cada uno con su checksum SHA-256 al lado. Software libre bajo {license}.",
+    "audience": "Para la persona que está al teclado.",
     "jump": "Ir al binario",
     "changelog": "Qué cambió"
   },

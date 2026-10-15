@@ -43,7 +43,7 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
-  <PageHero hue="indigo" page="compare" kicker={t('kicker.compare')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="indigo" page="compare" kicker={t('kicker.compare')} title={t('hero.title')} lede={t('hero.lede')} audience={t('hero.audience')}>
     <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
     <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
   </PageHero>
@@ -58,6 +58,7 @@ const next = withText(
   <Section title={t('wall.title')} lede={t('wall.lede')} hue="teal">
     <Diagram name="home-wrap" alt={t('wall.alt')} caption={t('wall.caption')} />
     <p class="text-muted max-w-[40em]" set:html={t('wall.codex')} />
+    <Callout title={t('both.nestedTitle')}><p set:html={t('both.nestedText')} /></Callout>
   </Section>
 
   <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="mustard" tint>
@@ -106,12 +107,6 @@ const next = withText(
       <Callout title={t('table.antigravityTitle')} hue="mustard"><p set:html={t('table.antigravityText')} /></Callout>
       <Callout title={t('table.opencodeTitle')} hue="mustard"><p set:html={t('table.opencodeText')} /></Callout>
     </div>
-    <h3 id="wrappers" class="text-xl mt-12 scroll-mt-24">{t('table.wrappersTitle')}</h3>
-    <p class="mt-3 text-muted max-w-[46em]" set:html={t('table.wrappersLead')} />
-    <div class="grid gap-x-8 md:grid-cols-2">
-      <Callout title={t('table.nonoTitle')} hue="clay"><p set:html={t('table.nonoText')} /></Callout>
-      <Callout title={t('table.zeroboxTitle')} hue="clay"><p set:html={t('table.zeroboxText')} /></Callout>
-    </div>
   </Section>
 
   <Section id="both" title={t('both.title')} lede={t('both.lede')} hue="clay" tint fill>
@@ -122,7 +117,6 @@ const next = withText(
     <p class="mt-4 text-muted max-w-[40em]" set:html={t('both.codeNote')} />
     <Diagram name="compare-layers-together" alt={t('both.alt')} caption={t('both.caption')} />
     <FeatureGrid items={together} cols={2} />
-    <Callout title={t('both.nestedTitle')}><p set:html={t('both.nestedText')} /></Callout>
   </Section>
 
   <Section id="containers" title={t('heavy.title')} lede={t('heavy.lede')} hue="red">
@@ -137,7 +131,13 @@ const next = withText(
     <p class="mt-6 text-muted max-w-[40em]" set:html={t('heavy.note')} />
   </Section>
 
-  <Section id="platforms" title={t('platforms.title')} lede={t('platforms.lede')} hue="mustard" tint>
+  <Section id="wrappers" title={t('evaluators.title')} lede={t('evaluators.lede')} hue="mustard" tint>
+    <div class="grid gap-x-8 md:grid-cols-2">
+      <Callout title={t('table.nonoTitle')} hue="clay"><p set:html={t('table.nonoText')} /></Callout>
+      <Callout title={t('table.zeroboxTitle')} hue="clay"><p set:html={t('table.zeroboxText')} /></Callout>
+    </div>
+    <h3 id="platforms" class="text-xl mt-12 scroll-mt-24">{t('platforms.title')}</h3>
+    <p class="mt-3 mb-6 text-muted max-w-[46em]" set:html={t('platforms.lede')} />
     <div class="table-wrap">
       <table class="table-site">
         <thead><tr><td></td><th scope="col">{t('platforms.cols.openshell')}</th><th scope="col" data-hue="teal" class="jail">{t('platforms.cols.jail')}</th></tr></thead>

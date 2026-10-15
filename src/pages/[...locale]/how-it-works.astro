@@ -36,7 +36,7 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <PageHero hue="clay" page="how" kicker={t('kicker.how')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="clay" page="how" kicker={t('kicker.how')} title={t('hero.title')} lede={t('hero.lede')} audience={t('hero.audience')}>
     <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
     <a href={href('/security/')} class="btn btn-ghost">{t('hero.security')}</a>
   </PageHero>
@@ -47,7 +47,21 @@ const next = withText(
     <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('launch.link')}</a>
   </Section>
 
-  <Section title={t('layers.title')} lede={t('layers.lede')} hue="clay" id="layers" tint fill>
+  <Section title={t('egress.title')} lede={t('egress.lede')} hue="clay" id="network" tint>
+    <Diagram name="how-egress" alt={t('egress.alt')} caption={t('egress.caption')} />
+    <FeatureGrid items={modes} />
+    <div class="table-wrap mt-10">
+      <table class="table-site">
+        <thead><tr><td></td><th scope="col">{t('egress.head.linux')}</th><th scope="col">{t('egress.head.macos')}</th></tr></thead>
+        <tbody>
+          {egress.map((r) => <tr><td set:html={r.what} /><td set:html={r.linux} /><td set:html={r.macos} /></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('egress.link')}</a>
+  </Section>
+
+  <Section title={t('layers.title')} lede={t('layers.lede')} hue="clay" id="layers" fill>
     <Diagram name="how-layers" alt={t('layers.alt')} caption={t('layers.caption')} />
     <ol class="layers">
       {layers.map((l, i) => (
@@ -64,20 +78,6 @@ const next = withText(
         </li>
       ))}
     </ol>
-  </Section>
-
-  <Section title={t('egress.title')} lede={t('egress.lede')} hue="clay" id="network">
-    <Diagram name="how-egress" alt={t('egress.alt')} caption={t('egress.caption')} />
-    <FeatureGrid items={modes} />
-    <div class="table-wrap mt-10">
-      <table class="table-site">
-        <thead><tr><td></td><th scope="col">{t('egress.head.linux')}</th><th scope="col">{t('egress.head.macos')}</th></tr></thead>
-        <tbody>
-          {egress.map((r) => <tr><td set:html={r.what} /><td set:html={r.linux} /><td set:html={r.macos} /></tr>)}
-        </tbody>
-      </table>
-    </div>
-    <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('egress.link')}</a>
   </Section>
 
   <Section title={t('macos.title')} lede={t('macos.lede')} hue="red" id="macos">

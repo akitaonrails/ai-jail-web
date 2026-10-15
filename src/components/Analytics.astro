@@ -71,8 +71,9 @@ const id = import.meta.env.PUBLIC_GA_ID as string | undefined;
 </script>
 
 <style>
-  .consent { position: fixed; z-index: 60; inset-inline: 1rem; bottom: 1rem; margin-inline: auto; max-width: 44rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; padding: 1rem 1.25rem; border-radius: 1.25rem; background: var(--surface); border: 1.5px solid var(--line); box-shadow: var(--shadow); font-size: .95rem; }
+  .consent { position: fixed; z-index: 60; inset-inline-end: 1rem; inset-inline-start: auto; bottom: 1rem; max-width: 24rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; padding: 1rem 1.25rem; background: var(--surface); border: var(--rule) solid var(--line); box-shadow: var(--press); font-size: .92rem; }
+  @media (max-width: 40rem) { .consent { inset-inline: 1rem; max-width: none; } }
   .consent[hidden] { display: none; }
-  .consent p { flex: 1 1 18rem; color: var(--muted); }
+  .consent p { flex: 1 1 14rem; color: var(--muted); }
   .consent .btn { padding: .6em 1.1em; font-size: .92rem; }
 </style>

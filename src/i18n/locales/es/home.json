@@ -1,11 +1,18 @@
 {
   "hero": {
     "title": "Una jaula para tu agente de IA",
-    "lede": "Tu agente se ejecuta con tu cuenta de usuario, así que puede leer todo lo que tú puedes leer. ai-jail lo arranca dentro de un sandbox del sistema operativo hecho para frenar los errores de un agente de confianza: el proyecto es escribible, y tus claves, los secretos de tu shell y tu directorio home no están ahí.",
+    "lede": "Tu agente de programación, el programa que edita y ejecuta código por ti, corre con tu cuenta de usuario, así que puede leer todo lo que tú puedes leer: las claves de tus servidores, tu cuenta en la nube, todos los demás proyectos del disco. ai-jail lo arranca dentro de un sandbox, una cerca que el sistema operativo mantiene alrededor de un solo programa, hecha para frenar los errores de un agente de confianza. El proyecto es escribible. Tus claves, tu directorio home y los secretos de tu shell (los tokens y contraseñas que una terminal guarda en variables de entorno) no están ahí.",
     "install": "Instalar",
     "why": "¿Lo necesito?",
     "logoAlt": "Un candado hecho de pistas de circuito. Tras las rejas de su ventana hay un microchip que brilla: el agente.",
     "stamp": "No es una VM"
+  },
+  "injection": {
+    "title": "Cómo un buen agente sale mal",
+    "lede": "Todo el día el agente lee texto que no escribiste: páginas web, issues, READMEs, paquetes. Basta una página con instrucciones escondidas, y el agente no necesita ser hostil para seguirlas.",
+    "alt": "Dos filas. Sin jaula, una página envenenada llega al agente, el agente lee la clave SSH y la envía a internet. Con ai-jail, el agente está dentro de un muro de barrotes, ninguna flecha sale de él, y la clave SSH e internet aparecen atenuados y tras barrotes, fuera.",
+    "caption": "La misma página, con y sin ai-jail. La clave no está ahí para leerla, e internet está cerrado.",
+    "link": "Qué más puede alcanzar un agente"
   },
   "scene": {
     "label": "Lo que el agente puede alcanzar, antes y después de ai-jail",
@@ -19,7 +26,7 @@
     "steps": [
       {
         "title": "Tu agente se ejecuta como tú",
-        "text": "Un agente de programación es un programa bajo tu cuenta de usuario. Él, y cada script, paquete y servidor MCP que arranca, pueden abrir cualquier cosa que tú puedas abrir."
+        "text": "Un agente de programación es un programa bajo tu cuenta de usuario. También lo es cada script, paquete y servidor MCP que arranca; un servidor MCP es un programa auxiliar que le da herramientas extra al agente. Todos pueden abrir cualquier cosa que tú puedas abrir."
       },
       {
         "title": "Arráncalo con ai-jail",
@@ -27,21 +34,21 @@
       },
       {
         "title": "Tu home no está montado",
-        "text": "El agente recibe un directorio home nuevo y vacío. Las claves SSH, las credenciales de la nube, los perfiles del navegador y tus otros proyectos no existen ahí dentro."
+        "text": "El agente recibe un directorio home nuevo y vacío. Las claves SSH (los archivos con los que entras a tus servidores), las credenciales de la nube, los perfiles del navegador y tus otros proyectos no existen ahí dentro."
       },
       {
-        "title": "Secretos, red y dispositivos apagados",
-        "text": "ai-jail reduce las variables de entorno a una lista de permitidos, así que los tokens de tu shell se quedan en tu shell. La red está cerrada, salvo los registries de paquetes de los que descargan tus toolchains. El socket de Docker, la pantalla y el portapapeles están apagados."
+        "title": "Secretos, red y dispositivos cerrados",
+        "text": "ai-jail reduce las variables de entorno a una lista de permitidos, así que los secretos de tu shell se quedan en tu shell. La red está cerrada, salvo el host de la API del propio agente y, en Linux, los registries de paquetes de los que descargan tus toolchains. El socket de Docker, la pantalla y el portapapeles están apagados."
       },
       {
         "title": "Abre lo que la tarea necesita",
-        "text": "Un agente en la nube arranca con la sesión iniciada, porque ai-jail monta su login por defecto. Para Claude, Codex, Gemini, Grok y Devin no abres nada: ai-jail deja pasar el host de la API del propio agente por su proxy filtrado y mantiene el resto cerrado. <code>--allow-host</code> añade hosts, <code>--network</code> lo abre todo."
+        "text": "Claude Code, Codex, Gemini, Grok y Devin arrancan con la sesión iniciada y alcanzan el host de su propia API. Un flag, una opción que escribes después de <code>ai-jail</code>, abre más: <code>--allow-host</code> añade hosts, <code>--network</code> lo abre todo."
       }
     ]
   },
   "wrap": {
     "title": "El muro rodea todo el harness",
-    "lede": "Los agentes que traen un sandbox lo ponen alrededor de los comandos que ejecuta el modelo. El proceso del agente, sus herramientas de archivos, sus servidores MCP y sus hooks quedan fuera, bajo tu cuenta. ai-jail los arranca a todos dentro.",
+    "lede": "Los agentes que traen un sandbox lo ponen alrededor de los comandos que ejecuta el modelo. El proceso del agente, sus herramientas de archivos, sus servidores MCP y sus hooks (scripts que el agente ejecuta en momentos fijos) quedan fuera, bajo tu cuenta. ai-jail los arranca a todos dentro. Una solicitud de permiso le pregunta a una persona, y a una persona se la puede apurar o engañar. Un sandbox le pregunta al kernel, el núcleo del sistema operativo, que responde siempre lo mismo.",
     "alt": "Dos paneles. A la izquierda, un sandbox integrado encierra solo los comandos de shell, mientras el agente, los servidores MCP y los hooks quedan fuera, junto a tu directorio home. A la derecha, ai-jail encierra juntos al agente, los servidores MCP, los hooks y los comandos de shell, y el directorio home queda fuera del muro.",
     "caption": "Una sola política para todos los agentes que usas, escrita una vez.",
     "link": "Ver la comparación completa"
@@ -51,16 +58,16 @@
     "lede": "Todo lo que alcanza tu máquina está apagado hasta que lo actives, salvo el login del propio agente, el host de su propia API, tus toolchains (en Linux) y sus registries de paquetes, cada uno con un interruptor <code>--no-</code>. Las escrituras fuera del proyecto caen en memoria y desaparecen cuando termina la sesión.",
     "inside": [
       {
-        "text": "El directorio del proyecto, en lectura y escritura, en su ruta real"
+        "text": "Tu proyecto, en lectura y escritura, en su ruta real"
       },
       {
-        "text": "Tus toolchains (mise, cargo, npm y otras) y las del sistema en <code>/usr</code>, en solo lectura, con una caché propia de la jaula en Linux"
+        "text": "Tus toolchains, en solo lectura, con una caché propia de la jaula (Linux)"
       },
       {
         "text": "El login del propio agente, como <code>~/.claude</code>, para que arranque con la sesión iniciada"
       },
       {
-        "text": "El host de la API de un agente conocido (Claude, Codex, Gemini, Grok, Devin) a través de un proxy filtrado, y los registries de paquetes en Linux"
+        "text": "<a class=\"link\" href=\"/install/#first\">El host de la API de un agente conocido</a>, y los registries de paquetes en Linux"
       },
       {
         "text": "Un directorio home nuevo y un <code>/tmp</code> privado"
@@ -71,15 +78,15 @@
         "text": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, perfiles del navegador"
       },
       {
-        "text": "Tokens y claves de API del entorno de tu shell, salvo la clave del propio agente, que se copia por defecto"
+        "text": "Los secretos de tu shell, salvo la clave de API del propio agente"
       },
       {
-        "text": "Otros procesos, el IPC del host, interfaces del kernel como <code>ptrace</code> y <code>bpf</code>"
+        "text": "Otros procesos, el IPC del host, <code>ptrace</code> y <code>bpf</code>"
       }
     ],
     "optin": [
       {
-        "text": "<code>--allow-host</code> para más hosts, <code>--forward-port</code> para un servicio local en Linux, o <code>--network</code> para toda la red"
+        "text": "<code>--allow-host</code> para más hosts, <code>--forward-port</code> para un servicio local, <code>--network</code> para toda la red"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> y más"
@@ -88,32 +95,17 @@
     "link": "Todos los interruptores"
   },
   "how": {
-    "title": "Varias capas del kernel, un binario pequeño",
-    "lede": "En Linux, bubblewrap crea los namespaces y los montajes, Landlock repite las reglas del sistema de archivos dentro del kernel, seccomp bloquea las llamadas al sistema peligrosas y los límites de recursos frenan los procesos desbocados. En macOS la misma política se convierte en un perfil de sandbox-exec.",
-    "points": [
-      {
-        "title": "Sin daemon y sin root",
-        "text": "ai-jail es un único binario en Rust que arranca tu agente y termina con él. Nada queda corriendo en segundo plano y nunca escribes sudo."
-      },
-      {
-        "title": "Tus toolchains, sin imágenes",
-        "text": "El agente usa los compiladores y runtimes que ya tienes en tu máquina. No hay ninguna imagen de contenedor que construir ni que mantener al día."
-      },
-      {
-        "title": "Un repositorio no puede aflojarla",
-        "text": "Un archivo <code>.ai-jail</code> dentro de un proyecto puede endurecer el sandbox y nunca abrirlo. Eso solo pueden hacerlo tu archivo global y tus flags."
-      }
-    ],
+    "text": "ai-jail es un programa pequeño, sin daemon y sin root. En Linux levanta los muros con funciones del kernel: bubblewrap para los namespaces y los montajes, Landlock para las reglas de archivos, seccomp para las llamadas al sistema, límites para los procesos desbocados. En macOS la misma política se convierte en un perfil de <code>sandbox-exec</code>. El agente usa los compiladores y runtimes que ya tienes en tu máquina, y un archivo <code>.ai-jail</code> dentro de un repositorio puede endurecer la jaula y nunca abrirla.",
     "link": "Cómo funcionan las capas"
   },
   "limits": {
     "title": "Lo que no es",
-    "text": "ai-jail está hecho para frenar los errores de un agente de confianza. No es una frontera contra código hostil: comparte tu kernel, un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, y un host que permites con <code>--allow-host</code> es de confianza para todo lo que ofrece. Para código que crees hostil, usa una máquina virtual desechable.",
+    "text": "ai-jail está hecho para frenar los errores de un agente de confianza. No es una frontera contra código hostil: comparte tu kernel, un agente con <code>--network</code> puede enviar fuera todo lo que puede leer, y un host que permites con <code>--allow-host</code> es de confianza para todo lo que ofrece. Para código que crees hostil, usa una máquina virtual desechable, una VM: una computadora entera ejecutada como software, con su propio kernel, que se tira después del trabajo.",
     "link": "Leer el modelo de amenazas"
   },
   "pair": {
     "title": "Funciona con ai-memory",
-    "text": "ai-memory da a tus agentes una memoria a largo plazo. ai-jail los mantiene en su celda. ai-jail reconoce el lanzador <code>ai-memory run</code> y aplica la política del agente que hay detrás.",
+    "text": "ai-memory da a tus agentes una memoria a largo plazo, y ai-jail los mantiene en su celda. ai-jail reconoce el lanzador <code>ai-memory run</code> y aplica la política del agente que hay detrás.",
     "link": "Visitar aimemory.io"
   },
   "faq": {
@@ -125,7 +117,7 @@
       },
       {
         "q": "¿Qué agentes soporta?",
-        "a": "Cualquier comando. Tiene presets para Claude Code, Codex, Gemini CLI, Devin, OpenCode, Crush, Grok, Kimi, pi, jcode y SoulForge, y <code>ai-jail bash</code> te da una shell dentro de la jaula para echar un vistazo."
+        "a": "Cualquier comando. Sabe dónde guardan su login Claude Code, Codex, Gemini CLI, OpenCode, Antigravity, Kimi, Kiro, Prime Agent, Devin, Crush, Grok, jcode, pi, aider, SoulForge y omp, y lo monta por defecto. <a class=\"link\" href=\"/install/#agents\">La tabla de Instalar</a> dice qué recibe cada uno, y <code>ai-jail bash</code> te da una shell dentro de la jaula para echar un vistazo."
       },
       {
         "q": "¿Funciona en Windows?",
@@ -133,7 +125,7 @@
       },
       {
         "q": "Mi agente necesita internet. ¿Sigue sirviendo la jaula?",
-        "a": "Sí. Un agente conocido como Claude Code alcanza el host de su propia API nada más arrancar y nada más. <code>--allow-host</code> añade los hosts que nombres. Con <code>--network</code> activado, en cambio, el agente sigue pudiendo leer solo tu proyecto, así que tus claves y el resto de tu home no están ahí para enviarlos. Lo que puede leer, puede enviarlo, y por eso importa enmascarar los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
+        "a": "Sí. Un agente conocido como Claude Code alcanza el host de su propia API nada más arrancar, más los registries de paquetes en Linux, y nada más. <code>--allow-host</code> añade los hosts que nombres. Con <code>--network</code> activado, en cambio, el agente sigue pudiendo leer solo tu proyecto, así que tus claves y el resto de tu home no están ahí para enviarlos. Lo que puede leer, puede enviarlo, y por eso importa enmascarar los secretos dentro del proyecto. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascararlos</a>."
       },
       {
         "q": "¿Es gratis?",

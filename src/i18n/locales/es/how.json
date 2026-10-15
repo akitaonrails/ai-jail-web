@@ -6,6 +6,7 @@
   "hero": {
     "title": "Qué pasa cuando escribes ai-jail claude",
     "lede": "ai-jail construye una copia pequeña y cerrada de tu sistema, mete tu proyecto dentro y arranca el agente ahí. Las paredes son funciones del propio sistema operativo, así que el agente corre a toda velocidad y no puede apagarlas. En cada arranque, la red está cerrada salvo el host de la API del propio agente, abierta a unos pocos hosts con nombre, o abierta del todo.",
+    "audience": "Para el ingeniero que quiere saber qué se aplica de verdad. A todos los demás les basta el primer párrafo y la primera imagen.",
     "install": "Instalar",
     "security": "Leer el modelo de amenazas"
   },
@@ -60,7 +61,7 @@
         "name": "seccomp",
         "tag": "llamadas al sistema",
         "is": "Los programas le piden cosas al kernel mediante llamadas al sistema (syscalls). seccomp es un filtro sobre esas llamadas, y ai-jail lo usa para rechazar las que un agente de programación nunca necesita.",
-        "stops": "El filtro bloquea <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, los módulos del kernel, <code>io_uring</code>, el keyring del kernel, los sockets raw y <code>TIOCSTI</code>, la llamada que escribe pulsaciones de teclas en una terminal, comparada tal como la lee el kernel. Es una lista de bloqueo a propósito, para que los compiladores y runtimes sigan funcionando. El único proceso que arranca antes de que se apliquen Landlock y seccomp es el pequeño puente que saca el tráfico de red filtrado, así que solo él queda sin restricciones."
+        "stops": "El filtro bloquea <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, los módulos del kernel, <code>io_uring</code>, el keyring del kernel, los sockets raw y <code>TIOCSTI</code>, una llamada que puede escribir pulsaciones de teclas en tu terminal. Es una lista de bloqueo a propósito, para que los compiladores y runtimes sigan funcionando. El único proceso que arranca antes de que se apliquen Landlock y seccomp es el pequeño puente que saca el tráfico de red filtrado, así que solo él queda sin restricciones."
       },
       {
         "name": "Límites de recursos",
@@ -84,13 +85,13 @@
   },
   "egress": {
     "title": "Tres caminos hacia la red",
-    "lede": "Cada arranque elige uno de tres modos de red. El modo por defecto es el más estricto: ninguna ruta de salida salvo lo que deja pasar el proxy filtrado, que es el host de la API del propio agente conocido en ambas plataformas (dos en el caso de Codex) y, en Linux con las toolchains activadas (lo normal), una lista corta de registries de paquetes. Los otros dos son flags que pasas a propósito.",
+    "lede": "Cada arranque elige uno de tres modos de red. El modo por defecto es el más estricto: ninguna ruta de salida salvo lo que deja pasar el proxy filtrado, que es <a class=\"link\" href=\"/install/#first\">el host de la API de un agente conocido</a> en ambas plataformas y, en Linux con las toolchains activadas (lo normal), una lista corta de registries de paquetes. Los otros dos son flags que pasas a propósito.",
     "alt": "Tres paneles, de izquierda a derecha. Apagada: el chip del agente dentro de un muro cerrado, con una nube atenuada y tras barrotes fuera. Filtrada: una puerta pequeña en el muro lleva a una caja de proxy, que conecta con una nube cian con la etiqueta api.anthropic.com mientras una segunda nube sigue atenuada y tras barrotes. Abierta: falta el lado de red del muro y el chip conecta directo con la nube.",
-    "caption": "Apagada es el valor por defecto. Filtrada abre una puerta solo hacia hosts con nombre. Abierta quita el muro del lado de la red.",
+    "caption": "Apagada es el valor por defecto, con una puerta para el host de la API del propio agente y, en Linux, los registries. Filtrada abre una puerta solo hacia hosts con nombre. Abierta quita el muro del lado de la red.",
     "modes": [
       {
         "title": "Apagada",
-        "text": "El modo por defecto. El sandbox recibe un namespace de red privado sin ruta de salida, salvo a través del proxy filtrado. Para un agente conocido (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>, <code>devin</code>) el proxy deja pasar su host de la API documentado, en Linux y macOS, así que un simple <code>ai-jail claude</code> funciona; Codex recibe dos, porque su login de ChatGPT también usa <code>chatgpt.com</code>. En Linux, con las toolchains activadas (lo normal), también deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; en macOS los registries siguen cerrados. <code>--no-network</code> lo deja completamente sin conexión."
+        "text": "El modo por defecto. El sandbox recibe un namespace de red privado sin ruta de salida, salvo a través del proxy filtrado. Para <a class=\"link\" href=\"/install/#first\">un agente conocido</a> el proxy deja pasar el host de su propia API, en Linux y macOS, así que un simple <code>ai-jail claude</code> funciona. En Linux, con las toolchains activadas (lo normal), también deja pasar <a class=\"link\" href=\"/configure/#toolchains\">una lista fija de registries de paquetes</a>, así que <code>npm install</code> y <code>cargo build</code> funcionan; en macOS los registries siguen cerrados. <code>--no-network</code> lo deja completamente sin conexión."
       },
       {
         "title": "Filtrada",
@@ -151,7 +152,7 @@
       },
       {
         "what": "Red",
-        "linux": "Apagada por defecto: ninguna ruta de salida salvo el host de la API del propio agente conocido y los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--forward-port</code> reenvía un puerto del loopback del host, <code>--no-network</code> cierra todo. Bajo <code>--lockdown</code> la red abierta siempre se bloquea, incluso con <code>--network</code>.",
+        "linux": "Cerrada por defecto: ninguna ruta de salida salvo el host de la API de un agente conocido y los registries de paquetes permitidos cuando las toolchains están activadas. <code>--allow-host</code> o <code>--network</code> abren más, <code>--forward-port</code> reenvía un puerto del loopback del host, <code>--no-network</code> cierra todo. Bajo <code>--lockdown</code> la red abierta siempre se bloquea, incluso con <code>--network</code>.",
         "macos": "El mismo valor por defecto y los mismos flags, incluido el host de la API del agente conocido, pero sin <code>--forward-port</code>, los registries ni los mapeos de caché de toolchains, que son solo para Linux. Lockdown también bloquea aquí la red abierta."
       },
       {

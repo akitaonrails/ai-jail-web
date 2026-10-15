@@ -7,7 +7,8 @@
     "title": "Baixe o ai-jail {tag}",
     "lede": "Lançado em {date}. Um arquivo compactado para Linux e um para macOS, cada um com o checksum SHA-256 ao lado. Software livre sob a licença {license}.",
     "jump": "Pegar o binário",
-    "changelog": "O que mudou"
+    "changelog": "O que mudou",
+    "audience": "Para quem está no teclado."
   },
   "builds": {
     "title": "Binários",
@@ -29,7 +30,10 @@
     "verify": {
       "title": "Confira o checksum",
       "text": "Coloque o arquivo compactado e o <code>.sha256</code> dele na mesma pasta e rode a linha do seu sistema. Ela imprime <code>OK</code> quando o arquivo bate.",
-      "comments": ["# Linux", "# macOS"],
+      "comments": [
+        "# Linux",
+        "# macOS"
+      ],
       "more": "As tags de release também são assinadas. <a class=\"link\" href=\"/security/#checked\">Segurança</a> lista como uma release é feita e o que ainda falta."
     },
     "windows": {
@@ -41,10 +45,22 @@
     "title": "Gerenciadores de pacotes",
     "lede": "Cada um destes instala o mesmo programa por uma ferramenta que você já usa, e as atualizações vêm por ela.",
     "items": [
-      { "title": "Homebrew", "text": "macOS e Linux." },
-      { "title": "Arch Linux", "text": "<code>ai-jail-bin</code> é o binário pré-compilado. <code>ai-jail</code> compila do código-fonte." },
-      { "title": "crates.io", "text": "Compila com Rust {rust} e as versões de dependências com que a release foi testada." },
-      { "title": "Nix", "text": "O flake aponta o ai-jail para a própria cópia do bubblewrap." }
+      {
+        "title": "Homebrew",
+        "text": "macOS e Linux."
+      },
+      {
+        "title": "Arch Linux",
+        "text": "<code>ai-jail-bin</code> é o binário pré-compilado. <code>ai-jail</code> compila do código-fonte."
+      },
+      {
+        "title": "crates.io",
+        "text": "Compila com Rust {rust} e as versões de dependências com que a release foi testada."
+      },
+      {
+        "title": "Nix",
+        "text": "O flake aponta o ai-jail para a própria cópia do bubblewrap."
+      }
     ],
     "link": "Instalação e primeira execução"
   },
@@ -57,9 +73,18 @@
   },
   "next": {
     "items": [
-      { "title": "Instalar", "text": "A primeira execução: um dry run, uma olhada lá dentro e depois o agente com um caminho até a API dele." },
-      { "title": "Configurar", "text": "Todas as flags e chaves de configuração, e como abrir só o que a tarefa precisa." },
-      { "title": "Segurança", "text": "O modelo de ameaças, como uma release é assinada e o que ainda falta." }
+      {
+        "title": "Instalar",
+        "text": "A primeira execução: um dry run, uma olhada lá dentro e depois o agente com um caminho até a API dele."
+      },
+      {
+        "title": "Configurar",
+        "text": "Todas as flags e chaves de configuração, e como abrir só o que a tarefa precisa."
+      },
+      {
+        "title": "Segurança",
+        "text": "O modelo de ameaças, como uma release é assinada e o que ainda falta."
+      }
     ]
   }
 }

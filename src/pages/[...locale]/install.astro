@@ -5,6 +5,7 @@ import Section from '@/components/Section.astro';
 import Diagram from '@/components/Diagram.astro';
 import Steps from '@/components/Steps.astro';
 import Tabs from '@/components/Tabs.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
 import Callout from '@/components/Callout.astro';
 import NextPages from '@/components/NextPages.astro';
@@ -37,7 +38,7 @@ const steps = withText(
     { code: 'cd ~/Projects/my-app\nai-jail --dry-run claude' },
     { code: 'ai-jail bash' },
     { code: `ai-jail claude\n${k[0]}\nai-jail --network claude` },
-    { code: `[commands.claude]\nallow_hosts = ["github.com"]\n${k[1]}\n\n${k[2]}\n# ai-jail --network claude` },
+    { code: `[commands.claude]\nallow_hosts = ["api.example.com"]\n${k[1]}\n\n${k[2]}\n# ai-jail --network claude` },
   ].map((s, i) => ({ ...s, codeTitle: codeTitles[i] })),
   raw<Words[]>('first.steps'),
 );
@@ -65,11 +66,12 @@ const trouble = withText(
   raw<(Words & { alt?: string })[]>('trouble.items'),
 );
 
+// The four most used agents first, then the rest in the order the README lists them.
 const agentRows = [
   { cmd: 'ai-jail claude', state: ['~/.claude', '~/.claude.json'], note: 'claude' },
   { cmd: 'ai-jail codex', state: ['~/.codex'], note: 'codex' },
-  { cmd: 'ai-jail opencode', state: ['~/.config/opencode', '~/.local/share/opencode'], note: 'opencode' },
   { cmd: 'ai-jail gemini', state: ['~/.gemini'] },
+  { cmd: 'ai-jail opencode', state: ['~/.config/opencode', '~/.local/share/opencode'], note: 'opencode' },
   { cmd: 'ai-jail antigravity', state: ['~/.gemini'], note: 'antigravity' },
   { cmd: 'ai-jail kimi', state: ['~/.kimi'], note: 'kimi' },
   { cmd: 'ai-jail kiro-cli', state: ['~/.kiro', '~/.local/share/kiro-cli'], note: 'kiro' },
@@ -77,6 +79,9 @@ const agentRows = [
   { cmd: 'ai-jail devin', state: ['~/.local/share/devin', '~/.config/devin'], note: 'devin' },
   { cmd: 'ai-jail ai-memory run claude', state: [], note: 'aimemory' },
 ];
+
+// Day one, as four cells; the flag in each is inside the catalog's <code>.
+const dayone = withText([{ hue: 'teal' }, { hue: 'teal' }, { hue: 'mustard' }, { hue: 'mustard' }] as const, raw<Words[]>('blocked.cells'));
 
 const next = withText(
   [
@@ -88,7 +93,7 @@ const next = withText(
 );
 ---
 <Base title={t('meta.title')} description={t('meta.description')}>
-  <PageHero hue="teal" page="install" kicker={t('kicker.install')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="teal" page="install" kicker={t('kicker.install')} title={t('hero.title')} lede={t('hero.lede')} audience={t('hero.audience')}>
     <a href="#install" class="btn btn-primary">{t('hero.jump')}</a>
     <a href={`${site.repo}/releases`} class="btn btn-ghost">{t('hero.releases')}</a>
   </PageHero>
@@ -116,7 +121,7 @@ const next = withText(
     </div>
   </Section>
 
-  <Section title={t('first.title')} lede={t('first.lede')} hue="teal" tint fill>
+  <Section id="first" title={t('first.title')} lede={t('first.lede')} hue="teal" tint fill>
     <Diagram name="install-first-run" alt={t('first.alt')} caption={t('first.caption')} />
     <Steps steps={steps} />
     <div class="grid gap-x-8 md:grid-cols-2 mt-10">
@@ -136,7 +141,15 @@ const next = withText(
     <p class="text-muted max-w-[40em] mt-6" set:html={t('see.caption')} />
   </Section>
 
-  <Section title={t('trouble.title')} lede={t('trouble.lede')} hue="red" tint>
+  <Section id="blocked" title={t('blocked.title')} lede={t('blocked.lede')} hue="mustard" tint>
+    <ul class="ticks max-w-[46em]">
+      {raw<string[]>('blocked.items').map((it) => <li set:html={it} />)}
+    </ul>
+    <h3 class="text-xl mt-14 mb-6">{t('blocked.dayTitle')}</h3>
+    <FeatureGrid items={dayone} cols={2} />
+  </Section>
+
+  <Section title={t('trouble.title')} lede={t('trouble.lede')} hue="red">
     <div class="grid gap-12 md:grid-cols-2">
       {trouble.map((item) => (
         <div class="grid gap-4 content-start min-w-0">
@@ -151,7 +164,7 @@ const next = withText(
     </div>
   </Section>
 
-  <Section title={t('agents.title')} lede={t('agents.lede')} hue="teal">
+  <Section id="agents" title={t('agents.title')} lede={t('agents.lede')} hue="teal">
     <div class="table-wrap">
       <table class="table-site">
         <thead><tr>{raw<string[]>('agents.head').map((h) => <th scope="col" set:html={h} />)}</tr></thead>

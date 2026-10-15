@@ -8,18 +8,37 @@
     "lede": "組み込みサンドボックスと許可プロンプトは、モデルが実行するコマンドを見張ります。ai-jailは、エージェントというプログラム全体がマシン上で何を見られるかを決め、信頼できるエージェントの誤りに合わせて調整されています。両者は併用できます。",
     "install": "インストール",
     "how": "仕組み",
-    "reviewed": "最終確認日は{date}です。他社製品は変化が速いため、それらに関する記述にはすべてベンダー自身のドキュメントへのリンクを付けています。"
+    "reviewed": "最終確認日は{date}です。他社製品は変化が速いため、それらに関する記述にはすべてベンダー自身のドキュメントへのリンクを付けています。",
+    "audience": "ツールを選んでいる人へ。冒頭の6つの状況で、たいていの疑問は片付きます。"
   },
   "tldr": {
     "title": "要点",
     "lede": "6つの状況に、答えを1つずつ。根拠はこのページの残りで示します。",
     "items": [
-      { "title": "複数のエージェントを使う", "text": "ai-jailです。ポリシーファイル1つでどんなコマンドにも使え、プロセスツリー全体が中に入り、ホームと鍵はデフォルトで隠れ、ツールチェーンとキャッシュは中で使えます。<a class=\"link\" href=\"/install/\">インストール</a>。" },
-      { "title": "Claude Codeしか使わない", "text": "Anthropic自身の<code>sandbox-runtime</code>もプロセス全体を包みます（ベータ）。ai-jailはそれに加えて、空のホーム、モデルのホスト以外に閉じたネットワーク、環境変数の許可リストをデフォルトで用意します。<a class=\"link\" href=\"#table\">カードを見る</a>。" },
-      { "title": "エージェント自身のサンドボックスとプロンプトを使いたい", "text": "そのまま有効にしておいてください。ai-jailの中でも動き、あなたなら承認しなかったはずのコマンドを止めてくれます。<a class=\"link\" href=\"#both\">両方使う</a>。" },
-      { "title": "ツールごとのポリシー、実行時の承認、署名付きの監査証跡が欲しい", "text": "そこではnonoがai-jailより先を行きます。代わりに、ポリシー言語とコマンドごとのスーパーバイザーが必要です。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。" },
-      { "title": "コードから、ツール呼び出し1回ずつサンドボックスに入れる", "text": "zeroboxにはそのためのSDKと、巻き戻し用のスナップショットがあります。読み取りは開いたままで、2026年5月以降リリースがありません。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。" },
-      { "title": "コードをまったく信用していない", "text": "使い捨ての仮想マシンです。ai-jailは信頼できるエージェントの誤りを止めるために作られているので、悪意のあるコードは対象外です。このページのツールはどれも、カーネルをホストと共有します。<a class=\"link\" href=\"#containers\">Docker、コンテナ、VM</a>。" }
+      {
+        "title": "複数のエージェントを使う",
+        "text": "ai-jailです。ポリシーファイル1つ、どんなコマンドでも、プロセス全体が中に入ります。<a class=\"link\" href=\"/install/\">インストール</a>。"
+      },
+      {
+        "title": "Claude Codeしか使わない",
+        "text": "Anthropic自身の<code>sandbox-runtime</code>もプロセス全体を包みます（ベータ）。ai-jailはそれに空のホームと閉じたネットワークを加えます。<a class=\"link\" href=\"#table\">カードを見る</a>。"
+      },
+      {
+        "title": "エージェント自身のサンドボックスとプロンプトを使いたい",
+        "text": "そのまま有効にしておいてください。ai-jailの中でも動きます。<a class=\"link\" href=\"#both\">両方使う</a>。"
+      },
+      {
+        "title": "ツールごとのポリシー、実行時の承認、署名付きの監査証跡が欲しい",
+        "text": "そこではnonoが先を行きます。代わりに、ポリシー言語とスーパーバイザーが要ります。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。"
+      },
+      {
+        "title": "コードから、ツール呼び出し1回ずつサンドボックスに入れる",
+        "text": "zeroboxにはそのためのSDKがあります。読み取りは開いたままで、2026年5月以降リリースがありません。<a class=\"link\" href=\"#wrappers\">ラッパーを比べる</a>。"
+      },
+      {
+        "title": "コードをまったく信用していない",
+        "text": "使い捨ての仮想マシンです。このページのツールはどれも、カーネルをホストと共有します。<a class=\"link\" href=\"#containers\">Docker、コンテナ、VM</a>。"
+      }
     ]
   },
   "wall": {
@@ -36,12 +55,32 @@
     "caption": "プロンプトは役に立ちます。プロンプトはレビューの工程で、サンドボックスは境界です。",
     "modesTitle": "人間を外すモード",
     "modesNote": "執筆時点で、以下のエージェントにはいずれも、確認を求めなくなるモードがあります。プロンプトがなくなれば、残る保護はサンドボックスだけです。それも、有効にしてあればの話です。",
-    "cols": { "agent": "エージェント", "mode": "モード", "effect": "ベンダーの説明による動作" },
+    "cols": {
+      "agent": "エージェント",
+      "mode": "モード",
+      "effect": "ベンダーの説明による動作"
+    },
     "modes": [
-      { "agent": "Claude Code", "mode": "<code>auto</code>", "effect": "すべてが実行され、別のモデルがあなたの代わりに操作を審査します。ドキュメントはこの分類器を<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">操作ごとの制御であり、隔離の境界ではない</a>と説明しています。" },
-      { "agent": "Claude Code", "mode": "<code>bypassPermissions</code>、または<code>--dangerously-skip-permissions</code>", "effect": "すべてがチェックなしで実行されます。<a class=\"link\" href=\"https://code.claude.com/docs/en/permission-modes\">ドキュメント</a>は、隔離されたコンテナやVMの中だけで使うよう求めています。" },
-      { "agent": "Codex CLI", "mode": "承認ポリシー<code>never</code>", "effect": "エージェントは一切確認を求めません。サンドボックスモードは引き続き適用されます。<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">承認とセキュリティ</a>を参照してください。" },
-      { "agent": "Codex CLI", "mode": "<code>danger-full-access</code>、または<code>--yolo</code>", "effect": "サンドボックスが無効になります。<code>--yolo</code>では承認もなくなります。" }
+      {
+        "agent": "Claude Code",
+        "mode": "<code>auto</code>",
+        "effect": "すべてが実行され、別のモデルがあなたの代わりに操作を審査します。ドキュメントはこの分類器を<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">操作ごとの制御であり、隔離の境界ではない</a>と説明しています。"
+      },
+      {
+        "agent": "Claude Code",
+        "mode": "<code>bypassPermissions</code>、または<code>--dangerously-skip-permissions</code>",
+        "effect": "すべてがチェックなしで実行されます。<a class=\"link\" href=\"https://code.claude.com/docs/en/permission-modes\">ドキュメント</a>は、隔離されたコンテナやVMの中だけで使うよう求めています。"
+      },
+      {
+        "agent": "Codex CLI",
+        "mode": "承認ポリシー<code>never</code>",
+        "effect": "エージェントは一切確認を求めません。サンドボックスモードは引き続き適用されます。<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">承認とセキュリティ</a>を参照してください。"
+      },
+      {
+        "agent": "Codex CLI",
+        "mode": "<code>danger-full-access</code>、または<code>--yolo</code>",
+        "effect": "サンドボックスが無効になります。<code>--yolo</code>では承認もなくなります。"
+      }
     ]
   },
   "table": {
@@ -56,12 +95,10 @@
       "jail": "ai-jail"
     },
     "sources": "出典：<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>、<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>、<a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>、<a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>、<a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>、<a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>。",
-    "wrappersTitle": "ai-jailに似たラッパー",
-    "wrappersLead": "ほかにも2つのオープンソースツールが、エージェントの周りにカーネルのサンドボックスを置きます。ai-jail 2.2は両方からアイデアを取り入れました。ファントム認証情報はzeroboxとnonoから、ハッシュチェーン付きの監査ログはnonoからです。どちらもRust製でApache-2.0、デーモンなしで動き、ai-jailと同じくカーネルはホストと共有します。",
     "nonoTitle": "nono：ツールごとのポリシーと実行時の承認",
-    "nonoText": "執筆時点で、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a>（nolabs、2026年9月時点でバージョン0.79）は、サンドボックス外のスーパーバイザーが管理するセッション用サンドボックスでエージェントを実行します。コマンドポリシーを使うと、指定したツール呼び出しを新しい子サンドボックスに入れられます。Linuxではファイルを開く操作にLandlockとseccompのトラップ、macOSではSeatbeltを使い、マウント名前空間はありません。プロファイルは名前を挙げたパスだけを許可し、<code>~/.ssh</code>は拒否グループに置いたままにします。環境はすべて引き継がれ、ネットワークは<code>--block-net</code>か<code>--allow-domain</code>を渡すまで開いています。認証情報プロキシはエージェントにセッショントークンを渡し、本物の鍵は上流で注入します。監査ログにはハッシュチェーン、Merkleルート、オプションの署名があり、Linuxではファイルを開く操作が拒否されたとき、あなたの承認を待って一時停止できます。目指すところがai-jailに最も近いツールで、動く部品も最も多いツールです。",
+    "nonoText": "執筆時点で、<a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a>（nolabs、2026年9月時点でバージョン0.79）は、サンドボックス外のスーパーバイザーが管理するセッション用サンドボックスでエージェントを実行します。コマンドポリシーを使うと、指定したツール呼び出しを新しい子サンドボックスに入れられます。Linuxではファイルを開く操作にLandlockとseccompのトラップ、macOSではSeatbeltを使い、マウント名前空間はありません。",
     "zeroboxTitle": "zerobox：Codexのサンドボックスをどのコマンドにも、ホスト単位の秘密情報付きで",
-    "zeroboxText": "執筆時点で、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a>（作者1人、2026年5月にバージョン0.3.3、以降リリースなし）は、CodexリポジトリのSeatbeltとbubblewrapのランタイムを再利用します。コマンド1つを、あるいはNode、Python、RustのSDKを通じてツール呼び出し1回ずつを、サンドボックスに入れます。書き込み、ネットワーク、環境はデフォルトで拒否されます。読み取りは開いているので、拒否しない限りホームが見えます。<code>--secret KEY=VALUE</code>はプロセスにプレースホルダーを渡し、<code>--secret-host</code>は本物の値が届く先を絞ります。ai-jailの<code>--secret</code>はこのパターンに倣っています。スナップショットと復元はありますが、監査ログ、承認、エージェント用のプリセットはありません。",
+    "zeroboxText": "執筆時点で、<a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a>（作者1人、2026年5月にバージョン0.3.3、以降リリースなし）は、CodexリポジトリのSeatbeltとbubblewrapのランタイムを再利用します。コマンド1つを、あるいはNode、Python、RustのSDKを通じてツール呼び出し1回ずつを、サンドボックスに入れます。",
     "groupJail": "エージェント全体を包むラッパーで加わるもの",
     "groupBuiltin": "組み込みサンドボックスのほうが優れている点",
     "rows": [
@@ -125,7 +162,7 @@
           "ドメイン単位の許可リストを持つプロキシ。新しいドメインが出てくると確認を求め、各コマンドにも個別の承認が要ります。プロキシはクライアントが送るホスト名を信頼するため、ドメインフロンティングで回避されうることは、ドキュメントにも書かれています。",
           "<code>workspace-write</code>ではデフォルトで無効。設定1つで有効になり、オプションのプロキシでドメイン単位の許可と拒否のルールを追加できます。ドキュメントによると、このプロキシはMCPサーバーへの接続、Web検索、ブラウザをフィルターしません。",
           "デフォルトのプロファイルはネットワークを許可します。より厳しいプロファイルやプロキシ付きのプロファイルはオプトインです。",
-          "3つのモードがあり、デフォルトはオフです。<code>--allow-host</code>は指定したホストとそのサブドメインを許可し、Linuxではネットワーク名前空間、macOSではseatbeltのendpointルールが強制します。経由するプロキシは各名前を一度だけ解決し、検査したアドレスに接続します。<code>--network</code>はすべてを開けます。フィルターはTCPのみで、パス単位のルールはなく、確認を求めることもありません。リスト外のホストは拒否され、<code>--audit-log</code>がその試みを記録します。許可したホストは丸ごと信頼されます。デフォルトでは、既知のエージェント自身のAPIホストを両プラットフォームでプロキシが通し、ツールチェーンが有効なら（Linuxのデフォルト）、ビルドが動くように固定のパッケージレジストリ一覧も通します。<code>--no-network</code>は両方を閉じます。明示的な<code>--allow-host</code>のリストはそのデフォルトに足されます。Linuxでは<code>--forward-port</code>がホストのループバックのポート1つをサンドボックスに中継し、そこを通るものにルールはありません。"
+          "3つのモードがあります。デフォルトは閉じていて、例外は両プラットフォームでの<a class=\"link\" href=\"/install/#first\">既知のエージェント自身のAPIホスト</a>と、ツールチェーンが有効なLinuxでの固定のパッケージレジストリ一覧です。この一覧には<code>github.com</code>が含まれるので、HTTPS経由の<code>git clone</code>が動きます。<code>--no-network</code>は両方を閉じます。<code>--allow-host</code>は指定したホストとそのサブドメインを足し、Linuxではネットワーク名前空間、macOSではseatbeltのendpointルールが強制します。経由するプロキシは各名前を一度だけ解決し、検査したアドレスに接続します。<code>--network</code>はすべてを開けます。フィルターはTCPのみで、パス単位のルールはなく、確認を求めることもありません。リスト外のホストは拒否され、<code>--audit-log</code>がその試みを記録します。許可したホストは丸ごと信頼されます。Linuxでは<code>--forward-port</code>がホストのループバックのポート1つをサンドボックスに中継し、そこを通るものにルールはありません。"
         ]
       },
       {
@@ -189,12 +226,18 @@
     "lede": "既知のエージェントなら何も開ける必要はありません。ログイン情報はデフォルトでマウントされ、フィルタ付きプロキシはそのモデルのAPIホストだけを通します。ツールがもっと必要なときは、<code>--allow-host</code>でホストを足すか、ネットワーク全体を開けます。",
     "codeFiltered": "デフォルト：モデルのホストだけ",
     "codeOpen": "手軽：ネットワーク全体",
-    "codeNote": "ai-jailはClaude Code、Codex、Gemini CLI、Grok、DevinのAPIホストを知っていて、デフォルトで許可します。CodexにはChatGPTログイン用の<code>chatgpt.com</code>も加わります。明示的な<code>--allow-host</code>のリストはそのデフォルトに足されるので、APIホストは許可されたままです。ログイン情報はデフォルトでマウントされ、<code>--no-agent-state</code>でログアウト状態の実行になります。<a class=\"link\" href=\"/configure/#switches\">すべてのフラグはConfigureに</a>。",
+    "codeNote": "ai-jailは<a class=\"link\" href=\"/install/#first\">既知のエージェント自身のAPIホスト</a>を知っていて、デフォルトで許可します。Linuxではパッケージレジストリも同様です。明示的な<code>--allow-host</code>のリストはそのデフォルトに足されるので、APIホストは許可されたままです。ログイン情報はデフォルトでマウントされ、<code>--no-agent-state</code>でログアウト状態の実行になります。<a class=\"link\" href=\"/configure/#switches\">すべてのフラグはConfigureに</a>。",
     "alt": "ai-jailと書かれた大きな壁が、エージェント、MCPサーバー、フック、プロジェクト、シェルコマンドを囲んでいます。エージェントとシェルコマンドの間には、エージェント自身の承認プロンプトがあります。1本の線が壁の門を通ってモデルAPIへ出ています。ホームディレクトリは壁の外にあり、暗く、格子がかかっています。",
     "caption": "外側の壁がai-jailです。その中で、エージェントのプロンプトとルールはこれまでどおり働きます。",
     "points": [
-      { "title": "エージェント自身のチェックが引き続き担うこと", "text": "許可プロンプト、許可と拒否のルール、planモードはエージェントというプログラムの一部なので、ジェイルの中でも外と同じように動きます。あなたなら承認しなかったはずのコマンドを、ここで止められます。" },
-      { "title": "その下でai-jailが保証すること", "text": "エージェント、そのMCPサーバー、そのフックは、何を承認しようと、あなたのホームディレクトリ、鍵、シェルのトークンを見ることはありません。唯一の例外はエージェント自身のログイン情報とAPIキーで、サインイン済みで始まるようデフォルトでマウントされます。エージェントが読めるものは、自身のAPIホストと許可したホストには送れるので、<a class=\"link\" href=\"/configure/#secrets\">プロジェクト内のシークレットはマスクしてください</a>。" }
+      {
+        "title": "エージェント自身のチェックが引き続き担うこと",
+        "text": "許可プロンプト、許可と拒否のルール、planモードはエージェントというプログラムの一部なので、ジェイルの中でも外と同じように動きます。あなたなら承認しなかったはずのコマンドを、ここで止められます。"
+      },
+      {
+        "title": "その下でai-jailが保証すること",
+        "text": "エージェント、そのMCPサーバー、そのフックは、何を承認しようと、あなたのホームディレクトリ、鍵、シェルのトークンを見ることはありません。唯一の例外はエージェント自身のログイン情報とAPIキーで、サインイン済みで始まるようデフォルトでマウントされます。エージェントが読めるものは、自身のAPIホストと許可したホストには送れるので、<a class=\"link\" href=\"/configure/#secrets\">プロジェクト内のシークレットはマスクしてください</a>。"
+      }
     ],
     "nestedTitle": "プロンプトは残す。ただしサンドボックスの中のサンドボックスは当てにしない",
     "nestedText": "Linuxでは、ai-jailは<code>unshare</code>や<code>mount</code>など、新しい名前空間やマウントを作るシステムコールをブロックします。プロセスが脱出するときに使う手段だからです。エージェントがジェイルの中で起動するbubblewrapのサンドボックスにはこれらのシステムコールが必要で、この組み合わせが動くとはai-jailのドキュメントに書かれていません。Claude Codeのドキュメントは執筆時点で、入れ子の構成向けに<code>enableWeakerNestedSandbox</code>を用意しており、これは<a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">セキュリティを大幅に弱める</a>と説明しています。"
@@ -202,43 +245,116 @@
   "heavy": {
     "title": "Docker、devコンテナ、仮想マシン",
     "lede": "これらも良い選択肢で、仮想マシンのほうが境界として強くなります。違いは、何をビルドし、何を更新し続ける必要があるかです。",
-    "cols": { "tool": "", "gives": "得られるもの", "costs": "かかるコスト" },
+    "cols": {
+      "tool": "",
+      "gives": "得られるもの",
+      "costs": "かかるコスト"
+    },
     "rows": [
-      { "tool": "Dockerコンテナ", "gives": "専用のファイルシステム、プロセス一覧、ネットワーク。エージェントに見えるのは、あなたがマウントしたものだけです。", "costs": "イメージのビルドと保守が必要で、ツールチェーンをもう一度インストールすることになります。Dockerソケットをマウントすると、そのコンテナはホストのroot相当になります。" },
-      { "tool": "devコンテナ", "gives": "コンテナと同じ隔離。エディタが理解でき、チームで共有できるファイルに定義を書きます。", "costs": "同じくイメージの保守が必要です。加えて、この形式に対応したエディタかツールが要ります。" },
-      { "tool": "仮想マシン", "gives": "専用のカーネル。この中で最も強い境界で、悪意があると考えるコードにはこれが適切です。", "costs": "最も重い選択肢です。ゲストOSをインストールして更新し、メモリを割り当て、プロジェクトをコピーする必要があります。" },
-      { "tool": "ai-jail", "gives": "1つのコマンドを囲むサンドボックス。マシンにすでにあるコンパイラやランタイムを使います。イメージもデーモンもrootも要りません。", "costs": "カーネルをホストと共有するので、カーネルやドライバの脆弱性を突く攻撃は守備範囲の外です。仮想マシンよりは弱い境界です。" }
+      {
+        "tool": "Dockerコンテナ",
+        "gives": "専用のファイルシステム、プロセス一覧、ネットワーク。エージェントに見えるのは、あなたがマウントしたものだけです。",
+        "costs": "イメージのビルドと保守が必要で、ツールチェーンをもう一度インストールすることになります。Dockerソケットをマウントすると、そのコンテナはホストのroot相当になります。"
+      },
+      {
+        "tool": "devコンテナ",
+        "gives": "コンテナと同じ隔離。エディタが理解でき、チームで共有できるファイルに定義を書きます。",
+        "costs": "同じくイメージの保守が必要です。加えて、この形式に対応したエディタかツールが要ります。"
+      },
+      {
+        "tool": "仮想マシン",
+        "gives": "専用のカーネル。この中で最も強い境界で、悪意があると考えるコードにはこれが適切です。",
+        "costs": "最も重い選択肢です。ゲストOSをインストールして更新し、メモリを割り当て、プロジェクトをコピーする必要があります。"
+      },
+      {
+        "tool": "ai-jail",
+        "gives": "1つのコマンドを囲むサンドボックス。マシンにすでにあるコンパイラやランタイムを使います。イメージもデーモンもrootも要りません。",
+        "costs": "カーネルをホストと共有するので、カーネルやドライバの脆弱性を突く攻撃は守備範囲の外です。仮想マシンよりは弱い境界です。"
+      }
     ],
     "note": "ai-jail自身のドキュメントは、これを「有用な層であり、使い捨てのVMの代わりではない」と位置づけています。<a class=\"link\" href=\"/security/\">脅威モデルを読む</a>。"
+  },
+  "evaluators": {
+    "title": "評価する人へ：ほかのラッパーとプラットフォーム",
+    "lede": "代替を検討する人のために、オープンソースのラッパー2つとランタイムプラットフォーム1つを、それぞれの出典付きで。"
   },
   "platforms": {
     "title": "エージェントのランタイムプラットフォーム",
     "lede": "<a class=\"link\" href=\"https://github.com/NVIDIA/OpenShell\">NVIDIA OpenShell</a>は別のカテゴリです。常駐するゲートウェイが各エージェントに専用のコンテナかMicroVMを与え、ネットワークの手前にポリシーエンジンを置きます。ai-jailは1つのコマンドを包み、それと一緒に終了する1つのプロセスです。以下は執筆時点、まだ1.0リリース前だったOpenShellのドキュメントに基づいています。",
-    "cols": { "row": "", "openshell": "OpenShell", "jail": "ai-jail" },
+    "cols": {
+      "row": "",
+      "openshell": "OpenShell",
+      "jail": "ai-jail"
+    },
     "rows": [
-      { "label": "サンドボックスを動かすもの", "openshell": "Docker、Podman、Kubernetes、KVMのいずれかで動くゲートウェイデーモン。エージェントは同梱のコンテナイメージの中で動きます。", "jail": "バイナリだけです。エージェントは、マシンにすでにあるコンパイラやランタイムを使って、あなたのプロジェクトに対して動きます。" },
-      { "label": "ネットワーク", "openshell": "デフォルトで拒否。ルールはプログラム、ホスト、ポートで照合し、オプションでメソッド、パス、MCPツールも検査できます。拒否されたエンドポイントは運用者側から承認できます。", "jail": "無効、ホスト単位のフィルタ付き、全開の3つ。フィルターは名前空間の柵とCONNECTプロキシで、ホストとポートは見えますが中身は見えません。許可したホストは丸ごと信頼されます。<code>--forward-port</code>で中継したホストのループバックのポートも同じく丸ごと信頼され、ルールはありません。" },
-      { "label": "認証情報", "openshell": "ゲートウェイが仲介してリクエストごとに注入し、サンドボックスのディスクには決して書きません。", "jail": "環境にそのまま置かれます。ハーネス自身のログイン情報はデフォルトで読み書き可能でマウントされ、<code>--env</code>や<code>--env-from-file</code>で渡したものは中のすべてから見えます。<code>--no-agent-state</code>を付けるとログアウト状態での実行になります。ツールの認証情報（<code>--github</code>、<code>--aws</code>、<code>--kube</code>、<code>--gcloud</code>、<code>--docker-config</code>）はオプトインの読み取り専用マウントで、読み取り専用でも使用は防げないとドキュメントに明記されています。" },
-      { "label": "隔離の上限", "openshell": "MicroVMドライバなら本物の仮想マシンの境界が得られ、サンドボックスは停止、再起動でき、ワークスペースも保持できます。", "jail": "カーネルをホストと共有し、設計上は使い切りです。悪意のあるコードには使い捨てのVMを使うよう、自身のドキュメントに書いてあります。" },
-      { "label": "macOS", "openshell": "Docker DesktopのLinux VMの中で動きます。macOSのホストはポリシーの対象外です。", "jail": "ホスト上で生成するネイティブのseatbeltプロファイル。" },
-      { "label": "テレメトリと安定性", "openshell": "匿名のテレメトリがデフォルトで有効で、オプトアウトできます。ポリシーの形式はまだ変わり続けています。", "jail": "テレメトリはありません。新しいバージョンは古いバージョンが書いた設定を必ず読め、テストがそれを保証します。2026年9月に独立した2つのソースコード監査がリポジトリで公開され、その結果が2.4.0の修正につながりました。" }
+      {
+        "label": "サンドボックスを動かすもの",
+        "openshell": "Docker、Podman、Kubernetes、KVMのいずれかで動くゲートウェイデーモン。エージェントは同梱のコンテナイメージの中で動きます。",
+        "jail": "バイナリだけです。エージェントは、マシンにすでにあるコンパイラやランタイムを使って、あなたのプロジェクトに対して動きます。"
+      },
+      {
+        "label": "ネットワーク",
+        "openshell": "デフォルトで拒否。ルールはプログラム、ホスト、ポートで照合し、オプションでメソッド、パス、MCPツールも検査できます。拒否されたエンドポイントは運用者側から承認できます。",
+        "jail": "無効、ホスト単位のフィルタ付き、全開の3つ。フィルターは名前空間の柵とCONNECTプロキシで、ホストとポートは見えますが中身は見えません。許可したホストは丸ごと信頼されます。<code>--forward-port</code>で中継したホストのループバックのポートも同じく丸ごと信頼され、ルールはありません。"
+      },
+      {
+        "label": "認証情報",
+        "openshell": "ゲートウェイが仲介してリクエストごとに注入し、サンドボックスのディスクには決して書きません。",
+        "jail": "環境にそのまま置かれます。ハーネス自身のログイン情報はデフォルトで読み書き可能でマウントされ、<code>--env</code>や<code>--env-from-file</code>で渡したものは中のすべてから見えます。<code>--no-agent-state</code>を付けるとログアウト状態での実行になります。ツールの認証情報（<code>--github</code>、<code>--aws</code>、<code>--kube</code>、<code>--gcloud</code>、<code>--docker-config</code>）はオプトインの読み取り専用マウントで、読み取り専用でも使用は防げないとドキュメントに明記されています。"
+      },
+      {
+        "label": "隔離の上限",
+        "openshell": "MicroVMドライバなら本物の仮想マシンの境界が得られ、サンドボックスは停止、再起動でき、ワークスペースも保持できます。",
+        "jail": "カーネルをホストと共有し、設計上は使い切りです。悪意のあるコードには使い捨てのVMを使うよう、自身のドキュメントに書いてあります。"
+      },
+      {
+        "label": "macOS",
+        "openshell": "Docker DesktopのLinux VMの中で動きます。macOSのホストはポリシーの対象外です。",
+        "jail": "ホスト上で生成するネイティブのseatbeltプロファイル。"
+      },
+      {
+        "label": "テレメトリと安定性",
+        "openshell": "匿名のテレメトリがデフォルトで有効で、オプトアウトできます。ポリシーの形式はまだ変わり続けています。",
+        "jail": "テレメトリはありません。新しいバージョンは古いバージョンが書いた設定を必ず読め、テストがそれを保証します。2026年9月に独立した2つのソースコード監査がリポジトリで公開され、その結果が2.4.0の修正につながりました。"
+      }
     ],
     "note": "ai-jailのリポジトリにある比較文書<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/openshell-comparison.md\">docs/openshell-comparison.md</a>は双方向に書かれていて、ホストの許可リストはそこから生まれました。"
   },
   "faq": {
     "title": "併用についての質問",
     "items": [
-      { "q": "エージェント自身のサンドボックスとプロンプトは切るべきですか？", "a": "プロンプトとルールは残してください。個々のコマンドを審査するのはそちらの役目で、ai-jailはそれをしません。エージェントのOSサンドボックスは、Linuxでは事情が違います。入れ子のbubblewrapサンドボックスに必要なシステムコールをai-jailがブロックしており、この組み合わせが動くとはドキュメントに書かれていません。ジェイルの中でエージェントが「サンドボックスを利用できない」と報告しても、ジェイル自体は機能しています。" },
-      { "q": "ai-jailはDockerより安全ですか？", "a": "境界としては同じ種類です。どちらもカーネルをホストと共有し、どちらも仮想マシンではありません。ai-jailはすべて閉じた状態から始まり、イメージもデーモンもrootも要りません。コンテナは指示されたものをマウントし、Dockerソケットをマウントすればホストのroot相当になります。悪意があると考えるコードには、使い捨てのVMを使ってください。" },
-      { "q": "ホストの許可リストは、エージェント自身のものと何が違いますか？", "a": "エージェントのプロキシは、サンドボックス内のプログラムが自分で使うことを選ばなければ効きません。ai-jailでは柵がカーネルです。Linuxではサンドボックスが専用のネットワーク名前空間を保ち、出口はプロキシだけです。macOSではseatbeltのルールがプロキシのポートへの外向き通信だけを許可します。そのため、<code>http_proxy</code>を無視するプログラムはどこにも届きません。UDPは対象外なので、Linuxではサンドボックス内のDNSが失敗し、macOSではシステムのリゾルバに柵がかかりません。接続の中身も検査しないので、許可したホストは丸ごと信頼されます。<code>--network</code>や<code>--browser</code>とは併用できません。" },
-      { "q": "Claude Codeしか使いません。それでもai-jailは必要ですか？", "a": "執筆時点で選択肢は3つあります。組み込みサンドボックスはシェルコマンドをカバーします。Anthropicの<code>@anthropic-ai/sandbox-runtime</code>はベータ版のリサーチプレビューで、プロセス全体を包みます。ai-jailもプロセス全体を包みます。ホームディレクトリと環境変数を閉じた状態から始まり、後でほかのエージェントを試すときにも同じポリシーを使えます。<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Anthropicによるサンドボックス環境の比較</a>も参照してください。" }
+      {
+        "q": "エージェント自身のサンドボックスとプロンプトは切るべきですか？",
+        "a": "プロンプトとルールは残してください。個々のコマンドを審査するのはそちらの役目で、ai-jailはそれをしません。エージェントのOSサンドボックスは、Linuxでは事情が違います。入れ子のbubblewrapサンドボックスに必要なシステムコールをai-jailがブロックしており、この組み合わせが動くとはドキュメントに書かれていません。ジェイルの中でエージェントが「サンドボックスを利用できない」と報告しても、ジェイル自体は機能しています。"
+      },
+      {
+        "q": "ai-jailはDockerより安全ですか？",
+        "a": "境界としては同じ種類です。どちらもカーネルをホストと共有し、どちらも仮想マシンではありません。ai-jailはすべて閉じた状態から始まり、イメージもデーモンもrootも要りません。コンテナは指示されたものをマウントし、Dockerソケットをマウントすればホストのroot相当になります。悪意があると考えるコードには、使い捨てのVMを使ってください。"
+      },
+      {
+        "q": "ホストの許可リストは、エージェント自身のものと何が違いますか？",
+        "a": "エージェントのプロキシは、サンドボックス内のプログラムが自分で使うことを選ばなければ効きません。ai-jailでは柵がカーネルです。Linuxではサンドボックスが専用のネットワーク名前空間を保ち、出口はプロキシだけです。macOSではseatbeltのルールがプロキシのポートへの外向き通信だけを許可します。そのため、<code>http_proxy</code>を無視するプログラムはどこにも届きません。UDPは対象外なので、Linuxではサンドボックス内のDNSが失敗し、macOSではシステムのリゾルバに柵がかかりません。接続の中身も検査しないので、許可したホストは丸ごと信頼されます。<code>--network</code>や<code>--browser</code>とは併用できません。"
+      },
+      {
+        "q": "Claude Codeしか使いません。それでもai-jailは必要ですか？",
+        "a": "執筆時点で選択肢は3つあります。組み込みサンドボックスはシェルコマンドをカバーします。Anthropicの<code>@anthropic-ai/sandbox-runtime</code>はベータ版のリサーチプレビューで、プロセス全体を包みます。ai-jailもプロセス全体を包みます。ホームディレクトリと環境変数を閉じた状態から始まり、後でほかのエージェントを試すときにも同じポリシーを使えます。<a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Anthropicによるサンドボックス環境の比較</a>も参照してください。"
+      }
     ]
   },
   "next": {
     "items": [
-      { "title": "仕組み", "text": "LinuxとmacOSで、エージェントとシステムの間に入るカーネルの層。" },
-      { "title": "設定", "text": "すべてのスイッチと、タスクに必要なものだけを開ける方法。" },
-      { "title": "セキュリティ", "text": "脅威モデル、限界、ジェイルを弱めるオプトイン。" }
+      {
+        "title": "仕組み",
+        "text": "LinuxとmacOSで、エージェントとシステムの間に入るカーネルの層。"
+      },
+      {
+        "title": "設定",
+        "text": "すべてのスイッチと、タスクに必要なものだけを開ける方法。"
+      },
+      {
+        "title": "セキュリティ",
+        "text": "脅威モデル、限界、ジェイルを弱めるオプトイン。"
+      }
     ]
   }
 }

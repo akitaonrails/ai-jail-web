@@ -7,7 +7,8 @@
     "title": "한계가 분명한 유용한 계층",
     "lede": "ai-jail은 신뢰하는 에이전트의 실수를 막고 피해를 프로젝트 안에 가두도록 만들었습니다. 프로젝트 디렉터리가 영향 범위이고, 홈과 키, 네트워크는 그 바깥에 있습니다. 호스트와 커널을 공유하는 프로세스 샌드박스이므로 악의적인 코드나 작정한 공격자를 막는 경계는 아니고, 일회용 가상 머신을 대신하지도 못합니다.",
     "report": "취약점 신고",
-    "doc": "SECURITY.md 읽기"
+    "doc": "SECURITY.md 읽기",
+    "audience": "먼저 승인하는 사람을 위해, 그다음 보안 엔지니어를 위해 썼습니다."
   },
   "stops": {
     "title": "막으려고 만든 것",
@@ -22,7 +23,7 @@
         "text": "셸에 있는 시크릿. 환경 변수는 작은 허용 목록에 있는 것만 남기므로 export한 토큰은 바깥에 남습니다. 유일한 예외는 실행한 하네스 자신의 API 키, 예를 들어 Claude의 <code>ANTHROPIC_API_KEY</code>로, 로그인과 함께 기본으로 복사됩니다. <code>--no-agent-state</code>로 막을 수 있습니다."
       },
       {
-        "text": "네트워크. 꺼져 있고, 필터링 프록시를 지나는 예외가 둘뿐입니다. 툴체인이 켜져 있을 때(Linux의 기본값)의 짧은 패키지 레지스트리 목록, 그리고 <code>claude</code>나 <code>codex</code> 같은 알려진 에이전트라면 문서화된 자기 API 호스트(Codex는 둘)이며, 두 플랫폼 모두 해당합니다. 텔레메트리 호스트는 닫힌 채로 남습니다. <code>--no-network</code>는 둘 다 닫습니다."
+        "text": "네트워크. 닫혀 있고, 필터링 프록시를 지나는 예외가 둘뿐입니다. 툴체인이 켜져 있을 때(Linux의 기본값)의 짧은 패키지 레지스트리 목록, 그리고 <a class=\"link\" href=\"/install/#first\">알려진 에이전트</a>라면 자기 API 호스트이며, 두 플랫폼 모두 해당합니다. 텔레메트리 호스트는 닫힌 채로 남습니다. <code>--no-network</code>는 둘 다 닫습니다."
       },
       {
         "text": "호스트 공유 메모리, 디스플레이 서버, 클립보드. 에이전트 출력은 터미널의 클립보드 시퀀스와 질의 시퀀스를 버리는 필터를 거칩니다."
@@ -41,26 +42,34 @@
     "lede": "감옥과 내 시스템은 같은 커널 위에 서 있습니다. 그 커널이나 드라이버, 샌드박스 백엔드에 버그가 있으면 벽을 돌아가는 길이 생기고, ai-jail이 할 수 있는 일은 없습니다. 가상 머신은 자체 커널을 가져오기 때문에 더 강한 경계입니다.",
     "alt": "왼쪽에는 내 시스템과 에이전트가 든 ai-jail 우리가 '내 커널'이라는 같은 판 위에 서 있고, 에이전트에서 나온 점선이 판을 지나 내 시스템으로 이어집니다. 오른쪽에는 일회용 VM이 별도의 자체 커널 위에 선 에이전트를 감싸고 있습니다.",
     "caption": "샌드박스는 지키려는 대상과 같은 바닥을 쓰고, VM은 자기 바닥을 가져옵니다.",
-    "listTitle": "여전히 위험한 것",
-    "items": [
-      "커널과 드라이버 취약점. 샌드박스 안의 모든 프로세스는 컴퓨터의 나머지 부분과 같은 커널을 씁니다.",
-      "터미널 에뮬레이터 버그. 출력 필터를 끄는 <code>--terminal-passthrough</code>를 쓸 때 특히 그렇습니다.",
-      "샌드박스 백엔드 자체의 결함. Linux에서는 bubblewrap, Landlock, seccomp이고 macOS에서는 <code>sandbox-exec</code>입니다.",
-      "커널 자체 규칙인 Landlock이 추상 Unix 소켓과 시그널에 울타리를 치는 것은 커널 6.12 이상에서만이고, 그것도 최선 노력입니다. 더 오래된 커널에는 파일시스템과 네트워크 규칙만 남으므로, <code>--x11</code>, <code>--network</code>, <code>--systemd-user</code>를 쓰면 호스트의 추상 소켓과 시그널에 그대로 닿을 수 있습니다.",
-      "프로젝트 안의 시크릿. 저장소에 있는 <code>.env</code> 파일은 마스킹하지 않으면 읽을 수 있습니다. <a class=\"link\" href=\"/configure/#secrets\">파일 마스킹 방법 보기</a>.",
-      "마스킹은 샌드박스가 시작될 때 존재하는 경로에만 적용됩니다. 세션 도중에 나중에 생긴 시크릿 파일은 숨겨지지 않습니다.",
-      "호스트 쪽 git은 프로젝트의 <code>.git/</code>을 신뢰하는데, 그곳은 쓸 수 있는 곳입니다. <code>.git/config</code>에 <code>core.fsmonitor</code>나 <code>core.pager</code>로 지정된 프로그램이나 <code>.git/hooks/</code>에 들어간 프로그램은, 다음에 호스트에서 해당 git 명령이 돌 때 샌드박스 밖에서 내 권한으로 실행됩니다. <code>core.fsmonitor</code>라면 평범한 <code>git status</code>만으로 충분하고, 에디터가 백그라운드에서 돌리는 것도 해당하며, <code>git diff</code>에는 아무것도 보이지 않습니다. <code>--lockdown</code>은 프로젝트를 읽기 전용으로 만들어 이를 막고, <code>--map .git</code>은 일반 실행에서도 저장소를 읽기 전용으로 유지하는 대신 안에서 커밋할 수 없게 됩니다. 뭔가 이상했던 세션 뒤에는 호스트에서 git을 돌리기 전에 일반 파일 도구로 <code>.git/config</code>를 읽고 <code>.git/hooks</code>를 살펴보세요. <code>git config --list</code> 자체가 설정된 페이저를 실행합니다.",
-      "<code>--mask</code>와 <code>--deny-path</code>는 샌드박스가 보는 것만 바꿉니다. 샌드박스 밖에서 에이전트를 대신해 움직이는 것은 여전히 실제 파일을 읽습니다. <code>--docker</code> 아래의 Docker 데몬, 매핑된 소켓으로 닿는 MCP 서버, <code>--forward-port</code> 뒤의 서비스가 그렇습니다.",
-      "사이드 채널과 일부 유형의 프로세스 간 통신.",
-      "허용된 호스트는 통째로 신뢰됩니다. <code>--allow-host</code>로 <code>github.com</code>을 허용하면 에이전트는 내 저장소뿐 아니라 거기 있는 어느 저장소에든 푸시할 수 있습니다.",
-      "필터링된 외부 연결은 TCP 전용입니다. UDP가 없어서 UDP가 필요한 프로그램은 동작하지 않고, 그 경로로 새어 나갈 수도 없습니다.",
-      "<code>--allow-host</code>에서의 DNS. Linux에서는 샌드박스 안의 이름 조회가 실패하므로 밖으로 나가는 DNS 채널이 없습니다. macOS에서는 시스템 리졸버에 울타리가 없어서 대역폭이 낮은 DNS 채널이 남습니다. Anthropic이 자체 sandbox-runtime에 대해 문서화한 것과 같은 빈틈입니다.",
-      "프록시는 연결마다 호스트, 포트, 시각을 봅니다. 그 안을 오가는 내용은 양쪽 끝 사이에만 머뭅니다. <a class=\"link\" href=\"/how-it-works/#network\">필터링된 외부 연결의 구조</a>.",
-      "팬텀 자격 증명은 신뢰를 ai-jail 자신에게 옮깁니다. <code>--secret</code>을 쓰면 묶어 둔 호스트로 가는 요청은 실제 키를 넣을 수 있도록 ai-jail을 평문으로 지나가고, 나갈 때 다시 암호화됩니다. 다른 호스트로 가는 터널은 여전히 열어 보지 않습니다. 그 호스트에 대해 프록시로 평문 HTTP를 보낼 수 있는 클라이언트만 해당합니다.",
-      "<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>로 넘긴 자격 증명. 읽기 전용은 파일이 바뀌는 것을 막을 뿐 자격 증명이 쓰이는 것은 막지 못합니다. 샌드박스 안의 무엇이든 그 자격 증명이 유효한 동안 해당 서비스에서 나처럼 행동할 수 있습니다.",
-      "ai-jail은 에이전트 자신의 로그인을 기본으로 읽기·쓰기 마운트하므로, 속아 넘어간 에이전트가 실행이 끝날 때까지 그 로그인을 쓸 수 있습니다. 프로젝트는 이것을 편의를 위한 맞교환으로 문서화하고 있고, <code>--no-agent-state</code>를 주면 로그아웃 상태로 실행됩니다.",
-      "macOS의 <code>sandbox-exec</code>는 Apple이 deprecated로 지정했고 Linux의 격리와 동등하지 않습니다. <a class=\"link\" href=\"/how-it-works/\">macOS에서 다른 점 보기</a>."
-    ],
+    "data": {
+      "title": "내 데이터에 미치는 영향",
+      "items": [
+        "프로젝트 안의 시크릿. 저장소에 있는 <code>.env</code> 파일은 마스킹하지 않으면 읽을 수 있습니다. <a class=\"link\" href=\"/configure/#secrets\">파일 마스킹 방법 보기</a>.",
+        "마스킹은 샌드박스가 시작될 때 존재하는 경로에만 적용됩니다. 세션 도중에 나중에 생긴 시크릿 파일은 숨겨지지 않습니다.",
+        "허용된 호스트는 통째로 신뢰됩니다. <code>--allow-host</code>로 <code>github.com</code>을 허용하면 에이전트는 내 저장소뿐 아니라 거기 있는 어느 저장소에든 푸시할 수 있습니다.",
+        "<code>--network</code>는 네트워크 전체를 열기 때문에, 에이전트가 읽을 수 있는 것은 내 프로젝트를 포함해 무엇이든 밖으로 보낼 수 있습니다.",
+        "ai-jail은 에이전트 자신의 로그인을 기본으로 읽기·쓰기 마운트하므로, 속아 넘어간 에이전트가 실행이 끝날 때까지 그 로그인을 쓸 수 있습니다. 프로젝트는 이것을 편의를 위한 맞교환으로 문서화하고 있고, <code>--no-agent-state</code>를 주면 로그아웃 상태로 실행됩니다.",
+        "호스트 쪽 git은 프로젝트의 <code>.git/</code>을 신뢰하는데, 그곳은 쓸 수 있는 곳입니다. <code>.git/config</code>에 <code>core.fsmonitor</code>나 <code>core.pager</code>로 지정된 프로그램이나 <code>.git/hooks/</code>에 들어간 프로그램은, 다음에 호스트에서 해당 git 명령이 돌 때 샌드박스 밖에서 내 권한으로 실행됩니다. <code>core.fsmonitor</code>라면 평범한 <code>git status</code>만으로 충분하고, 에디터가 백그라운드에서 돌리는 것도 해당하며, <code>git diff</code>에는 아무것도 보이지 않습니다. <code>--lockdown</code>은 프로젝트를 읽기 전용으로 만들어 이를 막고, <code>--map .git</code>은 일반 실행에서도 저장소를 읽기 전용으로 유지하는 대신 안에서 커밋할 수 없게 됩니다. 뭔가 이상했던 세션 뒤에는 호스트에서 git을 돌리기 전에 일반 파일 도구로 <code>.git/config</code>를 읽고 <code>.git/hooks</code>를 살펴보세요. <code>git config --list</code> 자체가 설정된 페이저를 실행합니다.",
+        "<code>--mask</code>와 <code>--deny-path</code>는 샌드박스가 보는 것만 바꿉니다. 샌드박스 밖에서 에이전트를 대신해 움직이는 것은 여전히 실제 파일을 읽습니다. <code>--docker</code> 아래의 Docker 데몬, 매핑된 소켓으로 닿는 MCP 서버, <code>--forward-port</code> 뒤의 서비스가 그렇습니다."
+      ]
+    },
+    "engineer": {
+      "title": "보안 엔지니어를 위해",
+      "items": [
+        "커널과 드라이버 취약점. 샌드박스 안의 모든 프로세스는 컴퓨터의 나머지 부분과 같은 커널을 씁니다.",
+        "터미널 에뮬레이터 버그. 출력 필터를 끄는 <code>--terminal-passthrough</code>를 쓸 때 특히 그렇습니다.",
+        "샌드박스 백엔드 자체의 결함. Linux에서는 bubblewrap, Landlock, seccomp이고 macOS에서는 <code>sandbox-exec</code>입니다.",
+        "커널 자체 규칙인 Landlock이 추상 Unix 소켓과 시그널에 울타리를 치는 것은 커널 6.12 이상에서만이고, 그것도 최선 노력입니다. 더 오래된 커널에는 파일시스템과 네트워크 규칙만 남으므로, <code>--x11</code>, <code>--network</code>, <code>--systemd-user</code>를 쓰면 호스트의 추상 소켓과 시그널에 그대로 닿을 수 있습니다.",
+        "사이드 채널과 일부 유형의 프로세스 간 통신.",
+        "필터링된 외부 연결은 TCP 전용입니다. UDP가 없어서 UDP가 필요한 프로그램은 동작하지 않고, 그 경로로 새어 나갈 수도 없습니다.",
+        "<code>--allow-host</code>에서의 DNS. Linux에서는 샌드박스 안의 이름 조회가 실패하므로 밖으로 나가는 DNS 채널이 없습니다. macOS에서는 시스템 리졸버에 울타리가 없어서 대역폭이 낮은 DNS 채널이 남습니다. Anthropic이 자체 sandbox-runtime에 대해 문서화한 것과 같은 빈틈입니다.",
+        "프록시는 연결마다 호스트, 포트, 시각을 봅니다. 그 안을 오가는 내용은 양쪽 끝 사이에만 머뭅니다. <a class=\"link\" href=\"/how-it-works/#network\">필터링된 외부 연결의 구조</a>.",
+        "팬텀 자격 증명은 신뢰를 ai-jail 자신에게 옮깁니다. <code>--secret</code>을 쓰면 묶어 둔 호스트로 가는 요청은 실제 키를 넣을 수 있도록 ai-jail을 평문으로 지나가고, 나갈 때 다시 암호화됩니다. 다른 호스트로 가는 터널은 여전히 열어 보지 않습니다. 그 호스트에 대해 프록시로 평문 HTTP를 보낼 수 있는 클라이언트만 해당합니다.",
+        "<code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code>, <code>--docker-config</code>로 넘긴 자격 증명. 읽기 전용은 파일이 바뀌는 것을 막을 뿐 자격 증명이 쓰이는 것은 막지 못합니다. 샌드박스 안의 무엇이든 그 자격 증명이 유효한 동안 해당 서비스에서 나처럼 행동할 수 있습니다.",
+        "macOS의 <code>sandbox-exec</code>는 Apple이 deprecated로 지정했고 Linux의 격리와 동등하지 않습니다. <a class=\"link\" href=\"/how-it-works/\">macOS에서 다른 점 보기</a>."
+      ]
+    },
     "callout": {
       "title": "악의적이라고 판단되는 코드에는 일회용 VM을 쓰세요",
       "text": "ai-jail은 쓸모 있지만 가끔 틀리거나 속는 에이전트를 위한 도구입니다. 악성 코드를 분석하거나 이미 믿지 못하는 저장소를 다룰 때는 버려도 되는 가상 머신을 띄우세요. <a class=\"link\" href=\"/compare/\">선택지 비교하기</a>."
@@ -74,7 +83,7 @@
       "gives": "켜면 샌드박스 안의 모든 것이 할 수 있는 일"
     },
     "rows": [
-      "읽을 수 있는 것을 전부 어디로든 보냅니다. 트래픽에 제한이 없습니다. 기본값은 알려진 에이전트 자신의 API 호스트만 허용하고, <code>--allow-host</code>가 더 조이는 대안입니다.",
+      "읽을 수 있는 것을 전부 어디로든 보냅니다. 트래픽에 제한이 없습니다. 기본값은 알려진 에이전트 자신의 API 호스트와, Linux에서는 패키지 레지스트리만 허용하고, <code>--allow-host</code>가 더 조이는 대안입니다.",
       "나열한 호스트와 그 서브도메인에만, 내장 프록시를 거쳐 TCP로 닿습니다. 나열한 호스트는 각각 통째로 신뢰됩니다. 내 목록은 에이전트 자신의 API 호스트에 더해집니다. <code>--no-network</code>와 목록을 함께 쓰면 그 목록만 허용됩니다.",
       "호스트 루프백의 서비스 하나를 통째로 씁니다. 그 포트의 MCP 서버, 에디터 소켓, 데이터베이스가 받아 주는 것이면 무엇이든 에이전트가 요청할 수 있고, 허용 목록도 검사도 감사 기록도 없습니다. 그 밖의 호스트 포트는 모두 닫힌 채입니다. Linux 전용이고, <code>--network</code>와 함께 쓰면 거부됩니다.",
       "Linux에서는 기본으로 켜짐. 내 툴체인이 안에서 그대로 동작합니다. <code>~/.cargo/bin</code>과 <code>~/.rustup</code>은 읽기 전용으로 마운트하고, 의존성 캐시는 실행 사이에 유지되는 감옥 전용 저장소 <code>~/.local/share/ai-jail/cache/</code>에 두며, 패키지 레지스트리로의 필터링된 외부 연결을 허용합니다. 호스트의 실제 캐시는 절대 마운트하지 않습니다. <code>--lockdown</code>에서는 꺼지고, <code>--no-toolchains</code>로 끌 수 있습니다.",
@@ -130,7 +139,7 @@
     ],
     "audit": {
       "title": "공개적으로 진행된 감사",
-      "text": "1.0 이전에 프로젝트는 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">스스로 감사</a>하고 보고서를 공개했습니다. {date}에는 2.3.0을 대상으로 한 독립적인 소스 감사 두 건을 비교와 수정 계획과 함께 저장소에 공개했습니다. <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">감사 A</a>는 헤더에 AI 모델이 수행했다고 밝히고 있고, 다른 하나가 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">감사 B</a>입니다. 여기서 GitHub 보안 권고 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a>와 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a> 두 건이 나왔고, 둘 다 2.4.0에서 회귀 테스트와 함께 해결되었습니다. 외부 업체가 ai-jail을 감사한 적은 없습니다."
+      "text": "1.0 이전에 프로젝트는 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">스스로 감사</a>하고 보고서를 공개했습니다. {date}에는 2.3.0을 대상으로 한 독립적인 소스 감사 두 건을 비교와 수정 계획과 함께 저장소에 공개했습니다. <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">감사 A</a>는 헤더에 AI 모델이 수행했다고 밝히고 있고, 다른 하나가 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">감사 B</a>입니다. 여기서 GitHub 보안 권고 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a>와 <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a> 두 건이 나왔고, 둘 다 2.4.0에서 회귀 테스트와 함께 해결되었습니다. 외부 업체가 ai-jail을 감사한 적은 없습니다. 이것이 내게 뜻하는 바는 이렇습니다. ai-jail은 실행에서 무언가를 빼기만 하고, 내가 켜지 않은 것은 아무것도 더하지 않습니다. ai-jail의 버그는 벽에 빈틈을 남기지만, 그 빈틈 뒤의 에이전트가 갖는 것은 기껏해야 ai-jail 없이 가졌을 만큼입니다."
     },
     "fixes": {
       "title": "최근 보안 수정",

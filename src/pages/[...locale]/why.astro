@@ -27,14 +27,38 @@ const cost = [
   t('cost.code.plain'),
   'ai-jail claude',
   t('cost.code.optin'),
-  'ai-jail --allow-host github.com claude',
+  'ai-jail --allow-host api.example.com claude',
+].join('\n');
+// Day one: the switches people reach for in the first week, one terminal, comments from the catalog.
+const dk = raw<string[]>('dayone.comments');
+const dayone = [
+  dk[0],
+  'ai-jail --allow-host registry.npmjs.org claude',
+  'ai-jail --network claude',
+  '',
+  dk[1],
+  'ai-jail --forward-port 5432 claude',
+  '',
+  dk[2],
+  'ai-jail --github claude',
+  'ai-jail --network --ssh claude',
+  '',
+  dk[3],
+  'ai-jail --docker claude',
+  'ai-jail --display claude',
 ].join('\n');
 ---
 <Base title={t('meta.title')} description={t('meta.description')} schema={[faqPage(faq)]}>
-  <PageHero hue="rose" page="why" kicker={t('kicker.why')} title={t('hero.title')} lede={t('hero.lede')}>
+  <PageHero hue="rose" page="why" kicker={t('kicker.why')} title={t('hero.title')} lede={t('hero.lede')} audience={t('hero.audience')}>
     <a href={href('/install/')} class="btn btn-primary">{t('hero.install')}</a>
     <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
   </PageHero>
+
+  <Section title={t('wrong.title')} lede={t('wrong.lede')} hue="red" tint>
+    <FeatureGrid items={scenarios} />
+    <Diagram name="why-injection" alt={t('wrong.alt')} caption={t('wrong.caption')} />
+    <p class="mt-10 max-w-[40em] text-muted" set:html={t('wrong.note')} />
+  </Section>
 
   <Section title={t('reach.title')} lede={t('reach.lede')} hue="rose" fill>
     <Diagram name="why-reach" alt={t('reach.alt')} caption={t('reach.caption')} />
@@ -42,12 +66,6 @@ const cost = [
     <ul class="ticks md:grid-cols-2 md:gap-x-10 max-w-[64rem]">
       {raw<string[]>('reach.items').map((it) => <li set:html={it} />)}
     </ul>
-  </Section>
-
-  <Section title={t('wrong.title')} lede={t('wrong.lede')} hue="red" tint>
-    <FeatureGrid items={scenarios} />
-    <Diagram name="why-injection" alt={t('wrong.alt')} caption={t('wrong.caption')} />
-    <p class="mt-10 max-w-[40em] text-muted" set:html={t('wrong.note')} />
   </Section>
 
   <Section title={t('prompts.title')} lede={t('prompts.lede')} hue="teal" narrow>
@@ -80,6 +98,23 @@ const cost = [
       <Callout title={t('cost.honestTitle')} hue="mustard"><p set:html={t('cost.honest')} /></Callout>
     </div>
   </Section>
+
+  <Section id="day-one" title={t('dayone.title')} lede={t('dayone.lede')} hue="teal" tint>
+    <div class="grid gap-10 lg:grid-cols-2 items-start">
+      <ul class="ticks">
+        {raw<string[]>('dayone.items').map((it) => <li set:html={it} />)}
+      </ul>
+      <CodeBlock code={dayone} title={t('dayone.codeTitle')} />
+    </div>
+  </Section>
+
+  <section class="wrap">
+    <Callout title={t('approve.title')} hue="rose">
+      <ul class="ticks">
+        {raw<string[]>('approve.items').map((it) => <li set:html={it} />)}
+      </ul>
+    </Callout>
+  </section>
 
   <Faq items={faq} title={t('faq.title')} hue="rose" />
   <NextPages title={t('next.title')} items={next} />

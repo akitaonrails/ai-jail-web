@@ -8,7 +8,8 @@
     "lede": "סביבות sandbox מובנות ובקשות אישור משגיחות על הפקודות שהמודל מריץ. לעומתן, ai-jail קובע מה תוכנת הסוכן כולה יכולה לראות במחשב שלכם, והוא מכוון לטעויות של סוכן אמין. השניים עובדים יחד.",
     "install": "התקנה",
     "how": "איך זה עובד",
-    "reviewed": "נבדק לאחרונה בתאריך {date}. מוצרים אחרים משתנים מהר, ולכן כל טענה לגביהם מקושרת לתיעוד של היצרן עצמו."
+    "reviewed": "נבדק לאחרונה בתאריך {date}. מוצרים אחרים משתנים מהר, ולכן כל טענה לגביהם מקושרת לתיעוד של היצרן עצמו.",
+    "audience": "למי שבוחר בין כלים. שש הסיטואציות למעלה עונות על רוב השאלות."
   },
   "tldr": {
     "title": "בקצרה",
@@ -16,27 +17,27 @@
     "items": [
       {
         "title": "אתם משתמשים ביותר מסוכן אחד",
-        "text": "ai-jail. קובץ מדיניות אחד, כל פקודה, עץ התהליכים כולו בפנים, תיקיית הבית והמפתחות מוסתרים כברירת מחדל, וה-toolchains וה-caches שלכם בפנים. <a class=\"link\" href=\"/install/\">התקנה</a>."
+        "text": "ai-jail: קובץ מדיניות אחד, כל פקודה, התהליך כולו בפנים. <a class=\"link\" href=\"/install/\">התקנה</a>."
       },
       {
         "title": "אתם משתמשים רק ב-Claude Code",
-        "text": "גם <code>sandbox-runtime</code> של Anthropic עוטף את התהליך כולו, בגרסת beta. הכלי ai-jail מוסיף כברירת מחדל תיקיית בית ריקה, רשת סגורה חוץ מה-host של המודל, ורשימת היתרים לסביבה. <a class=\"link\" href=\"#table\">לכרטיסים</a>."
+        "text": "גם <code>sandbox-runtime</code> של Anthropic עוטף את התהליך כולו, בגרסת beta; ai-jail מוסיף תיקיית בית ריקה ורשת סגורה. <a class=\"link\" href=\"#table\">לכרטיסים</a>."
       },
       {
         "title": "אתם רוצים את ה-sandbox ואת בקשות האישור של הסוכן עצמו",
-        "text": "השאירו אותם דלוקים. הם עובדים בתוך ai-jail, והם תופסים את הפקודות שלא הייתם מאשרים. <a class=\"link\" href=\"#both\">השתמשו בשניהם</a>."
+        "text": "השאירו אותם דלוקים. הם עובדים בתוך ai-jail. <a class=\"link\" href=\"#both\">השתמשו בשניהם</a>."
       },
       {
         "title": "אתם רוצים מדיניות לכל כלי, אישורים בזמן ריצה ויומן ביקורת חתום",
-        "text": "בזה nono הולך רחוק יותר מ-ai-jail, במחיר של שפת מדיניות ו-supervisor לכל פקודה. <a class=\"link\" href=\"#wrappers\">השוואת העטיפות</a>."
+        "text": "בזה nono הולך רחוק יותר, במחיר של שפת מדיניות ו-supervisor. <a class=\"link\" href=\"#wrappers\">השוואת העטיפות</a>."
       },
       {
         "title": "אתם סוגרים ב-sandbox מתוך קוד, קריאת כלי אחת בכל פעם",
-        "text": "ל-zerobox יש SDKs בשביל זה, ו-snapshots כדי לחזור אחורה. הוא משאיר את הקריאה פתוחה, ולא יצאה לו גרסה מאז מאי 2026. <a class=\"link\" href=\"#wrappers\">השוואת העטיפות</a>."
+        "text": "ל-zerobox יש SDKs בשביל זה; הוא משאיר את הקריאה פתוחה, ולא יצאה לו גרסה מאז מאי 2026. <a class=\"link\" href=\"#wrappers\">השוואת העטיפות</a>."
       },
       {
         "title": "אתם לא סומכים על הקוד בכלל",
-        "text": "מכונה וירטואלית חד-פעמית. הכלי ai-jail נבנה לטעויות של סוכן אמין, ולכן קוד עוין נמצא מחוץ לתחום שלו, וכל כלי בעמוד הזה חולק איתכם את הקרנל. <a class=\"link\" href=\"#containers\">Docker, קונטיינרים ומכונות וירטואליות</a>."
+        "text": "מכונה וירטואלית חד-פעמית. כל כלי בעמוד הזה חולק איתכם את הקרנל. <a class=\"link\" href=\"#containers\">Docker, קונטיינרים ומכונות וירטואליות</a>."
       }
     ]
   },
@@ -94,12 +95,10 @@
       "jail": "ai-jail"
     },
     "sources": "מקורות: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>.",
-    "wrappersTitle": "עטיפות כמו ai-jail",
-    "wrappersLead": "שני כלי קוד פתוח נוספים מציבים sandbox של הקרנל סביב סוכן. גרסה 2.2 של ai-jail לקחה רעיונות משניהם: פרטי גישה פנטום מ-zerobox ומ-nono, ויומן ביקורת עם שרשרת hash מ-nono. שניהם כתובים ב-Rust, ברישיון Apache-2.0 ורצים בלי daemon, ושניהם חולקים איתכם את הקרנל, כמו ai-jail.",
     "nonoTitle": "nono: מדיניות לכל כלי, אישורים בזמן ריצה",
-    "nonoText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a> (של nolabs, גרסה 0.79 בספטמבר 2026) מריץ סוכן בתוך sandbox של סשן תחת supervisor שנשאר מחוץ ל-sandbox; מדיניות פקודות יכולה להריץ קריאות נבחרות לכלים בסביבות sandbox בנות חדשות. ב-Linux הוא משתמש ב-Landlock וב-seccomp trap על פתיחת קבצים, ב-macOS ב-Seatbelt, ואין לו mount namespaces. פרופילים מתירים רק את הנתיבים שמצוינים בהם בשם ושומרים את <code>~/.ssh</code> בקבוצת deny. הסביבה עוברת בירושה במלואה, והרשת פתוחה עד שמעבירים <code>--block-net</code> או <code>--allow-domain</code>. פרוקסי פרטי הגישה שלו נותן לסוכן טוקן של סשן ומזריק את המפתח האמיתי בדרך החוצה. ליומן הביקורת שלו יש שרשרת hash, שורש Merkle וחתימה אופציונלית, וב-Linux פתיחת קובץ שנדחתה יכולה להיעצר ולחכות לאישור שלכם. זה הכלי הקרוב ביותר ל-ai-jail בשאיפות, וזה עם הכי הרבה חלקים נעים.",
+    "nonoText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a> (של nolabs, גרסה 0.79 בספטמבר 2026) מריץ סוכן בתוך sandbox של סשן תחת supervisor שנשאר מחוץ ל-sandbox; מדיניות פקודות יכולה להריץ קריאות נבחרות לכלים בסביבות sandbox בנות חדשות. ב-Linux הוא משתמש ב-Landlock וב-seccomp trap על פתיחת קבצים, ב-macOS ב-Seatbelt, ואין לו mount namespaces.",
     "zeroboxTitle": "zerobox: ה-sandbox של Codex לכל פקודה, עם סודות לפי host",
-    "zeroboxText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a> (מחבר אחד, גרסה 0.3.3 במאי 2026, בלי גרסה מאז) משתמש ב-runtime של Seatbelt ו-bubblewrap מהריפוזיטורי של Codex. הוא סוגר ב-sandbox פקודה אחת, או קריאת כלי אחת בכל פעם דרך ה-SDKs שלו ל-Node, ל-Python ול-Rust. כתיבה, רשת וסביבה נדחות כברירת מחדל. הקריאה פתוחה, ולכן תיקיית הבית שלכם גלויה אלא אם חסמתם אותה. <code>--secret KEY=VALUE</code> נותן לתהליך placeholder, ו-<code>--secret-host</code> מגביל לאן הערך האמיתי מגיע. הדגל <code>--secret</code> של ai-jail הולך בעקבות התבנית הזאת. יש לו snapshots ושחזור, ואין לו יומן ביקורת, אישורים או presets לסוכנים.",
+    "zeroboxText": "נכון לזמן הכתיבה, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a> (מחבר אחד, גרסה 0.3.3 במאי 2026, בלי גרסה מאז) משתמש ב-runtime של Seatbelt ו-bubblewrap מהריפוזיטורי של Codex. הוא סוגר ב-sandbox פקודה אחת, או קריאת כלי אחת בכל פעם דרך ה-SDKs שלו ל-Node, ל-Python ול-Rust.",
     "groupJail": "מה מוסיפה עטיפה סביב הסוכן כולו",
     "groupBuiltin": "מה סביבות ה-sandbox המובנות עושות טוב יותר",
     "rows": [
@@ -163,7 +162,7 @@
           "פרוקסי עם רשימת היתרים לפי דומיין. דומיין חדש מקפיץ בקשת אישור, וכל פקודה עדיין מקבלת אישור משלה. התיעוד מציין שהפרוקסי סומך על שם ה-host שהלקוח שולח, ולכן domain fronting יכול לעקוף אותו.",
           "כבויה כברירת מחדל במצב <code>workspace-write</code>. הגדרה אחת מדליקה אותה, ופרוקסי אופציונלי מוסיף כללי allow ו-deny לפי דומיין. לפי התיעוד, הפרוקסי לא מסנן חיבורים לשרתי MCP, חיפוש באינטרנט או את הדפדפן.",
           "פרופיל ברירת המחדל מתיר רשת. פרופילים מחמירים יותר ופרופילים עם פרוקסי הם opt-in.",
-          "שלושה מצבים, כבויה כברירת מחדל. <code>--allow-host</code> מתיר את ה-hosts שברשימה ואת תת-הדומיינים שלהם, באכיפה של ה-network namespace ב-Linux או של כלל seatbelt ב-macOS, דרך פרוקסי שפותר כל שם פעם אחת ומחייג לכתובת שבדק. <code>--network</code> פותח הכול. הסינון הוא TCP בלבד, בלי כללים לפי נתיב ובלי בקשות אישור: host שמחוץ לרשימה נדחה, ו-<code>--audit-log</code> מתעד את הניסיון. host מורשה זוכה לאמון מלא. כברירת מחדל הפרוקסי מתיר בשתי הפלטפורמות את ה-host של ה-API של סוכן מוכר, וכשה-toolchains דלוקים (ברירת המחדל ב-Linux) גם רשימה קבועה של registries של חבילות כדי ש-builds יעבדו. <code>--no-network</code> מכבה את שניהם. רשימת <code>--allow-host</code> מפורשת מתווספת לברירת המחדל הזו. ב-Linux, <code>--forward-port</code> מעביר פורט אחד מה-loopback של המארח אל תוך ה-sandbox, בלי שום כלל על מה שעובר בו."
+          "שלושה מצבים. ברירת המחדל סגורה, חוץ מ<a class=\"link\" href=\"/install/#first\">ה-host של ה-API של סוכן מוכר</a> בשתי הפלטפורמות, וב-Linux כשה-toolchains דלוקים גם רשימה קבועה של registries של חבילות שכוללת את <code>github.com</code>, ולכן <code>git clone</code> ב-HTTPS עובד; <code>--no-network</code> סוגר את שניהם. <code>--allow-host</code> מוסיף hosts ואת תת-הדומיינים שלהם, באכיפה של ה-network namespace ב-Linux או של כלל seatbelt ב-macOS, דרך פרוקסי שפותר כל שם פעם אחת ומחייג לכתובת שבדק. <code>--network</code> פותח הכול. הסינון הוא TCP בלבד, בלי כללים לפי נתיב ובלי בקשות אישור: host שמחוץ לרשימה נדחה, ו-<code>--audit-log</code> מתעד את הניסיון. host מורשה זוכה לאמון מלא. ב-Linux, <code>--forward-port</code> מעביר פורט אחד מה-loopback של המארח אל תוך ה-sandbox, בלי שום כלל על מה שעובר בו."
         ]
       },
       {
@@ -227,7 +226,7 @@
     "lede": "סוכן מוכר לא צריך שיפתחו לו כלום. ההתחברות שלו מעוגנת כברירת מחדל, והפרוקסי המסנן מעביר רק את ה-host של ה-API של המודל. כשכלי צריך עוד, מוסיפים hosts עם <code>--allow-host</code> או פותחים את כל הרשת.",
     "codeFiltered": "ברירת המחדל: רק ה-host של המודל",
     "codeOpen": "פשוט יותר: כל הרשת",
-    "codeNote": "הכלי ai-jail מכיר את ה-host של ה-API של Claude Code, Codex, Gemini CLI, Grok ו-Devin ומתיר אותו כברירת מחדל; Codex מקבל גם את <code>chatgpt.com</code> בשביל ההתחברות ל-ChatGPT. רשימת <code>--allow-host</code> מפורשת מתווספת לברירת המחדל הזו, ולכן ה-host של ה-API נשאר מורשה. ההתחברות מעוגנת כברירת מחדל; <code>--no-agent-state</code> נותן הרצה ללא התחברות. <a class=\"link\" href=\"/configure/#switches\">כל הדגלים בעמוד ההגדרה</a>.",
+    "codeNote": "הכלי ai-jail מכיר את <a class=\"link\" href=\"/install/#first\">ה-host של ה-API של סוכן מוכר</a> ומתיר אותו כברירת מחדל, וב-Linux גם את ה-registries של החבילות. רשימת <code>--allow-host</code> מפורשת מתווספת לברירת המחדל הזו, ולכן ה-host של ה-API נשאר מורשה. ההתחברות מעוגנת כברירת מחדל; <code>--no-agent-state</code> נותן הרצה ללא התחברות. <a class=\"link\" href=\"/configure/#switches\">כל הדגלים בעמוד ההגדרה</a>.",
     "alt": "חומה גדולה אחת שכתוב עליה ai-jail מקיפה את הסוכן, את שרתי ה-MCP שלו, את ה-hooks שלו, את הפרויקט ואת פקודות ה-shell שלו. בין הסוכן לפקודות ה-shell נמצאת בקשת האישור של הסוכן עצמו. קו אחד יוצא מהחומה דרך שער אל ה-API של המודל. תיקיית הבית שלכם נמצאת מחוץ לחומה, מעומעמת וחסומה.",
     "caption": "החומה החיצונית היא ai-jail. בתוכה, בקשות האישור והכללים של הסוכן ממשיכים לעשות את העבודה שלהם.",
     "points": [
@@ -274,6 +273,10 @@
       }
     ],
     "note": "התיעוד של ai-jail עצמו מגדיר אותו כשכבה מועילה שלא מחליפה מכונה וירטואלית חד-פעמית. <a class=\"link\" href=\"/security/\">למודל האיומים</a>."
+  },
+  "evaluators": {
+    "title": "למעריכים: עטיפות ופלטפורמות אחרות",
+    "lede": "שתי עטיפות בקוד פתוח ופלטפורמת הרצה אחת, כל אחת עם המקורות שלה, למי ששוקל את החלופות."
   },
   "platforms": {
     "title": "פלטפורמות להרצת סוכנים",

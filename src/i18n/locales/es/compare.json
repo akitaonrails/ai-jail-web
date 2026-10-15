@@ -8,7 +8,8 @@
     "lede": "Los sandboxes integrados y las solicitudes de permiso vigilan los comandos que ejecuta el modelo. ai-jail decide qué puede ver en tu máquina el programa del agente entero, y está pensado para los errores de un agente de confianza. Los dos trabajan juntos.",
     "install": "Instalar",
     "how": "Cómo funciona",
-    "reviewed": "Última revisión: {date}. Los otros productos cambian rápido, así que cada afirmación sobre ellos enlaza a la documentación del propio fabricante."
+    "reviewed": "Última revisión: {date}. Los otros productos cambian rápido, así que cada afirmación sobre ellos enlaza a la documentación del propio fabricante.",
+    "audience": "Para quien elige entre herramientas. Las seis situaciones de arriba responden casi todo."
   },
   "tldr": {
     "title": "En resumen",
@@ -16,27 +17,27 @@
     "items": [
       {
         "title": "Usas más de un agente",
-        "text": "ai-jail. Un solo archivo de política, cualquier comando, todo el árbol de procesos dentro, home y claves ocultos por defecto, tus toolchains y cachés dentro. <a class=\"link\" href=\"/install/\">Instalar</a>."
+        "text": "ai-jail: un solo archivo de política, cualquier comando, todo el proceso dentro. <a class=\"link\" href=\"/install/\">Instalar</a>."
       },
       {
         "title": "Solo usas Claude Code",
-        "text": "El <code>sandbox-runtime</code> de la propia Anthropic también envuelve el proceso entero, en beta. ai-jail añade por defecto un home vacío, una red cerrada a todo salvo el host del modelo y una lista de variables de entorno permitidas. <a class=\"link\" href=\"#table\">Mira las tarjetas</a>."
+        "text": "El <code>sandbox-runtime</code> de la propia Anthropic también envuelve el proceso entero, en beta; ai-jail añade un home vacío y una red cerrada. <a class=\"link\" href=\"#table\">Mira las tarjetas</a>."
       },
       {
         "title": "Quieres el sandbox y las solicitudes del propio agente",
-        "text": "Déjalos activados. Funcionan dentro de ai-jail y atrapan los comandos que tú no habrías aprobado. <a class=\"link\" href=\"#both\">Usa los dos</a>."
+        "text": "Déjalos activados. Funcionan dentro de ai-jail. <a class=\"link\" href=\"#both\">Usa los dos</a>."
       },
       {
         "title": "Quieres políticas por herramienta, aprobaciones en tiempo de ejecución y un registro de auditoría firmado",
-        "text": "nono llega más lejos que ai-jail ahí, a cambio de un lenguaje de políticas y un supervisor por comando. <a class=\"link\" href=\"#wrappers\">Compara los wrappers</a>."
+        "text": "nono llega más lejos ahí, a cambio de un lenguaje de políticas y un supervisor. <a class=\"link\" href=\"#wrappers\">Compara los wrappers</a>."
       },
       {
         "title": "Aíslas desde código, una llamada a herramienta a la vez",
-        "text": "zerobox tiene SDKs para eso y snapshots para volver atrás. Deja las lecturas abiertas y no tiene ninguna versión nueva desde mayo de 2026. <a class=\"link\" href=\"#wrappers\">Compara los wrappers</a>."
+        "text": "zerobox tiene SDKs para eso; deja las lecturas abiertas y no tiene ninguna versión nueva desde mayo de 2026. <a class=\"link\" href=\"#wrappers\">Compara los wrappers</a>."
       },
       {
         "title": "No confías en el código en absoluto",
-        "text": "Una máquina virtual desechable. ai-jail está hecho para los errores de un agente de confianza, así que el código hostil queda fuera de su alcance, y todas las herramientas de esta página comparten tu kernel. <a class=\"link\" href=\"#containers\">Docker, contenedores y VMs</a>."
+        "text": "Una máquina virtual desechable. Todas las herramientas de esta página comparten tu kernel. <a class=\"link\" href=\"#containers\">Docker, contenedores y VMs</a>."
       }
     ]
   },
@@ -94,12 +95,10 @@
       "jail": "ai-jail"
     },
     "sources": "Fuentes: <a class=\"link\" href=\"https://code.claude.com/docs/en/sandboxing\">Claude Code sandboxing</a>, <a class=\"link\" href=\"https://code.claude.com/docs/en/sandbox-environments\">Claude Code sandbox environments</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/agent-approvals-security\">Codex approvals and security</a>, <a class=\"link\" href=\"https://learn.chatgpt.com/docs/permissions\">Codex permissions</a>, <a class=\"link\" href=\"https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md\">Codex Linux sandbox</a>, <a class=\"link\" href=\"https://geminicli.com/docs/cli/sandbox/\">Gemini CLI sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/sandbox/\">Antigravity terminal sandbox</a>, <a class=\"link\" href=\"https://antigravity.google/docs/permissions/\">Antigravity permissions</a>, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono security model</a>, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox README</a>.",
-    "wrappersTitle": "Wrappers como ai-jail",
-    "wrappersLead": "Otras dos herramientas de código abierto ponen un sandbox del kernel alrededor de un agente. ai-jail 2.2 tomó ideas de ambas: las credenciales fantasma de zerobox y nono, y el registro de auditoría con cadena de hashes de nono. Las dos están en Rust, bajo Apache-2.0 y corren sin daemon, y las dos comparten tu kernel, igual que ai-jail.",
     "nonoTitle": "nono: una política por herramienta, aprobaciones en tiempo de ejecución",
-    "nonoText": "Al momento de escribir esto, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a> (nolabs, versión 0.79 en septiembre de 2026) ejecuta un agente en un sandbox de sesión bajo un supervisor que queda fuera; las políticas de comandos pueden colocar invocaciones seleccionadas de herramientas en sandboxes hijos nuevos. En Linux usa Landlock y una trampa de seccomp sobre las aperturas de archivos, en macOS Seatbelt, y no tiene namespaces de montaje. Los perfiles conceden solo las rutas que nombran y mantienen <code>~/.ssh</code> en un grupo denegado. El entorno se hereda completo, y la red está abierta hasta que pasas <code>--block-net</code> o <code>--allow-domain</code>. Su proxy de credenciales le entrega al agente un token de sesión e inyecta la clave real hacia el destino. Su registro de auditoría tiene una cadena de hashes, una raíz Merkle y una firma opcional, y en Linux una apertura de archivo denegada puede quedar en pausa hasta que la apruebes. Es la herramienta más cercana a ai-jail en ambición, y la que tiene más piezas móviles.",
+    "nonoText": "Al momento de escribir esto, <a class=\"link\" href=\"https://nono.sh/docs/cli/internals/security-model\">nono</a> (nolabs, versión 0.79 en septiembre de 2026) ejecuta un agente en un sandbox de sesión bajo un supervisor que queda fuera; las políticas de comandos pueden colocar invocaciones seleccionadas de herramientas en sandboxes hijos nuevos. En Linux usa Landlock y una trampa de seccomp sobre las aperturas de archivos, en macOS Seatbelt, y no tiene namespaces de montaje.",
     "zeroboxTitle": "zerobox: el sandbox de Codex para cualquier comando, con secretos por host",
-    "zeroboxText": "Al momento de escribir esto, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a> (un solo autor, versión 0.3.3 en mayo de 2026, sin versiones nuevas desde entonces) reutiliza el runtime de Seatbelt y bubblewrap del repositorio de Codex. Aísla un comando, o una llamada a herramienta a la vez a través de sus SDKs de Node, Python y Rust. Las escrituras, la red y el entorno están denegados por defecto. Las lecturas están abiertas, así que tu home es visible salvo que lo deniegues. <code>--secret KEY=VALUE</code> le da al proceso un marcador de posición (placeholder) y <code>--secret-host</code> limita adónde va el valor real; el <code>--secret</code> de ai-jail sigue ese patrón. Tiene snapshots y restauración, y no tiene registro de auditoría, aprobaciones ni presets de agentes.",
+    "zeroboxText": "Al momento de escribir esto, <a class=\"link\" href=\"https://github.com/afshinm/zerobox\">zerobox</a> (un solo autor, versión 0.3.3 en mayo de 2026, sin versiones nuevas desde entonces) reutiliza el runtime de Seatbelt y bubblewrap del repositorio de Codex. Aísla un comando, o una llamada a herramienta a la vez, a través de sus SDKs de Node, Python y Rust.",
     "groupJail": "Lo que añade envolver al agente entero",
     "groupBuiltin": "Lo que los sandboxes integrados hacen mejor",
     "rows": [
@@ -163,7 +162,7 @@
           "Un proxy con una lista de permitidos por dominio. Un dominio nuevo te pide confirmación, y cada comando sigue teniendo su propia aprobación. La documentación señala que el proxy confía en el hostname que envía el cliente, así que el domain fronting puede saltárselo.",
           "Apagada por defecto en <code>workspace-write</code>. Un ajuste la activa, y un proxy opcional añade reglas de permitir y denegar por dominio. La documentación dice que el proxy no filtra las conexiones de los servidores MCP, la búsqueda web ni el navegador.",
           "El perfil por defecto permite la red. Los perfiles más estrictos y los que usan proxy son opt-in.",
-          "Tres modos, apagada por defecto. <code>--allow-host</code> permite los hosts de la lista y sus subdominios, aplicado por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y marca la dirección que comprobó. <code>--network</code> abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. Por defecto el proxy deja pasar el host de la API de un agente conocido en ambas plataformas y, con las toolchains activadas (lo normal en Linux), una lista fija de registries de paquetes para que las compilaciones funcionen. <code>--no-network</code> cierra ambas cosas. Una lista explícita con <code>--allow-host</code> se suma a ese valor por defecto. En Linux, <code>--forward-port</code> reenvía un puerto del loopback del host hacia el sandbox, sin ninguna regla sobre lo que pasa."
+          "Tres modos. El modo por defecto está cerrado salvo <a class=\"link\" href=\"/install/#first\">el host de la API de un agente conocido</a> en ambas plataformas y, en Linux con las toolchains activadas, una lista fija de registries de paquetes que incluye <code>github.com</code>, así que <code>git clone</code> por HTTPS funciona; <code>--no-network</code> cierra ambas cosas. <code>--allow-host</code> añade hosts y sus subdominios, aplicado por el namespace de red en Linux o por una regla de endpoint de seatbelt en macOS, a través de un proxy que resuelve cada nombre una sola vez y marca la dirección que comprobó. <code>--network</code> abre todo. El filtro es solo TCP, no tiene reglas por ruta y nunca pregunta: un host fuera de la lista se deniega y <code>--audit-log</code> registra el intento. Un host permitido es de confianza por completo. En Linux, <code>--forward-port</code> reenvía un puerto del loopback del host hacia el sandbox, sin ninguna regla sobre lo que pasa."
         ]
       },
       {
@@ -227,7 +226,7 @@
     "lede": "Un agente conocido no necesita que abras nada. Su login se monta por defecto y el proxy filtrado deja pasar solo el host de la API de su modelo. Añade hosts con <code>--allow-host</code>, o abre toda la red, cuando una herramienta necesite más.",
     "codeFiltered": "por defecto: solo el host del modelo",
     "codeOpen": "más simple: toda la red",
-    "codeNote": "ai-jail conoce el host de la API de Claude Code, Codex, Gemini CLI, Grok y Devin y lo permite por defecto; Codex recibe además <code>chatgpt.com</code> para su login de ChatGPT. Una lista explícita con <code>--allow-host</code> se suma a ese valor por defecto, así que el host de la API sigue permitido. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
+    "codeNote": "ai-jail conoce <a class=\"link\" href=\"/install/#first\">el host de la API de un agente conocido</a> y lo permite por defecto, junto con los registries de paquetes en Linux. Una lista explícita con <code>--allow-host</code> se suma a ese valor por defecto, así que el host de la API sigue permitido. El login se monta por defecto; <code>--no-agent-state</code> da una ejecución sin sesión. <a class=\"link\" href=\"/configure/#switches\">Todos los flags están en Configurar</a>.",
     "alt": "Un muro grande con la etiqueta ai-jail encierra al agente, sus servidores MCP, sus hooks, el proyecto y sus comandos de shell. Entre el agente y los comandos de shell está la solicitud de aprobación del propio agente. Una línea sale del muro por una puerta hacia la API del modelo. Tu directorio home queda fuera del muro, atenuado y tras barrotes.",
     "caption": "El muro exterior es ai-jail. Dentro, las solicitudes y las reglas del agente siguen haciendo su trabajo.",
     "points": [
@@ -274,6 +273,10 @@
       }
     ],
     "note": "La propia documentación de ai-jail lo llama una capa útil, no un reemplazo de una VM desechable. <a class=\"link\" href=\"/security/\">Lee el modelo de amenazas</a>."
+  },
+  "evaluators": {
+    "title": "Para evaluadores: otros wrappers y plataformas",
+    "lede": "Dos wrappers de código abierto y una plataforma de runtime, cada uno con sus fuentes, para quien esté sopesando las alternativas."
   },
   "platforms": {
     "title": "Plataformas de runtime para agentes",

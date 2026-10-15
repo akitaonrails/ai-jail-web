@@ -7,7 +7,8 @@
     "title": "Closed by default. You hold the switches.",
     "lede": "With no options, the agent gets your project, your build tools on Linux, its own login and its own API host, and no network beyond that and a short list of package registries. You turn things down one switch at a time, and lockdown closes most of them at once.",
     "switches": "See the switches",
-    "install": "Install"
+    "install": "Install",
+    "audience": "For the person at the keyboard."
   },
   "authority": {
     "title": "Three places a setting can come from",
@@ -57,13 +58,13 @@
         "title": "Network and services",
         "rows": [
           {
-            "text": "The whole network. Anything the agent can read, it can send out. If the agent needs only a few hosts, <code>--allow-host</code> is tighter. Without either flag, the sandbox reaches only the <a class=\"link\" href=\"#toolchains\">package registries</a> that toolchains open through the proxy, plus the API host of a known agent (Claude, Codex, Gemini, Grok, Devin; Codex also gets <code>chatgpt.com</code> for its ChatGPT login), and <code>--no-network</code> closes all of those."
+            "text": "The whole network. Anything the agent can read, it can send out. If the agent needs only a few hosts, <code>--allow-host</code> is tighter. Without either flag, the sandbox reaches only <a class=\"link\" href=\"/install/#first\">a known agent's own API host</a> and, on Linux, the <a class=\"link\" href=\"#toolchains\">package registries</a> that toolchains open through the proxy; <code>--no-network</code> closes both."
           },
           {
             "text": "The sandbox reaches only the listed host and its subdomains, over TCP through ai-jail's built-in proxy. You can repeat the flag. Since 2.8.1 the list adds to the default, so a known agent keeps its own API host. It cannot be combined with <code>--network</code> or <code>--browser</code>, and a project file may only shrink the list."
           },
           {
-            "text": "One port of the host's loopback, relayed onto the sandbox's own loopback. A local MCP server, an editor socket or a dev database on the host's <code>127.0.0.1</code> answers at the same port inside, and every other host port stays shut. Repeat the flag for more ports. Linux only, and refused with <code>--network</code> and for ports below 1024. It works with <code>--allow-host</code> and under <code>--lockdown</code>. The service behind the port is trusted in full, with no allowlist and no audit record. A project file can only shrink the list, and <code>forward_ports</code> belongs under a <code>[commands.&lt;name&gt;]</code> table: an entry in the base table fails every browser launch and every macOS launch."
+            "text": "One port of the host's loopback, relayed onto the sandbox's own loopback. A local MCP server, an editor socket or a dev database on the host's <code>127.0.0.1</code> answers at the same port inside, and every other host port stays shut. Repeat the flag for more ports. Linux only, and refused with <code>--network</code> and for ports below 1024. It works with <code>--allow-host</code> and under <code>--lockdown</code>. The service behind the port is trusted in full, with no allowlist and no audit record. A project file can only shrink the list. <a class=\"link\" href=\"#forward\">Where <code>forward_ports</code> goes in the config file</a>."
           },
           {
             "text": "Your <code>~/.ssh</code>, read only, and your SSH agent socket, so <code>git push</code> works."
@@ -377,11 +378,11 @@
     "items": [
       {
         "title": "A cloud agent, day to day",
-        "text": "A known agent starts logged in and reaches only its own API host through the filtered proxy; Codex gets a second one, <code>chatgpt.com</code>, for its ChatGPT login. When a task needs more, put <code>allow_hosts</code> in the global file with the API host plus the extra ones, or open the whole network with <code>network = true</code>."
+        "text": "A known agent starts logged in and reaches its own API host through the filtered proxy, plus the package registries on Linux. When a task needs more, put <code>allow_hosts</code> in the global file with the extra hosts, or open the whole network with <code>network = true</code>."
       },
       {
         "title": "An agent ai-jail does not know",
-        "text": "ai-jail allows the API host on its own for five agents: Claude <code>api.anthropic.com</code>, Codex <code>api.openai.com</code> plus <code>chatgpt.com</code> for its ChatGPT login, Gemini <code>generativelanguage.googleapis.com</code>, Grok <code>api.x.ai</code> and Devin <code>server.codeium.com</code>. Any other agent gets its host from you with <code>--allow-host</code>. If the host is missing from the list, the launch warning names it."
+        "text": "ai-jail allows the API host on its own for <a class=\"link\" href=\"/install/#first\">five agents</a>. Any other agent gets its host from you with <code>--allow-host</code>. If the host is missing from the list, the launch warning names it."
       },
       {
         "title": "A logged-out run",
@@ -389,7 +390,7 @@
       },
       {
         "title": "Allowed hosts in the global file",
-        "text": "The list applies to every run of that command, on top of the agent's own API host. An allowed host is trusted as a whole: <code>github.com</code> lets the agent push to any repository your credentials can reach, so add it only when you want that."
+        "text": "The list applies to every run of that command, on top of the agent's own API host. On Linux, <code>github.com</code> and the package registries are already reachable, so you list them only on macOS. An allowed host is trusted as a whole: the agent can ask it for anything your credentials there allow."
       },
       {
         "title": "A local MCP server or database",
@@ -401,7 +402,7 @@
       },
       {
         "title": "Git push over SSH",
-        "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. Pushing also needs the network."
+        "text": "<code>--ssh</code> mounts <code>~/.ssh</code> read only and forwards your SSH agent socket. It does not open the network, so the recipe pairs it with <code>--network</code>. For a push over HTTPS with your gh token, see the GitHub CLI recipe."
       },
       {
         "title": "Build and test inside the jail",
@@ -409,7 +410,7 @@
       },
       {
         "title": "GitHub CLI inside the jail",
-        "text": "<code>--github</code> mounts your gh config directory read only and forwards your active github.com token as <code>GH_TOKEN</code>, so <code>gh</code> is logged in, keyring or not. <code>api.github.com</code> is covered by the default registry list (<code>github.com</code> and its subdomains), so you add no host. Anything in the jail can then act on GitHub as you."
+        "text": "<code>--github</code> mounts your gh config directory read only and forwards your active github.com token as <code>GH_TOKEN</code>, so <code>gh</code> and <code>git push</code> over HTTPS are logged in, keyring or not. On Linux, <code>github.com</code> and its subdomains are already in the default list, so you add no host; on macOS add <code>--allow-host github.com</code>. Anything in the jail can then act on GitHub as you."
       },
       {
         "title": "A browser for the agent",
@@ -426,15 +427,16 @@
     ],
     "comments": {
       "nothing": "# nothing to add: login and api.anthropic.com come by default",
-      "more": "# when a task needs more, once in ~/.ai-jail (added to the agent's own API host)",
+      "more": "# when a task needs more, once in ~/.ai-jail (added to the API host and, on Linux, the registries)",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# or open the whole network: network = true",
-      "hosts": "# claude, codex, gemini, grok and devin need no flag: ai-jail allows their API host by itself",
-      "forward": "# or once in ~/.ai-jail, under the command, never in the base table",
+      "hosts": "# a known agent needs no flag: ai-jail allows its API host by itself",
+      "forward": "# or once in ~/.ai-jail, under the command's table",
       "phantom": "# the key lives in the 0600 file; the sandbox only ever sees AIJAIL-PHANTOM-...",
       "build": "# default on Linux: caches on, registries reachable through the proxy",
-      "offline": "# nothing mapped, nothing reachable"
+      "offline": "# nothing mapped, nothing reachable",
+      "github": "# macOS: github.com is not in the default list there"
     }
   },
   "compat": {

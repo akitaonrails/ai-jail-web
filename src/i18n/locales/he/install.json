@@ -7,12 +7,20 @@
     "title": "מתקינים, מציצים פנימה, מריצים סוכן",
     "lede": "כל ai-jail הוא תוכנה אחת, בלי daemon ובלי root. מתקינים אותה, כותבים את השם שלה לפני הפקודה שאתם מקלידים ממילא, והסוכן עולה בתוך sandbox.",
     "jump": "בחרו שיטת התקנה",
-    "releases": "גרסאות ב-GitHub"
+    "releases": "גרסאות ב-GitHub",
+    "audience": "למי שיושב מול המקלדת."
   },
   "install": {
     "title": "התקנה",
     "lede": "בחרו בדרך שבה אתם כבר מתקינים כלי שורת פקודה. בכל שיטה מקבלים את אותה תוכנה יחידה, <code>ai-jail</code>.",
-    "tabs": ["Homebrew", "Arch Linux", "crates.io", "Nix", "גרסאות ב-GitHub", "מקוד המקור"],
+    "tabs": [
+      "Homebrew",
+      "Arch Linux",
+      "crates.io",
+      "Nix",
+      "גרסאות ב-GitHub",
+      "מקוד המקור"
+    ],
     "notes": [
       "עובד ב-macOS וב-Linux.",
       "החבילה הראשונה היא קובץ בינארי מוכן עבור Linux x86_64. השנייה נבנית מקוד המקור.",
@@ -24,9 +32,18 @@
     "platforms": {
       "title": "מה המערכת שלכם צריכה",
       "items": [
-        { "title": "Linux", "text": "התקינו את bubblewrap, התוכנה הקטנה שבעזרתה ai-jail בונה את ה-sandbox. ברוב ההפצות שם החבילה הוא <code>bubblewrap</code>." },
-        { "title": "macOS", "text": "אין מה להתקין. הכלי משתמש ב-<code>sandbox-exec</code>, שמגיע עם macOS. Apple מסמנת את הממשק הזה כ-deprecated." },
-        { "title": "Windows", "text": "לא נתמך. השתמשו ב-WSL2 ובצעו בתוכו את השלבים של Linux." }
+        {
+          "title": "Linux",
+          "text": "התקינו את bubblewrap, התוכנה הקטנה שבעזרתה ai-jail בונה את ה-sandbox. ברוב ההפצות שם החבילה הוא <code>bubblewrap</code>."
+        },
+        {
+          "title": "macOS",
+          "text": "אין מה להתקין. ai-jail משתמש ב-<code>sandbox-exec</code>, שמגיע עם macOS. Apple מסמנת את הממשק הזה כ-deprecated. ב-macOS ה-registries של החבילות לא נגישים כברירת מחדל: הוסיפו אחד עם <code>--allow-host</code>, או פתחו את הרשת עם <code>--network</code>."
+        },
+        {
+          "title": "Windows",
+          "text": "לא נתמך. השתמשו ב-WSL2 ובצעו בתוכו את השלבים של Linux."
+        }
       ]
     }
   },
@@ -36,18 +53,29 @@
     "alt": "שלושה חלקים משמאל לימין. Dry run: התא הוא רק קו מתאר מקווקו, והסוכן מחכה בחוץ. מבט מבפנים: התא מלא, ויש בו טרמינל ותיקיית הפרויקט. הרצת הסוכן: הסוכן, הפרויקט וכרטיס ההתחברות של הסוכן בפנים, ובחומה פתח אחד, שער אל ה-host של ה-API של הסוכן ש-ai-jail פתח בעצמו. תיקיית הבית שלכם נשארת חסומה בחוץ בשלושתם.",
     "caption": "תיקיית הבית שלכם נשארת בחוץ בכל שלב, וההתחברות של הסוכן בפנים מההתחלה. בשלב האחרון ai-jail פותח את השער האחד שסוכן ענן צריך, ה-host של ה-API שלו, כשהוא מכיר את הסוכן. שאר הרשת נשארת סגורה.",
     "steps": [
-      { "title": "רואים את התוכנית בלי להריץ כלום", "text": "עברו לתיקיית הפרויקט ובקשו dry run. הכלי מדפיס את פקודת ה-sandbox שהוא היה מריץ, ויוצא. הרצת dry run אף פעם לא כותבת קובץ." },
-      { "title": "מסתכלים מסביב מבפנים", "text": "פתחו shell רגיל בתוך הכלא. הפרויקט שלכם נמצא שם בנתיב האמיתי שלו ואפשר לערוך אותו. תיקיית הבית היא תיקייה חדשה, והטוקנים מה-shell שלכם נעלמו. כדי לצאת, הקלידו <code>exit</code>." },
+      {
+        "title": "רואים את התוכנית בלי להריץ כלום",
+        "text": "עברו לתיקיית הפרויקט ובקשו dry run. הכלי מדפיס את פקודת ה-sandbox שהוא היה מריץ, ויוצא. הרצת dry run אף פעם לא כותבת קובץ."
+      },
+      {
+        "title": "מסתכלים מסביב מבפנים",
+        "text": "פתחו shell רגיל בתוך הכלא. הפרויקט שלכם נמצא שם בנתיב האמיתי שלו ואפשר לערוך אותו. תיקיית הבית היא תיקייה חדשה, והטוקנים מה-shell שלכם נעלמו. כדי לצאת, הקלידו <code>exit</code>."
+      },
       {
         "title": "מריצים את הסוכן",
         "text": "הכלי ai-jail מעגן כברירת מחדל את תיקיית המצב של הסוכן עצמו, ולכן הוא כבר מחובר. כשהוא מכיר את הסוכן, הוא גם מעביר דרך הפרוקסי המסנן שלו את ה-host של ה-API של הסוכן: <code>api.anthropic.com</code> עבור Claude Code, <code>api.openai.com</code> ו-<code>chatgpt.com</code> עבור Codex, <code>generativelanguage.googleapis.com</code> עבור Gemini, <code>api.x.ai</code> עבור Grok, <code>server.codeium.com</code> עבור Devin, ב-Linux וב-macOS. hosts של טלמטריה נשארים סגורים. ב-Linux, ה-toolchains מגיעים כברירת מחדל אל registries של חבילות כמו crates.io, npm ו-PyPI, כדי ש-builds יעבדו. <code>--network</code> פותח במקום זה את כל הרשת."
       },
       {
         "title": "כשצריך יותר",
-        "text": "כתבו רשימת hosts ב-<code>~/.ai-jail</code>, קובץ ההגדרות שלכם, תחת שם הסוכן. הרשימה מתווספת ל-host של ה-API של הסוכן, שנשאר מורשה. או השתמשו ב-<code>--network</code> לכל הרשת. להרצה ללא התחברות, העבירו <code>--no-agent-state</code>. קובץ <code>.ai-jail</code> בתוך הפרויקט יכול רק להדק את הכלא: הוא יכול לקצר את רשימת ה-hosts או את רשימת <code>forward_ports</code> ולכבות את ההתחברות, אף פעם לא להפך, ולכן ריפוזיטורי שעשיתם לו clone לא יכול לפתוח לעצמו את הכלא."
+        "text": "כתבו רשימת hosts ב-<code>~/.ai-jail</code>, קובץ ההגדרות שלכם, תחת שם הסוכן. הרשימה מתווספת ל-host של ה-API של הסוכן, שנשאר מורשה, וב-Linux <code>github.com</code> וה-registries של החבילות כבר בפנים. או השתמשו ב-<code>--network</code> לכל הרשת. להרצה ללא התחברות, העבירו <code>--no-agent-state</code>. קובץ <code>.ai-jail</code> בתוך הפרויקט יכול רק להדק את הכלא: הוא יכול לקצר את רשימת ה-hosts או את רשימת <code>forward_ports</code> ולכבות את ההתחברות, אף פעם לא להפך, ולכן ריפוזיטורי שעשיתם לו clone לא יכול לפתוח לעצמו את הכלא."
       }
     ],
-    "codeTitles": ["dry run", "מעטפת shell בכלא", "ההרצה האמיתית", "~/.ai-jail"],
+    "codeTitles": [
+      "dry run",
+      "מעטפת shell בכלא",
+      "ההרצה האמיתית",
+      "~/.ai-jail"
+    ],
     "gitignore": {
       "title": "הקובץ .ai-jail בפרויקט שלכם",
       "text": "הרצה רגילה עשויה לשמור הגדרות של הפרויקט בקובץ <code>.ai-jail</code>. ערכים שהעברתם עם <code>--env</code> אף פעם לא נכתבים אליו, והסוכן רואה את הקובץ הזה כקובץ ריק. ה-README מציע להוסיף את <code>.ai-jail</code> אל <code>.gitignore</code>, כדי שהפלט של <code>git status</code> יישאר נקי בתוך הכלא. שני קובצי ההגדרות מוסברים בעמוד <a class=\"link\" href=\"/configure/\">הגדרה</a>."
@@ -56,16 +84,55 @@
       "title": "מה ברירות המחדל חושפות",
       "text": "ההתחברות של הסוכן מעוגנת לקריאה וכתיבה, ומשתנה מפתח ה-API שלו (<code>ANTHROPIC_API_KEY</code> עבור Claude Code) מועתק מה-shell שלכם כשהוא מוגדר, וה-host של ה-API שלו נגיש, ולכן כל מה שרץ בכלא יכול להשתמש בהתחברות הזאת למשך ההרצה. <code>--no-agent-state</code> מכבה את ההתחברות ואת המפתח; <code>--no-network</code> סוגר גם את ה-host של ה-API. host שהתרתם זוכה לאמון בכל מה שהוא מציע: מי שמתיר את <code>github.com</code> מתיר push לכל ריפוזיטורי. הדגל <code>--network</code> הוא כל הרשת, ולכן כל מה שהסוכן יכול לקרוא הוא יכול גם לשלוח. מפתחות ה-SSH, פרטי הגישה לענן והפרויקטים האחרים שלכם עדיין לא נמצאים שם, ואי אפשר לקרוא אותם. הרשימה המלאה של המגבלות נמצאת בעמוד <a class=\"link\" href=\"/security/\">אבטחה</a>."
     },
-    "comments": ["# או, כשכל הרשת פתוחה:", "# מתווסף ל-host של ה-API ש-ai-jail כבר מרשה", "# או, להרצה אחת:"]
+    "comments": [
+      "# או, כשכל הרשת פתוחה:",
+      "# מתווסף ל-host של ה-API ול-registries ש-ai-jail כבר מתיר",
+      "# או, להרצה אחת:"
+    ]
   },
   "see": {
     "title": "מה תראו בפנים",
     "lede": "ה-prompt משתנה ל-<code>(jail)</code>, והפרויקט נמצא איפה שהיה תמיד. גם ה-toolchains שלכם שם, לקריאה בלבד. הדברים ששווה לגנוב חסרים, חוץ מההתחברות של הסוכן עצמו, שנמצאת שם בכוונה.",
     "termTitle": "הפקודה ai-jail bash, ב-Linux",
-    "comments": ["# הפרויקט נמצא בנתיב האמיתי שלו", "# טוקן שיוצא ב-shell שלכם לא הגיע לכאן", "# המפתחות שלכם לא נמצאים בתיקיית הבית הזאת", "# לכלא יש שם מארח משלו"],
+    "comments": [
+      "# הפרויקט נמצא בנתיב האמיתי שלו",
+      "# טוקן שיוצא ב-shell שלכם לא הגיע לכאן",
+      "# המפתחות שלכם לא נמצאים בתיקיית הבית הזאת",
+      "# לכלא יש שם מארח משלו"
+    ],
     "note": "זה סשן של Linux. ב-macOS אין דרך לבנות עץ קבצים נפרד, ולכן שם אותם נתיבים קיימים והקריאה מהם נדחית.",
     "alt": "המבט מתוך התא. הסוכן יושב ליד תיקיית פרויקט גדולה ומוארת, ומאחוריו תיקיית בית חדשה וכלי המערכת. מחוץ לסורגים, מעומעמים וחסומים: מפתחות SSH, התחברויות לענן, פרויקטים אחרים והרשת.",
     "caption": "מבפנים, הפרויקט הוא הדבר היחיד שלכם שאפשר לשנות. ה-toolchains שלכם (mise, cargo, npm ואחרים) נמצאים שם, לקריאה בלבד, עם cache של תלויות ששייך לכלא. הרשת נשארת בחוץ, חוץ מה-host של ה-API של סוכן מוכר וב-Linux גם registries של החבילות שה-toolchains האלה מושכים מהם, עד שתפתחו host עם <code>--allow-host</code>, פורט מקומי אחד עם <code>--forward-port</code>, או את כולה עם <code>--network</code>. <a class=\"link\" href=\"/configure/#toolchains\">איך ה-toolchains ממופים</a>."
+  },
+  "blocked": {
+    "title": "כשהכלא חוסם משהו",
+    "lede": "כל מה שהסוכן מפעיל רץ בפנים יחד איתו, ולכן דבר חסום פשוט נכשל, ואף אחד לא שואל אתכם. כך זה נראה, וכך רואים את זה.",
+    "items": [
+      "קובץ מחוץ לפרויקט לא נמצא שם. ב-Linux הנתיב לא קיים, ב-macOS הוא קיים והקריאה ממנו נדחית.",
+      "ל-host שמחוץ לרשימה אי אפשר להגיע: החיבור נכשל. <code>--allow-host HOST</code> מוסיף אותו להרצה הבאה.",
+      "משתנה מה-shell שלכם ריק בפנים, אלא אם העברתם אותו עם <code>--env NAME</code> או <code>--env-from-file</code>.",
+      "כדי לראות מה נדחה, הוסיפו <code>--audit-log</code>: הוא מתעד כל הפעלה וכל חיבור שהפרוקסי התיר או דחה. <code>ai-jail --audit-show</code> מדפיס אותו.",
+      "כדי להסתכל מסביב בעצמכם, <code>ai-jail bash</code> פותח shell בתוך אותו כלא."
+    ],
+    "dayTitle": "מה תפתחו ביום הראשון",
+    "cells": [
+      {
+        "title": "התקנות",
+        "text": "ב-Linux עובדות כמו שהן: ה-registries ו-<code>github.com</code> ברשימת ברירת המחדל. ב-macOS הוסיפו אחד, <code>--allow-host registry.npmjs.org</code>, או פתחו הכול עם <code>--network</code>."
+      },
+      {
+        "title": "שירותים מקומיים",
+        "text": "מסד נתונים, שרת MCP מקומי או socket של עורך על ה-loopback של המחשב שלכם: <code>--forward-port 5432</code> מעביר את הפורט האחד הזה ב-Linux. ב-macOS, <code>--network</code>."
+      },
+      {
+        "title": "Git push",
+        "text": "clone ו-pull מ-GitHub עובדים ב-Linux. ל-push צריך פרטי גישה: <code>--github</code> ל-token של gh ב-HTTPS (ב-macOS הוסיפו <code>--allow-host github.com</code>), או <code>--network --ssh</code> למפתח ה-SSH שלכם."
+      },
+      {
+        "title": "שרתי MCP",
+        "text": "הם עולים בתוך הכלא יחד עם הסוכן. שרת שקורא token מה-shell שלכם לא מקבל כלום עד שתעבירו אותו, <code>--env GITHUB_TOKEN</code> או <code>--env-from-file</code>. שרת מרוחק ב-HTTP צריך את ה-host שלו ב-<code>--allow-host</code>."
+      }
+    ]
   },
   "trouble": {
     "title": "אם זה לא עולה",
@@ -80,14 +147,24 @@
         "title": "הערך של <code>BWRAP_BIN</code> נדחה",
         "text": "בעזרת <code>BWRAP_BIN</code> אפשר להפנות את ai-jail אל bubblewrap מסוים. הערך מתקבל רק אם הוא מוביל לתוכנה בבעלות root שמשתמשים אחרים לא יכולים לכתוב אליה, או לתוכנה שנמצאת ב-<code>/nix/store</code> רב-משתמשים סטנדרטי. עותק שנמצא בתיקיית הבית שלכם נדחה, כי מי שיכול להחליף את הקובץ הזה שולט בכלא."
       },
-      { "title": "opencode נתקע על <code>Starting background server</code>", "text": "opencode 2.x מדבר עם שרת רקע משותף. הכלא הוא עטיפה חד-פעמית עם תיקיית בית חדשה, ולכן השרת הזה לא שורד בין הרצות. הפעילו את opencode עצמאי עם <code>--standalone</code>, וקבעו את זה בקובץ ההגדרות כדי לא להקליד אותו בכל פעם. ai-jail מזהיר בזמן ההפעלה כש-opencode עולה בלי זה:" },
-      { "title": "<code>Failed to create stream fd</code> בזמן העלייה", "text": "ההודעה מגיעה מסקריפט login של Ubuntu דסקטופ, בזמן ההכנה של mise. היא לא מזיקה, ו-mise ממשיך לעבוד. העבירו <code>--no-mise</code> כדי לדלג על ההכנה של mise, וההודעה תיעלם יחד איתה." }
+      {
+        "title": "opencode נתקע על <code>Starting background server</code>",
+        "text": "opencode 2.x מדבר עם שרת רקע משותף. הכלא הוא עטיפה חד-פעמית עם תיקיית בית חדשה, ולכן השרת הזה לא שורד בין הרצות. הפעילו את opencode עצמאי עם <code>--standalone</code>, וקבעו את זה בקובץ ההגדרות כדי לא להקליד אותו בכל פעם. ai-jail מזהיר בזמן ההפעלה כש-opencode עולה בלי זה:"
+      },
+      {
+        "title": "<code>Failed to create stream fd</code> בזמן העלייה",
+        "text": "ההודעה מגיעה מסקריפט login של Ubuntu דסקטופ, בזמן ההכנה של mise. היא לא מזיקה, ו-mise ממשיך לעבוד. העבירו <code>--no-mise</code> כדי לדלג על ההכנה של mise, וההודעה תיעלם יחד איתה."
+      }
     ]
   },
   "agents": {
     "title": "לפי סוכן",
     "lede": "הכלי ai-jail יודע איפה כל סוכן שומר את ההתחברות שלו ומעגן אותה כברירת מחדל: רק את התיקיות של הסוכן שאתם מעלים, ורק אם הן קיימות. <code>--no-agent-state</code> מכבה את זה. כשהוא מוגדר ב-shell שלכם, גם משתנה מפתח ה-API של אותו סוכן מגיע: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> או <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>.",
-    "head": ["מה מריצים", "מעוגן כברירת מחדל", "כדאי לדעת"],
+    "head": [
+      "מה מריצים",
+      "מעוגן כברירת מחדל",
+      "כדאי לדעת"
+    ],
     "notes": {
       "claude": "לפרופיל שני של Claude, הפנו את <code>--claude-dir</code> לתיקייה שלו.",
       "codex": "אחרי שינוי גודל של החלון, ai-jail שולח אל Codex מקש redraw כדי שהמסך יצויר מחדש. ב-macOS, Codex מקבל גם shim פרטי של <code>ps</code> ואת שירותי המערכת שה-app server שלו צריך, מוגבלים ל-Codex; <code>--no-agent-state</code> מוותר עליהם.",
@@ -100,13 +177,22 @@
       "devin": "ההתקנה של ה-CLI עצמו תחת <code>devin/cli/_versions</code> נשארת לקריאה בלבד. עדכנו את Devin במארח, ואז פתחו סשן חדש."
     },
     "aimemoryState": "התיקיות של הסוכן שהועלה",
-    "more": "אותו דבר עובד עבור <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> ו-<code>omp</code>. גם כל פקודה אחרת רצה, עם אותו כלא ובלי תיקיית התחברות. ai-jail פותח כברירת מחדל את ה-host של ה-API עבור <code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code> ו-<code>devin</code>; סוכנים אחרים צריכים <code>--allow-host</code> או <code>--network</code>."
+    "more": "אותו דבר עובד עבור <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> ו-<code>omp</code>. גם כל פקודה אחרת רצה, עם אותו כלא ובלי תיקיית התחברות. ai-jail פותח כברירת מחדל את ה-host של ה-API עבור <a class=\"link\" href=\"#first\">חמשת הסוכנים שבשלב 03</a>; סוכנים אחרים צריכים <code>--allow-host</code> או <code>--network</code>."
   },
   "next": {
     "items": [
-      { "title": "הגדרה", "text": "כל הדגלים ומפתחות ההגדרה, ואיך פותחים רק את מה שהמשימה צריכה." },
-      { "title": "איך זה עובד", "text": "השכבות שבין הסוכן למערכת שלכם, ב-Linux וב-macOS." },
-      { "title": "אבטחה", "text": "מה ai-jail עוצר, מה לא, ואיך הגרסאות נחתמות." }
+      {
+        "title": "הגדרה",
+        "text": "כל הדגלים ומפתחות ההגדרה, ואיך פותחים רק את מה שהמשימה צריכה."
+      },
+      {
+        "title": "איך זה עובד",
+        "text": "השכבות שבין הסוכן למערכת שלכם, ב-Linux וב-macOS."
+      },
+      {
+        "title": "אבטחה",
+        "text": "מה ai-jail עוצר, מה לא, ואיך הגרסאות נחתמות."
+      }
     ]
   }
 }

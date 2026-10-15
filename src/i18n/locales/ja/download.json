@@ -7,7 +7,8 @@
     "title": "ai-jail {tag}をダウンロード",
     "lede": "{date}リリース。Linux用とmacOS用のアーカイブが1つずつあり、それぞれにSHA-256チェックサムが並んでいます。{license}のフリーソフトウェアです。",
     "jump": "バイナリを入手する",
-    "changelog": "変更点"
+    "changelog": "変更点",
+    "audience": "キーボードの前にいる人へ。"
   },
   "builds": {
     "title": "バイナリ",
@@ -29,7 +30,10 @@
     "verify": {
       "title": "チェックサムを確認する",
       "text": "アーカイブと<code>.sha256</code>ファイルを同じフォルダに置き、お使いのシステムの行を実行します。アーカイブが一致すれば<code>OK</code>と表示されます。",
-      "comments": ["# Linux", "# macOS"],
+      "comments": [
+        "# Linux",
+        "# macOS"
+      ],
       "more": "リリースタグにも署名があります。リリースの作り方と、まだ足りないものは<a class=\"link\" href=\"/security/#checked\">セキュリティ</a>のページにあります。"
     },
     "windows": {
@@ -41,10 +45,22 @@
     "title": "パッケージマネージャー",
     "lede": "どれも、普段使っているツールで同じプログラムをインストールし、更新もそのツールから受け取れます。",
     "items": [
-      { "title": "Homebrew", "text": "macOSとLinux。" },
-      { "title": "Arch Linux", "text": "<code>ai-jail-bin</code>はビルド済みバイナリ、<code>ai-jail</code>はソースからビルドします。" },
-      { "title": "crates.io", "text": "Rust {rust}と、リリースのテストに使われたバージョンの依存でビルドします。" },
-      { "title": "Nix", "text": "このflakeは、ai-jailが同梱のbubblewrapを使うよう設定します。" }
+      {
+        "title": "Homebrew",
+        "text": "macOSとLinux。"
+      },
+      {
+        "title": "Arch Linux",
+        "text": "<code>ai-jail-bin</code>はビルド済みバイナリ、<code>ai-jail</code>はソースからビルドします。"
+      },
+      {
+        "title": "crates.io",
+        "text": "Rust {rust}と、リリースのテストに使われたバージョンの依存でビルドします。"
+      },
+      {
+        "title": "Nix",
+        "text": "このflakeは、ai-jailが同梱のbubblewrapを使うよう設定します。"
+      }
     ],
     "link": "インストールと最初の実行"
   },
@@ -57,9 +73,18 @@
   },
   "next": {
     "items": [
-      { "title": "インストール", "text": "最初の実行。ドライラン、中の見学、そしてAPIへの経路を付けたエージェントの起動。" },
-      { "title": "設定", "text": "すべてのフラグと設定キー、そしてタスクに必要なものだけを開ける方法。" },
-      { "title": "セキュリティ", "text": "脅威モデル、リリースの署名方法、まだ足りないもの。" }
+      {
+        "title": "インストール",
+        "text": "最初の実行。ドライラン、中の見学、そしてAPIへの経路を付けたエージェントの起動。"
+      },
+      {
+        "title": "設定",
+        "text": "すべてのフラグと設定キー、そしてタスクに必要なものだけを開ける方法。"
+      },
+      {
+        "title": "セキュリティ",
+        "text": "脅威モデル、リリースの署名方法、まだ足りないもの。"
+      }
     ]
   }
 }

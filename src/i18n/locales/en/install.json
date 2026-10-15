@@ -7,7 +7,8 @@
     "title": "Install it, look inside, run your agent",
     "lede": "ai-jail is one program with no daemon and no root. You install it, put its name in front of the command you already type, and the agent starts inside a sandbox.",
     "jump": "Pick an install method",
-    "releases": "GitHub releases"
+    "releases": "GitHub releases",
+    "audience": "For the person at the keyboard."
   },
   "install": {
     "title": "Install",
@@ -37,7 +38,7 @@
         },
         {
           "title": "macOS",
-          "text": "Nothing to install. ai-jail uses <code>sandbox-exec</code>, which ships with macOS. Apple marks that interface as deprecated."
+          "text": "Nothing to install. ai-jail uses <code>sandbox-exec</code>, which ships with macOS. Apple marks that interface as deprecated. Package registries are not reachable by default on macOS: add one with <code>--allow-host</code>, or open the network with <code>--network</code>."
         },
         {
           "title": "Windows",
@@ -66,7 +67,7 @@
       },
       {
         "title": "When you need more",
-        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. The list adds to the agent's own API host, which stays allowed. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list or the <code>forward_ports</code> list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
+        "text": "Put a host list in <code>~/.ai-jail</code>, your own config file, under the agent's name. The list adds to the agent's own API host, which stays allowed, and on Linux <code>github.com</code> and the package registries are already in. Or use <code>--network</code> for the whole network. For a logged-out run, pass <code>--no-agent-state</code>. A <code>.ai-jail</code> file inside the project can only tighten the jail: it can shrink the host list or the <code>forward_ports</code> list and turn the login off, never the opposite, so a repository you clone cannot open the jail for itself."
       }
     ],
     "codeTitles": [
@@ -85,7 +86,7 @@
     },
     "comments": [
       "# or, with the whole network open:",
-      "# added to the API host ai-jail already allows",
+      "# added to the API host and the registries ai-jail already allows",
       "# or, for one run:"
     ]
   },
@@ -102,6 +103,36 @@
     "note": "This is a Linux session. macOS has no way to build a separate file tree, so there the same paths exist and reading them is refused.",
     "alt": "The view from inside the cell. The agent sits next to a large, bright project folder, with a fresh home and the system tools behind it. Outside the bars, dim and barred: SSH keys, cloud logins, other projects and the network.",
     "caption": "From inside, the project is the only thing of yours that you can change. Your toolchains (mise, cargo, npm and others) are there, read only, with a dependency cache the jail owns. The network stays outside, apart from a known agent's own API host and, on Linux, the package registries those toolchains fetch from, until you open a host with <code>--allow-host</code>, one local port with <code>--forward-port</code>, or all of it with <code>--network</code>. <a class=\"link\" href=\"/configure/#toolchains\">How toolchains are mapped</a>."
+  },
+  "blocked": {
+    "title": "When the jail blocks something",
+    "lede": "Everything the agent starts runs inside with it, so a blocked thing fails, and nothing asks you. This is what that looks like, and how to see it.",
+    "items": [
+      "A file outside the project is not there. On Linux the path does not exist, on macOS it exists and reading it is refused.",
+      "A host outside the list cannot be reached: the connection fails. <code>--allow-host HOST</code> adds it for the next run.",
+      "A variable from your shell is empty inside, unless you pass it with <code>--env NAME</code> or <code>--env-from-file</code>.",
+      "To see what was refused, add <code>--audit-log</code>: it records each launch and every connection the proxy allowed or denied. <code>ai-jail --audit-show</code> prints it.",
+      "To look around yourself, <code>ai-jail bash</code> opens a shell inside the same jail."
+    ],
+    "dayTitle": "What you will open on day one",
+    "cells": [
+      {
+        "title": "Installs",
+        "text": "Work on Linux as they are: the registries and <code>github.com</code> are in the default list. On macOS add one, <code>--allow-host registry.npmjs.org</code>, or open everything with <code>--network</code>."
+      },
+      {
+        "title": "Local services",
+        "text": "A database, a local MCP server or an editor socket on your machine's loopback: <code>--forward-port 5432</code> relays that one port on Linux. On macOS, <code>--network</code>."
+      },
+      {
+        "title": "Git push",
+        "text": "Clone and pull from GitHub work on Linux. A push needs a credential: <code>--github</code> for your gh token over HTTPS (on macOS add <code>--allow-host github.com</code>), or <code>--network --ssh</code> for your SSH key."
+      },
+      {
+        "title": "MCP servers",
+        "text": "They start inside the jail with the agent. One that reads a token from your shell gets nothing until you pass it, <code>--env GITHUB_TOKEN</code> or <code>--env-from-file</code>. A remote one over HTTP needs its host in <code>--allow-host</code>."
+      }
+    ]
   },
   "trouble": {
     "title": "If it does not start",
@@ -146,7 +177,7 @@
       "devin": "The CLI's own installation under <code>devin/cli/_versions</code> stays read only. Update Devin on the host, then start a new session."
     },
     "aimemoryState": "The launched agent's folders",
-    "more": "The same works for <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> and <code>omp</code>. Any other command runs too, with the same jail and no login folder. ai-jail opens the API host by default for <code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code> and <code>devin</code>; other agents need <code>--allow-host</code> or <code>--network</code>."
+    "more": "The same works for <code>crush</code>, <code>grok</code>, <code>jcode</code>, <code>pi</code>, <code>aider</code>, <code>soulforge</code> and <code>omp</code>. Any other command runs too, with the same jail and no login folder. ai-jail opens the API host by default for <a class=\"link\" href=\"#first\">the five agents in step 03</a>; other agents need <code>--allow-host</code> or <code>--network</code>."
   },
   "next": {
     "items": [

@@ -3,7 +3,6 @@ import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import Section from '@/components/Section.astro';
 import Diagram from '@/components/Diagram.astro';
-import FeatureGrid from '@/components/FeatureGrid.astro';
 import Reach from '@/components/Reach.astro';
 import Callout from '@/components/Callout.astro';
 import CodeBlock from '@/components/CodeBlock.astro';
@@ -13,12 +12,11 @@ import Lockdown from '@/components/Lockdown.astro';
 import logo from '@/assets/img/logo.png';
 import { site } from '@/data/site';
 import { faqPage, type Faq as FaqItem } from '@/lib/schema';
-import { localePaths, useI18n, withText } from '@/i18n';
+import { localePaths, useI18n } from '@/i18n';
 export const getStaticPaths = localePaths;
 
 const { t, raw, href } = useI18n(Astro, 'home');
 const faq = raw<FaqItem[]>('faq.items');
-const points = withText([{ hue: 'clay' }, { hue: 'mustard' }, { hue: 'red' }] as const, raw<{ title: string; text: string }[]>('how.points'));
 type Item = { text: string };
 ---
 <Base schema={[faqPage(faq)]}>
@@ -40,6 +38,11 @@ type Item = { text: string };
     </div>
   </section>
 
+  <Section title={t('injection.title')} lede={t('injection.lede')} hue="red">
+    <Diagram name="why-injection" alt={t('injection.alt')} caption={t('injection.caption')} />
+    <a href={href('/why/')} class="btn btn-ghost">{t('injection.link')}</a>
+  </Section>
+
   <Lockdown />
 
   <Section title={t('wrap.title')} lede={t('wrap.lede')} hue="indigo">
@@ -56,10 +59,12 @@ type Item = { text: string };
     <a href={href('/configure/')} class="btn btn-ghost mt-10">{t('defaults.link')}</a>
   </Section>
 
-  <Section title={t('how.title')} lede={t('how.lede')} hue="clay">
-    <FeatureGrid items={points} />
-    <a href={href('/how-it-works/')} class="btn btn-ghost mt-10">{t('how.link')}</a>
-  </Section>
+  <section class="band" data-hue="clay">
+    <div class="wrap-narrow">
+      <p class="lede" set:html={t('how.text')} />
+      <a href={href('/how-it-works/')} class="btn btn-ghost mt-8">{t('how.link')}</a>
+    </div>
+  </section>
 
   <section class="wrap">
     <Callout title={t('limits.title')}>

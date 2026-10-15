@@ -7,7 +7,8 @@
     "title": "Una capa útil, con bordes conocidos",
     "lede": "ai-jail está hecho para frenar los errores de un agente de confianza y mantener el daño dentro del proyecto: el directorio del proyecto es el radio de impacto, y tu home, tus claves y la red quedan fuera de él. Es un sandbox de procesos que comparte tu kernel, así que no es una frontera contra código hostil ni contra un atacante decidido, y no reemplaza a una máquina virtual desechable.",
     "report": "Reportar una vulnerabilidad",
-    "doc": "Leer SECURITY.md"
+    "doc": "Leer SECURITY.md",
+    "audience": "Para quien firma la aprobación, y después para el ingeniero de seguridad."
   },
   "stops": {
     "title": "Lo que está hecho para detener",
@@ -22,7 +23,7 @@
         "text": "Los secretos de tu shell. ai-jail reduce las variables de entorno a una lista de permitidos pequeña, así que los tokens exportados se quedan fuera. La única excepción es la clave de API del propio harness que arrancas, por ejemplo <code>ANTHROPIC_API_KEY</code> para Claude, copiada por defecto junto con su login; <code>--no-agent-state</code> lo impide."
       },
       {
-        "text": "La red. Está apagada, con dos excepciones que pasan por el proxy filtrado: una lista corta de registries de paquetes cuando las toolchains están activadas, lo normal en Linux, y, para un agente conocido como <code>claude</code> o <code>codex</code>, su host de la API documentado, en ambas plataformas (dos en el caso de Codex). Los hosts de telemetría siguen cerrados. <code>--no-network</code> cierra ambas cosas."
+        "text": "La red. Está cerrada, con dos excepciones que pasan por el proxy filtrado: una lista corta de registries de paquetes cuando las toolchains están activadas, lo normal en Linux, y, para <a class=\"link\" href=\"/install/#first\">un agente conocido</a>, el host de su propia API, en ambas plataformas. Los hosts de telemetría siguen cerrados. <code>--no-network</code> cierra ambas cosas."
       },
       {
         "text": "La memoria compartida del host, tu servidor gráfico y tu portapapeles. La salida del agente pasa por un filtro que descarta las secuencias de terminal de portapapeles y de consulta."
@@ -41,26 +42,34 @@
     "lede": "La jaula y tu sistema se apoyan en el mismo kernel. Un bug en ese kernel, en un driver o en el backend del sandbox es una forma de rodear el muro, y ai-jail no puede hacer nada al respecto. Una máquina virtual trae su propio kernel, y por eso es la frontera más fuerte.",
     "alt": "A la izquierda, tu sistema y la jaula de ai-jail con el agente dentro se apoyan en una sola losa compartida, tu kernel, y una línea punteada va del agente, a través de la losa, hasta tu sistema. A la derecha, una VM desechable encierra a un agente apoyado en su propio kernel, separado.",
     "caption": "Un sandbox comparte el suelo con lo que protege, y una VM trae el suyo.",
-    "listTitle": "Lo que sigue en riesgo",
-    "items": [
-      "Vulnerabilidades del kernel y de los drivers. Cada proceso aislado habla con el mismo kernel que el resto de tu máquina.",
-      "Bugs en tu emulador de terminal, sobre todo con <code>--terminal-passthrough</code>, que apaga el filtro de salida.",
-      "Defectos en el propio backend del sandbox: bubblewrap, Landlock y seccomp en Linux, <code>sandbox-exec</code> en macOS.",
-      "Landlock, las reglas del propio kernel, solo valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos, en modo best-effort. Los kernels más antiguos se quedan solo con las reglas de sistema de archivos y de red, así que con <code>--x11</code>, <code>--network</code> o <code>--systemd-user</code> los sockets abstractos y las señales del host siguen al alcance.",
-      "Secretos dentro del proyecto. Un archivo <code>.env</code> en el repositorio se puede leer salvo que lo enmascares. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascarar archivos</a>.",
-      "Las máscaras cubren solo las rutas que existen cuando arranca el sandbox. Un archivo con secretos creado después, durante la sesión, no queda oculto.",
-      "El git del host confía en el <code>.git/</code> del proyecto, que es escribible. Un programa nombrado en <code>.git/config</code>, como <code>core.fsmonitor</code> o <code>core.pager</code>, o dejado en <code>.git/hooks/</code> corre como tú, fuera del sandbox, la próxima vez que un comando git que coincida se ejecute en el host; para <code>core.fsmonitor</code> basta un simple <code>git status</code>, incluso uno que tu editor lance en segundo plano, y nada aparece en <code>git diff</code>. <code>--lockdown</code> lo cierra al dejar el proyecto en solo lectura, y <code>--map .git</code> mantiene el repositorio en solo lectura en una ejecución normal, a cambio de no poder hacer commit desde dentro. Después de una sesión que te sorprenda, lee <code>.git/config</code> y lista <code>.git/hooks</code> con herramientas de archivos simples antes de ejecutar git en el host, porque el propio <code>git config --list</code> arranca el pager configurado.",
-      "<code>--mask</code> y <code>--deny-path</code> cambian solo lo que ve el sandbox. Cualquier cosa fuera del sandbox que actúe por el agente sigue leyendo los archivos reales: el daemon de Docker bajo <code>--docker</code>, un servidor MCP alcanzado por un socket mapeado o un servicio detrás de <code>--forward-port</code>.",
-      "Canales laterales y algunas clases de comunicación entre procesos.",
-      "Un host permitido es de confianza por completo. Permitir <code>github.com</code> con <code>--allow-host</code> deja que el agente haga push a cualquier repositorio de ahí, no solo a los tuyos.",
-      "La salida filtrada es solo TCP. No hay UDP, así que un programa que lo necesite no funciona; tampoco puede sacar nada por ahí.",
-      "El DNS bajo <code>--allow-host</code>. En Linux, las consultas de nombres dentro del sandbox fallan, así que no hay canal DNS hacia fuera. En macOS el resolver del sistema no está vallado, así que queda un canal DNS de poco ancho de banda, la misma brecha que Anthropic documenta para su propio sandbox-runtime.",
-      "El proxy ve el host, el puerto y el momento de cada conexión. Lo que viaja dentro queda entre los dos extremos. <a class=\"link\" href=\"/how-it-works/#network\">Cómo está construida la salida filtrada</a>.",
-      "Las credenciales fantasma trasladan la confianza al propio ai-jail. Con <code>--secret</code>, las peticiones al host vinculado pasan por ai-jail en claro para que pueda insertar la clave real, y las vuelve a cifrar al salir. Los túneles hacia cualquier otro host siguen siendo opacos. Solo cubre a los clientes que pueden hablar HTTP plano con el proxy para ese host.",
-      "Credenciales que pasas con <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> o <code>--docker-config</code>. Solo lectura protege el archivo contra cambios, no la credencial contra el uso: cualquier cosa dentro del sandbox puede actuar como tú en ese servicio mientras siga siendo válida.",
-      "ai-jail monta el login del propio agente por defecto, en lectura y escritura, así que un agente engañado puede usarlo mientras dure el arranque. El proyecto lo documenta como una concesión por comodidad; <code>--no-agent-state</code> da una ejecución sin sesión.",
-      "En macOS, <code>sandbox-exec</code> está marcado como obsoleto por Apple y no equivale al aislamiento de Linux. <a class=\"link\" href=\"/how-it-works/\">Mira las diferencias en macOS</a>."
-    ],
+    "data": {
+      "title": "Lo que esto significa para tus datos",
+      "items": [
+        "Secretos dentro del proyecto. Un archivo <code>.env</code> en el repositorio se puede leer salvo que lo enmascares. <a class=\"link\" href=\"/configure/#secrets\">Mira cómo enmascarar archivos</a>.",
+        "Las máscaras cubren solo las rutas que existen cuando arranca el sandbox. Un archivo con secretos creado después, durante la sesión, no queda oculto.",
+        "Un host permitido es de confianza por completo. Permitir <code>github.com</code> con <code>--allow-host</code> deja que el agente haga push a cualquier repositorio de ahí, no solo a los tuyos.",
+        "<code>--network</code> abre toda la red, así que todo lo que el agente pueda leer, tu proyecto incluido, puede enviarlo fuera.",
+        "ai-jail monta el login del propio agente por defecto, en lectura y escritura, así que un agente engañado puede usarlo mientras dure el arranque. El proyecto lo documenta como una concesión por comodidad; <code>--no-agent-state</code> da una ejecución sin sesión.",
+        "El git del host confía en el <code>.git/</code> del proyecto, que es escribible. Un programa nombrado en <code>.git/config</code>, como <code>core.fsmonitor</code> o <code>core.pager</code>, o dejado en <code>.git/hooks/</code> corre como tú, fuera del sandbox, la próxima vez que un comando git que coincida se ejecute en el host; para <code>core.fsmonitor</code> basta un simple <code>git status</code>, incluso uno que tu editor lance en segundo plano, y nada aparece en <code>git diff</code>. <code>--lockdown</code> lo cierra al dejar el proyecto en solo lectura, y <code>--map .git</code> mantiene el repositorio en solo lectura en una ejecución normal, a cambio de no poder hacer commit desde dentro. Después de una sesión que te sorprenda, lee <code>.git/config</code> y lista <code>.git/hooks</code> con herramientas de archivos simples antes de ejecutar git en el host, porque el propio <code>git config --list</code> arranca el pager configurado.",
+        "<code>--mask</code> y <code>--deny-path</code> cambian solo lo que ve el sandbox. Cualquier cosa fuera del sandbox que actúe por el agente sigue leyendo los archivos reales: el daemon de Docker bajo <code>--docker</code>, un servidor MCP alcanzado por un socket mapeado o un servicio detrás de <code>--forward-port</code>."
+      ]
+    },
+    "engineer": {
+      "title": "Para el ingeniero de seguridad",
+      "items": [
+        "Vulnerabilidades del kernel y de los drivers. Cada proceso aislado habla con el mismo kernel que el resto de tu máquina.",
+        "Bugs en tu emulador de terminal, sobre todo con <code>--terminal-passthrough</code>, que apaga el filtro de salida.",
+        "Defectos en el propio backend del sandbox: bubblewrap, Landlock y seccomp en Linux, <code>sandbox-exec</code> en macOS.",
+        "Landlock, las reglas del propio kernel, solo valla los sockets Unix abstractos y las señales en kernels 6.12 o más nuevos, en modo best-effort. Los kernels más antiguos se quedan solo con las reglas de sistema de archivos y de red, así que con <code>--x11</code>, <code>--network</code> o <code>--systemd-user</code> los sockets abstractos y las señales del host siguen al alcance.",
+        "Canales laterales y algunas clases de comunicación entre procesos.",
+        "La salida filtrada es solo TCP. No hay UDP, así que un programa que lo necesite no funciona; tampoco puede sacar nada por ahí.",
+        "El DNS bajo <code>--allow-host</code>. En Linux, las consultas de nombres dentro del sandbox fallan, así que no hay canal DNS hacia fuera. En macOS el resolver del sistema no está vallado, así que queda un canal DNS de poco ancho de banda, la misma brecha que Anthropic documenta para su propio sandbox-runtime.",
+        "El proxy ve el host, el puerto y el momento de cada conexión. Lo que viaja dentro queda entre los dos extremos. <a class=\"link\" href=\"/how-it-works/#network\">Cómo está construida la salida filtrada</a>.",
+        "Las credenciales fantasma trasladan la confianza al propio ai-jail. Con <code>--secret</code>, las peticiones al host vinculado pasan por ai-jail en claro para que pueda insertar la clave real, y las vuelve a cifrar al salir. Los túneles hacia cualquier otro host siguen siendo opacos. Solo cubre a los clientes que pueden hablar HTTP plano con el proxy para ese host.",
+        "Credenciales que pasas con <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> o <code>--docker-config</code>. Solo lectura protege el archivo contra cambios, no la credencial contra el uso: cualquier cosa dentro del sandbox puede actuar como tú en ese servicio mientras siga siendo válida.",
+        "En macOS, <code>sandbox-exec</code> está marcado como obsoleto por Apple y no equivale al aislamiento de Linux. <a class=\"link\" href=\"/how-it-works/\">Mira las diferencias en macOS</a>."
+      ]
+    },
     "callout": {
       "title": "Para código que crees hostil, usa una VM desechable",
       "text": "ai-jail es para agentes que son útiles y a veces se equivocan o se dejan engañar. Para analizar malware, o para un repositorio del que ya desconfías, arranca una máquina virtual que puedas tirar. <a class=\"link\" href=\"/compare/\">Compara las opciones</a>."
@@ -74,7 +83,7 @@
       "gives": "Lo que puede hacer entonces cualquier cosa dentro del sandbox"
     },
     "rows": [
-      "Enviar todo lo que pueda leer a cualquier sitio, sin restricción de tráfico. El valor por defecto permite solo el host de la API del propio agente conocido; <code>--allow-host</code> es la alternativa más estricta.",
+      "Enviar todo lo que pueda leer a cualquier sitio, sin restricción de tráfico. El valor por defecto permite solo el host de la API de un agente conocido y, en Linux, los registries de paquetes; <code>--allow-host</code> es la alternativa más estricta.",
       "Alcanzar exactamente los hosts que listas, y sus subdominios, por TCP a través de un proxy integrado. Cada host de la lista es de confianza por completo. Tu lista se suma al host de la propia API del agente; <code>--no-network</code> con una lista te deja solo esa lista.",
       "Usar por completo un servicio del loopback de tu host. Lo que acepte el servidor MCP, el socket del editor o la base de datos en ese puerto, el agente puede pedirlo, sin lista de permitidos, sin inspección y sin registro de auditoría. Todos los demás puertos del host siguen cerrados. Solo Linux, y se rechaza con <code>--network</code>.",
       "Activado por defecto en Linux. Ejecutar tus toolchains: <code>~/.cargo/bin</code> y <code>~/.rustup</code> en solo lectura, una caché de dependencias propia de la jaula en <code>~/.local/share/ai-jail/cache/</code> que sobrevive entre ejecuciones, y salida filtrada hacia los registries de paquetes. Las cachés reales del host nunca se montan. Apagado bajo <code>--lockdown</code> y con <code>--no-toolchains</code>.",
@@ -130,7 +139,7 @@
     ],
     "audit": {
       "title": "Auditado a la vista de todos",
-      "text": "Antes de la 1.0 el proyecto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">se auditó a sí mismo</a> y publicó los informes. El {date} se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0, con una comparación y un plan de corrección: la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoría A</a>, que según su propia cabecera realizó un modelo de IA, y la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoría B</a>. Produjeron dos advisories en GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> y <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos cerrados en la 2.4.0 con tests de regresión. Ninguna empresa externa ha auditado ai-jail."
+      "text": "Antes de la 1.0 el proyecto <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">se auditó a sí mismo</a> y publicó los informes. El {date} se publicaron en el repositorio dos auditorías de código independientes de la 2.3.0, con una comparación y un plan de corrección: la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">auditoría A</a>, que según su propia cabecera realizó un modelo de IA, y la <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">auditoría B</a>. Produjeron dos advisories en GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> y <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ambos cerrados en la 2.4.0 con tests de regresión. Ninguna empresa externa ha auditado ai-jail. Lo que eso significa para ti: ai-jail le quita cosas a una ejecución y no añade nada que no hayas activado tú. Un bug en él deja un hueco en el muro, y el agente detrás de ese hueco tiene como mucho lo que habría tenido sin ai-jail."
     },
     "fixes": {
       "title": "Correcciones de seguridad recientes",

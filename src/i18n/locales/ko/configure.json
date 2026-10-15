@@ -7,7 +7,8 @@
     "title": "기본은 닫힘, 스위치는 내 손에",
     "lede": "옵션을 주지 않으면 에이전트는 프로젝트, Linux에서는 빌드 도구, 자신의 로그인과 자신의 API 호스트를 받습니다. 그 밖의 네트워크는 짧은 패키지 레지스트리 목록이 전부입니다. 스위치 하나씩 줄여 나갈 수 있고, 락다운은 대부분을 한 번에 닫습니다.",
     "switches": "스위치 보기",
-    "install": "설치"
+    "install": "설치",
+    "audience": "키보드 앞에 앉은 사람을 위한 글입니다."
   },
   "authority": {
     "title": "설정이 들어오는 세 곳",
@@ -57,13 +58,13 @@
         "title": "네트워크와 서비스",
         "rows": [
           {
-            "text": "네트워크 전체. 에이전트가 읽을 수 있는 것은 무엇이든 밖으로 보낼 수 있습니다. 호스트 몇 개만 필요하다면 <code>--allow-host</code>가 더 조이는 선택입니다. 둘 다 주지 않으면 샌드박스는 툴체인이 프록시를 통해 여는 <a class=\"link\" href=\"#toolchains\">패키지 레지스트리</a>와 알려진 에이전트(Claude, Codex, Gemini, Grok, Devin. Codex는 ChatGPT 로그인용 <code>chatgpt.com</code>도 받습니다)의 API 호스트에만 닿고, <code>--no-network</code>는 그것까지 모두 닫습니다."
+            "text": "네트워크 전체. 에이전트가 읽을 수 있는 것은 무엇이든 밖으로 보낼 수 있습니다. 호스트 몇 개만 필요하다면 <code>--allow-host</code>가 더 조이는 선택입니다. 둘 다 주지 않으면 샌드박스는 <a class=\"link\" href=\"/install/#first\">알려진 에이전트 자신의 API 호스트</a>와, Linux에서는 툴체인이 프록시를 통해 여는 <a class=\"link\" href=\"#toolchains\">패키지 레지스트리</a>에만 닿고, <code>--no-network</code>는 둘 다 닫습니다."
           },
           {
             "text": "샌드박스가 나열한 호스트와 그 서브도메인에만, ai-jail 내장 프록시를 거쳐 TCP로 닿습니다. 플래그는 여러 번 쓸 수 있습니다. 2.8.1부터 목록이 기본값에 더해지므로, 알려진 에이전트는 자기 API 호스트를 그대로 유지합니다. <code>--network</code>나 <code>--browser</code>와는 함께 쓸 수 없고, 프로젝트 파일은 목록을 줄일 수만 있습니다."
           },
           {
-            "text": "호스트 루프백의 포트 하나를 샌드박스 자신의 루프백으로 중계합니다. 호스트 <code>127.0.0.1</code>에 떠 있는 로컬 MCP 서버, 에디터 소켓, 개발용 데이터베이스가 안에서도 같은 포트로 응답하고, 그 밖의 호스트 포트는 모두 닫힌 채입니다. 포트를 더 열려면 플래그를 반복하세요. Linux 전용이고, <code>--network</code>와 함께 쓰거나 1024 미만 포트를 주면 거부됩니다. <code>--allow-host</code>와 함께, 그리고 <code>--lockdown</code> 아래에서도 동작합니다. 그 포트 뒤의 서비스는 통째로 신뢰되며, 허용 목록도 감사 기록도 없습니다. 프로젝트 파일은 목록을 줄일 수만 있고, <code>forward_ports</code>는 <code>[commands.&lt;name&gt;]</code> 테이블 아래에 둬야 합니다. 기본 테이블에 넣으면 모든 브라우저 실행과 모든 macOS 실행이 실패합니다."
+            "text": "호스트 루프백의 포트 하나를 샌드박스 자신의 루프백으로 중계합니다. 호스트 <code>127.0.0.1</code>에 떠 있는 로컬 MCP 서버, 에디터 소켓, 개발용 데이터베이스가 안에서도 같은 포트로 응답하고, 그 밖의 호스트 포트는 모두 닫힌 채입니다. 포트를 더 열려면 플래그를 반복하세요. Linux 전용이고, <code>--network</code>와 함께 쓰거나 1024 미만 포트를 주면 거부됩니다. <code>--allow-host</code>와 함께, 그리고 <code>--lockdown</code> 아래에서도 동작합니다. 그 포트 뒤의 서비스는 통째로 신뢰되며, 허용 목록도 감사 기록도 없습니다. 프로젝트 파일은 목록을 줄일 수만 있습니다. <a class=\"link\" href=\"#forward\">설정 파일에서 <code>forward_ports</code>를 두는 위치</a>."
           },
           {
             "text": "<code>~/.ssh</code>를 읽기 전용으로 열고 SSH 에이전트 소켓을 연결해서 <code>git push</code>가 되게 합니다."
@@ -377,11 +378,11 @@
     "items": [
       {
         "title": "매일 쓰는 클라우드 에이전트",
-        "text": "알려진 에이전트는 로그인된 상태로 시작하고, 필터링 프록시를 통해 자신의 API 호스트에만 닿습니다. Codex는 ChatGPT 로그인용으로 <code>chatgpt.com</code> 하나를 더 받습니다. 작업에 더 필요하면 전역 파일의 <code>allow_hosts</code>에 API 호스트와 추가 호스트를 함께 넣거나, <code>network = true</code>로 네트워크 전체를 여세요."
+        "text": "알려진 에이전트는 로그인된 상태로 시작하고, 필터링 프록시를 통해 자신의 API 호스트에 닿으며, Linux에서는 패키지 레지스트리에도 닿습니다. 작업에 더 필요하면 전역 파일의 <code>allow_hosts</code>에 추가 호스트를 넣거나, <code>network = true</code>로 네트워크 전체를 여세요."
       },
       {
         "title": "ai-jail이 모르는 에이전트",
-        "text": "ai-jail은 다섯 에이전트의 API 호스트를 알아서 허용합니다. Claude는 <code>api.anthropic.com</code>, Codex는 <code>api.openai.com</code>과 ChatGPT 로그인용 <code>chatgpt.com</code>, Gemini는 <code>generativelanguage.googleapis.com</code>, Grok은 <code>api.x.ai</code>, Devin은 <code>server.codeium.com</code>입니다. 그 밖의 에이전트는 <code>--allow-host</code>로 호스트를 직접 줘야 합니다. 목록에 그 호스트가 없으면 실행 시 경고에 호스트 이름이 나옵니다."
+        "text": "ai-jail은 <a class=\"link\" href=\"/install/#first\">다섯 에이전트</a>의 API 호스트를 알아서 허용합니다. 그 밖의 에이전트는 <code>--allow-host</code>로 호스트를 직접 줘야 합니다. 목록에 그 호스트가 없으면 실행 시 경고에 호스트 이름이 나옵니다."
       },
       {
         "title": "로그아웃 상태 실행",
@@ -389,7 +390,7 @@
       },
       {
         "title": "전역 파일의 허용 호스트",
-        "text": "목록은 그 명령을 실행할 때마다 에이전트 자신의 API 호스트에 더해져 적용됩니다. 허용된 호스트는 통째로 신뢰됩니다. <code>github.com</code>을 넣으면 에이전트가 내 자격 증명이 닿는 어느 저장소에든 푸시할 수 있으니, 정말 원할 때만 추가하세요."
+        "text": "목록은 그 명령을 실행할 때마다 에이전트 자신의 API 호스트에 더해져 적용됩니다. Linux에서는 <code>github.com</code>과 패키지 레지스트리에 이미 닿으므로 macOS에서만 적습니다. 허용된 호스트는 통째로 신뢰됩니다. 에이전트는 내 자격 증명이 허용하는 것이라면 무엇이든 그 호스트에 요청할 수 있습니다."
       },
       {
         "title": "로컬 MCP 서버나 데이터베이스",
@@ -401,7 +402,7 @@
       },
       {
         "title": "SSH로 git push",
-        "text": "<code>--ssh</code>는 <code>~/.ssh</code>를 읽기 전용으로 마운트하고 SSH 에이전트 소켓을 전달합니다. 푸시하려면 네트워크도 필요합니다."
+        "text": "<code>--ssh</code>는 <code>~/.ssh</code>를 읽기 전용으로 마운트하고 SSH 에이전트 소켓을 전달합니다. 네트워크는 열지 않으므로 레시피에서는 <code>--network</code>와 함께 씁니다. gh 토큰으로 HTTPS 푸시를 하려면 GitHub CLI 레시피를 보세요."
       },
       {
         "title": "감옥 안에서 빌드하고 테스트하기",
@@ -409,7 +410,7 @@
       },
       {
         "title": "감옥 안에서 GitHub CLI 쓰기",
-        "text": "<code>--github</code>은 gh 설정 디렉터리를 읽기 전용으로 마운트하고 활성 github.com 토큰을 <code>GH_TOKEN</code>으로 전달해서, 키링에 있든 없든 <code>gh</code>가 로그인된 상태가 됩니다. <code>api.github.com</code>에는 기본 레지스트리 목록(<code>github.com</code>과 그 서브도메인)을 통해 닿으므로 호스트를 추가할 필요가 없습니다. 그 뒤로는 감옥 안의 모든 것이 GitHub에서 나처럼 행동할 수 있습니다."
+        "text": "<code>--github</code>은 gh 설정 디렉터리를 읽기 전용으로 마운트하고 활성 github.com 토큰을 <code>GH_TOKEN</code>으로 전달해서, 키링에 있든 없든 <code>gh</code>와 HTTPS <code>git push</code>가 로그인된 상태가 됩니다. Linux에서는 <code>github.com</code>과 그 서브도메인이 이미 기본 목록에 있어 호스트를 더할 필요가 없고, macOS에서는 <code>--allow-host github.com</code>을 더합니다. 그 뒤로는 감옥 안의 모든 것이 GitHub에서 나처럼 행동할 수 있습니다."
       },
       {
         "title": "에이전트용 브라우저",
@@ -426,15 +427,16 @@
     ],
     "comments": {
       "nothing": "# 더할 것 없음: 로그인과 api.anthropic.com은 기본으로 옵니다",
-      "more": "# 작업에 더 필요하면 ~/.ai-jail에 한 번만 (에이전트 자신의 API 호스트에 더해짐)",
+      "more": "# 작업에 더 필요하면 ~/.ai-jail에 한 번만 (API 호스트와, Linux에서는 레지스트리에 더해짐)",
       "wayland": "# Wayland",
       "x11": "# X11",
       "open": "# 아니면 네트워크 전체를 열기: network = true",
-      "hosts": "# claude, codex, gemini, grok, devin은 플래그가 필요 없음: ai-jail이 API 호스트를 알아서 허용",
+      "hosts": "# 알려진 에이전트는 플래그가 필요 없음: ai-jail이 API 호스트를 알아서 허용",
+      "forward": "# 또는 ~/.ai-jail에 한 번만, 명령 테이블 아래에",
       "phantom": "# 키는 0600 파일에만 있고, 샌드박스에는 AIJAIL-PHANTOM-... 만 보입니다",
       "build": "# Linux의 기본값: 캐시는 켜고, 레지스트리는 프록시를 통해 닿음",
       "offline": "# 아무것도 매핑하지 않고 아무 데도 닿지 않음",
-      "forward": "# 또는 ~/.ai-jail에 한 번만, 명령 테이블 아래에. 기본 테이블에는 절대 넣지 않음"
+      "github": "# macOS: 거기서는 github.com이 기본 목록에 없음"
     }
   },
   "compat": {

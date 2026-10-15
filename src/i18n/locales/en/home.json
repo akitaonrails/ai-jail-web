@@ -1,11 +1,18 @@
 {
   "hero": {
     "title": "A jail for your AI coding agent",
-    "lede": "Your agent runs with your user account, so it can read everything you can. ai-jail starts it inside an OS sandbox built to stop a trusted agent's mistakes: the project is writable, and your keys, shell secrets and home directory are not there.",
+    "lede": "Your coding agent, the program that edits and runs code for you, runs with your user account, so it can read everything you can: the keys to your servers, your cloud account, every other project on the disk. ai-jail starts it inside a sandbox, a fence the operating system holds around one program, built to stop a trusted agent's mistakes. The project is writable. Your keys, your home directory and your shell secrets (the tokens and passwords a terminal keeps in environment variables) are not there.",
     "install": "Install",
     "why": "Do I need it?",
     "logoAlt": "A padlock made of circuit traces. Behind the bars in its window sits a glowing microchip: the agent.",
     "stamp": "Not a VM"
+  },
+  "injection": {
+    "title": "How a good agent goes wrong",
+    "lede": "All day the agent reads text you did not write: web pages, issues, READMEs, packages. One page with instructions hidden in it is enough, and the agent does not need to be hostile to follow them.",
+    "alt": "Two rows. Without a jail, a poisoned page reaches the agent, the agent reads the SSH key and sends it to the internet. With ai-jail, the agent sits inside a wall of bars, no arrow leaves it, and the SSH key and the internet are dim and barred outside.",
+    "caption": "The same page, with and without ai-jail. The key is not there to read, and the internet is closed.",
+    "link": "What else an agent can reach"
   },
   "scene": {
     "label": "What the agent can reach, before and after ai-jail",
@@ -19,7 +26,7 @@
     "steps": [
       {
         "title": "Your agent runs as you",
-        "text": "A coding agent is a program under your user account. It, and every script, package and MCP server it starts, can open anything you can open."
+        "text": "A coding agent is a program under your user account. So is every script, package and MCP server it starts; an MCP server is a helper program that gives the agent extra tools. All of them can open anything you can open."
       },
       {
         "title": "Start it through ai-jail",
@@ -27,21 +34,21 @@
       },
       {
         "title": "Your home is not mounted",
-        "text": "The agent gets a fresh, empty home directory. SSH keys, cloud credentials, browser profiles and your other projects do not exist in there."
+        "text": "The agent gets a fresh, empty home directory. SSH keys (the files that log you in to your servers), cloud credentials, browser profiles and your other projects do not exist in there."
       },
       {
-        "title": "Secrets, network and devices are off",
-        "text": "ai-jail cuts environment variables down to an allowlist, so tokens in your shell stay in your shell. The network is closed, apart from the package registries your toolchains fetch from. The Docker socket, the screen and the clipboard are off."
+        "title": "Secrets, network and devices are closed",
+        "text": "ai-jail cuts environment variables down to an allowlist, so your shell secrets stay in your shell. The network is closed, except the agent's own API host and, on Linux, the package registries your toolchains fetch from. The Docker socket, the screen and the clipboard are off."
       },
       {
         "title": "Open what the task needs",
-        "text": "A cloud agent starts logged in, because ai-jail mounts its login by default. For Claude, Codex, Gemini, Grok and Devin you open nothing: ai-jail lets the agent's own API host through its filtered proxy and keeps the rest shut. <code>--allow-host</code> adds hosts, <code>--network</code> opens all of it."
+        "text": "Claude Code, Codex, Gemini, Grok and Devin start logged in and reach their own API host. A flag, an option you type after <code>ai-jail</code>, opens more: <code>--allow-host</code> adds hosts, <code>--network</code> opens all of it."
       }
     ]
   },
   "wrap": {
     "title": "The wall goes around the whole harness",
-    "lede": "Agents that ship a sandbox put it around the commands the model runs. The agent process, its file tools, its MCP servers and its hooks stay outside, under your account. ai-jail starts all of them inside.",
+    "lede": "Agents that ship a sandbox put it around the commands the model runs. The agent process, its file tools, its MCP servers and its hooks (scripts the agent runs at set moments) stay outside, under your account. ai-jail starts all of them inside. A prompt asks a person, and a person can be rushed or fooled. A sandbox asks the kernel, the core of the operating system, which gives the same answer every time.",
     "alt": "Two panels. On the left a built-in sandbox encloses only the shell commands while the agent, MCP servers and hooks sit outside next to your home directory. On the right ai-jail encloses the agent, MCP servers, hooks and shell commands together, and the home directory is outside the wall.",
     "caption": "One policy for every agent you use, written once.",
     "link": "See the full comparison"
@@ -51,16 +58,16 @@
     "lede": "Everything that reaches your machine is off until you turn it on, except the agent's own login, its own API host, your toolchains (on Linux) and their package registries, each with a <code>--no-</code> switch. Writes outside the project land in memory and vanish when the session ends.",
     "inside": [
       {
-        "text": "Your project directory, read and write, at its real path"
+        "text": "Your project, read and write, at its real path"
       },
       {
-        "text": "Your toolchains (mise, cargo, npm and others) and the system ones in <code>/usr</code>, read only, with a cache the jail owns on Linux"
+        "text": "Your toolchains, read only, with a cache the jail owns (Linux)"
       },
       {
         "text": "The agent's own login, such as <code>~/.claude</code>, so it starts signed in"
       },
       {
-        "text": "The API host of a known agent (Claude, Codex, Gemini, Grok, Devin) through a filtered proxy, and the package registries on Linux"
+        "text": "<a class=\"link\" href=\"/install/#first\">A known agent's own API host</a>, and the package registries on Linux"
       },
       {
         "text": "A fresh home directory and a private <code>/tmp</code>"
@@ -71,15 +78,15 @@
         "text": "<code>~/.ssh</code>, <code>~/.aws</code>, <code>~/.gnupg</code>, browser profiles"
       },
       {
-        "text": "Tokens and API keys in your shell environment, except the agent's own key, which is copied by default"
+        "text": "Your shell secrets, except the agent's own API key"
       },
       {
-        "text": "Other processes, host IPC, kernel interfaces such as <code>ptrace</code> and <code>bpf</code>"
+        "text": "Other processes, host IPC, <code>ptrace</code> and <code>bpf</code>"
       }
     ],
     "optin": [
       {
-        "text": "<code>--allow-host</code> for more hosts, <code>--forward-port</code> for one local service on Linux, or <code>--network</code> for all of it"
+        "text": "<code>--allow-host</code> for more hosts, <code>--forward-port</code> for one local service, <code>--network</code> for all of it"
       },
       {
         "text": "<code>--ssh</code>, <code>--gpu</code>, <code>--display</code>, <code>--docker</code> and more"
@@ -88,32 +95,17 @@
     "link": "All the switches"
   },
   "how": {
-    "title": "Several kernel layers, one small binary",
-    "lede": "On Linux, bubblewrap builds the namespaces and mounts, Landlock repeats the filesystem rules inside the kernel, seccomp blocks dangerous system calls and resource limits stop runaway processes. On macOS the same policy becomes a sandbox-exec profile.",
-    "points": [
-      {
-        "title": "No daemon, no root",
-        "text": "ai-jail is a single Rust binary that starts your agent and exits with it. Nothing keeps running in the background, and you never type sudo."
-      },
-      {
-        "title": "Your toolchains, not an image",
-        "text": "The agent uses the compilers and runtimes already on your machine. There is no container image to build or keep up to date."
-      },
-      {
-        "title": "A repository cannot loosen it",
-        "text": "A <code>.ai-jail</code> file inside a project can tighten the sandbox and never open it. Only your own global file and your flags can."
-      }
-    ],
+    "text": "ai-jail is one small program with no daemon and no root. On Linux it builds the walls from kernel features: bubblewrap for the namespaces and mounts, Landlock for the file rules, seccomp for the system calls, limits for runaway processes. On macOS the same policy becomes a <code>sandbox-exec</code> profile. The agent uses the compilers and runtimes already on your machine, and a <code>.ai-jail</code> file inside a repository can tighten the jail and never open it.",
     "link": "How the layers work"
   },
   "limits": {
     "title": "What it is not",
-    "text": "ai-jail is built to stop a trusted agent's mistakes. It is not a boundary against hostile code: it shares your kernel, an agent with <code>--network</code> can send out anything it can read, and a host you allow with <code>--allow-host</code> is trusted for everything it offers. For code you believe is hostile, use a disposable virtual machine.",
+    "text": "ai-jail is built to stop a trusted agent's mistakes. It is not a boundary against hostile code: it shares your kernel, an agent with <code>--network</code> can send out anything it can read, and a host you allow with <code>--allow-host</code> is trusted for everything it offers. For code you believe is hostile, use a disposable virtual machine, a VM: a whole computer run as software, with its own kernel, thrown away after the job.",
     "link": "Read the threat model"
   },
   "pair": {
     "title": "Works with ai-memory",
-    "text": "ai-memory gives your agents a long-term memory. ai-jail keeps them in their cell. ai-jail recognizes the <code>ai-memory run</code> launcher and applies the policy of the agent behind it.",
+    "text": "ai-memory gives your agents a long-term memory, and ai-jail keeps them in their cell. ai-jail recognizes the <code>ai-memory run</code> launcher and applies the policy of the agent behind it.",
     "link": "Visit aimemory.io"
   },
   "faq": {
@@ -125,7 +117,7 @@
       },
       {
         "q": "Which agents does it support?",
-        "a": "Any command. It has presets for Claude Code, Codex, Gemini CLI, Devin, OpenCode, Crush, Grok, Kimi, pi, jcode and SoulForge, and <code>ai-jail bash</code> gives you a shell inside the jail to look around."
+        "a": "Any command. It knows where Claude Code, Codex, Gemini CLI, OpenCode, Antigravity, Kimi, Kiro, Prime Agent, Devin, Crush, Grok, jcode, pi, aider, SoulForge and omp keep their login, and mounts it by default. <a class=\"link\" href=\"/install/#agents\">The table on Install</a> lists what each one gets, and <code>ai-jail bash</code> gives you a shell inside the jail to look around."
       },
       {
         "q": "Does it work on Windows?",
@@ -133,7 +125,7 @@
       },
       {
         "q": "My agent needs the internet. Is the jail still useful?",
-        "a": "Yes. A known agent such as Claude Code reaches its own API host out of the box and nothing else. <code>--allow-host</code> adds the hosts you name. With <code>--network</code> on instead, the agent can still only read your project, so your keys and the rest of your home are not there to send. What it can read, it can send, which is why masking secrets inside the project matters. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>."
+        "a": "Yes. A known agent such as Claude Code reaches its own API host out of the box, plus the package registries on Linux, and nothing else. <code>--allow-host</code> adds the hosts you name. With <code>--network</code> on instead, the agent can still only read your project, so your keys and the rest of your home are not there to send. What it can read, it can send, which is why masking secrets inside the project matters. <a class=\"link\" href=\"/configure/#secrets\">See how to mask them</a>."
       },
       {
         "q": "Is it free?",

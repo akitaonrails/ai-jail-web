@@ -7,7 +7,8 @@
     "title": "What happens when you type ai-jail claude",
     "lede": "ai-jail builds a small, closed copy of your system, puts your project in it, and starts the agent inside. The walls are features of the operating system itself, so the agent runs at full speed and cannot switch them off. Per launch, the network is closed apart from the agent's own API host, open to a few named hosts, or fully open.",
     "install": "Install",
-    "security": "Read the threat model"
+    "security": "Read the threat model",
+    "audience": "For the engineer who wants to know what is enforced. The first paragraph and the first picture are enough for everyone else."
   },
   "launch": {
     "title": "What happens at launch",
@@ -60,7 +61,7 @@
         "name": "seccomp",
         "tag": "system calls",
         "is": "Programs ask the kernel for things through system calls. seccomp is a filter on those calls, and ai-jail uses it to refuse the ones a coding agent never needs.",
-        "stops": "The filter blocks <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, kernel modules, <code>io_uring</code>, the kernel keyring, raw sockets, and <code>TIOCSTI</code>, the call that types keystrokes into a terminal, compared the way the kernel reads it. It is a blocklist on purpose, so compilers and runtimes keep working. The one process started before Landlock and seccomp apply is the small bridge that carries filtered network traffic out, so it alone stays unrestricted."
+        "stops": "The filter blocks <code>ptrace</code>, <code>mount</code>, <code>bpf</code>, kernel modules, <code>io_uring</code>, the kernel keyring, raw sockets, and <code>TIOCSTI</code>, a call that can type keystrokes into your terminal. It is a blocklist on purpose, so compilers and runtimes keep working. The one process started before Landlock and seccomp apply is the small bridge that carries filtered network traffic out, so it alone stays unrestricted."
       },
       {
         "name": "Resource limits",
@@ -84,13 +85,13 @@
   },
   "egress": {
     "title": "Three ways to the network",
-    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out except what the filtered proxy lets through, which is a known agent's own API host on both platforms (two for Codex) and, on Linux with toolchains on (the default), a short list of package registries. The other two are flags you pass on purpose.",
+    "lede": "Every launch picks one of three network modes. The default is the strictest: no route out except what the filtered proxy lets through, which is <a class=\"link\" href=\"/install/#first\">a known agent's own API host</a> on both platforms and, on Linux with toolchains on (the default), a short list of package registries. The other two are flags you pass on purpose.",
     "alt": "Three panels, left to right. Off: the agent chip inside a closed wall, a dim barred cloud outside. Filtered: a small gate in the wall leads to a proxy box, which connects to a cyan cloud labeled api.anthropic.com while a second cloud stays dim and barred. Open: the wall's network side is missing and the chip connects straight to the cloud.",
-    "caption": "Off is the default. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
+    "caption": "Off is the default, with one gate for the agent's own API host and, on Linux, the registries. Filtered opens a gate to named hosts only. Open removes the wall on the network side.",
     "modes": [
       {
         "title": "Off",
-        "text": "The default. The sandbox gets a private network namespace with no route out, except through the filtered proxy. For a known agent (<code>claude</code>, <code>codex</code>, <code>gemini</code>, <code>grok</code>, <code>devin</code>) the proxy lets its documented API host through, on Linux and macOS, so a bare <code>ai-jail claude</code> works; Codex gets two, since its ChatGPT login also uses <code>chatgpt.com</code>. On Linux, with toolchains on (the default), it also lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; on macOS the registries stay closed. <code>--no-network</code> makes it fully offline."
+        "text": "The default. The sandbox gets a private network namespace with no route out, except through the filtered proxy. For <a class=\"link\" href=\"/install/#first\">a known agent</a> the proxy lets its own API host through, on Linux and macOS, so a bare <code>ai-jail claude</code> works. On Linux, with toolchains on (the default), it also lets <a class=\"link\" href=\"/configure/#toolchains\">a fixed list of package registries</a> through, so <code>npm install</code> and <code>cargo build</code> work; on macOS the registries stay closed. <code>--no-network</code> makes it fully offline."
       },
       {
         "title": "Filtered",
@@ -151,7 +152,7 @@
       },
       {
         "what": "Network",
-        "linux": "Off by default: no route out except a known agent's own API host and the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--forward-port</code> relays one port of the host's loopback, <code>--no-network</code> closes all. Under <code>--lockdown</code> the open network is always blocked, even with <code>--network</code>.",
+        "linux": "Closed by default: no route out except a known agent's own API host and the package registries allowed when toolchains are on. <code>--allow-host</code> or <code>--network</code> opens more, <code>--forward-port</code> relays one port of the host's loopback, <code>--no-network</code> closes all. Under <code>--lockdown</code> the open network is always blocked, even with <code>--network</code>.",
         "macos": "The same default and the same flags, including the known agent's API host, but without <code>--forward-port</code>, the registries or the toolchain cache maps, which are Linux only. Lockdown blocks the open network here too."
       },
       {

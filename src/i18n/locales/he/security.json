@@ -7,7 +7,8 @@
     "title": "שכבה מועילה, עם גבולות ידועים",
     "lede": "הכלי ai-jail נבנה לעצור טעויות של סוכן אמין ולהשאיר את הנזק בתוך הפרויקט: תיקיית הפרויקט היא רדיוס הפגיעה, ותיקיית הבית, המפתחות והרשת שלכם נשארים מחוץ לו. מדובר ב-sandbox ברמת התהליך שחולק איתכם את הקרנל, ולכן הוא לא גבול מול קוד עוין או תוקף נחוש, ולא מחליף מכונה וירטואלית חד-פעמית.",
     "report": "דיווח על פגיעות",
-    "doc": "לקובץ SECURITY.md"
+    "doc": "לקובץ SECURITY.md",
+    "audience": "למי שחותם על האישור, ואחר כך למהנדס האבטחה."
   },
   "stops": {
     "title": "מה הוא נבנה לעצור",
@@ -22,7 +23,7 @@
         "text": "סודות ב-shell שלכם. הכלי ai-jail מצמצם את משתני הסביבה לרשימת היתרים קטנה, כך שטוקנים שיוצאו נשארים בחוץ. היוצא מן הכלל היחיד הוא מפתח ה-API של ה-harness שהופעל, למשל <code>ANTHROPIC_API_KEY</code> עבור Claude, שמועתק כברירת מחדל יחד עם ההתחברות שלו; <code>--no-agent-state</code> עוצר את זה."
       },
       {
-        "text": "הרשת. היא כבויה, עם שני חריגים שעוברים דרך הפרוקסי המסנן: רשימה קצרה של registries של חבילות כשה-toolchains דלוקים, ברירת המחדל ב-Linux, ועבור סוכן מוכר כמו <code>claude</code> או <code>codex</code>, ה-host של ה-API שלו שמתועד, בשתי הפלטפורמות (שניים ל-Codex). hosts של טלמטריה נשארים סגורים. <code>--no-network</code> סוגר את שניהם."
+        "text": "הרשת. היא סגורה, עם שני חריגים שעוברים דרך הפרוקסי המסנן: רשימה קצרה של registries של חבילות כשה-toolchains דלוקים, ברירת המחדל ב-Linux, ועבור <a class=\"link\" href=\"/install/#first\">סוכן מוכר</a>, ה-host של ה-API שלו, בשתי הפלטפורמות. hosts של טלמטריה נשארים סגורים. <code>--no-network</code> סוגר את שניהם."
       },
       {
         "text": "הזיכרון המשותף של המארח, שרת התצוגה ולוח ההעתקה שלכם. הפלט של הסוכן עובר דרך מסנן שזורק sequences של טרמינל שנוגעים בלוח ההעתקה או מתשאלים את הטרמינל."
@@ -41,26 +42,34 @@
     "lede": "הכלא והמערכת שלכם עומדים על אותו קרנל. באג בקרנל הזה, בדרייבר או ב-backend של ה-sandbox הוא דרך לעקוף את החומה, ו-ai-jail לא יכול לעשות שום דבר בעניין. מכונה וירטואלית מביאה קרנל משלה, ולכן היא גבול חזק יותר.",
     "alt": "משמאל, המערכת שלכם והכלוב של ai-jail שמחזיק את הסוכן עומדים על משטח משותף אחד, הקרנל שלכם, וקו מקווקו עובר מהסוכן דרך המשטח אל המערכת שלכם. מימין, מכונה וירטואלית חד-פעמית מקיפה סוכן שעומד על קרנל נפרד משלו.",
     "caption": "כל sandbox חולק את הקרקע עם מה שהוא מגן עליו, ומכונה וירטואלית מביאה קרקע משלה.",
-    "listTitle": "מה נשאר בסיכון",
-    "items": [
-      "פגיעויות בקרנל ובדרייברים. כל תהליך שרץ ב-sandbox מדבר עם אותו קרנל כמו שאר המחשב שלכם.",
-      "באגים באמולטור הטרמינל שלכם, בעיקר עם <code>--terminal-passthrough</code>, שמכבה את מסנן הפלט.",
-      "פגמים ב-backend של ה-sandbox עצמו: bubblewrap, Landlock ו-seccomp ב-Linux, או <code>sandbox-exec</code> ב-macOS.",
-      "Landlock, הכללים של הקרנל עצמו, מגדר sockets אבסטרקטיים של Unix וסיגנלים רק בקרנלים 6.12 ומעלה, במאמץ מיטבי. קרנלים ישנים יותר נשארים רק עם כללי מערכת הקבצים והרשת, ולכן עם <code>--x11</code>, <code>--network</code> או <code>--systemd-user</code> ה-sockets האבסטרקטיים והסיגנלים של המארח נשארים נגישים.",
-      "סודות בתוך הפרויקט. קובץ <code>.env</code> בריפוזיטורי קריא, אלא אם מיסכתם אותו. <a class=\"link\" href=\"/configure/#secrets\">כך ממסכים קבצים</a>.",
-      "מיסוך מכסה רק נתיבים שקיימים כשה-sandbox עולה. קובץ סודות שנוצר מאוחר יותר, במהלך הסשן, לא מוסתר.",
-      "git בצד המארח סומך על <code>.git/</code> של הפרויקט, שפתוח לכתיבה. תוכנית ששמה מופיע ב-<code>.git/config</code>, למשל ב-<code>core.fsmonitor</code> או ב-<code>core.pager</code>, או שהונחה ב-<code>.git/hooks/</code>, רצה בשמכם, מחוץ ל-sandbox, בפעם הבאה שפקודת git מתאימה רצה על המארח; ל-<code>core.fsmonitor</code> מספיק <code>git status</code> רגיל, גם כזה שהעורך שלכם מריץ ברקע, ושום דבר לא מופיע ב-<code>git diff</code>. <code>--lockdown</code> סוגר את זה בכך שהפרויקט הופך לקריאה בלבד, ו-<code>--map .git</code> שומר את הריפוזיטורי לקריאה בלבד בהרצה רגילה, במחיר של commit מבפנים. אחרי סשן שהפתיע אתכם, קראו את <code>.git/config</code> ורשמו את התוכן של <code>.git/hooks</code> עם כלי קבצים רגילים לפני שאתם מריצים git על המארח, כי <code>git config --list</code> בעצמו מפעיל את ה-pager שהוגדר.",
-      "<code>--mask</code> ו-<code>--deny-path</code> משנים רק את מה שה-sandbox רואה. כל מה שמחוץ ל-sandbox ופועל בשם הסוכן עדיין קורא את הקבצים האמיתיים: ה-daemon של Docker תחת <code>--docker</code>, שרת MCP שמגיעים אליו דרך socket ממופה, או שירות שמאחורי <code>--forward-port</code>.",
-      "ערוצי צד (side channels) וכמה סוגים של תקשורת בין-תהליכית.",
-      "host מורשה זוכה לאמון מלא. מי שמתיר את <code>github.com</code> עם <code>--allow-host</code> נותן לסוכן לעשות push לכל ריפוזיטורי שם, לא רק לשלכם.",
-      "יציאה מסוננת היא TCP בלבד. אין UDP, ולכן תוכנית שצריכה אותו לא עובדת, וגם לא יכולה להדליף דרכו.",
-      "DNS תחת <code>--allow-host</code>. ב-Linux, פתרון שמות בתוך ה-sandbox נכשל, ולכן אין ערוץ DNS החוצה. ב-macOS ה-resolver של המערכת לא מגודר, ולכן נשאר ערוץ DNS ברוחב פס נמוך, אותו פער ש-Anthropic מתעדת ב-sandbox-runtime שלה.",
-      "הפרוקסי רואה את ה-host, את הפורט ואת התזמון של כל חיבור. מה שעובר בפנים נשאר בין שני הקצוות. <a class=\"link\" href=\"/how-it-works/#network\">איך בנויה היציאה המסוננת</a>.",
-      "פרטי גישה פנטום מעבירים את האמון אל ai-jail עצמו. עם <code>--secret</code>, בקשות אל ה-host שנקשר אליו עוברות דרך ai-jail בגלוי כדי שיוכל להכניס את המפתח האמיתי, והוא מצפין אותן מחדש בדרך החוצה. מנהרות לכל host אחר נשארות אטומות. זה מכסה רק לקוחות שיכולים לדבר HTTP רגיל עם הפרוקסי בשביל אותו host.",
-      "פרטי גישה שאתם מעבירים עם <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> או <code>--docker-config</code>. קריאה בלבד מגינה על הקובץ מפני שינוי, לא על פרטי הגישה מפני שימוש: כל דבר בתוך ה-sandbox יכול לפעול בשמכם מול השירות הזה כל עוד הם בתוקף.",
-      "הכלי ai-jail מעגן את ההתחברות של הסוכן עצמו כברירת מחדל, לקריאה וכתיבה, ולכן סוכן שהוטעה יכול להשתמש בה למשך ההרצה. הפרויקט מתעד את זה כפשרה לטובת הנוחות; <code>--no-agent-state</code> נותן הרצה ללא התחברות.",
-      "ב-macOS, הממשק <code>sandbox-exec</code> סומן על ידי Apple כ-deprecated ואינו שקול לבידוד שמתקבל ב-Linux. <a class=\"link\" href=\"/how-it-works/\">להבדלים ב-macOS</a>."
-    ],
+    "data": {
+      "title": "מה זה אומר על הנתונים שלכם",
+      "items": [
+        "סודות בתוך הפרויקט. קובץ <code>.env</code> בריפוזיטורי קריא, אלא אם מיסכתם אותו. <a class=\"link\" href=\"/configure/#secrets\">כך ממסכים קבצים</a>.",
+        "מיסוך מכסה רק נתיבים שקיימים כשה-sandbox עולה. קובץ סודות שנוצר מאוחר יותר, במהלך הסשן, לא מוסתר.",
+        "host מורשה זוכה לאמון מלא. מי שמתיר את <code>github.com</code> עם <code>--allow-host</code> נותן לסוכן לעשות push לכל ריפוזיטורי שם, לא רק לשלכם.",
+        "<code>--network</code> פותח את כל הרשת, ולכן כל מה שהסוכן יכול לקרוא, כולל הפרויקט שלכם, הוא יכול לשלוח החוצה.",
+        "הכלי ai-jail מעגן את ההתחברות של הסוכן עצמו כברירת מחדל, לקריאה וכתיבה, ולכן סוכן שהוטעה יכול להשתמש בה למשך ההרצה. הפרויקט מתעד את זה כפשרה לטובת הנוחות; <code>--no-agent-state</code> נותן הרצה ללא התחברות.",
+        "git בצד המארח סומך על <code>.git/</code> של הפרויקט, שפתוח לכתיבה. תוכנית ששמה מופיע ב-<code>.git/config</code>, למשל ב-<code>core.fsmonitor</code> או ב-<code>core.pager</code>, או שהונחה ב-<code>.git/hooks/</code>, רצה בשמכם, מחוץ ל-sandbox, בפעם הבאה שפקודת git מתאימה רצה על המארח; ל-<code>core.fsmonitor</code> מספיק <code>git status</code> רגיל, גם כזה שהעורך שלכם מריץ ברקע, ושום דבר לא מופיע ב-<code>git diff</code>. <code>--lockdown</code> סוגר את זה בכך שהפרויקט הופך לקריאה בלבד, ו-<code>--map .git</code> שומר את הריפוזיטורי לקריאה בלבד בהרצה רגילה, במחיר של commit מבפנים. אחרי סשן שהפתיע אתכם, קראו את <code>.git/config</code> ורשמו את התוכן של <code>.git/hooks</code> עם כלי קבצים רגילים לפני שאתם מריצים git על המארח, כי <code>git config --list</code> בעצמו מפעיל את ה-pager שהוגדר.",
+        "<code>--mask</code> ו-<code>--deny-path</code> משנים רק את מה שה-sandbox רואה. כל מה שמחוץ ל-sandbox ופועל בשם הסוכן עדיין קורא את הקבצים האמיתיים: ה-daemon של Docker תחת <code>--docker</code>, שרת MCP שמגיעים אליו דרך socket ממופה, או שירות שמאחורי <code>--forward-port</code>."
+      ]
+    },
+    "engineer": {
+      "title": "למהנדס האבטחה",
+      "items": [
+        "פגיעויות בקרנל ובדרייברים. כל תהליך שרץ ב-sandbox מדבר עם אותו קרנל כמו שאר המחשב שלכם.",
+        "באגים באמולטור הטרמינל שלכם, בעיקר עם <code>--terminal-passthrough</code>, שמכבה את מסנן הפלט.",
+        "פגמים ב-backend של ה-sandbox עצמו: bubblewrap, Landlock ו-seccomp ב-Linux, או <code>sandbox-exec</code> ב-macOS.",
+        "Landlock, הכללים של הקרנל עצמו, מגדר sockets אבסטרקטיים של Unix וסיגנלים רק בקרנלים 6.12 ומעלה, במאמץ מיטבי. קרנלים ישנים יותר נשארים רק עם כללי מערכת הקבצים והרשת, ולכן עם <code>--x11</code>, <code>--network</code> או <code>--systemd-user</code> ה-sockets האבסטרקטיים והסיגנלים של המארח נשארים נגישים.",
+        "ערוצי צד (side channels) וכמה סוגים של תקשורת בין-תהליכית.",
+        "יציאה מסוננת היא TCP בלבד. אין UDP, ולכן תוכנית שצריכה אותו לא עובדת, וגם לא יכולה להדליף דרכו.",
+        "DNS תחת <code>--allow-host</code>. ב-Linux, פתרון שמות בתוך ה-sandbox נכשל, ולכן אין ערוץ DNS החוצה. ב-macOS ה-resolver של המערכת לא מגודר, ולכן נשאר ערוץ DNS ברוחב פס נמוך, אותו פער ש-Anthropic מתעדת ב-sandbox-runtime שלה.",
+        "הפרוקסי רואה את ה-host, את הפורט ואת התזמון של כל חיבור. מה שעובר בפנים נשאר בין שני הקצוות. <a class=\"link\" href=\"/how-it-works/#network\">איך בנויה היציאה המסוננת</a>.",
+        "פרטי גישה פנטום מעבירים את האמון אל ai-jail עצמו. עם <code>--secret</code>, בקשות אל ה-host שנקשר אליו עוברות דרך ai-jail בגלוי כדי שיוכל להכניס את המפתח האמיתי, והוא מצפין אותן מחדש בדרך החוצה. מנהרות לכל host אחר נשארות אטומות. זה מכסה רק לקוחות שיכולים לדבר HTTP רגיל עם הפרוקסי בשביל אותו host.",
+        "פרטי גישה שאתם מעבירים עם <code>--github</code>, <code>--aws</code>, <code>--kube</code>, <code>--gcloud</code> או <code>--docker-config</code>. קריאה בלבד מגינה על הקובץ מפני שינוי, לא על פרטי הגישה מפני שימוש: כל דבר בתוך ה-sandbox יכול לפעול בשמכם מול השירות הזה כל עוד הם בתוקף.",
+        "ב-macOS, הממשק <code>sandbox-exec</code> סומן על ידי Apple כ-deprecated ואינו שקול לבידוד שמתקבל ב-Linux. <a class=\"link\" href=\"/how-it-works/\">להבדלים ב-macOS</a>."
+      ]
+    },
     "callout": {
       "title": "לקוד שאתם מאמינים שהוא עוין, השתמשו במכונה וירטואלית חד-פעמית",
       "text": "הכלי ai-jail מיועד לסוכנים שמועילים לכם, ולפעמים טועים או מוטעים. לניתוח נוזקות, או לריפוזיטורי שאתם כבר לא סומכים עליו, העלו מכונה וירטואלית שאפשר לזרוק. <a class=\"link\" href=\"/compare/\">להשוואת האפשרויות</a>."
@@ -74,7 +83,7 @@
       "gives": "מה כל דבר שרץ ב-sandbox יכול לעשות אחר כך"
     },
     "rows": [
-      "לשלוח לכל מקום את כל מה שהוא יכול לקרוא, בלי הגבלה על התעבורה. ברירת המחדל מתירה רק את ה-host של ה-API של הסוכן המוכר; <code>--allow-host</code> היא החלופה ההדוקה יותר.",
+      "לשלוח לכל מקום את כל מה שהוא יכול לקרוא, בלי הגבלה על התעבורה. ברירת המחדל מתירה רק את ה-host של ה-API של סוכן מוכר, וב-Linux גם את ה-registries של החבילות; <code>--allow-host</code> היא החלופה ההדוקה יותר.",
       "להגיע בדיוק ל-hosts שציינתם ולתת-הדומיינים שלהם, ב-TCP דרך פרוקסי מובנה. כל host ברשימה זוכה לאמון מלא. הרשימה שלכם מתווספת ל-host של ה-API של הסוכן; <code>--no-network</code> עם רשימה נותן לכם את הרשימה הזו בלבד.",
       "להשתמש במלואו בשירות אחד שיושב על ה-loopback של המארח. כל מה ששרת ה-MCP, ה-socket של העורך או מסד הנתונים שבפורט הזה מקבלים, הסוכן יכול לבקש, בלי רשימת היתרים, בלי בדיקה ובלי רישום ביומן הביקורת. כל שאר הפורטים של המארח נשארים סגורים. רק ב-Linux, ונדחה יחד עם <code>--network</code>.",
       "דלוק כברירת מחדל ב-Linux. להריץ את ה-toolchains שלכם: <code>~/.cargo/bin</code> ו-<code>~/.rustup</code> לקריאה בלבד, cache של תלויות ששייך לכלא תחת <code>~/.local/share/ai-jail/cache/</code> ושורד בין הרצות, ויציאה מסוננת ל-registries של חבילות. ה-caches האמיתיים של המארח לעולם לא מעוגנים. כבוי תחת <code>--lockdown</code> ועם <code>--no-toolchains</code>.",
@@ -130,7 +139,7 @@
     ],
     "audit": {
       "title": "ביקורת בגלוי",
-      "text": "לפני גרסה 1.0 הפרויקט <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">ערך ביקורת על עצמו</a> ופרסם את הדוחות. ב-{date} פורסמו בריפוזיטורי שתי ביקורות קוד בלתי תלויות של גרסה 2.3.0, עם השוואה ותוכנית תיקון: <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">ביקורת A</a>, שנערכה על ידי מודל AI כפי שהכותרת שלה מצהירה, ו-<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">ביקורת B</a>, שנערכה באופן עצמאי. הן הניבו שני advisories ב-GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> ו-<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ושניהם נסגרו בגרסה 2.4.0 עם בדיקות רגרסיה. אף חברה חיצונית לא ערכה ביקורת על ai-jail."
+      "text": "לפני גרסה 1.0 הפרויקט <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/AUDIT_1.0_SECURITY.md\">ערך ביקורת על עצמו</a> ופרסם את הדוחות. ב-{date} פורסמו בריפוזיטורי שתי ביקורות קוד בלתי תלויות של גרסה 2.3.0, עם השוואה ותוכנית תיקון: <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30.md\">ביקורת A</a>, שלפי הכותרת שלה נערכה על ידי מודל AI, ו-<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/blob/master/docs/SECURITY_AUDIT_2026-09-30_B.md\">ביקורת B</a>. הן הניבו שני advisories ב-GitHub, <a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-w976-gw52-hvx2\">GHSA-w976-gw52-hvx2</a> ו-<a class=\"link\" href=\"https://github.com/akitaonrails/ai-jail/security/advisories/GHSA-frgp-q3qc-g78p\">GHSA-frgp-q3qc-g78p</a>, ושניהם נסגרו בגרסה 2.4.0 עם בדיקות רגרסיה. אף חברה חיצונית לא ערכה ביקורת על ai-jail. מה זה אומר בשבילכם: ai-jail רק מוריד דברים מההרצה, ולא מוסיף שום דבר שלא הדלקתם. באג בו משאיר פרצה בחומה, ולסוכן שמאחורי הפרצה הזאת יש לכל היותר מה שהיה לו בלי ai-jail."
     },
     "fixes": {
       "title": "תיקוני אבטחה אחרונים",
