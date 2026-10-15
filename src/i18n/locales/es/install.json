@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Instalar ai-jail y ejecutar tu primer agente enjaulado",
-    "description": "Instala ai-jail con Homebrew, el AUR, cargo o Nix, previsualiza el sandbox con un dry run, y después arranca Claude Code o Codex con la sesión iniciada y solo su propia API accesible."
+    "description": "Instala ai-jail con Homebrew, el AUR, cargo o Nix, previsualízalo con un dry run y arranca un agente con la sesión iniciada y acceso a la red muy filtrado."
   },
   "hero": {
     "title": "Instálalo, mira dentro, ejecuta tu agente",
@@ -51,7 +51,7 @@
     "title": "Tu primera ejecución",
     "lede": "Tres comandos: un plan, un vistazo dentro, un agente funcionando. El login ya está dentro, y ai-jail abre por ti la ruta al host de la API del agente.",
     "alt": "Tres paneles de izquierda a derecha. Dry run: la celda es solo un contorno punteado y el agente espera fuera. Mirar dentro: la celda es sólida y contiene una terminal y la carpeta del proyecto. Ejecutar el agente: el agente, el proyecto y la tarjeta de login del agente están dentro, con una abertura en la pared, una puerta al host de la API del agente que ai-jail abrió por sí solo. Tu carpeta home se queda fuera tras barrotes en los tres.",
-    "caption": "Tu directorio home se queda fuera en cada paso, y el login del agente está dentro desde el principio. En el último paso ai-jail abre la única puerta que un agente en la nube necesita, el host de su API, cuando conoce al agente. El resto de la red sigue cerrado.",
+    "caption": "Tu directorio home se queda fuera en cada paso, y el login del agente está dentro desde el principio. En el último, ai-jail abre el host de la API del propio agente; en Linux, las toolchains también alcanzan los registros de paquetes. Todo lo demás sigue cerrado.",
     "steps": [
       {
         "title": "Mira el plan sin ejecutar nada",
@@ -159,6 +159,7 @@
   },
   "agents": {
     "title": "Por agente",
+    "expand": "Mostrar la tabla por agente",
     "lede": "ai-jail sabe dónde guarda su login cada agente y lo monta por defecto: solo las carpetas del agente que arrancas, y solo si existen. <code>--no-agent-state</code> lo apaga. Si está definida en tu shell, la variable con la clave de API de ese agente también entra: <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code> o <code>GOOGLE_API_KEY</code>, <code>XAI_API_KEY</code>, <code>MOONSHOT_API_KEY</code>.",
     "head": [
       "Ejecutas",
@@ -167,7 +168,7 @@
     ],
     "notes": {
       "claude": "Para un segundo perfil de Claude, apunta <code>--claude-dir</code> a su directorio.",
-      "codex": "Después de redimensionar la ventana, ai-jail le envía a Codex una tecla de redibujado para que la pantalla se repinte. En macOS, Codex recibe además un <code>ps</code> shim privado y los servicios del sistema que necesita su app server, limitados a Codex; <code>--no-agent-state</code> los desactiva.",
+      "codex": "Después de redimensionar la ventana, ai-jail envía a Codex una tecla de redibujado. En macOS, fuera de lockdown, Codex recibe un <code>ps</code> shim privado; con el estado del agente activado, recibe también los servicios limitados que necesita su app server. <code>--no-agent-state</code> elimina esos servicios, no el shim.",
       "opencode": "Necesita <code>--standalone</code>. Mira el punto de arriba en \"Si no arranca\".",
       "antigravity": "Comparte su login de Google con Gemini, así que una sola sesión sirve para los dos.",
       "kimi": "<code>~/.kimi-code</code>, la ubicación antigua, también se monta cuando existe.",

@@ -165,21 +165,24 @@ const next = withText(
   </Section>
 
   <Section id="agents" title={t('agents.title')} lede={t('agents.lede')} hue="teal">
-    <div class="table-wrap" tabindex="0">
-      <table class="table-site">
-        <thead><tr>{raw<string[]>('agents.head').map((h) => <th scope="col" set:html={h} />)}</tr></thead>
-        <tbody>
-          {agentRows.map((r) => (
-            <tr>
-              <td dir="ltr"><code>{r.cmd}</code></td>
-              <td>{r.state.length ? r.state.map((s, i) => <>{i > 0 && <br />}<code dir="ltr">{s}</code></>) : t('agents.aimemoryState')}</td>
-              <td>{r.note && <span set:html={t(`agents.notes.${r.note}`)} />}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    <p class="text-muted max-w-[40em] mt-6" set:html={t('agents.more')} />
+    <details class="disclosure">
+      <summary>{t('agents.expand')}</summary>
+      <div class="table-wrap mt-5" tabindex="0">
+        <table class="table-site">
+          <thead><tr>{raw<string[]>('agents.head').map((h) => <th scope="col" set:html={h} />)}</tr></thead>
+          <tbody>
+            {agentRows.map((r) => (
+              <tr>
+                <td dir="ltr"><code>{r.cmd}</code></td>
+                <td>{r.state.length ? r.state.map((s, i) => <>{i > 0 && <br />}<code dir="ltr">{s}</code></>) : t('agents.aimemoryState')}</td>
+                <td>{r.note && <span set:html={t(`agents.notes.${r.note}`)} />}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-muted max-w-[40em] mt-6" set:html={t('agents.more')} />
+    </details>
   </Section>
 
   <NextPages title={t('next.title')} items={next} />

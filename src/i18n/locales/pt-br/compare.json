@@ -223,8 +223,8 @@
   },
   "both": {
     "title": "Use os dois",
-    "lede": "Um agente conhecido não precisa que você abra nada. O login dele é montado por padrão e o proxy filtrado deixa passar só o host da API do modelo dele. Acrescente hosts com <code>--allow-host</code>, ou abra a rede inteira, quando uma ferramenta precisar de mais.",
-    "codeFiltered": "o padrão: só o host do modelo",
+    "lede": "Um agente conhecido não precisa que você abra nada. O login dele é montado por padrão e o proxy filtrado libera o host da API do modelo, mais os registros de pacotes no Linux. Acrescente hosts com <code>--allow-host</code>, ou abra a rede inteira, quando uma ferramenta precisar de mais.",
+    "codeFiltered": "o padrão: API + registros no Linux",
     "codeOpen": "mais simples: a rede inteira",
     "codeNote": "O ai-jail conhece <a class=\"link\" href=\"/install/#first\">o host da API de um agente conhecido</a> e o libera por padrão, com os registries de pacotes no Linux. Uma lista explícita em <code>--allow-host</code> soma a esse padrão, então o host da API continua liberado. O login é montado por padrão; <code>--no-agent-state</code> dá uma execução sem login. <a class=\"link\" href=\"/configure/#switches\">Todas as flags estão em Configurar</a>.",
     "alt": "Um muro grande com o rótulo ai-jail cerca o agente, seus servidores MCP, seus hooks, o projeto e seus comandos de shell. Entre o agente e os comandos de shell fica o pedido de aprovação do próprio agente. Uma linha sai do muro por um portão até a API do modelo. O seu diretório home fica do lado de fora do muro, apagado e gradeado.",
@@ -276,6 +276,7 @@
   },
   "evaluators": {
     "title": "Para quem avalia: outros wrappers e plataformas",
+    "expand": "Mostrar detalhes dos wrappers e das plataformas",
     "lede": "Dois wrappers open source e uma plataforma de runtime, cada um com suas fontes, para quem está pesando as alternativas."
   },
   "platforms": {

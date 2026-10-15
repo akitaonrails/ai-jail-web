@@ -77,6 +77,7 @@
   },
   "switches": {
     "title": "Interruptores que abren el muro",
+    "expand": "Mostrar todos los interruptores y sus consecuencias",
     "lede": "Todo lo de abajo está apagado hasta que lo activas, salvo dos interruptores que vienen activados por defecto: <code>--toolchains</code> en Linux y <code>--agent-state</code> en todas partes. La mayoría le da al agente un acceso real. <a class=\"link\" href=\"/configure/#switches\">Cómo configurarlos está en la página Configurar</a>.",
     "head": {
       "flag": "Interruptor",
@@ -185,7 +186,7 @@
     },
     "log": {
       "title": "Un registro de lo que permitiste",
-      "text": "<code>--audit-log</code> responde dos preguntas: qué le dejé hacer a ese agente y adónde intentó llegar. Añade una línea JSON por arranque y, con <code>--allow-host</code> activado, una línea por cada conexión permitida o denegada. Desde la 2.2 cada línea lleva su número de secuencia y el SHA-256 de la línea anterior, y <code>ai-jail --audit-verify</code> recorre la cadena y reporta el primer eslabón roto. Eso hace ruidosa una edición silenciosa; no impide que alguien reemplace el archivo entero, porque nada está firmado. Está apagado por defecto, y un <code>.ai-jail</code> de proyecto solo puede apagarlo. <code>ai-jail --audit-show</code> imprime un resumen legible de los arranques, las decisiones de red y las sustituciones de credenciales, sin verificar la cadena. Desde la 2.3 el registro se abre sin seguir symlinks por debajo de tu home, y un registro que sea un archivo especial o de otro dueño se rechaza. Los registros por arranque pueden incluir los argumentos del comando, así que deja los secretos fuera de ellos."
+      "text": "<code>--audit-log</code> responde dos preguntas: qué le dejé hacer a ese agente y adónde intentó llegar. Añade una línea JSON por arranque y, con <code>--allow-host</code> activado, una línea por cada conexión permitida o denegada. Desde la 2.2 cada línea lleva su número de secuencia y el SHA-256 de la línea anterior, y <code>ai-jail --audit-verify</code> recorre la cadena y reporta el primer eslabón roto. Eso delata un registro editado cuando le sigue otro encadenado; no detecta el borrado limpio del final, la edición del último registro sin sucesor ni el reemplazo del archivo entero sin firma. Está apagado por defecto, y un <code>.ai-jail</code> de proyecto solo puede apagarlo. <code>ai-jail --audit-show</code> imprime un resumen legible de los arranques, las decisiones de red y las sustituciones de credenciales, sin verificar la cadena. Desde la 2.3 el registro se abre sin seguir symlinks por debajo de tu home, y un registro que sea un archivo especial o de otro dueño se rechaza. Los registros por arranque pueden incluir los argumentos del comando, así que deja los secretos fuera de ellos."
     }
   },
   "report": {

@@ -6,7 +6,7 @@ import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import { useI18n } from '@/i18n';
 interface Props { name: string; alt: string; caption?: string }
 const { name, alt, caption } = Astro.props;
-const { raw } = useI18n(Astro, 'images');
+const { raw, t } = useI18n(Astro, 'images');
 const labels = raw<Record<string, string>>(name);
 const drawings = import.meta.glob<{ default: AstroComponentFactory }>('./diagrams/*.astro', { eager: true });
 const Drawing = drawings[`./diagrams/${name}.astro`]?.default;
@@ -24,6 +24,7 @@ if (!Drawing) throw new Error(`Diagram: no drawing for name="${name}"`);
     </svg>
     <Drawing labels={labels} />
   </div>
+  <p class="scroll-hint">↔ {t('a11y.scrollHint')}</p>
   {caption && <figcaption>{caption}</figcaption>}
 </figure>
 <style is:global>
@@ -65,6 +66,10 @@ if (!Drawing) throw new Error(`Diagram: no drawing for name="${name}"`);
   :lang(ja) .dg .dg-chip .dg-label, :lang(ko) .dg .dg-chip .dg-label { font-size: 12px; }
   @media (max-width: 40rem) {
     .fig { margin-inline: -1rem; }
-    .fig figcaption { margin-inline: 1rem; }
+    .fig figcaption, .fig .scroll-hint { margin-inline: 1rem; }
+    .plate { scrollbar-color: var(--hue, var(--teal)) var(--surface); scrollbar-width: thin; scroll-snap-type: inline proximity; }
+    .plate > svg:not([aria-hidden]) { scroll-snap-align: start; }
+    .scroll-hint { display: flex; align-items: center; gap: 0.45rem; margin-block-start: 0.75rem; color: var(--muted); font: 700 var(--text-sm)/1.4 var(--font-mono); }
   }
+  @media (min-width: 40.01rem) { .scroll-hint { display: none; } }
 </style>

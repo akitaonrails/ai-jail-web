@@ -55,26 +55,31 @@ const facts = withText([{ n: factsData.escapeTests }, { n: factsData.unitTests }
     <ul class="ticks max-w-[46em]">
       {raw<string[]>('edge.data.items').map((item) => <li set:html={item} />)}
     </ul>
-    <h3 class="text-xl mb-5 mt-12">{t('edge.engineer.title')}</h3>
-    <ul class="ticks max-w-[46em]">
-      {raw<string[]>('edge.engineer.items').map((item) => <li set:html={item} />)}
-    </ul>
+    <details class="disclosure mt-12">
+      <summary>{t('edge.engineer.title')}</summary>
+      <ul class="ticks max-w-[46em] mt-5">
+        {raw<string[]>('edge.engineer.items').map((item) => <li set:html={item} />)}
+      </ul>
+    </details>
     <Callout title={t('edge.callout.title')}>
       <p set:html={t('edge.callout.text')} />
     </Callout>
   </Section>
 
   <Section id="switches" title={t('switches.title')} lede={t('switches.lede')} hue="mustard">
-    <div class="table-wrap" tabindex="0">
-      <table class="table-site">
-        <thead><tr><th>{t('switches.head.flag')}</th><th>{t('switches.head.gives')}</th></tr></thead>
-        <tbody>
-          {flags.map((flag, i) => (
-            <tr><td dir="ltr"><code>{flag}</code></td><td set:html={consequences[i]} /></tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <details class="disclosure">
+      <summary>{t('switches.expand')}</summary>
+      <div class="table-wrap mt-5" tabindex="0">
+        <table class="table-site">
+          <thead><tr><th>{t('switches.head.flag')}</th><th>{t('switches.head.gives')}</th></tr></thead>
+          <tbody>
+            {flags.map((flag, i) => (
+              <tr><td dir="ltr"><code>{flag}</code></td><td set:html={consequences[i]} /></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
   </Section>
 
   <Section id="fails-closed" title={t('closed.title')} lede={t('closed.lede')} hue="clay" tint>

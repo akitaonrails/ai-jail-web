@@ -39,6 +39,7 @@ const { hue, page, kicker, title, lede, audience } = Astro.props;
     .page-hero::before { background-position: 62% center; }
     .page-hero::after { background: linear-gradient(90deg, color-mix(in oklch, var(--ink) 94%, transparent), color-mix(in oklch, var(--ink) 56%, transparent)), linear-gradient(0deg, color-mix(in oklch, var(--ink) 94%, transparent), transparent 65%); }
     .page-hero-inner { padding-block: 8rem 4.5rem; }
+    .page-hero h1 { font-size: clamp(2.75rem, 12vw, 3.2rem); }
     .rings { inline-size: 9rem; inset-inline-end: -4rem; inset-block-start: -5rem; }
   }
 </style>

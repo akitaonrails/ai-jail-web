@@ -111,9 +111,9 @@
     "title": "Para quem aprova isso",
     "items": [
       "A exposição: um agente na máquina de um desenvolvedor alcança as chaves dos servidores, credenciais de nuvem com acesso a produção, código de outros clientes sob NDA e as sessões de navegador daquela máquina.",
-      "O que o ai-jail faz: cerca cada execução do agente em um único projeto, por padrão.",
-      "O que custa: uma instalação única, uma palavra na frente do comando e algumas opções por projeto.",
-      "O que pedir ao time: instalar, rodar todo agente por ele, manter os pedidos de permissão ligados e relatar o que precisaram abrir.",
+      "A fronteira e o custo: por padrão o ai-jail cerca cada execução em um projeto, depois de uma instalação única e uma palavra antes do comando.",
+      "A adoção: só instalar não obriga nada. Defina um responsável, rode todo agente por ele, mantenha os pedidos de permissão, revise as exceções e audite um piloto de uma semana.",
+      "O risco residual: <code>.git/</code> continua gravável. Use <code>--map .git</code> quando fizer sentido e inspecione a configuração e os hooks depois de uma execução inesperada.",
       "O que ele não cobre: código que você acredita ser hostil. Isso é caso para uma VM descartável."
     ]
   },

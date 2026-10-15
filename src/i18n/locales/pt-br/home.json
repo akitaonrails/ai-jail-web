@@ -11,7 +11,7 @@
     "title": "Como um agente bom sai dos trilhos",
     "lede": "O dia inteiro o agente lê texto que você não escreveu: páginas web, issues, READMEs, pacotes. Basta uma página com instruções escondidas, e o agente não precisa ser hostil para segui-las.",
     "alt": "Duas fileiras. Sem jaula, uma página envenenada chega ao agente, o agente lê a chave SSH e a envia para a internet. Com o ai-jail, o agente fica dentro de um muro de grades, nenhuma seta sai dele, e a chave SSH e a internet aparecem apagadas e barradas do lado de fora.",
-    "caption": "A mesma página, com e sem o ai-jail. A chave não está lá para ser lida, e a internet está fechada.",
+    "caption": "A mesma página, com e sem o ai-jail. A chave não está lá para ser lida, e a internet em geral fica fechada, exceto para a API do próprio agente e os registros de pacotes no Linux.",
     "link": "O que mais um agente consegue alcançar"
   },
   "scene": {
@@ -95,7 +95,7 @@
     "link": "Todas as opções"
   },
   "how": {
-    "text": "O ai-jail é um programa pequeno, sem daemon e sem root. No Linux, ele ergue os muros com recursos do kernel: bubblewrap para os namespaces e as montagens, Landlock para as regras de arquivo, seccomp para as chamadas de sistema, limites para processos fora de controle. No macOS, a mesma política vira um perfil do <code>sandbox-exec</code>. O agente usa os compiladores e runtimes que já estão na sua máquina, e um arquivo <code>.ai-jail</code> dentro de um repositório pode apertar a jaula e nunca abri-la.",
+    "text": "O ai-jail é um programa pequeno, sem daemon e sem root. No Linux, ele ergue os muros com recursos do kernel: bubblewrap para os namespaces e as montagens, mais Landlock, seccomp e limites de recursos quando o kernel os oferece. No macOS, ele traduz o que a plataforma suporta para um perfil mais fino do <code>sandbox-exec</code>. O agente usa os compiladores e runtimes que já estão na sua máquina e, por padrão, um arquivo <code>.ai-jail</code> dentro de um repositório só pode apertar a jaula, nunca abri-la.",
     "link": "Como as camadas funcionam"
   },
   "limits": {

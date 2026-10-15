@@ -11,7 +11,7 @@
     "title": "How a good agent goes wrong",
     "lede": "All day the agent reads text you did not write: web pages, issues, READMEs, packages. One page with instructions hidden in it is enough, and the agent does not need to be hostile to follow them.",
     "alt": "Two rows. Without a jail, a poisoned page reaches the agent, the agent reads the SSH key and sends it to the internet. With ai-jail, the agent sits inside a wall of bars, no arrow leaves it, and the SSH key and the internet are dim and barred outside.",
-    "caption": "The same page, with and without ai-jail. The key is not there to read, and the internet is closed.",
+    "caption": "The same page, with and without ai-jail. The key is not there to read, and the general internet stays closed except for the agent's own API host and the package registries on Linux.",
     "link": "What else an agent can reach"
   },
   "scene": {
@@ -95,7 +95,7 @@
     "link": "All the switches"
   },
   "how": {
-    "text": "ai-jail is one small program with no daemon and no root. On Linux it builds the walls from kernel features: bubblewrap for the namespaces and mounts, Landlock for the file rules, seccomp for the system calls, limits for runaway processes. On macOS the same policy becomes a <code>sandbox-exec</code> profile. The agent uses the compilers and runtimes already on your machine, and a <code>.ai-jail</code> file inside a repository can tighten the jail and never open it.",
+    "text": "ai-jail is one small program with no daemon and no root. On Linux it builds the walls from kernel features: bubblewrap for the namespaces and mounts, plus Landlock, seccomp and resource limits where the kernel has them. On macOS it translates what the platform supports into a thinner <code>sandbox-exec</code> profile. The agent uses the compilers and runtimes already on your machine, and by default a <code>.ai-jail</code> file inside a repository can tighten the jail and never open it.",
     "link": "How the layers work"
   },
   "limits": {

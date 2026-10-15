@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "ai-jailのインストールと最初の実行",
-    "description": "Homebrew、AUR、cargo、Nixでai-jailをインストールし、ドライランでサンドボックスを下見してから、Claude CodeやCodexをサインイン済みで、自身のAPIにだけ届く状態で起動します。"
+    "description": "Homebrew、AUR、cargo、Nixでai-jailをインストールし、ドライランで確認してから、サインイン済みのエージェントを厳しく制限されたネットワークで起動します。"
   },
   "hero": {
     "title": "インストールして、中を見て、エージェントを動かす",
@@ -51,7 +51,7 @@
     "title": "最初の実行",
     "lede": "コマンドは3つ。計画、中の下見、動くエージェント。ログイン情報は最初から中にあり、エージェントのAPIホストへの経路はai-jailが開けてくれます。",
     "alt": "左から右へ3つのパネル。ドライラン：独房は破線の輪郭だけで、エージェントは外で待っている。中を見る：独房は実線になり、ターミナルとプロジェクトフォルダがある。エージェントを実行：エージェント、プロジェクト、エージェントのログインカードが中にあり、壁に開口部が1つ、ai-jailが自ら開けたエージェントのAPIホストへの門がある。あなたのホームフォルダは3つとも外で遮られたまま。",
-    "caption": "あなたのホームディレクトリはどの段階でも外に残り、エージェントのログイン情報は最初から中にあります。最後の段階で、ai-jailはエージェントを知っていれば、クラウドのエージェントに必要なただ1つの門、そのAPIホストを開けます。残りのネットワークは閉じたままです。",
+    "caption": "あなたのホームディレクトリはどの段階でも外に残り、エージェントのログイン情報は最初から中にあります。最後にai-jailはエージェント自身のAPIホストを開きます。Linuxではツールチェーンからパッケージレジストリにも届きます。それ以外は閉じたままです。",
     "steps": [
       {
         "title": "何も実行せずに計画を見る",
@@ -159,6 +159,7 @@
   },
   "agents": {
     "title": "エージェント別",
+    "expand": "エージェント別の表を表示",
     "lede": "ai-jailは、各エージェントがログイン情報をどこに保存するかを知っていて、デフォルトでマウントします。対象は起動するエージェントのフォルダだけで、存在する場合に限ります。<code>--no-agent-state</code>で無効になります。シェルに設定されていれば、そのエージェントのAPIキーの変数も一緒に渡ります：<code>ANTHROPIC_API_KEY</code>、<code>OPENAI_API_KEY</code>、<code>GEMINI_API_KEY</code>または<code>GOOGLE_API_KEY</code>、<code>XAI_API_KEY</code>、<code>MOONSHOT_API_KEY</code>。",
     "head": [
       "実行するコマンド",
@@ -167,7 +168,7 @@
     ],
     "notes": {
       "claude": "2つ目のClaudeプロファイルを使うには、<code>--claude-dir</code>でそのディレクトリを指定します。",
-      "codex": "ウィンドウをリサイズすると、画面が描き直されるよう、ai-jailがCodexに再描画のキーを送ります。macOSでは、Codex専用の<code>ps</code>シムと、そのapp serverに必要なシステムサービスも、Codexに限って渡します。<code>--no-agent-state</code>でこれらを外せます。",
+      "codex": "ウィンドウをリサイズすると、ai-jailがCodexに再描画キーを送ります。macOSではlockdown外のCodexに専用<code>ps</code>シムを渡し、agent stateが有効ならapp serverに必要な限定システムサービスも渡します。<code>--no-agent-state</code>で外れるのはサービス権限で、シムではありません。",
       "opencode": "<code>--standalone</code>が必要です。上のトラブルシューティングの項目を見てください。",
       "antigravity": "GoogleのログインをGeminiと共有するので、一度のサインインで両方に使えます。",
       "kimi": "以前の場所である<code>~/.kimi-code</code>も、存在すればマウントされます。",

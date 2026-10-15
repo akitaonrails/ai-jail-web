@@ -1,7 +1,7 @@
 {
   "site": {
     "tagline": "An OS sandbox for AI coding agents",
-    "description": "ai-jail runs Claude Code, Codex and other AI coding agents inside an OS sandbox on Linux and macOS. The project stays writable. Your keys, tokens and home directory stay out of reach.",
+    "description": "ai-jail runs Claude Code, Codex and other AI coding agents inside an OS sandbox on Linux and macOS. The project stays writable. Your files and credentials stay out of reach, except for the invoked agent's own login.",
     "ogAlt": "A dark stone prison corridor with the ai-jail name and the message: A jail for your AI coding agent"
   },
   "a11y": {
@@ -13,7 +13,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "menu": "Menu",
-    "chooseOne": "Choose one"
+    "chooseOne": "Choose one",
+    "scrollHint": "Swipe sideways to see the full diagram"
   },
   "nav": {
     "why": {

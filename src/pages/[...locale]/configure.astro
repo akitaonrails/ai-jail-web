@@ -41,7 +41,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '--systemd-user', key: 'systemd_user = true', risk: 'weakens' },
   ],
   [
-    { flag: '--agent-state', key: 'agent_state = false', risk: 'default' },
+    { flag: '--agent-state', key: 'agent_state = true', risk: 'default' },
     { flag: '--claude-dir <PATH>', key: 'claude_dir = "..."', risk: 'optin' },
     { flag: '--env <NAME[=VALUE]>', risk: 'optin' },
     { flag: '--env-from-file <PATH>', key: 'env_from_file = [...]', risk: 'optin' },
@@ -50,7 +50,7 @@ const rows: { flag: string; key?: string; risk?: Risk }[][] = [
     { flag: '', key: 'env_pass = ["NAME"]', risk: 'optin' },
   ],
   [
-    { flag: '--toolchains', key: 'no_toolchains = true', risk: 'default' },
+    { flag: '--toolchains', key: 'no_toolchains = false', risk: 'default' },
     { flag: '--github', key: 'github = true', risk: 'optin' },
     { flag: '--aws', key: 'aws = true', risk: 'optin' },
     { flag: '--kube', key: 'kube = true', risk: 'optin' },

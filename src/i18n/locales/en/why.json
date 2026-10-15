@@ -111,9 +111,9 @@
     "title": "For the person who approves this",
     "items": [
       "The exposure: an agent on a developer's machine can reach the server keys, cloud credentials with production access, other clients' code under NDA and the browser sessions on that machine.",
-      "What ai-jail does: it fences each agent run to one project, by default.",
-      "What it costs: a one-time install, one word in front of the command, and a few switches per project.",
-      "What to ask the team: install it, run every agent through it, keep the permission prompts on, and report what they had to open.",
+      "The boundary and cost: ai-jail fences each run to one project by default, after a one-time install and one word before the command.",
+      "The rollout: installation alone enforces nothing. Name an owner, run every agent through it, keep permission prompts on, review exceptions, and audit a one-week pilot.",
+      "The residual risk: <code>.git/</code> stays writable. Use <code>--map .git</code> when practical, and inspect its config and hooks after a surprising run.",
       "What it does not cover: code you believe is hostile. That belongs in a disposable VM."
     ]
   },

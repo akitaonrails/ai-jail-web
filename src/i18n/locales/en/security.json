@@ -77,6 +77,7 @@
   },
   "switches": {
     "title": "Switches that open the wall",
+    "expand": "Show all switches and consequences",
     "lede": "Everything below is off until you turn it on, except two switches that are on by default: <code>--toolchains</code> on Linux and <code>--agent-state</code> everywhere. Most of them give the agent real access. <a class=\"link\" href=\"/configure/#switches\">How to set them is on the Configure page</a>.",
     "head": {
       "flag": "Switch",
@@ -185,7 +186,7 @@
     },
     "log": {
       "title": "A log of what you allowed",
-      "text": "<code>--audit-log</code> answers two questions: what did I let that agent do, and where did it try to reach. It appends one JSON line per launch, and with <code>--allow-host</code> on, one line per connection allowed or denied. Since 2.2 each line carries its sequence number and the SHA-256 of the line before it, and <code>ai-jail --audit-verify</code> walks the chain and reports the first broken link. That makes a quiet edit loud; it does not stop someone replacing the whole file, because nothing is signed. It is off by default, and a project <code>.ai-jail</code> can only turn it off. <code>ai-jail --audit-show</code> prints a readable summary of launches, network decisions and credential substitutions, without verifying the chain. Since 2.3 ai-jail opens the log without following a symlink below your home, and refuses a log that is a special file or owned by someone else. Launch records can include command arguments, so keep secrets out of them."
+      "text": "<code>--audit-log</code> answers two questions: what did I let that agent do, and where did it try to reach. It appends one JSON line per launch, and with <code>--allow-host</code> on, one line per connection allowed or denied. Since 2.2 each line carries its sequence number and the SHA-256 of the line before it, and <code>ai-jail --audit-verify</code> walks the chain and reports the first broken link. That exposes an edited record when a chained record follows it; it cannot detect a clean suffix deletion, an edit to the final record without a successor, or replacement of the whole unsigned file. It is off by default, and a project <code>.ai-jail</code> can only turn it off. <code>ai-jail --audit-show</code> prints a readable summary of launches, network decisions and credential substitutions, without verifying the chain. Since 2.3 ai-jail opens the log without following a symlink below your home, and refuses a log that is a special file or owned by someone else. Launch records can include command arguments, so keep secrets out of them."
     }
   },
   "report": {

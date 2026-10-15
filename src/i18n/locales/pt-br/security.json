@@ -77,6 +77,7 @@
   },
   "switches": {
     "title": "Opções que abrem o muro",
+    "expand": "Mostrar todas as opções e consequências",
     "lede": "Tudo o que está abaixo fica desligado até você ligar, exceto duas opções que vêm ligadas por padrão: <code>--toolchains</code> no Linux e <code>--agent-state</code> em todo lugar. A maioria dá acesso real ao agente. <a class=\"link\" href=\"/configure/#switches\">Como definir cada um está na página Configurar</a>.",
     "head": {
       "flag": "Opção",
@@ -185,7 +186,7 @@
     },
     "log": {
       "title": "Um log do que você liberou",
-      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Desde a 2.2, cada linha carrega o próprio número de sequência e o SHA-256 da linha anterior, e <code>ai-jail --audit-verify</code> percorre a cadeia e aponta o primeiro elo quebrado. Isso faz uma edição silenciosa virar barulho; não impede alguém de trocar o arquivo inteiro, porque nada é assinado. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar. <code>ai-jail --audit-show</code> imprime um resumo legível das inicializações, das decisões de rede e das substituições de credenciais, sem verificar a cadeia. Desde a 2.3 o log é aberto sem seguir symlink abaixo do seu home, e um log que seja arquivo especial ou de outro dono é recusado. Os registros de inicialização podem incluir os argumentos do comando, então deixe segredos fora deles."
+      "text": "<code>--audit-log</code> responde duas perguntas: o que eu deixei aquele agente fazer, e aonde ele tentou chegar. Ele acrescenta uma linha JSON por inicialização e, com <code>--allow-host</code> ligado, uma linha por conexão permitida ou negada. Desde a 2.2, cada linha carrega o próprio número de sequência e o SHA-256 da linha anterior, e <code>ai-jail --audit-verify</code> percorre a cadeia e aponta o primeiro elo quebrado. Isso denuncia um registro editado quando há outro encadeado depois dele; não detecta a remoção limpa do final, a edição do último registro sem sucessor nem a troca do arquivo inteiro sem assinatura. Vem desligado por padrão, e um <code>.ai-jail</code> de projeto só consegue desligar. <code>ai-jail --audit-show</code> imprime um resumo legível das inicializações, das decisões de rede e das substituições de credenciais, sem verificar a cadeia. Desde a 2.3 o log é aberto sem seguir symlink abaixo do seu home, e um log que seja arquivo especial ou de outro dono é recusado. Os registros de inicialização podem incluir os argumentos do comando, então deixe segredos fora deles."
     }
   },
   "report": {

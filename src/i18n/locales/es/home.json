@@ -11,7 +11,7 @@
     "title": "Cómo un buen agente sale mal",
     "lede": "Todo el día el agente lee texto que no escribiste: páginas web, issues, READMEs, paquetes. Basta una página con instrucciones escondidas, y el agente no necesita ser hostil para seguirlas.",
     "alt": "Dos filas. Sin jaula, una página envenenada llega al agente, el agente lee la clave SSH y la envía a internet. Con ai-jail, el agente está dentro de un muro de barrotes, ninguna flecha sale de él, y la clave SSH e internet aparecen atenuados y tras barrotes, fuera.",
-    "caption": "La misma página, con y sin ai-jail. La clave no está ahí para leerla, e internet está cerrado.",
+    "caption": "La misma página, con y sin ai-jail. La clave no está ahí para leerla, e internet en general queda cerrado, excepto para la API del propio agente y los registros de paquetes en Linux.",
     "link": "Qué más puede alcanzar un agente"
   },
   "scene": {
@@ -95,7 +95,7 @@
     "link": "Todos los interruptores"
   },
   "how": {
-    "text": "ai-jail es un programa pequeño, sin daemon y sin root. En Linux levanta los muros con funciones del kernel: bubblewrap para los namespaces y los montajes, Landlock para las reglas de archivos, seccomp para las llamadas al sistema, límites para los procesos desbocados. En macOS la misma política se convierte en un perfil de <code>sandbox-exec</code>. El agente usa los compiladores y runtimes que ya tienes en tu máquina, y un archivo <code>.ai-jail</code> dentro de un repositorio puede endurecer la jaula y nunca abrirla.",
+    "text": "ai-jail es un programa pequeño, sin daemon y sin root. En Linux levanta los muros con funciones del kernel: bubblewrap para los namespaces y los montajes, más Landlock, seccomp y límites de recursos cuando el kernel los ofrece. En macOS traduce lo que admite la plataforma a un perfil más fino de <code>sandbox-exec</code>. El agente usa los compiladores y runtimes que ya tienes y, por defecto, un archivo <code>.ai-jail</code> dentro de un repositorio solo puede endurecer la jaula, nunca abrirla.",
     "link": "Cómo funcionan las capas"
   },
   "limits": {

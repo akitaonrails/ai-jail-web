@@ -54,6 +54,14 @@ const dayone = [
     <a href={href('/how-it-works/')} class="btn btn-ghost">{t('hero.how')}</a>
   </PageHero>
 
+  <section class="wrap">
+    <Callout title={t('approve.title')} hue="rose">
+      <ul class="ticks">
+        {raw<string[]>('approve.items').map((it) => <li set:html={it} />)}
+      </ul>
+    </Callout>
+  </section>
+
   <Section title={t('wrong.title')} lede={t('wrong.lede')} hue="red" tint>
     <FeatureGrid items={scenarios} />
     <Diagram name="why-injection" alt={t('wrong.alt')} caption={t('wrong.caption')} />
@@ -107,14 +115,6 @@ const dayone = [
       <CodeBlock code={dayone} title={t('dayone.codeTitle')} />
     </div>
   </Section>
-
-  <section class="wrap">
-    <Callout title={t('approve.title')} hue="rose">
-      <ul class="ticks">
-        {raw<string[]>('approve.items').map((it) => <li set:html={it} />)}
-      </ul>
-    </Callout>
-  </section>
 
   <Faq items={faq} title={t('faq.title')} hue="rose" />
   <NextPages title={t('next.title')} items={next} />

@@ -1,7 +1,7 @@
 {
   "site": {
     "tagline": "AI 코딩 에이전트를 위한 OS 샌드박스",
-    "description": "ai-jail은 Linux와 macOS에서 Claude Code, Codex 같은 AI 코딩 에이전트를 OS 샌드박스 안에서 실행합니다. 프로젝트에는 그대로 쓸 수 있고, 키와 토큰, 홈 디렉터리에는 에이전트가 닿을 수 없습니다.",
+    "description": "ai-jail은 Linux와 macOS에서 Claude Code, Codex 같은 AI 코딩 에이전트를 OS 샌드박스 안에서 실행합니다. 프로젝트에는 그대로 쓸 수 있습니다. 실행한 에이전트 자체의 로그인 정보를 제외하면 사용자의 파일과 자격 증명에는 닿을 수 없습니다.",
     "ogAlt": "어두운 석조 감옥 복도에 ai-jail 이름과 'AI 코딩 에이전트를 위한 감옥'이라는 문구가 표시된 이미지"
   },
   "a11y": {
@@ -13,7 +13,8 @@
     "openMenu": "메뉴 열기",
     "closeMenu": "메뉴 닫기",
     "menu": "메뉴",
-    "chooseOne": "하나를 선택하세요"
+    "chooseOne": "하나를 선택하세요",
+    "scrollHint": "옆으로 밀어 전체 다이어그램을 확인하세요"
   },
   "nav": {
     "why": {

@@ -109,6 +109,20 @@ const detect = locale === defaultLocale && !noindex
       import '@/scripts/motion';
       import '@/scripts/copy';
       import '@/scripts/nav';
+
+      const revealHashTarget = () => {
+        const id = decodeURIComponent(location.hash.slice(1));
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        const disclosure = target.closest('details') ?? target.querySelector('details');
+        disclosure?.setAttribute('open', '');
+        requestAnimationFrame(() => target.scrollIntoView());
+      };
+
+      revealHashTarget();
+      addEventListener('load', revealHashTarget, { once: true });
+      addEventListener('hashchange', revealHashTarget);
     </script>
   </body>
 </html>

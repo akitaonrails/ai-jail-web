@@ -1,7 +1,7 @@
 {
   "site": {
     "tagline": "AIコーディングエージェントのためのOSサンドボックス",
-    "description": "ai-jailは、Claude CodeやCodexなどのAIコーディングエージェントをLinuxとmacOSのOSサンドボックス内で実行します。プロジェクトには書き込めますが、鍵やトークン、ホームディレクトリには手が届きません。",
+    "description": "ai-jailは、Claude CodeやCodexなどのAIコーディングエージェントをLinuxとmacOSのOSサンドボックス内で実行します。プロジェクトには書き込めます。起動したエージェント自身のログイン情報を除き、あなたのファイルと認証情報には手が届きません。",
     "ogAlt": "暗い石造りの監獄通路に、ai-jailの名前と「AIコーディングエージェントのための監獄」というメッセージ"
   },
   "a11y": {
@@ -13,7 +13,8 @@
     "openMenu": "メニューを開く",
     "closeMenu": "メニューを閉じる",
     "menu": "メニュー",
-    "chooseOne": "1つ選んでください"
+    "chooseOne": "1つ選んでください",
+    "scrollHint": "横にスワイプすると図全体を見られます"
   },
   "nav": {
     "why": {
